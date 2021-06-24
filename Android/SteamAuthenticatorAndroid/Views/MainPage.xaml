@@ -34,7 +34,8 @@
                        VerticalTextAlignment="Center"
                        HorizontalOptions="FillAndExpand"
                        IsTextPredictionEnabled="False"
-                       IsReadOnly="True"/>
+                       IsReadOnly="True"
+                       Placeholder="Token" />
 
                     <Button Text="Copy"
                         HorizontalOptions="End"
@@ -44,7 +45,7 @@
                 </StackLayout>
 
                 <ProgressBar Progress="{Binding Path=ProgressBar}"
-                             ProgressColor="Green" />
+                             ProgressColor="{StaticResource Primary}" />
 
             </StackLayout>
 
@@ -63,10 +64,11 @@
 
                 <StackLayout Orientation="Horizontal" >
                     <Label Text="Filter:"
-                       VerticalOptions="Center" />
+                           VerticalOptions="Center" />
 
                     <Entry VerticalTextAlignment="Center"
-                           HorizontalOptions="FillAndExpand" >
+                           HorizontalOptions="FillAndExpand"
+                           Placeholder="account" >
 
                     </Entry>
                 </StackLayout>

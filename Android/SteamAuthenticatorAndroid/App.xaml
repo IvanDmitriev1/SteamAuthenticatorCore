@@ -34,6 +34,7 @@
 
             <Style TargetType="Entry">
                 <Setter Property="TextColor" Value="Black"/>
+                <Setter Property="PlaceholderColor" Value="Gray"/>
             </Style>
 
             <Style TargetType="CheckBox">

@@ -38,19 +38,31 @@ namespace SteamAuthenticatorAndroid.ViewModels
         public string PeriodicCheckingInterval
         {
             get => _periodicCheckingInterval;
-            set => SetProperty(ref _periodicCheckingInterval, value);
+            set
+            {
+                _manifest.PeriodicCheckingInterval = int.Parse(value);
+                SetProperty(ref _periodicCheckingInterval, value);
+            }
         }
 
         public bool AutoConfirmMarketTransactions
         {
             get => _autoConfirmMarketTransactions;
-            set => SetProperty(ref _autoConfirmMarketTransactions, value);
+            set
+            {
+                _manifest.AutoConfirmMarketTransactions = value;
+                SetProperty(ref _autoConfirmMarketTransactions, value);
+            }
         }
 
         public bool AutoConfirmTrades
         {
             get => _autoConfirmTrades;
-            set => SetProperty(ref _autoConfirmTrades, value);
+            set
+            {
+                _manifest.AutoConfirmTrades = value;
+                SetProperty(ref _autoConfirmTrades, value);
+            }
         }
 
         #endregion
