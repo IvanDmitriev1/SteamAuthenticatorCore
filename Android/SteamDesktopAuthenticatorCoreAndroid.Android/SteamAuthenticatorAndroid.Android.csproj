@@ -7,8 +7,8 @@
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TemplateGuid>{6968b3a4-1835-46a3-ac5c-1ae33b475983}</TemplateGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SteamDesktopAuthenticatorCoreAndroid.Droid</RootNamespace>
-    <AssemblyName>SteamDesktopAuthenticatorCoreAndroid.Android</AssemblyName>
+    <RootNamespace>SteamAuthenticatorAndroid.Droid</RootNamespace>
+    <AssemblyName>SteamAuthenticatorAndroid.Android</AssemblyName>
     <Deterministic>True</Deterministic>
     <AndroidApplication>True</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
@@ -58,10 +58,6 @@
     <Reference Include="Mono.Android" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
@@ -94,9 +90,9 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\launcher_foreground.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SteamDesktopAuthenticatorCoreAndroid\SteamDesktopAuthenticatorCoreAndroid.csproj">
-      <Project>{FE4E2403-CFD8-4ADA-927D-34BC69BF9C3A}</Project>
-      <Name>SteamDesktopAuthenticatorCoreAndroid</Name>
+    <ProjectReference Include="..\SteamDesktopAuthenticatorCoreAndroid\SteamAuthenticatorAndroid.csproj">
+      <Project>{2E3362E3-410A-465D-B7BA-BEBBCDD9E0CA}</Project>
+      <Name>SteamAuthenticatorAndroid</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

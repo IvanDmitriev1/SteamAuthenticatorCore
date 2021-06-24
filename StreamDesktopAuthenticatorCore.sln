@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthCore", "SteamAuthC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Android", "Android", "{F54B8248-3F07-4D7D-BE93-66A7A32451E8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamDesktopAuthenticatorCoreAndroid", "Android\SteamDesktopAuthenticatorCoreAndroid\SteamDesktopAuthenticatorCoreAndroid.csproj", "{2E3362E3-410A-465D-B7BA-BEBBCDD9E0CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorAndroid", "Android\SteamDesktopAuthenticatorCoreAndroid\SteamAuthenticatorAndroid.csproj", "{2E3362E3-410A-465D-B7BA-BEBBCDD9E0CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamDesktopAuthenticatorCoreAndroid.Android", "Android\SteamDesktopAuthenticatorCoreAndroid.Android\SteamDesktopAuthenticatorCoreAndroid.Android.csproj", "{BBB57225-6F01-46EB-8AEB-C99C2D10454E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamAuthenticatorAndroid.Android", "Android\SteamDesktopAuthenticatorCoreAndroid.Android\SteamAuthenticatorAndroid.Android.csproj", "{BBB57225-6F01-46EB-8AEB-C99C2D10454E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleDrive", "GoogleDrive\GoogleDrive.csproj", "{AA5EF1AC-01D7-41AE-A696-BA8BE5F4B0D4}"
 EndProject

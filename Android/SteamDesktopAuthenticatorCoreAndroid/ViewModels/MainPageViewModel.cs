@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using SteamAuthCore;
 using SteamAuthCore.Models;
-using SteamDesktopAuthenticatorCoreAndroid.Services;
+using SteamAuthenticatorAndroid.Services;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
-namespace SteamDesktopAuthenticatorCoreAndroid.ViewModels
+namespace SteamAuthenticatorAndroid.ViewModels
 {
     internal class MainPageViewModel : BaseViewModel
     {

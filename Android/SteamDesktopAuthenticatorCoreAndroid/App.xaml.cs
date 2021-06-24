@@ -1,7 +1,7 @@
-﻿using SteamDesktopAuthenticatorCoreAndroid.Views;
+﻿using SteamAuthenticatorAndroid.Views;
 using Xamarin.Forms;
 
-namespace SteamDesktopAuthenticatorCoreAndroid
+namespace SteamAuthenticatorAndroid
 {
     public partial class App : Application
     {

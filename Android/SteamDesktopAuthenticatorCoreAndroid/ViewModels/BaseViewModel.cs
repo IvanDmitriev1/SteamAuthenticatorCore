@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace SteamDesktopAuthenticatorCoreAndroid.ViewModels
+namespace SteamAuthenticatorAndroid.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged
     {
