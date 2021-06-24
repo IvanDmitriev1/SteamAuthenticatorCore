@@ -56,7 +56,7 @@ namespace SteamDesktopAuthenticatorCore
 
         private static async Task DeletePreviousFile()
         {
-            await Task.Delay(3000);
+            await Task.Delay(5000);
 
             string[] files = await Task.Run(() => Directory.GetFiles(Environment.CurrentDirectory));
             foreach (var file in files)
@@ -66,7 +66,14 @@ namespace SteamDesktopAuthenticatorCore
                 if (!fileName.Contains("SteamDesktopAuthenticatorCore") || !fileName.Contains("exe")) continue;
                 if (fileName == Path.GetFileName(Process.GetCurrentProcess().MainModule?.FileName)) continue;
 
-                File.Delete(file);
+                try
+                {
+                    File.Delete(file);
+                }
+                catch
+                {
+                    Debug.WriteLine("Failed to delete file");
+                }
             }
         }
 
