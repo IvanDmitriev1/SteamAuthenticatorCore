@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels1="clr-namespace:SteamAuthenticatorAndroid.ViewModels;assembly=SteamAuthenticatorAndroid"
-             x:Class="SteamAuthenticatorAndroid.Views.MainPage" >
+             x:Class="SteamAuthenticatorAndroid.Views.MainPage"
+             Title="Login token" >
 
     <ContentPage.Resources>
         <viewModels1:MainPageViewModel x:Key="DataContext"/>

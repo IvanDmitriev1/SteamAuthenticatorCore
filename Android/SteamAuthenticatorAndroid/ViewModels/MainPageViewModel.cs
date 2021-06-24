@@ -48,6 +48,8 @@ namespace SteamAuthenticatorAndroid.ViewModels
 
         #region Fields
 
+        public static SteamGuardAccount? SelectedGuardAccount;
+
         public ManifestModel? Manifest
         {
             get => _manifest;
@@ -57,7 +59,11 @@ namespace SteamAuthenticatorAndroid.ViewModels
         public SteamGuardAccount? SelectedAccount
         {
             get => _selectedAccount;
-            set => SetProperty(ref _selectedAccount, value);
+            set
+            {
+                SelectedGuardAccount = value;
+                SetProperty(ref _selectedAccount, value);
+            }
         }
 
         public string StatusText

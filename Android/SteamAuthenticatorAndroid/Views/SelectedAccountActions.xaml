@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SteamAuthenticatorAndroid.Views.SelectedAccountActions"
+             Title="Account actions" >
+
+    <ContentPage.Content>
+        <StackLayout Margin="10, 20, 0, 0"
+                     Spacing="20" >
+
+            <Button Text="Login again"/>
+
+            <Button Text="Force session refresh"/>
+
+            <Button Text="Deactivate Authenticator"/>
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
