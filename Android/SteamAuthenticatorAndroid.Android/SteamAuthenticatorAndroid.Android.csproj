@@ -90,8 +90,8 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\launcher_foreground.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SteamDesktopAuthenticatorCoreAndroid\SteamAuthenticatorAndroid.csproj">
-      <Project>{2E3362E3-410A-465D-B7BA-BEBBCDD9E0CA}</Project>
+    <ProjectReference Include="..\SteamAuthenticatorAndroid\SteamAuthenticatorAndroid.csproj">
+      <Project>{5e6d53f9-158a-4948-adc0-8e160c550a9a}</Project>
       <Name>SteamAuthenticatorAndroid</Name>
     </ProjectReference>
   </ItemGroup>
