@@ -256,7 +256,7 @@
                         BorderThickness="0"
                         Padding="5"
                         HorizontalAlignment="Left"
-                        Command="{Binding Path=}" >
+                        Command="{Binding Path=CheckNewVersionCommand}" >
 
                 </Button>
 
