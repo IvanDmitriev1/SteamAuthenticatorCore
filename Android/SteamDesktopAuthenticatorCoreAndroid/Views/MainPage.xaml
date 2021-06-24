@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:SteamDesktopAuthenticatorCoreAndroid.ViewModels;assembly=SteamDesktopAuthenticatorCoreAndroid"
+             x:Class="SteamDesktopAuthenticatorCoreAndroid.Views.MainPage" >
+
+    <ContentPage.Resources>
+        <viewModels:MainPageViewModel x:Key="DataContext"/>
+    </ContentPage.Resources>
+
+    <StackLayout Margin="10"
+                 Spacing="10"
+                 BindingContext="{StaticResource DataContext}" >
+
+        <Button TextTransform="None"
+                FontSize="Medium"
+                Text="Import accounts"
+                Command="{Binding Path=ImportAccount}" />
+
+        <StackLayout Margin="7, 0, 0, 0"
+                     Orientation="Vertical" >
+
+            <StackLayout Orientation="Vertical"
+                         Spacing="10" >
+
+                <StackLayout Orientation="Horizontal" >
+                    <Label Text="Login Token:"
+                       VerticalOptions="Center" />
+
+                    <Entry FontSize="16"
+                       Text="{Binding Path=LoginTokenText, Mode=OneWay}"
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center"
+                       HorizontalOptions="FillAndExpand"
+                       IsTextPredictionEnabled="False"
+                       IsReadOnly="True"/>
+
+                    <Button Text="Copy"
+                        HorizontalOptions="End"
+                        VerticalOptions="Center"
+                        Command="{Binding Path=CopyCommand}" />
+
+                </StackLayout>
+
+                <ProgressBar Progress="{Binding Path=ProgressBar}"
+                             ProgressColor="Green" />
+
+            </StackLayout>
+
+            <StackLayout Spacing="10"
+                         Margin="0, 20, 0, 0" >
+
+                <StackLayout Orientation="Horizontal" >
+
+                    <Label Text="Account:"
+                           VerticalOptions="Center" />
+
+                    <Label Text="{Binding Path=SelectedAccount.AccountName}"
+                           FontSize="Body"
+                           VerticalOptions="Center" />
+                </StackLayout>
+
+                <StackLayout Orientation="Horizontal" >
+                    <Label Text="Filter:"
+                       VerticalOptions="Center" />
+
+                    <Entry VerticalTextAlignment="Center"
+                           HorizontalOptions="FillAndExpand" >
+
+                    </Entry>
+                </StackLayout>
+
+                <ListView ItemsSource="{Binding Path=Manifest.Accounts}"
+                      SelectedItem="{Binding Path=SelectedAccount}" >
+
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <ViewCell.ContextActions>
+                                    <MenuItem Text="Delete"
+                                              Command="{Binding Source={StaticResource DataContext}, Path=DeleteAccount}" />
+                                </ViewCell.ContextActions>
+
+                                <ViewCell.View>
+                                    <StackLayout Orientation="Vertical"
+                                                 HorizontalOptions="FillAndExpand" 
+                                                 VerticalOptions="Center"
+                                                 Margin="0, 0" >
+
+                                        <Label Text="{Binding Path=AccountName}"
+                                               VerticalTextAlignment="Center"
+                                               HorizontalOptions="Center" />
+                                    </StackLayout>
+                                </ViewCell.View>
+
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+
+                </ListView>
+
+            </StackLayout>
+
+        </StackLayout>
+
+        
+
+    </StackLayout>
+</ContentPage>
