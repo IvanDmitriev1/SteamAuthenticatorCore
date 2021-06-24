@@ -1,0 +1,3 @@
+[submodule "WpfHelper"]
+	path = WpfHelper
+	url = https://github.com/bduj1/WpfHelper
