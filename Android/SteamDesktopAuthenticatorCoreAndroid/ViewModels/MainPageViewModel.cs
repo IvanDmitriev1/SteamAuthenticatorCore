@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,6 +30,8 @@ namespace SteamDesktopAuthenticatorCoreAndroid.ViewModels
             ImportAccount = new Command(AddMaFile);
             DeleteAccount = new Command(DeleteAccountMethod);
             CopyCommand = new Command(CopyCommandMethod);
+            MoveAccountUpCommand = new Command(MoveAccountUp);
+            MoveAccountDownCommand = new Command(MoveAccountDown);
         }
 
         #region Variables
@@ -87,9 +90,13 @@ namespace SteamDesktopAuthenticatorCoreAndroid.ViewModels
 
         public Command ImportAccount { get; }
 
+        public Command CopyCommand { get; }
+
         public Command DeleteAccount { get; }
 
-        public Command CopyCommand { get; }
+        public Command MoveAccountUpCommand { get; }
+
+        public Command MoveAccountDownCommand { get; }
 
         #endregion
 
@@ -121,10 +128,19 @@ namespace SteamDesktopAuthenticatorCoreAndroid.ViewModels
 
         private static async void AddMaFile()
         {
-            FileResult[] files = (await FilePicker.PickMultipleAsync(new PickOptions
+            FileResult[] files;
+
+            try
             {
-                PickerTitle = "Select maFile"
-            })).ToArray();
+                files = (await FilePicker.PickMultipleAsync(new PickOptions
+                {
+                    PickerTitle = "Select maFile"
+                })).ToArray();
+            }
+            catch
+            {
+                return;
+            }
 
             foreach (var file in files)
             {
@@ -144,6 +160,31 @@ namespace SteamDesktopAuthenticatorCoreAndroid.ViewModels
         public void CopyCommandMethod()
         {
             Clipboard.SetTextAsync(LoginTokenText);
+        }
+
+        public async void MoveAccountUp(object obj)
+        {
+            if (Manifest is not { } ) return;
+            if(obj is not SteamGuardAccount account) return;
+
+
+            int index = Manifest.Accounts.IndexOf(account);
+            if (index < 0 && Manifest.Accounts.Count <= 0) return;
+
+            Manifest.Accounts.Move(index -1, index);
+            await ManifestModelService.SaveManifest();
+        }
+
+        public async void MoveAccountDown(object obj)
+        {
+            if (Manifest is not { }) return;
+            if (obj is not SteamGuardAccount account) return;
+
+            int index = Manifest.Accounts.IndexOf(account);
+            if (index + 1 >= Manifest.Accounts.Count && Manifest.Accounts.Count <= 0) return;
+
+            Manifest.Accounts.Move(index, index +1);
+            await ManifestModelService.SaveManifest();
         }
 
         #endregion

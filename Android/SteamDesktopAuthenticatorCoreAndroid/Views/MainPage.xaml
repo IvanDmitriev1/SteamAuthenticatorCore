@@ -77,6 +77,14 @@
                         <DataTemplate>
                             <ViewCell>
                                 <ViewCell.ContextActions>
+                                    <MenuItem Text="Move up"
+                                              Command="{Binding Source={StaticResource DataContext}, Path=MoveAccountUpCommand}"
+                                              CommandParameter="{Binding}" />
+
+                                    <MenuItem Text="Move down"
+                                              Command="{Binding Source={StaticResource DataContext}, Path=MoveAccountDownCommand}"
+                                              CommandParameter="{Binding}" />
+
                                     <MenuItem Text="Delete"
                                               Command="{Binding Source={StaticResource DataContext}, Path=DeleteAccount}" />
                                 </ViewCell.ContextActions>
