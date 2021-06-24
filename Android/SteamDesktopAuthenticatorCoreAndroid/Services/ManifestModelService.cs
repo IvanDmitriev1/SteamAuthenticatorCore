@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using SteamAuthCore.Models;
 using Xamarin.Essentials;
 
-namespace SteamDesktopAuthenticatorCoreAndroid.Services
+namespace SteamAuthenticatorAndroid.Services
 {
     public static class ManifestModelService
     {

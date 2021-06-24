@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewModels="clr-namespace:SteamDesktopAuthenticatorCoreAndroid.ViewModels;assembly=SteamDesktopAuthenticatorCoreAndroid"
-             x:Class="SteamDesktopAuthenticatorCoreAndroid.Views.MainPage" >
+             xmlns:viewModels1="clr-namespace:SteamAuthenticatorAndroid.ViewModels;assembly=SteamAuthenticatorAndroid"
+             x:Class="SteamAuthenticatorAndroid.Views.MainPage" >
 
     <ContentPage.Resources>
-        <viewModels:MainPageViewModel x:Key="DataContext"/>
+        <viewModels1:MainPageViewModel x:Key="DataContext"/>
     </ContentPage.Resources>
 
     <StackLayout Margin="10"
@@ -77,6 +77,14 @@
                         <DataTemplate>
                             <ViewCell>
                                 <ViewCell.ContextActions>
+                                    <MenuItem Text="Move up"
+                                              Command="{Binding Source={StaticResource DataContext}, Path=MoveAccountUpCommand}"
+                                              CommandParameter="{Binding}" />
+
+                                    <MenuItem Text="Move down"
+                                              Command="{Binding Source={StaticResource DataContext}, Path=MoveAccountDownCommand}"
+                                              CommandParameter="{Binding}" />
+
                                     <MenuItem Text="Delete"
                                               Command="{Binding Source={StaticResource DataContext}, Path=DeleteAccount}" />
                                 </ViewCell.ContextActions>

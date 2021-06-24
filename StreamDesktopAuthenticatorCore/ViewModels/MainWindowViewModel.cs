@@ -261,12 +261,12 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
             try
             {
-                await Task.Run(() =>
+                bool result = await Task.Run(() => UpdateService.CheckForUpdate(out downloadUrl, out newVersion));
+                if (!result)
                 {
-                    if (UpdateService.CheckForUpdate(out downloadUrl, out newVersion)) return;
-
                     MessageBox.Show("You are using the latest version");
-                });
+                    return;
+                }
             }
             catch (Exception e)
             {
