@@ -84,7 +84,9 @@
                                               Command="{Binding Source={StaticResource DataContext}, Path=LoginCommand}"
                                               CommandParameter="{Binding}" />
 
-                                    <MenuItem Text="Force refresh session" />
+                                    <MenuItem Text="Force refresh session"
+                                              Command="{Binding Source={StaticResource DataContext}, Path=ForceRefreshSessionCommand}"
+                                              CommandParameter="{Binding}" />
 
                                     <MenuItem Text="Move up"
                                               Command="{Binding Source={StaticResource DataContext}, Path=MoveAccountUpCommand}"

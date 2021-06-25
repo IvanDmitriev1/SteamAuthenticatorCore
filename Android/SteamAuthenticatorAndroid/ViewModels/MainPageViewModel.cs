@@ -8,6 +8,7 @@ using SteamAuthCore;
 using SteamAuthCore.Models;
 using SteamAuthenticatorAndroid.Services;
 using SteamAuthenticatorAndroid.Views;
+using SteamDesktopAuthenticatorCore.Models;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -42,6 +43,7 @@ namespace SteamAuthenticatorAndroid.ViewModels
             MoveAccountUpCommand = new Command(MoveAccountUp);
             MoveAccountDownCommand = new Command(MoveAccountDown);
             LoginCommand = new Command(ShowLoginWindow);
+            ForceRefreshSessionCommand = new Command(ForceRefreshSession);
 
             SettingsPageViewModel.Page = this;
         }
@@ -107,7 +109,6 @@ namespace SteamAuthenticatorAndroid.ViewModels
         #endregion
 
         #region Commands
-
         public Command ImportAccount { get; }
 
         public Command CopyCommand { get; }
@@ -120,10 +121,11 @@ namespace SteamAuthenticatorAndroid.ViewModels
 
         public Command LoginCommand { get; }
 
+        public Command ForceRefreshSessionCommand { get; }
+
         #endregion
 
         #region Methods
-
         private void LoadAccountInfo()
         {
             if (SelectedAccount is null || _steamTime == 0) return;
@@ -267,6 +269,40 @@ namespace SteamAuthenticatorAndroid.ViewModels
 
             LoginPageViewModel.Account = account;
             await Shell.Current.GoToAsync($"{nameof(LoginPage)}?Account={account}", true);
+        }
+
+        private async Task<bool> RefreshAccountSession(SteamGuardAccount account, bool attemptRefreshLogin = true)
+        {
+            if (SelectedAccount is null) return false;
+
+            try
+            {
+                bool refreshed = await SelectedAccount.RefreshSessionAsync();
+                return refreshed; //No exception thrown means that we either successfully refreshed the session or there was a different issue preventing us from doing so.
+            }
+            catch (SteamGuardAccount.WgTokenExpiredException)
+            {
+                if (!attemptRefreshLogin) return false;
+
+                ShowLoginWindow(account);
+
+                return await RefreshAccountSession(account, false);
+            }
+        }
+
+        private async void ForceRefreshSession(object? obj)
+        {
+            if (obj is not SteamGuardAccount account) return;
+
+            if (await RefreshAccountSession(account))
+            {
+                await Application.Current.MainPage.DisplayAlert("Session refresh", "Your session has been refreshed", "Ok");
+                await ManifestModelService.SaveManifest();
+
+                return;
+            }
+
+            await Application.Current.MainPage.DisplayAlert("Session refresh", "Failed to refresh your session.\nTry using the \"Login again\" option.", "Ok");
         }
 
         #endregion

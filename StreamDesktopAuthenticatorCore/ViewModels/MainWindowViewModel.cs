@@ -170,7 +170,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             ShowLoginWindow(LoginType.Refresh);
         });
 
-        public ICommand ForceSessionRefresh => new AsyncRelayCommand(async o =>
+        public ICommand ForceRefreshSession => new AsyncRelayCommand(async o =>
         {
             if (await RefreshAccountSession())
             {
