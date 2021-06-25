@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels1="clr-namespace:SteamAuthenticatorAndroid.ViewModels;assembly=SteamAuthenticatorAndroid"
              x:Class="SteamAuthenticatorAndroid.Views.MainPage"
-             Title="Login token" >
+             Title="Login token"
+             Visual="Material" >
 
     <ContentPage.Resources>
         <viewModels1:MainPageViewModel x:Key="DataContext"/>
@@ -25,22 +26,19 @@
                          Spacing="10" >
 
                 <StackLayout Orientation="Horizontal" >
-                    <Label Text="Login Token:"
-                       VerticalOptions="Center" />
 
-                    <Entry FontSize="16"
-                       Text="{Binding Path=LoginTokenText, Mode=OneWay}"
-                       HorizontalTextAlignment="Center"
-                       VerticalTextAlignment="Center"
-                       HorizontalOptions="FillAndExpand"
-                       IsTextPredictionEnabled="False"
-                       IsReadOnly="True"
-                       Placeholder="Token" />
+                    <Entry Text="{Binding Path=LoginTokenText, Mode=OneWay}"
+                           HorizontalTextAlignment="Center"
+                           HorizontalOptions="FillAndExpand"
+                           IsTextPredictionEnabled="False"
+                           FontSize="Large"
+                           IsReadOnly="True"
+                           Placeholder="Login token" />
 
                     <Button Text="Copy"
-                        HorizontalOptions="End"
-                        VerticalOptions="Center"
-                        Command="{Binding Path=CopyCommand}" />
+                            HorizontalOptions="End"
+                            VerticalOptions="CenterAndExpand"
+                            Command="{Binding Path=CopyCommand}" />
 
                 </StackLayout>
 
@@ -49,12 +47,13 @@
 
             </StackLayout>
 
-            <StackLayout Spacing="10"
-                         Margin="0, 20, 0, 0" >
+            <StackLayout Margin="0, 20, 0, 0" >
 
-                <StackLayout Orientation="Horizontal" >
+                <StackLayout Orientation="Horizontal"
+                             Margin="13, 0" >
 
-                    <Label Text="Account:"
+                    <Label Text="Selected Account:"
+                           FontSize="Body"
                            VerticalOptions="Center" />
 
                     <Label Text="{Binding Path=SelectedAccount.AccountName}"
@@ -62,19 +61,15 @@
                            VerticalOptions="Center" />
                 </StackLayout>
 
-                <StackLayout Orientation="Horizontal" >
-                    <Label Text="Filter:"
-                           VerticalOptions="Center" />
+                <Entry VerticalTextAlignment="Center"
+                       HorizontalOptions="FillAndExpand"
+                       FontSize="Body"
+                       Placeholder="Account filter" >
 
-                    <Entry VerticalTextAlignment="Center"
-                           HorizontalOptions="FillAndExpand"
-                           Placeholder="account" >
-
-                    </Entry>
-                </StackLayout>
+                </Entry>
 
                 <ListView ItemsSource="{Binding Path=Manifest.Accounts}"
-                      SelectedItem="{Binding Path=SelectedAccount}" >
+                          SelectedItem="{Binding Path=SelectedAccount}" >
 
                     <ListView.ItemTemplate>
                         <DataTemplate>

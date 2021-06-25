@@ -8,6 +8,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <Color x:Key="Primary">#2196F3</Color>
+
             <Style TargetType="Button">
                 <Setter Property="TextColor" Value="White"></Setter>
                 <Setter Property="VisualStateManager.VisualStateGroups">
@@ -28,13 +29,12 @@
                 </Setter>
             </Style>
 
-            <Style TargetType="Label">
-                <Setter Property="TextColor" Value="Black"/>
+            <Style TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="White"></Setter>
             </Style>
 
-            <Style TargetType="Entry">
-                <Setter Property="TextColor" Value="Black"/>
-                <Setter Property="PlaceholderColor" Value="Gray"/>
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="#575757"></Setter>
             </Style>
 
             <Style TargetType="CheckBox">

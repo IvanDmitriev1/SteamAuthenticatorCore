@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:SteamAuthenticatorAndroid.ViewModels;assembly=SteamAuthenticatorAndroid"
              x:Class="SteamAuthenticatorAndroid.Views.SettingsPage"
-             Title="Settings" >
+             Title="Settings"
+             Visual="Material" >
 
     <ContentPage.BindingContext>
         <viewModels:SettingsPageViewModel/>
@@ -21,13 +22,13 @@
                 </Style>
 
                 <Style TargetType="{x:Type CheckBox}">
-                    <Setter Property="Margin" Value="4, 0, 0, 0"/>
+                    <Setter Property="Margin" Value="7, 0, 0, 0"/>
                     <Setter Property="HorizontalOptions" Value="StartAndExpand"/>
                 </Style>
             </StackLayout.Resources>
 
             <Grid>
-                <Entry WidthRequest="40"
+                <Entry WidthRequest="45"
                        MaxLength="2"
                        Keyboard="Numeric"
                        HorizontalTextAlignment="Center"

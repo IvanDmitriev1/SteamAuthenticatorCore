@@ -24,12 +24,16 @@
     </Shell.Resources>
 
     <TabBar>
-        <Tab Title="Login token" >
+        <Tab Title="Main"
+             Icon="icon_home" >
+
             <ShellContent Title="Login token"
                           ContentTemplate="{DataTemplate views:MainPage}" />
         </Tab>
 
-        <Tab Title="Settings" >
+        <Tab Title="Settings"
+             Icon="icon_settings.png">
+
             <ShellContent ContentTemplate="{DataTemplate views:SettingsPage}" />
         </Tab>
 

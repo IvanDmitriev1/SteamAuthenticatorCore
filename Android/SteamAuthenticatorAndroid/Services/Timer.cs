@@ -26,6 +26,9 @@ namespace SteamAuthenticatorAndroid.Services
 
         public void Start()
         {
+            if (_alive)
+                return;
+
             _alive = true;
 
             Xamarin.Forms.Device.StartTimer(TimeSpan.FromSeconds(Interval), () =>

@@ -59,6 +59,16 @@ namespace SteamAuthenticatorAndroid.ViewModels
             set
             {
                 _manifest.AutoConfirmMarketTransactions = value;
+
+                if (value)
+                {
+                    Page!.AutoConfirmTradesTimer.Start();
+                }
+                else
+                {
+                    Page!.AutoConfirmTradesTimer.Stop();
+                }
+
                 SetProperty(ref _autoConfirmMarketTransactions, value);
             }
         }
