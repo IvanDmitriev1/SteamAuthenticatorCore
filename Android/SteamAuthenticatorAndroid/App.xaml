@@ -33,10 +33,6 @@
                 <Setter Property="BackgroundColor" Value="White"></Setter>
             </Style>
 
-            <Style TargetType="Label">
-                <Setter Property="TextColor" Value="#575757"></Setter>
-            </Style>
-
             <Style TargetType="CheckBox">
                 <Setter Property="Color" Value="{StaticResource Primary}"/>
             </Style>

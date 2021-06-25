@@ -44,6 +44,7 @@ namespace SteamAuthenticatorAndroid.ViewModels
             MoveAccountDownCommand = new Command(MoveAccountDown);
             LoginCommand = new Command(ShowLoginWindow);
             ForceRefreshSessionCommand = new Command(ForceRefreshSession);
+            ListTappedCommand = new Command(ListTappedCommandMethod);
 
             SettingsPageViewModel.Page = this;
         }
@@ -122,6 +123,8 @@ namespace SteamAuthenticatorAndroid.ViewModels
         public Command LoginCommand { get; }
 
         public Command ForceRefreshSessionCommand { get; }
+
+        public Command ListTappedCommand { get; }
 
         #endregion
 
@@ -303,6 +306,15 @@ namespace SteamAuthenticatorAndroid.ViewModels
             }
 
             await Application.Current.MainPage.DisplayAlert("Session refresh", "Failed to refresh your session.\nTry using the \"Login again\" option.", "Ok");
+        }
+
+        private void ListTappedCommandMethod(object? obj)
+        {
+            if (obj is not ListView {SelectedItem: SteamGuardAccount account} list) return;
+
+            SelectedAccount = account;
+
+            list.SelectedItem = null;
         }
 
         #endregion

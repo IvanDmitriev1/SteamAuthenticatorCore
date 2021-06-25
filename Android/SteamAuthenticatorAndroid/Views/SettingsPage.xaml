@@ -11,7 +11,7 @@
     </ContentPage.BindingContext>
 
     <ContentPage.Content>
-        <StackLayout Margin="10, 20, 0, 0"
+        <StackLayout Margin="10, 10, 0, 0"
                      Spacing="20" >
 
             <StackLayout.Resources>
@@ -27,28 +27,30 @@
                 </Style>
             </StackLayout.Resources>
 
-            <Grid>
-                <Entry WidthRequest="45"
-                       MaxLength="2"
-                       Keyboard="Numeric"
-                       HorizontalTextAlignment="Center"
-                       HorizontalOptions="StartAndExpand"
-                       Text="{Binding Path=PeriodicCheckingInterval}" />
+            <StackLayout>
+                <Grid>
+                    <Entry WidthRequest="45"
+                           MaxLength="2"
+                           Keyboard="Numeric"
+                           HorizontalTextAlignment="Center"
+                           HorizontalOptions="StartAndExpand"
+                           Text="{Binding Path=PeriodicCheckingInterval}" />
 
-                <Label Text="Seconds between checking for confirmations" />
-            </Grid>
+                    <Label Text="Seconds between checking for confirmations" />
+                </Grid>
 
-            <Grid>
-                <CheckBox IsChecked="{Binding Path=AutoConfirmMarketTransactions}" />
+                <Grid>
+                    <CheckBox IsChecked="{Binding Path=AutoConfirmMarketTransactions}" />
 
-                <Label Text="Auto-confirm market transactions" />
-            </Grid>
+                    <Label Text="Auto-confirm market transactions" />
+                </Grid>
 
-            <Grid>
-                <CheckBox IsChecked="{Binding Path=AutoConfirmTrades}" />
+                <Grid>
+                    <CheckBox IsChecked="{Binding Path=AutoConfirmTrades}" />
 
-                <Label Text="Auto-confirm trades" />
-            </Grid>
+                    <Label Text="Auto-confirm trades" />
+                </Grid>
+            </StackLayout>
 
         </StackLayout>
     </ContentPage.Content>

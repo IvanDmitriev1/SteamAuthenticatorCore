@@ -2,12 +2,17 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels1="clr-namespace:SteamAuthenticatorAndroid.ViewModels;assembly=SteamAuthenticatorAndroid"
+             xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
              x:Class="SteamAuthenticatorAndroid.Views.MainPage"
              Title="Login token"
              Visual="Material" >
 
     <ContentPage.Resources>
-        <viewModels1:MainPageViewModel x:Key="DataContext"/>
+        <ResourceDictionary>
+            <viewModels1:MainPageViewModel x:Key="DataContext"/>
+            <xct:ItemTappedEventArgsConverter x:Key="ItemTappedEventArgsConverter" />
+            <xct:ItemSelectedEventArgsConverter x:Key="ItemSelectedEventArgsConverter" />
+        </ResourceDictionary>
     </ContentPage.Resources>
 
     <StackLayout Margin="10"
@@ -50,6 +55,7 @@
             <StackLayout Margin="0, 20, 0, 0" >
 
                 <StackLayout Orientation="Horizontal"
+                             Spacing="10"
                              Margin="13, 0" >
 
                     <Label Text="Selected Account:"
@@ -64,12 +70,22 @@
                 <Entry VerticalTextAlignment="Center"
                        HorizontalOptions="FillAndExpand"
                        FontSize="Body"
+                       IsVisible="False"
                        Placeholder="Account filter" >
 
                 </Entry>
 
                 <ListView ItemsSource="{Binding Path=Manifest.Accounts}"
-                          SelectedItem="{Binding Path=SelectedAccount}" >
+                          CachingStrategy="RecycleElement"
+                          x:Name="List"
+                          BackgroundColor="Transparent"
+                          SeparatorColor="#D0D0D0" >
+
+                    <ListView.Behaviors>
+                        <xct:EventToCommandBehavior EventName="ItemTapped"
+                                                    Command="{Binding Path=ListTappedCommand}"
+                                                    CommandParameter="{x:Reference List}" />
+                    </ListView.Behaviors>
 
                     <ListView.ItemTemplate>
                         <DataTemplate>
@@ -93,7 +109,8 @@
 
                                     <MenuItem Text="Delete"
                                               Command="{Binding Source={StaticResource DataContext}, Path=DeleteAccount}"
-                                              CommandParameter="{Binding}" />
+                                              CommandParameter="{Binding}"
+                                              IsDestructive="True" />
                                 </ViewCell.ContextActions>
 
                                 <ViewCell.View>
