@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using SteamAuthCore;
 using SteamAuthCore.Models;
 using SteamAuthenticatorAndroid.Services;
+using SteamAuthenticatorAndroid.Views;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -171,11 +172,11 @@ namespace SteamAuthenticatorAndroid.ViewModels
             }
         }
 
-        private async void DeleteAccountMethod()
+        private async void DeleteAccountMethod(object? obj)
         {
-            if (SelectedAccount is null) return;
+            if (obj is not SteamGuardAccount account) return;
 
-            await ManifestModelService.DeleteSteamGuardAccount(SelectedAccount);
+            await ManifestModelService.DeleteSteamGuardAccount(account);
         }
 
         private void CopyCommandMethod()
@@ -190,7 +191,7 @@ namespace SteamAuthenticatorAndroid.ViewModels
 
 
             int index = Manifest.Accounts.IndexOf(account);
-            if (index < 0 && Manifest.Accounts.Count <= 0) return;
+            if (index < 0 || Manifest.Accounts.Count <= 1) return;
 
             Manifest.Accounts.Move(index -1, index);
             await ManifestModelService.SaveManifest();
@@ -202,7 +203,7 @@ namespace SteamAuthenticatorAndroid.ViewModels
             if (obj is not SteamGuardAccount account) return;
 
             int index = Manifest.Accounts.IndexOf(account);
-            if (index + 1 >= Manifest.Accounts.Count && Manifest.Accounts.Count <= 0) return;
+            if (index + 1 >= Manifest.Accounts.Count || Manifest.Accounts.Count <= 1) return;
 
             Manifest.Accounts.Move(index, index +1);
             await ManifestModelService.SaveManifest();
@@ -243,7 +244,8 @@ namespace SteamAuthenticatorAndroid.ViewModels
                 catch (SteamGuardAccount.WgTokenExpiredException)
                 {
                     //Prompt to relogin
-                    //ShowLoginWindow(LoginType.Refresh);
+                    await Application.Current.MainPage.DisplayAlert("AutoTradeConfirmation error", "Relogin into your account", "Ok");
+                    ShowLoginWindow(acc);
                     break; //Don't bombard a user with login refresh requests if they have multiple accounts. Give them a few seconds to disable the autocheck option if they want.
                 }
                 catch (WebException)
@@ -259,9 +261,12 @@ namespace SteamAuthenticatorAndroid.ViewModels
             }
         }
 
-        private void ShowLoginWindow()
+        private async void ShowLoginWindow(object? obj)
         {
-            
+            if (obj is not SteamGuardAccount account) return;
+
+            LoginPageViewModel.Account = account;
+            await Shell.Current.GoToAsync($"{nameof(LoginPage)}?Account={account}", true);
         }
 
         #endregion

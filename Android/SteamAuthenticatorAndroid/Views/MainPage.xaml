@@ -80,9 +80,11 @@
                         <DataTemplate>
                             <ViewCell>
                                 <ViewCell.ContextActions>
-                                    <MenuItem Text="Login"
-                                              Command="{Binding Source={StaticResource DataContext}, Path=MoveAccountUpCommand}"
+                                    <MenuItem Text="Login again"
+                                              Command="{Binding Source={StaticResource DataContext}, Path=LoginCommand}"
                                               CommandParameter="{Binding}" />
+
+                                    <MenuItem Text="Force refresh session" />
 
                                     <MenuItem Text="Move up"
                                               Command="{Binding Source={StaticResource DataContext}, Path=MoveAccountUpCommand}"
@@ -93,7 +95,8 @@
                                               CommandParameter="{Binding}" />
 
                                     <MenuItem Text="Delete"
-                                              Command="{Binding Source={StaticResource DataContext}, Path=DeleteAccount}" />
+                                              Command="{Binding Source={StaticResource DataContext}, Path=DeleteAccount}"
+                                              CommandParameter="{Binding}" />
                                 </ViewCell.ContextActions>
 
                                 <ViewCell.View>

@@ -27,9 +27,6 @@
         <Tab Title="Login token" >
             <ShellContent Title="Login token"
                           ContentTemplate="{DataTemplate views:MainPage}" />
-
-            <ShellContent Title="Selected account actions"
-                          ContentTemplate="{DataTemplate views:SelectedAccountActions}" />
         </Tab>
 
         <Tab Title="Settings" >

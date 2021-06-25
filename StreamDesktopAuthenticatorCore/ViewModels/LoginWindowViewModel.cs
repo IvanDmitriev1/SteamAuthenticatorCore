@@ -167,9 +167,6 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                         MessageBox.Show("Error logging in: Steam returned \"GeneralFailure\".", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         _thisWindow?.Close();
                         return;
-                    case LoginResult.LoginOkay:
-                    case LoginResult.NeedEmail:
-                        throw new NotImplementedException();
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
