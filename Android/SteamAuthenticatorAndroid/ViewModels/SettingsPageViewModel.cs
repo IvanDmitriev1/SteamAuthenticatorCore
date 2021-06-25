@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using SteamAuthCore.Models;
 using SteamAuthenticatorAndroid.Services;
 
@@ -20,8 +19,6 @@ namespace SteamAuthenticatorAndroid.ViewModels
                 _autoConfirmMarketTransactions = _manifest.AutoConfirmMarketTransactions;
                 _autoConfirmTrades = _manifest.AutoConfirmTrades;
             });
-
-            
         }
 
         #region Variables
@@ -35,12 +32,23 @@ namespace SteamAuthenticatorAndroid.ViewModels
         #endregion
 
         #region Fields
+
+        public static MainPageViewModel? Page;
+
         public string PeriodicCheckingInterval
         {
             get => _periodicCheckingInterval;
             set
             {
-                _manifest.PeriodicCheckingInterval = int.Parse(value);
+                if (string.IsNullOrEmpty(value))
+                    return;
+
+                int num = int.Parse(value);
+                if (num < 1)
+                    return;
+
+                _manifest.PeriodicCheckingInterval = num;
+                Page!.AutoConfirmTradesTimer.Interval = num;
                 SetProperty(ref _periodicCheckingInterval, value);
             }
         }

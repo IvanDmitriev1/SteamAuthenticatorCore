@@ -35,6 +35,9 @@
         <Tab Title="Settings" >
             <ShellContent ContentTemplate="{DataTemplate views:SettingsPage}" />
         </Tab>
+
     </TabBar>
+
+    
 
 </Shell>

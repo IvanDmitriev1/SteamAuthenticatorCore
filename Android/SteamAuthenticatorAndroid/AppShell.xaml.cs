@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using SteamAuthenticatorAndroid.Views;
+using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace SteamAuthenticatorAndroid
@@ -9,6 +10,8 @@ namespace SteamAuthenticatorAndroid
         public AppShell()
         {
             InitializeComponent();
+
+            Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
         }
     }
 }

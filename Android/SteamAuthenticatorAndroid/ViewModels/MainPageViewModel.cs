@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using SteamAuthCore;
 using SteamAuthCore.Models;
@@ -17,6 +19,13 @@ namespace SteamAuthenticatorAndroid.ViewModels
             Task.Run(async () =>
             {
                 Manifest = await ManifestModelService.GetManifest();
+
+                AutoConfirmTradesTimer = new Timer(Manifest.PeriodicCheckingInterval, AutoTradeConfirmationTimerOnTick);
+
+                if (Manifest!.AutoConfirmTrades)
+                {
+                    AutoConfirmTradesTimer.Start();
+                }
             });
 
             Device.StartTimer(TimeSpan.FromSeconds(1), () =>
@@ -31,6 +40,9 @@ namespace SteamAuthenticatorAndroid.ViewModels
             CopyCommand = new Command(CopyCommandMethod);
             MoveAccountUpCommand = new Command(MoveAccountUp);
             MoveAccountDownCommand = new Command(MoveAccountDown);
+            LoginCommand = new Command(ShowLoginWindow);
+
+            SettingsPageViewModel.Page = this;
         }
 
         #region Variables
@@ -47,6 +59,8 @@ namespace SteamAuthenticatorAndroid.ViewModels
         #endregion
 
         #region Fields
+
+        public Timer AutoConfirmTradesTimer = null!;
 
         public static SteamGuardAccount? SelectedGuardAccount;
 
@@ -102,6 +116,8 @@ namespace SteamAuthenticatorAndroid.ViewModels
         public Command MoveAccountUpCommand { get; }
 
         public Command MoveAccountDownCommand { get; }
+
+        public Command LoginCommand { get; }
 
         #endregion
 
@@ -162,12 +178,12 @@ namespace SteamAuthenticatorAndroid.ViewModels
             await ManifestModelService.DeleteSteamGuardAccount(SelectedAccount);
         }
 
-        public void CopyCommandMethod()
+        private void CopyCommandMethod()
         {
             Clipboard.SetTextAsync(LoginTokenText);
         }
 
-        public async void MoveAccountUp(object obj)
+        private async void MoveAccountUp(object obj)
         {
             if (Manifest is not { } ) return;
             if(obj is not SteamGuardAccount account) return;
@@ -180,7 +196,7 @@ namespace SteamAuthenticatorAndroid.ViewModels
             await ManifestModelService.SaveManifest();
         }
 
-        public async void MoveAccountDown(object obj)
+        private async void MoveAccountDown(object obj)
         {
             if (Manifest is not { }) return;
             if (obj is not SteamGuardAccount account) return;
@@ -190,6 +206,62 @@ namespace SteamAuthenticatorAndroid.ViewModels
 
             Manifest.Accounts.Move(index, index +1);
             await ManifestModelService.SaveManifest();
+        }
+
+        private async void AutoTradeConfirmationTimerOnTick()
+        {
+            List<ConfirmationModel> confs = new();
+            Dictionary<SteamGuardAccount, List<ConfirmationModel>> autoAcceptConfirmations = new();
+            SteamGuardAccount[] accs = Manifest!.Accounts.ToArray();
+
+            StatusText = "Checking confirmations...";
+
+            foreach (var acc in accs)
+            {
+                try
+                {
+                    ConfirmationModel[] tmp = await acc.FetchConfirmationsAsync();
+                    foreach (var conf in tmp)
+                    {
+                        if ((conf.ConfType == ConfirmationModel.ConfirmationType.MarketSellTransaction && Manifest.AutoConfirmMarketTransactions) ||
+                            (conf.ConfType == ConfirmationModel.ConfirmationType.Trade && Manifest.AutoConfirmTrades))
+                        {
+                            if (!autoAcceptConfirmations.ContainsKey(acc))
+                                autoAcceptConfirmations[acc] = new List<ConfirmationModel>();
+                            autoAcceptConfirmations[acc].Add(conf);
+                        }
+                        else
+                            confs.Add(conf);
+                    }
+                }
+                catch (SteamGuardAccount.WgTokenInvalidException)
+                {
+                    StatusText = "Refreshing session";
+                    await acc.RefreshSessionAsync(); //Don't save it to the HDD, of course. We'd need their encryption passkey again.
+                    StatusText = "";
+                }
+                catch (SteamGuardAccount.WgTokenExpiredException)
+                {
+                    //Prompt to relogin
+                    //ShowLoginWindow(LoginType.Refresh);
+                    break; //Don't bombard a user with login refresh requests if they have multiple accounts. Give them a few seconds to disable the autocheck option if they want.
+                }
+                catch (WebException)
+                {
+
+                }
+            }
+
+            foreach (var acc in autoAcceptConfirmations.Keys)
+            {
+                var confirmations = autoAcceptConfirmations[acc].ToArray();
+                acc.AcceptMultipleConfirmations(confirmations);
+            }
+        }
+
+        private void ShowLoginWindow()
+        {
+            
         }
 
         #endregion

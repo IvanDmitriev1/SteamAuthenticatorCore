@@ -80,6 +80,10 @@
                         <DataTemplate>
                             <ViewCell>
                                 <ViewCell.ContextActions>
+                                    <MenuItem Text="Login"
+                                              Command="{Binding Source={StaticResource DataContext}, Path=MoveAccountUpCommand}"
+                                              CommandParameter="{Binding}" />
+
                                     <MenuItem Text="Move up"
                                               Command="{Binding Source={StaticResource DataContext}, Path=MoveAccountUpCommand}"
                                               CommandParameter="{Binding}" />

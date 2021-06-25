@@ -133,7 +133,7 @@ namespace SteamAuthCore
             }
             catch (WebException e)
             {
-                HandleFailedWebRequestResponse(e.Response as HttpWebResponse ?? throw new InvalidOperationException(), url);
+                HandleFailedWebRequestResponse(e.Response as HttpWebResponse, url);
                 return null;
             }
         }
