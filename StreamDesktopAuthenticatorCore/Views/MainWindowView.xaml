@@ -72,7 +72,7 @@
 
                     <MenuItem Header="Force session refresh"
                               Template="{StaticResource SingleDropDownMenuItem}"
-                              Command="{Binding Path=ForceSessionRefresh}" />
+                              Command="{Binding Path=ForceRefreshSession}" />
 
                     <Separator/>
 

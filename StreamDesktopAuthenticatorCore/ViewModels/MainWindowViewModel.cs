@@ -18,7 +18,6 @@ using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
 using WpfHelper.Commands;
 using WpfHelper.Services;
-using static System.String;
 
 namespace SteamDesktopAuthenticatorCore.ViewModels
 {
@@ -64,8 +63,8 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         private static readonly Regex Regex = new("[^0-9]+");
 
         private SteamGuardAccount? _selectedAccount;
-        private string _loginTokenText = Empty;
-        private string _statusText = Empty;
+        private string _loginTokenText = string.Empty;
+        private string _statusText = string.Empty;
         private int _progressBar;
 
         #endregion
@@ -171,7 +170,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             ShowLoginWindow(LoginType.Refresh);
         });
 
-        public ICommand ForceSessionRefresh => new AsyncRelayCommand(async o =>
+        public ICommand ForceRefreshSession => new AsyncRelayCommand(async o =>
         {
             if (await RefreshAccountSession())
             {
@@ -256,7 +255,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         public ICommand CheckNewVersionCommand => new AsyncRelayCommand(async o =>
         {
-            string downloadUrl = Empty;
+            string downloadUrl = string.Empty;
             Version newVersion = new();
 
             try
@@ -310,7 +309,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             StatusText = "Aligning time with Steam...";
             _steamTime = await TimeAligner.GetSteamTimeAsync();
-            StatusText = Empty;
+            StatusText = string.Empty;
 
             _currentSteamChunk = _steamTime / 30L;
             int secondsUntilChange = (int)(_steamTime - (_currentSteamChunk * 30L));
@@ -359,6 +358,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                     //Prompt to relogin
                     ShowLoginWindow(LoginType.Refresh);
                     break; //Don't bombard a user with login refresh requests if they have multiple accounts. Give them a few seconds to disable the autocheck option if they want.
+
                 }
                 catch (WebException)
                 {

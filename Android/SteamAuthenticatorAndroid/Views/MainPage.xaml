@@ -2,10 +2,16 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels1="clr-namespace:SteamAuthenticatorAndroid.ViewModels;assembly=SteamAuthenticatorAndroid"
-             x:Class="SteamAuthenticatorAndroid.Views.MainPage" >
+             xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+             x:Class="SteamAuthenticatorAndroid.Views.MainPage"
+             Title="Login token"
+             Visual="Material"
+             Shell.NavBarHasShadow="True" >
 
     <ContentPage.Resources>
-        <viewModels1:MainPageViewModel x:Key="DataContext"/>
+        <ResourceDictionary>
+            <viewModels1:MainPageViewModel x:Key="DataContext"/>
+        </ResourceDictionary>
     </ContentPage.Resources>
 
     <StackLayout Margin="10"
@@ -24,59 +30,77 @@
                          Spacing="10" >
 
                 <StackLayout Orientation="Horizontal" >
-                    <Label Text="Login Token:"
-                       VerticalOptions="Center" />
 
-                    <Entry FontSize="16"
-                       Text="{Binding Path=LoginTokenText, Mode=OneWay}"
-                       HorizontalTextAlignment="Center"
-                       VerticalTextAlignment="Center"
-                       HorizontalOptions="FillAndExpand"
-                       IsTextPredictionEnabled="False"
-                       IsReadOnly="True"/>
+                    <Entry Text="{Binding Path=LoginTokenText, Mode=OneWay}"
+                           HorizontalTextAlignment="Center"
+                           HorizontalOptions="FillAndExpand"
+                           IsTextPredictionEnabled="False"
+                           FontSize="Large"
+                           IsReadOnly="True"
+                           Placeholder="Login token" />
 
                     <Button Text="Copy"
-                        HorizontalOptions="End"
-                        VerticalOptions="Center"
-                        Command="{Binding Path=CopyCommand}" />
+                            HorizontalOptions="End"
+                            VerticalOptions="CenterAndExpand"
+                            Command="{Binding Path=CopyCommand}" />
 
                 </StackLayout>
 
                 <ProgressBar Progress="{Binding Path=ProgressBar}"
-                             ProgressColor="Green" />
+                             ProgressColor="{StaticResource Primary}" />
 
             </StackLayout>
 
-            <StackLayout Spacing="10"
-                         Margin="0, 20, 0, 0" >
+            <StackLayout Margin="0, 20, 0, 0"
+                         Spacing="20" >
 
-                <StackLayout Orientation="Horizontal" >
+                <StackLayout Orientation="Horizontal"
+                             HorizontalOptions="FillAndExpand" >
 
-                    <Label Text="Account:"
-                           VerticalOptions="Center" />
+                    <StackLayout Spacing="10"
+                                 HorizontalOptions="Start"
+                                 Orientation="Horizontal" >
 
-                    <Label Text="{Binding Path=SelectedAccount.AccountName}"
-                           FontSize="Body"
-                           VerticalOptions="Center" />
-                </StackLayout>
+                        <Label Text="Selected Account:"
+                               VerticalOptions="Center" />
 
-                <StackLayout Orientation="Horizontal" >
-                    <Label Text="Filter:"
-                       VerticalOptions="Center" />
+                        <Label Text="{Binding Path=SelectedAccount.AccountName}"
+                               VerticalOptions="Center" />
+                    </StackLayout>
 
-                    <Entry VerticalTextAlignment="Center"
-                           HorizontalOptions="FillAndExpand" >
+                    <StackLayout HorizontalOptions="EndAndExpand"
+                                 Orientation="Horizontal" >
+                        <Label Text="{Binding Path=Manifest.Accounts.Count}"/>
 
-                    </Entry>
+                        <Label Text=" items" />
+                    </StackLayout>
+                    
                 </StackLayout>
 
                 <ListView ItemsSource="{Binding Path=Manifest.Accounts}"
-                      SelectedItem="{Binding Path=SelectedAccount}" >
+                          CachingStrategy="RecycleElement"
+                          x:Name="List"
+                          BackgroundColor="Transparent"
+                          SeparatorColor="#D0D0D0" >
+
+                    <ListView.Behaviors>
+                        <xct:EventToCommandBehavior EventName="ItemTapped"
+                                                    Command="{Binding Path=ListTappedCommand}"
+                                                    CommandParameter="{x:Reference List}" />
+                    </ListView.Behaviors>
 
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
                                 <ViewCell.ContextActions>
+                                    <MenuItem Text="Login again"
+                                              Command="{Binding Source={StaticResource DataContext}, Path=LoginCommand}"
+                                              CommandParameter="{Binding}" />
+
+                                    <MenuItem Text="Force refresh session"
+                                              Command="{Binding Source={StaticResource DataContext}, Path=ForceRefreshSessionCommand}"
+                                              CommandParameter="{Binding}" />
+
                                     <MenuItem Text="Move up"
                                               Command="{Binding Source={StaticResource DataContext}, Path=MoveAccountUpCommand}"
                                               CommandParameter="{Binding}" />
@@ -86,7 +110,9 @@
                                               CommandParameter="{Binding}" />
 
                                     <MenuItem Text="Delete"
-                                              Command="{Binding Source={StaticResource DataContext}, Path=DeleteAccount}" />
+                                              Command="{Binding Source={StaticResource DataContext}, Path=DeleteAccount}"
+                                              CommandParameter="{Binding}"
+                                              IsDestructive="True" />
                                 </ViewCell.ContextActions>
 
                                 <ViewCell.View>
@@ -96,6 +122,7 @@
                                                  Margin="0, 0" >
 
                                         <Label Text="{Binding Path=AccountName}"
+                                               FontSize="Body"
                                                VerticalTextAlignment="Center"
                                                HorizontalOptions="Center" />
                                     </StackLayout>

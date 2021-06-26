@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:SteamAuthenticatorAndroid.ViewModels;assembly=SteamAuthenticatorAndroid"
+             x:Class="SteamAuthenticatorAndroid.Views.SettingsPage"
+             Title="Settings"
+             Visual="Material"
+             Shell.NavBarHasShadow="True" >
+
+    <ContentPage.BindingContext>
+        <viewModels:SettingsPageViewModel/>
+    </ContentPage.BindingContext>
+
+    <ContentPage.Content>
+        <StackLayout Margin="10, 10, 0, 0"
+                     Spacing="20" >
+
+            <StackLayout.Resources>
+                <Style TargetType="{x:Type Label}">
+                    <Setter Property="Margin" Value="45, 0, 0, 0"/>
+                    <Setter Property="FontSize" Value="Medium" />
+                    <Setter Property="VerticalOptions" Value="Center"/>
+                </Style>
+
+                <Style TargetType="{x:Type CheckBox}">
+                    <Setter Property="Margin" Value="7, 0, 0, 0"/>
+                    <Setter Property="HorizontalOptions" Value="StartAndExpand"/>
+                </Style>
+            </StackLayout.Resources>
+
+            <StackLayout>
+                <Grid>
+                    <Entry WidthRequest="45"
+                           MaxLength="2"
+                           Keyboard="Numeric"
+                           HorizontalTextAlignment="Center"
+                           HorizontalOptions="StartAndExpand"
+                           Text="{Binding Path=PeriodicCheckingInterval}" />
+
+                    <Label Text="Seconds between checking for confirmations" />
+                </Grid>
+
+                <Grid>
+                    <CheckBox IsChecked="{Binding Path=AutoConfirmMarketTransactions}" />
+
+                    <Label Text="Auto-confirm market transactions" />
+                </Grid>
+
+                <Grid>
+                    <CheckBox IsChecked="{Binding Path=AutoConfirmTrades}"
+                              IsEnabled="False" />
+
+                    <Label Text="Auto-confirm trades" />
+                </Grid>
+            </StackLayout>
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

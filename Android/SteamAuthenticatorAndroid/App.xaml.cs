@@ -1,4 +1,4 @@
-﻿using SteamAuthenticatorAndroid.Views;
+﻿using SteamAuthenticatorAndroid.Services;
 using Xamarin.Forms;
 
 namespace SteamAuthenticatorAndroid
@@ -9,7 +9,14 @@ namespace SteamAuthenticatorAndroid
         {
             InitializeComponent();
 
-            MainPage = new MainPage();
+            MainPage = new AppShell();
+        }
+
+        protected override async void OnSleep()
+        {
+            await ManifestModelService.SaveManifest();
+            
+            base.OnSleep();
         }
     }
 }

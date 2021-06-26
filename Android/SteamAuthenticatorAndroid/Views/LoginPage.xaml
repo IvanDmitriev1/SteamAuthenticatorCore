@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:SteamAuthenticatorAndroid.ViewModels;assembly=SteamAuthenticatorAndroid"
+             x:Class="SteamAuthenticatorAndroid.Views.LoginPage"
+             Title="Login"
+             Visual="Material" >
+
+    <ContentPage.BindingContext>
+        <viewModels:LoginPageViewModel/>
+    </ContentPage.BindingContext>
+
+    <ContentPage.Content>
+        <StackLayout Margin="10, 20, 10, 0" >
+            <Entry Placeholder="Login"
+                   Text="{Binding Path=Login, Mode=TwoWay}"
+                   IsReadOnly="{Binding Path=LoginReadOnly}" />
+
+            <Entry Placeholder="password"
+                   Text="{Binding Path=Password}"
+                   IsPassword="True" />
+
+            <Button Text="Login"
+                    HeightRequest="50"
+                    Margin="0,10,0,0"
+                    FontSize="Medium"
+                    Command="{Binding Path=LoginCommand}" />
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
