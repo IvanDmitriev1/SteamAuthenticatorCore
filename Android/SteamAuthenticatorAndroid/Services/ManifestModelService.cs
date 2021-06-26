@@ -30,8 +30,12 @@ namespace SteamAuthenticatorAndroid.Services
 
             await using FileStream stream = new(ManifestFileName, FileMode.Open);
             using StreamReader reader = new(stream);
-            if (JsonConvert.DeserializeObject<ManifestModel>(reader.ReadToEnd()) is not { } manifest)
-                throw new ArgumentNullException(nameof(manifest));
+            if (JsonConvert.DeserializeObject<ManifestModel>(await reader.ReadToEndAsync()) is not { } manifest)
+            {
+                await CreateNewManifest();
+                return _manifest!;
+            }
+
 
             _manifest = manifest;
             return _manifest;

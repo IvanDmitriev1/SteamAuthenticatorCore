@@ -8,7 +8,6 @@ using SteamAuthCore;
 using SteamAuthCore.Models;
 using SteamAuthenticatorAndroid.Services;
 using SteamAuthenticatorAndroid.Views;
-using SteamDesktopAuthenticatorCore.Models;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -18,6 +17,8 @@ namespace SteamAuthenticatorAndroid.ViewModels
     {
         public MainPageViewModel()
         {
+            _manifest = new ManifestModel();
+
             Task.Run(async () =>
             {
                 Manifest = await ManifestModelService.GetManifest();
@@ -54,7 +55,7 @@ namespace SteamAuthenticatorAndroid.ViewModels
         private long _steamTime;
         private long _currentSteamChunk;
 
-        private ManifestModel? _manifest;
+        private ManifestModel _manifest;
         private SteamGuardAccount? _selectedAccount;
         private string _loginTokenText = string.Empty;
         private string _statusText = string.Empty;
@@ -68,7 +69,7 @@ namespace SteamAuthenticatorAndroid.ViewModels
 
         public static SteamGuardAccount? SelectedGuardAccount;
 
-        public ManifestModel? Manifest
+        public ManifestModel Manifest
         {
             get => _manifest;
             private set => SetProperty(ref _manifest, value);

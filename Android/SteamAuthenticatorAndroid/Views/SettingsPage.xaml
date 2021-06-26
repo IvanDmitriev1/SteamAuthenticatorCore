@@ -4,7 +4,8 @@
              xmlns:viewModels="clr-namespace:SteamAuthenticatorAndroid.ViewModels;assembly=SteamAuthenticatorAndroid"
              x:Class="SteamAuthenticatorAndroid.Views.SettingsPage"
              Title="Settings"
-             Visual="Material" >
+             Visual="Material"
+             Shell.NavBarHasShadow="True" >
 
     <ContentPage.BindingContext>
         <viewModels:SettingsPageViewModel/>
@@ -46,7 +47,8 @@
                 </Grid>
 
                 <Grid>
-                    <CheckBox IsChecked="{Binding Path=AutoConfirmTrades}" />
+                    <CheckBox IsChecked="{Binding Path=AutoConfirmTrades}"
+                              IsEnabled="False" />
 
                     <Label Text="Auto-confirm trades" />
                 </Grid>
