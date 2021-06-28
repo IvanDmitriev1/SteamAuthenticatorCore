@@ -16,7 +16,7 @@ namespace SteamDesktopAuthenticatorCore.Services
         }
 
         private static readonly string ManifestFilePath;
-        private static readonly string MaFilesDirectory;
+        public static readonly string MaFilesDirectory;
 
         public static async Task<ManifestModel> GetManifestFromDrive()
         {

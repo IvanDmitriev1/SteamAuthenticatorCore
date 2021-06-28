@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -136,8 +138,17 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                         //
                     }
 
-                    if (App.GoogleDriveApi.IsAuthenticated && !_windowOpened)
-                        StartWindows(ref manifest);
+                    if (!App.GoogleDriveApi.IsAuthenticated || _windowOpened) return;
+
+                    if (settings.ImportFiles)
+                    {
+                        await ImportFilesToGoogleDrive();
+                        settings.ImportFiles = false;
+
+                        await SettingsModelService.SaveSettings();
+                    }
+
+                    StartWindows(ref manifest);
 
                     return;
                 }
@@ -154,6 +165,25 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             }
 
             return await ManifestModelService.GetManifestFromGoogleDrive();
+        }
+
+        private static async Task ImportFilesToGoogleDrive()
+        {
+            foreach (var file in Directory.GetFiles(ManifestModelService.MaFilesDirectory))
+            {
+                if (!file.Contains(".maFile")) continue;
+
+                try
+                {
+                    await ManifestModelService.AddSteamGuardAccountInGoogleDrive(Path.GetFileName(file), file);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.Message);
+                }
+            }
+
+            await ManifestModelService.GetAccountsInGoogleDrive();
         }
 
         private void StartWindows(ref ManifestModel manifest)

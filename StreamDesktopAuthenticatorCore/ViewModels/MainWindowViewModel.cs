@@ -176,6 +176,10 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 _ => throw new ArgumentOutOfRangeException()
             };
 
+            if (settings.ManifestLocation == ManifestLocation.GoogleDrive)
+                if (MessageBox.Show("Import your current files to google drive?", "Import service", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                    settings.ImportFiles = true;
+
             await SettingsModelService.SaveSettings();
 
             MessageBox.Show("Restart application");

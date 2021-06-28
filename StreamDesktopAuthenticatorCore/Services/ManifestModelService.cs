@@ -81,7 +81,12 @@ namespace SteamDesktopAuthenticatorCore.Services
         private static async Task CheckSettings(Func<Task> onDriveMethod, Func<Task> onGoogleDriveAction)
         {
             if (_settings is null)
-                throw new ArgumentNullException(nameof(_settings));
+            {
+                if (await SettingsModelService.GetSettingsModel() is not { } settings)
+                    throw new ArgumentNullException(nameof(settings));
+
+                _settings = settings;
+            }
 
             switch (_settings.ManifestLocation)
             {
@@ -99,7 +104,12 @@ namespace SteamDesktopAuthenticatorCore.Services
         private static async Task CheckSettings(Task onDriveMethod, Task onGoogleDriveAction)
         {
             if (_settings is null)
-                throw new ArgumentNullException(nameof(_settings));
+            {
+                if (await SettingsModelService.GetSettingsModel() is not { } settings)
+                    throw new ArgumentNullException(nameof(settings));
+
+                _settings = settings;
+            }
 
             switch (_settings.ManifestLocation)
             {
