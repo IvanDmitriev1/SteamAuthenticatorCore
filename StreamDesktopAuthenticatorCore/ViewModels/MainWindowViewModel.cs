@@ -246,7 +246,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             if (SelectedAccount is null) return;
 
-            if (MessageBox.Show("are you sure you want to delete a account from disk ?", "Delete account", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) == MessageBoxResult.Yes)
+            if (MessageBox.Show("are you sure you want to delete a account from drive?", "Delete account", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) == MessageBoxResult.Yes)
             {
                 await ManifestModelService.DeleteSteamGuardAccount(SelectedAccount);
             }
@@ -385,6 +385,14 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             {
                 MessageBox.Show("Failed to download update");
             }
+        });
+
+        public ICommand SetUpNewAccountCommand => new RelayCommand(o =>
+        {
+            LoginWindowView window = new();
+            window.ShowDialog();
+
+            RefreshAccountCommand.Execute(null);
         });
 
         #endregion

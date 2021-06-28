@@ -15,6 +15,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
     {
         public LoginWindowViewModel()
         {
+            LoginType = LoginType.Initial;
             _loginExplanation = "This will activate Steam Desktop Authenticator on your Steam account. This requires a phone number that can receive SMS.";
         }
 
@@ -35,7 +36,16 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         public LoginType LoginType
         {
             get => _loginType;
-            set => LoginTypeOnchange(ref value);
+            set
+            {
+                if (Account is null)
+                {
+                    Set(ref _loginType, value);
+                    return;
+                }
+                
+                LoginTypeOnchange(ref value);
+            }
         }
 
         public string UserName
@@ -81,7 +91,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                     await RefreshLogin();
                     return;
                 case LoginType.Initial:
-                    InitLogin();
+                    await InitLogin();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -90,40 +100,16 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         #endregion
 
-        #region PrivateMethods
-
-        private void LoginTypeOnchange(ref LoginType loginType)
-        {
-            if (Account is null)
-                throw new ArgumentNullException(nameof(Account));
-
-            switch (loginType)
-            {
-                case LoginType.Initial:
-                    break;
-                case LoginType.Refresh:
-                    UserName = Account.AccountName;
-                    UserNameEnabled = false;
-                    LoginExplanation = "Your Steam credentials have expired. For trade and market confirmations to work properly, please login again.";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(loginType), loginType, null);
-            }
-
-            Set(ref _loginType, loginType, nameof(LoginType));
-        }
-
         private async Task RefreshLogin()
         {
             if (Account is null)
                 throw new ArgumentNullException(nameof(Account));
 
-            Int64 steamTime = await TimeAligner.GetSteamTimeAsync();
             Account.FullyEnrolled = true;
-
             UserLogin userLogin = new(UserName, Password);
-            LoginResult response = LoginResult.BadCredentials;
 
+            LoginResult response = LoginResult.BadCredentials;
+            Int64 steamTime = await TimeAligner.GetSteamTimeAsync();
             while ((response = userLogin.DoLogin()) != LoginResult.LoginOkay)
             {
                 switch (response)
@@ -175,9 +161,204 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             _thisWindow?.Close();
         }
 
-        private void InitLogin()
+        private async Task InitLogin()
         {
+            UserLogin userLogin = new(UserName, Password);
+            LoginResult response = LoginResult.BadCredentials;
 
+            while ((response = userLogin.DoLogin()) != LoginResult.LoginOkay)
+            {
+                switch (response)
+                {
+                    case LoginResult.NeedEmail:
+
+                        InputWindowView inputWindow = new();
+                        var inputWindowDataContext = (inputWindow.DataContext as InputWindowViewModel)!;
+                        inputWindowDataContext.Text = "Enter your phone number in the following format: +{cC} phoneNumber. EG, +1 123-456-7890";
+                        inputWindowDataContext.InputString = "+1";
+
+                        if (inputWindow.ShowDialog() == false)
+                        {
+                            _thisWindow?.Close();
+                            return;
+                        }
+                        userLogin.EmailCode = inputWindowDataContext.InputString;
+                        break;
+                    case LoginResult.NeedCaptcha:
+
+                        CaptchaWindowView captchaWindow = new();
+                        var captchaWindowDataContext = (captchaWindow.DataContext as CaptchaWindowViewModel)!;
+                        captchaWindowDataContext.CaptchaGid = userLogin.CaptchaGid; //-V3149
+
+                        if (captchaWindow.ShowDialog() == false)
+                        {
+                            _thisWindow?.Close();
+                            return;
+                        }
+                        userLogin.CaptchaText = captchaWindowDataContext.CaptchaCode;
+                        break;
+                    case LoginResult.Need2Fa:
+                        MessageBox.Show("This account already has a mobile authenticator linked to it.\nRemove the old authenticator from your Steam account before adding a new one.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        _thisWindow?.Close();
+                        return;
+
+                    case LoginResult.BadRsa:
+                        MessageBox.Show("Error logging in: Steam returned \"BadRSA\".", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        _thisWindow?.Close();
+                        return;
+
+                    case LoginResult.BadCredentials:
+                        MessageBox.Show("Error logging in: Username or password was incorrect.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        _thisWindow?.Close();
+                        return;
+
+                    case LoginResult.TooManyFailedLogins:
+                        MessageBox.Show("Error logging in: Too many failed logins, try again later.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        _thisWindow?.Close();
+                        return;
+
+                    case LoginResult.GeneralFailure:
+                        MessageBox.Show("Error logging in: Steam returned \"GeneralFailure\".", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        _thisWindow?.Close();
+                        return;
+                }
+            }
+
+            //Login succeeded
+            SessionData session = userLogin.Session;
+            AuthenticatorLinker linker = new(session);
+
+            AuthenticatorLinker.LinkResult linkResponse = AuthenticatorLinker.LinkResult.GeneralFailure;
+            while ((linkResponse = linker.AddAuthenticator()) != AuthenticatorLinker.LinkResult.AwaitingFinalization)
+            {
+                switch (linkResponse)
+                {
+                    case AuthenticatorLinker.LinkResult.MustProvidePhoneNumber:
+                        string phoneNumber = "";
+                        while (!PhoneNumberOkay(phoneNumber))
+                        {
+                            InputWindowView phoneNumberWindow = new();
+                            var inputWindowDataContext = (phoneNumberWindow.DataContext as InputWindowViewModel)!;
+                            inputWindowDataContext.Text = "Enter your phone number in the following format: +{cC} phoneNumber. EG, +1 123-456-7890";
+                            inputWindowDataContext.InputString = "+1";
+
+                            if (phoneNumberWindow.ShowDialog() == false)
+                            {
+                                _thisWindow?.Close();
+                                return;
+                            }
+                            phoneNumber = FilterPhoneNumber(inputWindowDataContext.InputString);
+                            break;
+                        }
+                        linker.PhoneNumber = phoneNumber;
+                        break;
+
+                    case AuthenticatorLinker.LinkResult.MustRemovePhoneNumber:
+                        linker.PhoneNumber = null;
+                        break;
+
+                    case AuthenticatorLinker.LinkResult.MustConfirmEmail:
+                        MessageBox.Show("Please check your email, and click the link Steam sent you before continuing.");
+                        break;
+
+                    case AuthenticatorLinker.LinkResult.GeneralFailure:
+                        MessageBox.Show("Error adding your phone number. Steam returned \"GeneralFailure\".");
+                        _thisWindow?.Close();
+                        return;
+                }
+            }
+
+            //Save the file immediately; losing this would be bad.
+            await ManifestModelService.SaveSteamGuardAccount(linker.LinkedAccount);
+
+            MessageBox.Show("The Mobile Authenticator has not yet been linked. Before finalizing the authenticator, please write down your revocation code: " + linker.LinkedAccount.RevocationCode);
+
+            AuthenticatorLinker.FinalizeResult finalizeResponse = AuthenticatorLinker.FinalizeResult.GeneralFailure;
+            while (finalizeResponse != AuthenticatorLinker.FinalizeResult.Success)
+            {
+                InputWindowView smsCodeWindow = new();
+                var smsCodeDataContext = (smsCodeWindow.DataContext as InputWindowViewModel)!;
+                smsCodeDataContext.Text = "Please input the SMS code sent to your phone.";
+
+                if (smsCodeWindow.ShowDialog() == false)
+                {
+                    await ManifestModelService.DeleteSteamGuardAccount(linker.LinkedAccount);
+                    _thisWindow?.Close();
+                    return;
+                }
+
+                InputWindowView confirmRevocationCodeWindow = new();
+                var confirmRevocationCodeDataContext = (smsCodeWindow.DataContext as InputWindowViewModel)!;
+                smsCodeDataContext.Text = "Please enter your revocation code to ensure you've saved it.";
+                confirmRevocationCodeWindow.ShowDialog();
+
+                if (confirmRevocationCodeDataContext.InputString.ToUpper() != linker.LinkedAccount.RevocationCode)
+                {
+                    MessageBox.Show("Revocation code incorrect; the authenticator has not been linked.");
+                    await ManifestModelService.DeleteSteamGuardAccount(linker.LinkedAccount);
+                    _thisWindow?.Close();
+                    return;
+                }
+
+                string smsCode = smsCodeDataContext.InputString;
+                finalizeResponse = linker.FinalizeAddAuthenticator(smsCode);
+
+                switch (finalizeResponse)
+                {
+                    case AuthenticatorLinker.FinalizeResult.BadSmsCode:
+                        continue;
+
+                    case AuthenticatorLinker.FinalizeResult.UnableToGenerateCorrectCodes:
+                        MessageBox.Show("Unable to generate the proper codes to finalize this authenticator. The authenticator should not have been linked. In the off-chance it was, please write down your revocation code, as this is the last chance to see it: " + linker.LinkedAccount.RevocationCode);
+                        await ManifestModelService.DeleteSteamGuardAccount(linker.LinkedAccount);
+                        _thisWindow?.Close();
+                        return;
+
+                    case AuthenticatorLinker.FinalizeResult.GeneralFailure:
+                        MessageBox.Show("Unable to finalize this authenticator. The authenticator should not have been linked. In the off-chance it was, please write down your revocation code, as this is the last chance to see it: " + linker.LinkedAccount.RevocationCode);
+                        await ManifestModelService.DeleteSteamGuardAccount(linker.LinkedAccount);
+                        _thisWindow?.Close();
+                        return;
+                }
+
+                //Linked, finally. Re-save with FullyEnrolled property.
+                await ManifestModelService.SaveSteamGuardAccount(linker.LinkedAccount);
+                MessageBox.Show("Mobile authenticator successfully linked. Please write down your revocation code: " + linker.LinkedAccount.RevocationCode);
+                _thisWindow?.Close();
+            }
+
+        }
+
+        #region PrivateMethods
+
+        private void LoginTypeOnchange(ref LoginType loginType)
+        {
+            switch (loginType)
+            {
+                case LoginType.Initial:
+                    break;
+                case LoginType.Refresh:
+                    UserName = Account!.AccountName;
+                    UserNameEnabled = false;
+                    LoginExplanation = "Your Steam credentials have expired. For trade and market confirmations to work properly, please login again.";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(loginType), loginType, null);
+            }
+
+            Set(ref _loginType, loginType, nameof(LoginType));
+        }
+
+        public string FilterPhoneNumber(in string phoneNumber)
+        {
+            return phoneNumber.Replace("-", "").Replace("(", "").Replace(")", "");
+        }
+
+        public bool PhoneNumberOkay(in string? phoneNumber)
+        {
+            if (string.IsNullOrEmpty(phoneNumber)) return false;
+
+            return phoneNumber[0] == '+';
         }
 
         private async Task HandlingAccount(bool isRefreshing = false)

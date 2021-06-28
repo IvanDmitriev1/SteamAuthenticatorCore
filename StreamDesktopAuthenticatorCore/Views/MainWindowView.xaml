@@ -14,7 +14,7 @@
         Background="Transparent"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        Title="MainWindow" Height="480" Width="300">
+        Title="MainWindow" Height="485" Width="300">
 
     <b:Interaction.Triggers>
         <b:EventTrigger EventName="Loaded">
@@ -80,6 +80,10 @@
 
                     <Separator/>
 
+                    <MenuItem Header="Delete from drive"
+                              Template="{StaticResource SingleDropDownMenuItem}"
+                              Command="{Binding Path=DeleteAccountCommand}" />
+
                     <MenuItem Header="Deactivate Authenticator"
                               IsEnabled="False"
                               Template="{StaticResource SingleDropDownMenuItem}"
@@ -97,6 +101,7 @@
                                       x:Name="CloseMinimizeButtons" />
 
             <tb:TaskbarIcon MenuActivation="RightClick"
+                            DoubleClickCommand="{Binding Path=ShowWindowCommand}"
                             IconSource="pack://application:,,,/icon.ico" >
 
                 <tb:TaskbarIcon.ContextMenu>
@@ -129,6 +134,9 @@
 
                         <Separator/>
 
+                        <MenuItem Header="Settings"
+                                  Command="{Binding Path=SettingsShowCommand}" />
+
                         <MenuItem Header="Quit"
                                   Command="{Binding Path=WindowCloseCommand}" />
 
@@ -137,7 +145,7 @@
 
             </tb:TaskbarIcon>
 
-            <StackPanel Margin="0 25 0 31">
+            <StackPanel Margin="0 30 0 31">
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -154,7 +162,7 @@
 
                     <Button Grid.Column="0"
                             Content="Setup New Account"
-                            IsEnabled="False" >
+                            Command="{Binding Path=SetUpNewAccountCommand}" >
 
                     </Button>
 
@@ -279,6 +287,7 @@
 
                 <Label Content="{Binding Path=StatusText}"
                        Width="115"
+                       FontSize="10"
                        HorizontalAlignment="Right"
                        HorizontalContentAlignment="Center"
                        Padding="5"
