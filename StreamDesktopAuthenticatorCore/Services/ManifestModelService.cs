@@ -7,9 +7,14 @@ namespace SteamDesktopAuthenticatorCore.Services
 {
     static partial class ManifestModelService
     {
-        private const string ManifestFileName = "manifest.json";
+        public const string ManifestFileName = "manifest.json";
         private static ManifestModel? _manifest;
         private static SettingsModel? _settings;
+
+        public static void SetManifest(ref ManifestModel manifest)
+        {
+            _manifest = new ManifestModel(manifest);
+        }
 
         public static async Task<ManifestModel> GetManifest()
         {
@@ -32,7 +37,12 @@ namespace SteamDesktopAuthenticatorCore.Services
         public static async Task SaveManifest()
         {
             if (_settings is null)
-                throw new ArgumentNullException(nameof(_settings));
+            {
+                if (await SettingsModelService.GetSettingsModel() is not { } settings)
+                    throw new ArgumentNullException(nameof(settings));
+
+                _settings = settings;
+            }
 
             switch (_settings.ManifestLocation)
             {
@@ -83,7 +93,7 @@ namespace SteamDesktopAuthenticatorCore.Services
             }
         }
 
-        public static async Task SaveSteamGuardAccount(SteamGuardAccount? account)
+        public static async Task SaveSteamGuardAccount(SteamGuardAccount account)
         {
             if (_settings is null)
                 throw new ArgumentNullException(nameof(_settings));
@@ -91,12 +101,9 @@ namespace SteamDesktopAuthenticatorCore.Services
             switch (_settings.ManifestLocation)
             {
                 case ManifestLocation.Drive:
-                    await SaveManifestInDrive();
+                    await SaveSteamGuardAccountInDrive(account);
                     break;
                 case ManifestLocation.GoogleDrive:
-                    if (account is null)
-                        throw new ArgumentNullException(nameof(account));
-
                     await SaveAccountInGoogleDrive(account);
                     break;
                 default:

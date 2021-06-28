@@ -86,6 +86,8 @@ namespace SteamDesktopAuthenticatorCore
         public void Dispose()
         {
             GoogleDriveApi.Dispose();
+
+            GC.SuppressFinalize(this);
         }
     }
 }

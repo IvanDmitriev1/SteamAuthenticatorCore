@@ -42,6 +42,15 @@ namespace SteamDesktopAuthenticatorCore.Services
             return _manifest;
         }
 
+        public static async Task SaveSteamGuardAccountInDrive(SteamGuardAccount account)
+        {
+            if (await FindFileInDrive(account) is not { } file)
+                return;
+
+            string serialized = JsonConvert.SerializeObject(account);
+
+            await File.WriteAllTextAsync(file, serialized);
+        }
         public static async Task SaveManifestInDrive()
         {
             if (_manifest is null)
@@ -60,8 +69,7 @@ namespace SteamDesktopAuthenticatorCore.Services
 
             _manifest.Accounts.Clear();
 
-            string[] files = Directory.GetFiles(MaFilesDirectory);
-            foreach (var file in files)
+            foreach (var file in Directory.GetFiles(MaFilesDirectory))
             {
                 if (!file.Contains(".maFile")) continue;
 

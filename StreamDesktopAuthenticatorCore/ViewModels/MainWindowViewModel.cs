@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Microsoft.Win32;
@@ -35,11 +36,11 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
                     SwitchText = settings.ManifestLocation switch
                     {
-                        ManifestLocation.Drive => "Switch to using the files on your disk",
-                        ManifestLocation.GoogleDrive => "Switch to using the files on your Google Drive",
+                        ManifestLocation.Drive => "Switch to using the files on your Google Drive",
+                        ManifestLocation.GoogleDrive => "Switch to using the files on your disk",
                         _ => throw new ArgumentOutOfRangeException()
                     };
-                });
+                }); 
             }
             else
             {
@@ -47,6 +48,8 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             }
 
             CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
+
+            #region Timers
 
             _steamGuardTimer = new DispatcherTimer()
             {
@@ -63,6 +66,8 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
             if (Manifest.AutoConfirmMarketTransactions)
                 _autoTradeConfirmationTimer.Start();
+
+            #endregion
         }
 
         #region Variables
@@ -73,8 +78,9 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         private readonly DispatcherTimer _steamGuardTimer;
         private readonly DispatcherTimer _autoTradeConfirmationTimer;
         private static readonly Regex Regex = new("[^0-9]+");
-
         private SteamGuardAccount? _selectedAccount;
+
+        private double _selectedAccountFont;
         private string _loginTokenText = string.Empty;
         private string _statusText = string.Empty;
         private int _progressBar;
@@ -88,8 +94,28 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         public SteamGuardAccount? SelectedAccount
         {
             get => _selectedAccount;
-            set => Set(ref _selectedAccount, value);
+            set
+            {
+                if (value is null)
+                    return;
+
+                switch (value.AccountName.Length)
+                {
+                    case < 39:
+                        SelectedAccountFont = 12;
+                        break;
+                    case > 39:
+                        SelectedAccountFont = 10;
+                        break;
+                }
+
+                if (value.AccountName.Length > 46)
+                    SelectedAccountFont = 8;
+
+                Set(ref _selectedAccount, value, nameof(SelectedAccount), nameof(SelectedAccountFont));
+            }
         }
+
         public string StatusText
         {
             get => _statusText;
@@ -110,6 +136,12 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             get => _switchText;
             set => Set(ref _switchText, value);
+        }
+
+        public double SelectedAccountFont
+        {
+            get => _selectedAccountFont;
+            set => Set(ref _selectedAccountFont, value);
         }
 
         public string CurrentVersion { get; private set; }
@@ -221,6 +253,13 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (SelectedAccount is null) return;
 
             ShowLoginWindow(LoginType.Refresh);
+        });
+
+        public ICommand FilterTextOnChangeCommand => new RelayCommand(o =>
+        {
+            if (o is not TextChangedEventArgs {Source: TextBox textBox}) return;
+
+
         });
 
         public ICommand ForceRefreshSession => new AsyncRelayCommand(async o =>
@@ -444,6 +483,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 return await RefreshAccountSession(false);
             }
         }
+
         private void ShowLoginWindow(LoginType type)
         {
             LoginWindowView window = new();
