@@ -18,15 +18,9 @@ namespace SteamDesktopAuthenticatorCore.Services
 
         public static async Task<ManifestModel> GetManifest()
         {
-            if (_settings is null)
-            {
-                if (await SettingsModelService.GetSettingsModel() is not { } settings)
-                    throw new ArgumentNullException(nameof(settings));
+            await CheckSettings();
 
-                _settings = settings;
-            }
-
-            return _settings.ManifestLocation switch
+            return _settings!.ManifestLocation switch
             {
                 ManifestLocation.Drive => await GetManifestFromDrive(),
                 ManifestLocation.GoogleDrive => await GetManifestFromGoogleDrive(),
@@ -36,25 +30,7 @@ namespace SteamDesktopAuthenticatorCore.Services
 
         public static async Task SaveManifest()
         {
-            if (_settings is null)
-            {
-                if (await SettingsModelService.GetSettingsModel() is not { } settings)
-                    throw new ArgumentNullException(nameof(settings));
-
-                _settings = settings;
-            }
-
-            switch (_settings.ManifestLocation)
-            {
-                case ManifestLocation.Drive:
-                    await SaveManifestInDrive();
-                    break;
-                case ManifestLocation.GoogleDrive:
-                    await SaveManifestInGoogleFile();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            await CheckSettings(SaveManifestInDrive, SaveManifestInGoogleFile);
         }
 
         public static async Task GetAccounts()
@@ -78,7 +54,8 @@ namespace SteamDesktopAuthenticatorCore.Services
         }
 
         #region PrivateMethods
-        private static async Task CheckSettings(Func<Task> onDriveMethod, Func<Task> onGoogleDriveAction)
+
+        private static async Task CheckSettings()
         {
             if (_settings is null)
             {
@@ -87,8 +64,13 @@ namespace SteamDesktopAuthenticatorCore.Services
 
                 _settings = settings;
             }
+        }
 
-            switch (_settings.ManifestLocation)
+        private static async Task CheckSettings(Func<Task> onDriveMethod, Func<Task> onGoogleDriveAction)
+        {
+            await CheckSettings();
+
+            switch (_settings!.ManifestLocation)
             {
                 case ManifestLocation.Drive:
                     await onDriveMethod.Invoke();
@@ -103,15 +85,9 @@ namespace SteamDesktopAuthenticatorCore.Services
 
         private static async Task CheckSettings(Task onDriveMethod, Task onGoogleDriveAction)
         {
-            if (_settings is null)
-            {
-                if (await SettingsModelService.GetSettingsModel() is not { } settings)
-                    throw new ArgumentNullException(nameof(settings));
+            await CheckSettings();
 
-                _settings = settings;
-            }
-
-            switch (_settings.ManifestLocation)
+            switch (_settings!.ManifestLocation)
             {
                 case ManifestLocation.Drive:
                     await onDriveMethod;
