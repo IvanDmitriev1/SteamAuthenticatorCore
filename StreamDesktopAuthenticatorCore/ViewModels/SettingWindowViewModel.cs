@@ -13,7 +13,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             if (!App.InDesignMode)
             {
-                _manifest = ManifestModelService.GetManifest().Result;
+                _manifest = ManifestModelService.GetManifestFromGoogleDrive().Result;
             }
             else
             {
@@ -72,7 +72,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             _manifest.AutoConfirmMarketTransactions = AutoConfirmMarketTransactions;
             _manifest.AutoConfirmTrades = AutoConfirmTrades;
 
-            await ManifestModelService.SaveManifest();
+            await ManifestModelService.SaveManifestInGoogleFile();
         });
 
         #endregion

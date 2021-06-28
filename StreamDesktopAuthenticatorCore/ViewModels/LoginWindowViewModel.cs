@@ -4,7 +4,6 @@ using System.Windows;
 using System.Windows.Input;
 using SteamAuthCore;
 using SteamAuthCore.Models;
-using SteamDesktopAuthenticatorCore.Models;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
@@ -120,7 +119,6 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 throw new ArgumentNullException(nameof(Account));
 
             Int64 steamTime = await TimeAligner.GetSteamTimeAsync();
-            ManifestModel manifest = await ManifestModelService.GetManifest();
             Account.FullyEnrolled = true;
 
             UserLogin userLogin = new(UserName, Password);
@@ -173,7 +171,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             }
 
             Account.Session = userLogin.Session;
-            await HandlingManifest(manifest, true);
+            await HandlingAccount(true);
             _thisWindow?.Close();
         }
 
@@ -182,12 +180,12 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         }
 
-        private async Task HandlingManifest(ManifestModel manifest, bool isRefreshing = false)
+        private async Task HandlingAccount(bool isRefreshing = false)
         {
             if (Account is null)
                 throw new ArgumentNullException(nameof(Account));
 
-            await ManifestModelService.SaveAccount(Account);
+            await ManifestModelService.SaveAccountInGoogleDrive(Account);
 
             if (isRefreshing)
             {

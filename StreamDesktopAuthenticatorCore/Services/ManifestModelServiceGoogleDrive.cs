@@ -1,23 +1,21 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GoogleDrive;
 using Newtonsoft.Json;
-using SteamAuthCore;
 using SteamAuthCore.Models;
 using GoogleFile = Google.Apis.Drive.v3.Data.File;
 
 namespace SteamDesktopAuthenticatorCore.Services
 {
-    public static class ManifestModelService
+    public static partial class ManifestModelService
     {
         private static ManifestModel? _manifest;
         private static string _manifestFileName = "manifest.json";
         private static GoogleDriveApi? _api;
 
-        public static async Task<ManifestModel> GetManifest(GoogleDriveApi? api = null)
+        public static async Task<ManifestModel> GetManifestFromGoogleDrive(GoogleDriveApi? api = null)
         {
             if (_manifest is not null)
                 return _manifest;
@@ -29,7 +27,7 @@ namespace SteamDesktopAuthenticatorCore.Services
 
             if (await _api.CheckForFile(_manifestFileName) is not { } manifestFile)
             {
-                await CreateNewManifest();
+                await CreateNewManifestInGoogleDrive();
                 return _manifest!;
             }
 
@@ -48,11 +46,11 @@ namespace SteamDesktopAuthenticatorCore.Services
                 await Task.Delay(10);
             }
 
-            await GetAccounts();
+            await GetAccountsFromGoogleDrive();
             return _manifest;
         }
 
-        public static async Task SaveManifest()
+        public static async Task SaveManifestInGoogleFile()
         {
             if (_api is null || _manifest is null)
                 throw new ArgumentNullException();
@@ -64,7 +62,7 @@ namespace SteamDesktopAuthenticatorCore.Services
             await _api.UploadFile(_manifestFileName, stream);
         }
 
-        public static async Task AddSteamGuardAccount(string fileName, string filePath)
+        public static async Task AddSteamGuardAccountInGoogleDrive(string fileName, string filePath)
         {
             if (_api is null || _manifest is null)
                 throw new ArgumentNullException();
@@ -74,10 +72,10 @@ namespace SteamDesktopAuthenticatorCore.Services
             await using MemoryStream memoryStream = new(Encoding.UTF8.GetBytes(await reader.ReadToEndAsync()));
             await _api.UploadFile(fileName, memoryStream);
 
-            await GetAccounts();
+            await GetAccountsFromGoogleDrive();
         }
 
-        public static async Task GetAccounts()
+        public static async Task GetAccountsFromGoogleDrive()
         {
             if (_api is null || _manifest is null)
                 throw new ArgumentNullException();
@@ -113,24 +111,24 @@ namespace SteamDesktopAuthenticatorCore.Services
             }
         }
 
-        public static async Task DeleteSteamGuardAccount(SteamGuardAccount account)
+        public static async Task DeleteSteamGuardAccountFromGoogleDrive(SteamGuardAccount account)
         {
             if (_manifest is null || _api is null)
                 throw new ArgumentNullException();
 
             _manifest.Accounts.Remove(account);
 
-            if (await FindMaFile(account) is { } file)
+            if (await FindMaFileInGoogleDrive(account) is { } file)
             {
                 await _api.DeleteFile(file.Id);
             }
         }
 
-        public static async Task SaveAccount(SteamGuardAccount account)
+        public static async Task SaveAccountInGoogleDrive(SteamGuardAccount account)
         {
             string serialized = JsonConvert.SerializeObject(account);
 
-            if (await FindMaFile(account) is { } file)
+            if (await FindMaFileInGoogleDrive(account) is { } file)
             {
                 await _api!.UploadFile(file, new MemoryStream(Encoding.UTF8.GetBytes(serialized)));
             }
@@ -138,13 +136,13 @@ namespace SteamDesktopAuthenticatorCore.Services
 
         #region PrivateFields
 
-        private static async Task CreateNewManifest()
+        private static async Task CreateNewManifestInGoogleDrive()
         {
             _manifest = new ManifestModel(true);
-            await SaveManifest();
+            await SaveManifestInGoogleFile();
         }
 
-        private static async Task<GoogleFile?> FindMaFile(SteamGuardAccount account)
+        private static async Task<GoogleFile?> FindMaFileInGoogleDrive(SteamGuardAccount account)
         {
             if (await _api!.GetFiles() is not { } files) return null;
 

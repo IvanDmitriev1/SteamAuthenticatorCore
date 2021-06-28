@@ -4,6 +4,8 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using GoogleDrive;
+using SteamAuthCore.Models;
+using SteamDesktopAuthenticatorCore.Services;
 using WpfHelper.Services;
 
 namespace SteamDesktopAuthenticatorCore
@@ -34,6 +36,8 @@ namespace SteamDesktopAuthenticatorCore
             CheckProcess();
 
             await DeletePreviousFile();
+
+            await StartWindow();
 
             base.OnStartup(e);
         }
@@ -75,6 +79,11 @@ namespace SteamDesktopAuthenticatorCore
                     Debug.WriteLine("Failed to delete file");
                 }
             }
+        }
+
+        private async Task StartWindow()
+        {
+            ManifestModel manifest = await ManifestModelService.GetManifestFromGoogleDrive();
         }
 
         #endregion

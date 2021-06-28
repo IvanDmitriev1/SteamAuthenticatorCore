@@ -17,16 +17,16 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
     {
         public InitializeWindowViewModel()
         {
-            _buttonTimer = new DispatcherTimer()
+            _buttonDelay = new DispatcherTimer()
             {
                 Interval = TimeSpan.FromSeconds(15)
             };
-            _buttonTimer.Tick += (sender, args) =>
+            _buttonDelay.Tick += (sender, args) =>
             {
                 _refreshButtonClick = true;
-                _buttonTimer.Stop();
+                _buttonDelay.Stop();
             };
-            _buttonTimer.Start();
+            _buttonDelay.Start();
 
             DispatcherTimer timer = new()
             {
@@ -44,7 +44,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         #region Variables
 
         private Window _thisWindow = null!;
-        private readonly DispatcherTimer _buttonTimer;
+        private readonly DispatcherTimer _buttonDelay;
         private bool _refreshButtonClick;
         private int _progressBar;
         private bool _closeWindow;
@@ -82,7 +82,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         public ICommand RefreshCommand => new RelayCommand(async o =>
         {
             _refreshButtonClick = false;
-            _buttonTimer.Start();
+            _buttonDelay.Start();
 
             await Init();
         }, o => _refreshButtonClick);
@@ -110,20 +110,18 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 //
             }
 
-            if (App.GoogleDriveApi.IsAuthenticated == false)
-                return;
-
-            StartWindows(ref manifestModel);
+            if (App.GoogleDriveApi.IsAuthenticated)
+                StartWindows(ref manifestModel);
         }
 
-        private async Task<ManifestModel> GoogleDriveSetup()
+        private static async Task<ManifestModel> GoogleDriveSetup()
         {
             if (!await App.GoogleDriveApi.Init(Assembly.GetExecutingAssembly().GetManifestResourceStream("SteamDesktopAuthenticatorCore.client_secret.json")!))
             {
                 await App.GoogleDriveApi.ConnectGoogleDrive(Assembly.GetExecutingAssembly().GetManifestResourceStream("SteamDesktopAuthenticatorCore.client_secret.json")!);
             }
 
-            return await ManifestModelService.GetManifest(App.GoogleDriveApi);
+            return await ManifestModelService.GetManifestFromGoogleDrive(App.GoogleDriveApi);
         }
 
         private void StartWindows(ref ManifestModel manifest)

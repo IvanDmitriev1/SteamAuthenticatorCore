@@ -12,27 +12,28 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
     {
         public WelcomeWindowViewModel()
         {
-            _manifest = ManifestModelService.GetManifest().Result;
+
         }
 
-        private readonly ManifestModel _manifest;
+        private ManifestModel _manifest = null!;
 
         private Window _thisWindow = null!;
 
         #region Commands
 
-        public ICommand WindowOnLoadedCommand => new RelayCommand(o =>
+        public ICommand WindowOnLoadedCommand => new RelayCommand(async o =>
         {
             if (o is not RoutedEventArgs {Source: Window window}) return;
 
             _thisWindow = window;
+            _manifest = await ManifestModelService.GetManifestFromGoogleDrive();
         });
 
         public ICommand JustRunButtonOnClick => new AsyncRelayCommand(async o =>
         {
             // Mark as not first run anymore
             _manifest.FirstRun = false;
-            await ManifestModelService.SaveManifest();
+            await ManifestModelService.SaveManifestInGoogleFile();
 
             ShowMainWindow();
         });

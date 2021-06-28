@@ -12,7 +12,6 @@ using System.Windows.Threading;
 using Microsoft.Win32;
 using SteamAuthCore;
 using SteamAuthCore.Models;
-using SteamDesktopAuthenticatorCore.Models;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
@@ -27,7 +26,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             if (!App.InDesignMode)
             {
-                Manifest = ManifestModelService.GetManifest().Result;
+                Manifest = ManifestModelService.GetManifestFromGoogleDrive().Result;
             }
             else
             {
@@ -47,7 +46,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             {
                 Interval = TimeSpan.FromSeconds(Manifest.PeriodicCheckingInterval)
             };
-            _autoTradeConfirmationTimer.Tick += AutoTradeConfirmationTimerOnTick;
+            _autoTradeConfirmationTimer.Tick += async (sender, args) => await AutoTradeConfirmationTimerOnTick();
 
             if (Manifest.AutoConfirmMarketTransactions)
                 _autoTradeConfirmationTimer.Start();
@@ -148,19 +147,19 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (!fileDialog.FileName.Contains(".maFile"))
                 MessageBox.Show("This is not .maFile");
 
-            await ManifestModelService.AddSteamGuardAccount(fileDialog.SafeFileName, fileDialog.FileName);
+            await ManifestModelService.AddSteamGuardAccountInGoogleDrive(fileDialog.SafeFileName, fileDialog.FileName);
         });
 
         public ICommand RefreshAccountCommand => new AsyncRelayCommand(async o =>
         {
-            await ManifestModelService.GetAccounts();
+            await ManifestModelService.GetAccountsFromGoogleDrive();
         });
 
         public ICommand DeleteAccountCommand => new AsyncRelayCommand(async o =>
         {
             if (SelectedAccount is null) return;
 
-            await ManifestModelService.DeleteSteamGuardAccount(SelectedAccount);
+            await ManifestModelService.DeleteSteamGuardAccountFromGoogleDrive(SelectedAccount);
         });
 
         public ICommand LoginWindowShowCommand => new RelayCommand(o =>
@@ -175,7 +174,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (await RefreshAccountSession())
             {
                 MessageBox.Show("Your session has been refreshed.", "Session refresh", MessageBoxButton.OK, MessageBoxImage.Information);
-                await ManifestModelService.SaveManifest();
+                await ManifestModelService.SaveManifestInGoogleFile();
 
                 return;
             }
@@ -321,7 +320,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             }
         }
 
-        private async void AutoTradeConfirmationTimerOnTick(object? sender, EventArgs e)
+        private async Task AutoTradeConfirmationTimerOnTick()
         {
             List<ConfirmationModel> confs = new();
             Dictionary<SteamGuardAccount, List<ConfirmationModel>> autoAcceptConfirmations = new();
