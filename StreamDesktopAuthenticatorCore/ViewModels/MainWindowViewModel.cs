@@ -175,15 +175,30 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             }
         });
 
-        public ICommand ImportAccountCommand => new AsyncRelayCommand(async o =>
+        public ICommand ImportAccountsCommand => new AsyncRelayCommand(async o =>
         {
-            FileDialog fileDialog = new OpenFileDialog();
+            FileDialog fileDialog = new OpenFileDialog()
+            {
+                Multiselect = true
+            };
+
             if (fileDialog.ShowDialog() == false) return;
 
-            if (!fileDialog.FileName.Contains(".maFile"))
-                MessageBox.Show("This is not .maFile");
+            for (var i = 0; i < fileDialog.FileNames.Length; i++)
+            {
+                string filePath = fileDialog.FileNames[i];
+                string fileNam = fileDialog.SafeFileNames[i];
 
-            await ManifestModelService.AddSteamGuardAccount(fileDialog.SafeFileName, fileDialog.FileName);
+                if (!fileNam.Contains(".maFile"))
+                {
+                    MessageBox.Show("This is not .maFile");
+                    continue;
+                }
+
+                await ManifestModelService.AddSteamGuardAccount(fileNam, filePath);
+            }
+
+            await ManifestModelService.GetAccounts();
         });
 
         public ICommand RefreshAccountCommand => new AsyncRelayCommand(async o =>

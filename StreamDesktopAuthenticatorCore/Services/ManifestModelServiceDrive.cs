@@ -87,7 +87,6 @@ namespace SteamDesktopAuthenticatorCore.Services
             await File.WriteAllTextAsync(Path.Combine(MaFilesDirectory, fileName), data);
 
             _manifest.Accounts.Add(account);
-            await SaveManifestInDrive();
         }
 
         public static async Task DeleteSteamGuardAccountInDrive(SteamGuardAccount account)

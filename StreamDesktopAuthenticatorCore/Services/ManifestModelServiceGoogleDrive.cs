@@ -67,8 +67,6 @@ namespace SteamDesktopAuthenticatorCore.Services
             using StreamReader reader = new(stream);
             await using MemoryStream memoryStream = new(Encoding.UTF8.GetBytes(await reader.ReadToEndAsync()));
             await Api.UploadFile(fileName, memoryStream);
-
-            await GetAccountsInGoogleDrive();
         }
 
         public static async Task GetAccountsInGoogleDrive()

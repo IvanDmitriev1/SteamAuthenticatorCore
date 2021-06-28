@@ -48,9 +48,9 @@
                 </Menu.Resources>
 
                 <MenuItem Header="File" >
-                    <MenuItem Header="Import Account"
+                    <MenuItem Header="Import Accounts"
                               Template="{StaticResource SingleDropDownMenuItem}"
-                              Command="{Binding Path=ImportAccountCommand}" />
+                              Command="{Binding Path=ImportAccountsCommand}" />
 
                     <MenuItem Header="Refresh Account list"
                               Template="{StaticResource SingleDropDownMenuItem}"
