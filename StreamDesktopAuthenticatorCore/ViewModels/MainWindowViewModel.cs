@@ -12,6 +12,7 @@ using System.Windows.Threading;
 using Microsoft.Win32;
 using SteamAuthCore;
 using SteamAuthCore.Models;
+using SteamDesktopAuthenticatorCore.Models;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
@@ -26,7 +27,19 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             if (!App.InDesignMode)
             {
-                Manifest = ManifestModelService.GetManifestFromGoogleDrive().Result;
+                Manifest = ManifestModelService.GetManifest().Result;
+
+                Task.Run(async () =>
+                {
+                    SettingsModel settings = (await SettingsModelService.GetSettingsModel())!;
+
+                    SwitchText = settings.ManifestLocation switch
+                    {
+                        ManifestLocation.Drive => "Switch to using the files on your disk",
+                        ManifestLocation.GoogleDrive => "Switch to using the files on your Google Drive",
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
+                });
             }
             else
             {
@@ -65,6 +78,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         private string _loginTokenText = string.Empty;
         private string _statusText = string.Empty;
         private int _progressBar;
+        private string _switchText = string.Empty;
 
         #endregion
 
@@ -92,6 +106,12 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             set => Set(ref _progressBar, value);
         }
 
+        public string SwitchText
+        {
+            get => _switchText;
+            set => Set(ref _switchText, value);
+        }
+
         public string CurrentVersion { get; private set; }
 
         #endregion
@@ -112,6 +132,22 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (o is not TextCompositionEventArgs args) return;
 
             args.Handled = true;
+        });
+
+        public ICommand SwitchCommand => new AsyncRelayCommand(async o =>
+        {
+            SettingsModel settings = (await SettingsModelService.GetSettingsModel())!;
+            settings.ManifestLocation = settings.ManifestLocation switch
+            {
+                ManifestLocation.Drive => ManifestLocation.GoogleDrive,
+                ManifestLocation.GoogleDrive => ManifestLocation.Drive,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+            await SettingsModelService.SaveSettings();
+
+            MessageBox.Show("Restart application");
+            Application.Current.Shutdown(0);
         });
 
         public ICommand ShowWindowCommand => new RelayCommand(o =>
@@ -147,19 +183,22 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (!fileDialog.FileName.Contains(".maFile"))
                 MessageBox.Show("This is not .maFile");
 
-            await ManifestModelService.AddSteamGuardAccountInGoogleDrive(fileDialog.SafeFileName, fileDialog.FileName);
+            await ManifestModelService.AddSteamGuardAccount(fileDialog.SafeFileName, fileDialog.FileName);
         });
 
         public ICommand RefreshAccountCommand => new AsyncRelayCommand(async o =>
         {
-            await ManifestModelService.GetAccountsFromGoogleDrive();
+            await ManifestModelService.GetAccounts();
         });
 
         public ICommand DeleteAccountCommand => new AsyncRelayCommand(async o =>
         {
             if (SelectedAccount is null) return;
 
-            await ManifestModelService.DeleteSteamGuardAccountFromGoogleDrive(SelectedAccount);
+            if (MessageBox.Show("are you sure you want to delete a account from disk ?", "Delete account", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) == MessageBoxResult.Yes)
+            {
+                await ManifestModelService.DeleteSteamGuardAccount(SelectedAccount);
+            }
         });
 
         public ICommand LoginWindowShowCommand => new RelayCommand(o =>
@@ -174,7 +213,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (await RefreshAccountSession())
             {
                 MessageBox.Show("Your session has been refreshed.", "Session refresh", MessageBoxButton.OK, MessageBoxImage.Information);
-                await ManifestModelService.SaveManifestInGoogleFile();
+                await ManifestModelService.SaveManifest();
 
                 return;
             }

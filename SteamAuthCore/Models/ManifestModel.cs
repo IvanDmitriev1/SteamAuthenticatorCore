@@ -32,9 +32,6 @@ namespace SteamAuthCore.Models
         [JsonProperty("first_run")]
         public bool FirstRun { get; set; }
 
-        [JsonProperty("useGoogleDrive")]
-        public bool UseGoogleDrive { get; set; } = false;
-
         [JsonProperty("accounts")]
         public ObservableCollection<SteamGuardAccount> Accounts { get; set; } = new();
 

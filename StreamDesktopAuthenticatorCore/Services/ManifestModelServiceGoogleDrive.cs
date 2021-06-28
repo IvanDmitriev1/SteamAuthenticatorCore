@@ -11,27 +11,23 @@ namespace SteamDesktopAuthenticatorCore.Services
 {
     public static partial class ManifestModelService
     {
-        private static ManifestModel? _manifest;
-        private static string _manifestFileName = "manifest.json";
-        private static GoogleDriveApi? _api;
+        public static GoogleDriveApi? Api { get; set; }
 
-        public static async Task<ManifestModel> GetManifestFromGoogleDrive(GoogleDriveApi? api = null)
+        public static async Task<ManifestModel> GetManifestFromGoogleDrive()
         {
             if (_manifest is not null)
                 return _manifest;
 
-            _api ??= api;
+            if (Api is null)
+                throw new ArgumentNullException(nameof(Api));
 
-            if (_api is null)
-                throw new ArgumentNullException(nameof(_api));
-
-            if (await _api.CheckForFile(_manifestFileName) is not { } manifestFile)
+            if (await Api.CheckForFile(ManifestFileName) is not { } manifestFile)
             {
                 await CreateNewManifestInGoogleDrive();
                 return _manifest!;
             }
 
-            GoogleDriveFileDownloader downloader = new(_api);
+            GoogleDriveFileDownloader downloader = new(Api);
             downloader.OnDataDownloaded += (sender, args) =>
             {
                 if (JsonConvert.DeserializeObject<ManifestModel>((string)args.UserState! ?? throw new InvalidOperationException()) is not { } manifest)
@@ -46,48 +42,48 @@ namespace SteamDesktopAuthenticatorCore.Services
                 await Task.Delay(10);
             }
 
-            await GetAccountsFromGoogleDrive();
+            await GetAccountsInGoogleDrive();
             return _manifest;
         }
 
         public static async Task SaveManifestInGoogleFile()
         {
-            if (_api is null || _manifest is null)
+            if (Api is null || _manifest is null)
                 throw new ArgumentNullException();
 
             ManifestModel newModel = new(_manifest);
 
             string serialized = JsonConvert.SerializeObject(newModel);
             await using MemoryStream stream = new(Encoding.UTF8.GetBytes(serialized));
-            await _api.UploadFile(_manifestFileName, stream);
+            await Api.UploadFile(ManifestFileName, stream);
         }
 
         public static async Task AddSteamGuardAccountInGoogleDrive(string fileName, string filePath)
         {
-            if (_api is null || _manifest is null)
+            if (Api is null || _manifest is null)
                 throw new ArgumentNullException();
 
             await using FileStream stream = new(filePath, FileMode.Open);
             using StreamReader reader = new(stream);
             await using MemoryStream memoryStream = new(Encoding.UTF8.GetBytes(await reader.ReadToEndAsync()));
-            await _api.UploadFile(fileName, memoryStream);
+            await Api.UploadFile(fileName, memoryStream);
 
-            await GetAccountsFromGoogleDrive();
+            await GetAccountsInGoogleDrive();
         }
 
-        public static async Task GetAccountsFromGoogleDrive()
+        public static async Task GetAccountsInGoogleDrive()
         {
-            if (_api is null || _manifest is null)
+            if (Api is null || _manifest is null)
                 throw new ArgumentNullException();
 
-            if (await _api.GetFiles() is not { } files)
+            if (await Api.GetFiles() is not { } files)
             {
-                files = new Google.Apis.Drive.v3.Data.File[0];
+                files = new GoogleFile[0];
             }
 
             _manifest.Accounts.Clear();
             string downloadedData = string.Empty;
-            GoogleDriveFileDownloader downloader = new(_api);
+            GoogleDriveFileDownloader downloader = new(Api);
             downloader.OnDataDownloaded += (sender, args) =>
             {
                 downloadedData = (string)args.UserState!;
@@ -111,16 +107,16 @@ namespace SteamDesktopAuthenticatorCore.Services
             }
         }
 
-        public static async Task DeleteSteamGuardAccountFromGoogleDrive(SteamGuardAccount account)
+        public static async Task DeleteSteamGuardAccountInGoogleDrive(SteamGuardAccount account)
         {
-            if (_manifest is null || _api is null)
+            if (_manifest is null || Api is null)
                 throw new ArgumentNullException();
 
             _manifest.Accounts.Remove(account);
 
             if (await FindMaFileInGoogleDrive(account) is { } file)
             {
-                await _api.DeleteFile(file.Id);
+                await Api.DeleteFile(file.Id);
             }
         }
 
@@ -130,7 +126,7 @@ namespace SteamDesktopAuthenticatorCore.Services
 
             if (await FindMaFileInGoogleDrive(account) is { } file)
             {
-                await _api!.UploadFile(file, new MemoryStream(Encoding.UTF8.GetBytes(serialized)));
+                await Api!.UploadFile(file, new MemoryStream(Encoding.UTF8.GetBytes(serialized)));
             }
         }
 
@@ -144,14 +140,14 @@ namespace SteamDesktopAuthenticatorCore.Services
 
         private static async Task<GoogleFile?> FindMaFileInGoogleDrive(SteamGuardAccount account)
         {
-            if (await _api!.GetFiles() is not { } files) return null;
+            if (await Api!.GetFiles() is not { } files) return null;
 
             foreach (var file in files)
             {
                 if (!file.Name.Contains(".maFile")) continue;
                 string downloadedData = string.Empty;
 
-                GoogleDriveFileDownloader downloader = new(_api);
+                GoogleDriveFileDownloader downloader = new(Api);
                 downloader.OnDataDownloaded += (sender, args) =>
                 {
                     downloadedData = (string)args.UserState!;
@@ -167,9 +163,7 @@ namespace SteamDesktopAuthenticatorCore.Services
                     throw new ArgumentNullException(nameof(account2));
 
                 if (account.Secret1 == account2.Secret1 && account.IdentitySecret == account2.IdentitySecret)
-                {
                     return file;
-                }
             }
 
             return null;

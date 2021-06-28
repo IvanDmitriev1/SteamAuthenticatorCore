@@ -56,6 +56,10 @@
                               Template="{StaticResource SingleDropDownMenuItem}"
                               Command="{Binding Path=RefreshAccountCommand}" />
 
+                    <MenuItem Header="{Binding Path=SwitchText}"
+                              Template="{StaticResource SingleDropDownMenuItem}"
+                              Command="{Binding Path=SwitchCommand}" />
+
                     <MenuItem Header="Settings"
                               Template="{StaticResource SingleDropDownMenuItem}"
                               Command="{Binding Path=SettingsShowCommand}" />

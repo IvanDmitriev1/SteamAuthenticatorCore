@@ -185,7 +185,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (Account is null)
                 throw new ArgumentNullException(nameof(Account));
 
-            await ManifestModelService.SaveAccountInGoogleDrive(Account);
+            await ManifestModelService.SaveSteamGuardAccount(Account);
 
             if (isRefreshing)
             {

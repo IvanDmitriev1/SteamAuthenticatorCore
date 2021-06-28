@@ -26,14 +26,14 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (o is not RoutedEventArgs {Source: Window window}) return;
 
             _thisWindow = window;
-            _manifest = await ManifestModelService.GetManifestFromGoogleDrive();
+            _manifest = await ManifestModelService.GetManifest();
         });
 
         public ICommand JustRunButtonOnClick => new AsyncRelayCommand(async o =>
         {
             // Mark as not first run anymore
             _manifest.FirstRun = false;
-            await ManifestModelService.SaveManifestInGoogleFile();
+            await ManifestModelService.SaveManifest();
 
             ShowMainWindow();
         });

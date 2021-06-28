@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using GoogleDrive;
-using SteamAuthCore.Models;
 using SteamDesktopAuthenticatorCore.Services;
 using WpfHelper.Services;
 
@@ -15,9 +14,12 @@ namespace SteamDesktopAuthenticatorCore
         public App()
         {
             UserCredentialPath = $"{Path.GetTempPath()}\\SteamDesktopAuthenticatorCoreToken.json";
+
             GoogleDriveApi = new GoogleDriveApi(UserCredentialPath,
                 new []{ Google.Apis.Drive.v3.DriveService.Scope.DriveFile },
                 "SteamDesktopAuthenticatorCore");
+
+            ManifestModelService.Api = GoogleDriveApi;
 
             UpdateService.GitHubUrl = "https://api.github.com/repos/bduj1/StreamDesktopAuthenticatorCore/releases/latest";
         }
@@ -36,8 +38,6 @@ namespace SteamDesktopAuthenticatorCore
             CheckProcess();
 
             await DeletePreviousFile();
-
-            await StartWindow();
 
             base.OnStartup(e);
         }
@@ -79,11 +79,6 @@ namespace SteamDesktopAuthenticatorCore
                     Debug.WriteLine("Failed to delete file");
                 }
             }
-        }
-
-        private async Task StartWindow()
-        {
-            ManifestModel manifest = await ManifestModelService.GetManifestFromGoogleDrive();
         }
 
         #endregion
