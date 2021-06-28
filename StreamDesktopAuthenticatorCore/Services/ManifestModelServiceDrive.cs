@@ -24,7 +24,7 @@ namespace SteamDesktopAuthenticatorCore.Services
                 return _manifest;
 
             if (!Directory.Exists(MaFilesDirectory))
-                Directory.CreateDirectory(ManifestFilePath);
+                Directory.CreateDirectory(MaFilesDirectory);
 
             if (!File.Exists(ManifestFilePath))
             {
