@@ -59,59 +59,26 @@ namespace SteamDesktopAuthenticatorCore.Services
 
         public static async Task GetAccounts()
         {
-            if (_settings is null)
-                throw new ArgumentNullException(nameof(_settings));
-
-            switch (_settings.ManifestLocation)
-            {
-                case ManifestLocation.Drive:
-                    await GetAccountsInDrive();
-                    break;
-                case ManifestLocation.GoogleDrive:
-                    await GetAccountsInGoogleDrive();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            await CheckSettings(GetAccountsInDrive, GetAccountsInGoogleDrive);
         }
 
         public static async Task AddSteamGuardAccount(string fileName, string filePath)
         {
-            if (_settings is null)
-                throw new ArgumentNullException(nameof(_settings));
-
-            switch (_settings.ManifestLocation)
-            {
-                case ManifestLocation.Drive:
-                    await AddSteamGuardAccountInDrive(fileName, filePath);
-                    break;
-                case ManifestLocation.GoogleDrive:
-                    await AddSteamGuardAccountInGoogleDrive(fileName, filePath);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            await CheckSettings(AddSteamGuardAccountInDrive(fileName, filePath), AddSteamGuardAccountInGoogleDrive(fileName, filePath));
         }
 
         public static async Task SaveSteamGuardAccount(SteamGuardAccount account)
         {
-            if (_settings is null)
-                throw new ArgumentNullException(nameof(_settings));
-
-            switch (_settings.ManifestLocation)
-            {
-                case ManifestLocation.Drive:
-                    await SaveSteamGuardAccountInDrive(account);
-                    break;
-                case ManifestLocation.GoogleDrive:
-                    await SaveAccountInGoogleDrive(account);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            await CheckSettings(SaveSteamGuardAccountInDrive(account), SaveAccountInGoogleDrive(account));
         }
 
         public static async Task DeleteSteamGuardAccount(SteamGuardAccount account)
+        {
+            await CheckSettings(DeleteSteamGuardAccountInDrive(account), DeleteSteamGuardAccountInGoogleDrive(account));
+        }
+
+        #region PrivateMethods
+        private static async Task CheckSettings(Func<Task> onDriveMethod, Func<Task> onGoogleDriveAction)
         {
             if (_settings is null)
                 throw new ArgumentNullException(nameof(_settings));
@@ -119,14 +86,34 @@ namespace SteamDesktopAuthenticatorCore.Services
             switch (_settings.ManifestLocation)
             {
                 case ManifestLocation.Drive:
-                    await DeleteSteamGuardAccountInDrive(account);
+                    await onDriveMethod.Invoke();
                     break;
                 case ManifestLocation.GoogleDrive:
-                    await DeleteSteamGuardAccountInGoogleDrive(account);
+                    await onGoogleDriveAction.Invoke();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+        private static async Task CheckSettings(Task onDriveMethod, Task onGoogleDriveAction)
+        {
+            if (_settings is null)
+                throw new ArgumentNullException(nameof(_settings));
+
+            switch (_settings.ManifestLocation)
+            {
+                case ManifestLocation.Drive:
+                    await onDriveMethod;
+                    break;
+                case ManifestLocation.GoogleDrive:
+                    await onGoogleDriveAction;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        #endregion
     }
 }

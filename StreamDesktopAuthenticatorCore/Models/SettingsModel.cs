@@ -5,7 +5,6 @@
         Drive,
         GoogleDrive
     }
-
     public class SettingsModel
     {
         public ManifestLocation ManifestLocation { get; set; }

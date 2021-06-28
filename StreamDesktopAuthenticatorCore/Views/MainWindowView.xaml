@@ -250,6 +250,7 @@
 
                         <TextBox Margin="45 0 0 0"
                                  VerticalContentAlignment="Center"
+                                 IsEnabled="False"
                                  Padding="5 0" >
 
                             <b:Interaction.Triggers>
