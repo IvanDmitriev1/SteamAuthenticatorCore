@@ -85,7 +85,6 @@
                               Command="{Binding Path=DeleteAccountCommand}" />
 
                     <MenuItem Header="Deactivate Authenticator"
-                              IsEnabled="False"
                               Template="{StaticResource SingleDropDownMenuItem}"
                               Command="{Binding Path=DeactivateAuthenticator}" />
 

@@ -279,74 +279,56 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             MessageBox.Show("Failed to refresh your session.\nTry using the \"Login again\" option.", "Session refresh", MessageBoxButton.OK, MessageBoxImage.Error);
         });
 
-        public ICommand DeactivateAuthenticator => new RelayCommand(o =>
+        public ICommand DeactivateAuthenticator => new AsyncRelayCommand(async o =>
         {
             if (SelectedAccount is null) return;
 
-            switch (MessageBox.Show("Would you like to remove Steam Guard completely?\nYes - Remove Steam Guard completely.\nNo - Switch back to Email authentication", "Remove Steam Guard"))
+            int scheme;
+            switch (MessageBox.Show("Would you like to remove Steam Guard completely?\nYes - Remove Steam Guard completely.\nNo - Switch back to Email authentication", "Remove Steam Guard", MessageBoxButton.YesNoCancel))
             {
                 case MessageBoxResult.None:
-                    break;
                 case MessageBoxResult.OK:
-                    break;
                 case MessageBoxResult.Cancel:
-                    break;
+                    MessageBox.Show("Steam Guard was not removed. No action was taken.");
+                    return;
                 case MessageBoxResult.Yes:
+                    scheme = 2;
                     break;
                 case MessageBoxResult.No:
+                    scheme = 1;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            /*int scheme = 0;
-            if (res == DialogResult.Yes)
+            if (MessageBox.Show("Are your sure ?") != MessageBoxResult.Yes)
+                return;
+
+            if (SelectedAccount.GenerateSteamGuardCode() is not { } confCode)
+                return;
+
+            InputWindowView confirmationWindow = new();
+            var confirmationDataContext = (confirmationWindow.DataContext as InputWindowViewModel)!;
+            confirmationDataContext.Text = $"Removing Steam Guard from {SelectedAccount.AccountName}. Enter this confirmation code: {confCode}";
+
+            if (confirmationWindow.ShowDialog() == false)
+                return;
+
+            string enteredCode = confirmationDataContext.InputString.ToUpper();
+            if (enteredCode != confCode)
             {
-                scheme = 2;
+                MessageBox.Show("Confirmation codes do not match. Steam Guard not removed.");
+                return;
             }
-            else if (res == DialogResult.No)
+
+            if (SelectedAccount.DeactivateAuthenticator(scheme))
             {
-                scheme = 1;
-            }
-            else if (res == DialogResult.Cancel)
-            {
-                scheme = 0;
-            }
-
-            if (scheme != 0)
-            {
-                string confCode = currentAccount.GenerateSteamGuardCode();
-                InputForm confirmationDialog = new InputForm(String.Format("Removing Steam Guard from {0}. Enter this confirmation code: {1}", currentAccount.AccountName, confCode));
-                confirmationDialog.ShowDialog();
-
-                if (confirmationDialog.Canceled)
-                {
-                    return;
-                }
-
-                string enteredCode = confirmationDialog.txtBox.Text.ToUpper();
-                if (enteredCode != confCode)
-                {
-                    MessageBox.Show("Confirmation codes do not match. Steam Guard not removed.");
-                    return;
-                }
-
-                bool success = currentAccount.DeactivateAuthenticator(scheme);
-                if (success)
-                {
-                    MessageBox.Show(String.Format("Steam Guard {0}. maFile will be deleted after hitting okay. If you need to make a backup, now's the time.", (scheme == 2 ? "removed completely" : "switched to emails")));
-                    this.manifest.RemoveAccount(currentAccount);
-                    this.loadAccountsList();
-                }
-                else
-                {
-                    MessageBox.Show("Steam Guard failed to deactivate.");
-                }
+                MessageBox.Show($"Steam Guard {(scheme == 2 ? "removed completely" : "switched to emails")}. maFile will be deleted after hitting okay. If you need to make a backup, now's the time.");
+                await ManifestModelService.DeleteSteamGuardAccount(SelectedAccount);
+                await ManifestModelService.GetAccounts();
             }
             else
-            {
-                MessageBox.Show("Steam Guard was not removed. No action was taken.");
-            }*/
+                MessageBox.Show("Steam Guard failed to deactivate.");
         });
 
         public ICommand CheckNewVersionCommand => new AsyncRelayCommand(async o =>
