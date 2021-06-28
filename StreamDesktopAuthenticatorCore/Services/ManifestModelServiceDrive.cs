@@ -47,9 +47,9 @@ namespace SteamDesktopAuthenticatorCore.Services
             if (_manifest is null)
                 throw new ArgumentNullException();
 
-            _manifest.Accounts.Clear();
+            ManifestModel newModel = new(_manifest);
 
-            string serialized = JsonConvert.SerializeObject(_manifest);
+            string serialized = JsonConvert.SerializeObject(newModel);
             await File.WriteAllTextAsync(ManifestFilePath, serialized);
         }
 
@@ -79,11 +79,12 @@ namespace SteamDesktopAuthenticatorCore.Services
 
             await using FileStream stream = new(filePath, FileMode.Open);
             using StreamReader reader = new(stream);
+            string data = await reader.ReadToEndAsync();
 
-            await File.WriteAllTextAsync(Path.Combine(MaFilesDirectory, fileName), await reader.ReadToEndAsync());
-
-            if (JsonConvert.DeserializeObject<SteamGuardAccount>(await reader.ReadToEndAsync()) is not { } account)
+            if (JsonConvert.DeserializeObject<SteamGuardAccount>(data) is not { } account)
                 throw new ArgumentNullException(nameof(account));
+
+            await File.WriteAllTextAsync(Path.Combine(MaFilesDirectory, fileName), data);
 
             _manifest.Accounts.Add(account);
             await SaveManifestInDrive();

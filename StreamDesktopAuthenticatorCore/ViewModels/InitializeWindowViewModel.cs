@@ -50,6 +50,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         private int _progressBar;
         private bool _closeWindow;
         private string _text = string.Empty;
+        private bool _windowOpened;
 
         #endregion
 
@@ -135,7 +136,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                         //
                     }
 
-                    if (App.GoogleDriveApi.IsAuthenticated)
+                    if (App.GoogleDriveApi.IsAuthenticated && !_windowOpened)
                         StartWindows(ref manifest);
 
                     return;
@@ -158,6 +159,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         private void StartWindows(ref ManifestModel manifest)
         {
             _refreshButtonClick = false;
+            _windowOpened = true;
 
             if (manifest.FirstRun)
             {

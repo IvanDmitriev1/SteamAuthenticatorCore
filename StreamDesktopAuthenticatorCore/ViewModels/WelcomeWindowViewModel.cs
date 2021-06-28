@@ -10,11 +10,6 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 {
     class WelcomeWindowViewModel : BaseViewModel
     {
-        public WelcomeWindowViewModel()
-        {
-
-        }
-
         private ManifestModel _manifest = null!;
 
         private Window _thisWindow = null!;
@@ -43,8 +38,6 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         private void ShowMainWindow()
         {
             MainWindowView mainWindow = new();
-            var mainWindowDataContext = (mainWindow.DataContext as MainWindowViewModel)!;
-            mainWindowDataContext.Manifest = _manifest; //-V3149
             mainWindow.Show();
 
             _thisWindow.Close();
