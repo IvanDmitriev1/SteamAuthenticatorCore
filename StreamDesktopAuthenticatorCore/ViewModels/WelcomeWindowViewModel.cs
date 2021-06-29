@@ -7,6 +7,7 @@ using System.Windows.Input;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using SteamAuthCore.Models;
+using SteamDesktopAuthenticatorCore.Custom;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
@@ -95,7 +96,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
-                MessageBox.Show($"Your {ManifestModelService.ManifestFileName} is corrupted");
+                CustomMessageBox.Show($"Your {ManifestModelService.ManifestFileName} is corrupted");
             }
         }
 

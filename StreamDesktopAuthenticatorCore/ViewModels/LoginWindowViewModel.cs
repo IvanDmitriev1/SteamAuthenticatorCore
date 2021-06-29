@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 using SteamAuthCore;
 using SteamAuthCore.Models;
+using SteamDesktopAuthenticatorCore.Custom;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
@@ -133,22 +134,22 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                         break;
 
                     case LoginResult.BadRsa:
-                        MessageBox.Show("Error logging in: Steam returned \"BadRSA\".", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        CustomMessageBox.Show("Error logging in: Steam returned \"BadRSA\".", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         _thisWindow?.Close();
                         return;
 
                     case LoginResult.BadCredentials:
-                        MessageBox.Show("Error logging in: Username or password was incorrect.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        CustomMessageBox.Show("Error logging in: Username or password was incorrect.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         _thisWindow?.Close();
                         return;
 
                     case LoginResult.TooManyFailedLogins:
-                        MessageBox.Show("Error logging in: Too many failed logins, try again later.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        CustomMessageBox.Show("Error logging in: Too many failed logins, try again later.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         _thisWindow?.Close();
                         return;
 
                     case LoginResult.GeneralFailure:
-                        MessageBox.Show("Error logging in: Steam returned \"GeneralFailure\".", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        CustomMessageBox.Show("Error logging in: Steam returned \"GeneralFailure\".", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         _thisWindow?.Close();
                         return;
                     default:
@@ -198,27 +199,27 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                         userLogin.CaptchaText = captchaWindowDataContext.CaptchaCode;
                         break;
                     case LoginResult.Need2Fa:
-                        MessageBox.Show("This account already has a mobile authenticator linked to it.\nRemove the old authenticator from your Steam account before adding a new one.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        CustomMessageBox.Show("This account already has a mobile authenticator linked to it.\nRemove the old authenticator from your Steam account before adding a new one.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         _thisWindow?.Close();
                         return;
 
                     case LoginResult.BadRsa:
-                        MessageBox.Show("Error logging in: Steam returned \"BadRSA\".", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        CustomMessageBox.Show("Error logging in: Steam returned \"BadRSA\".", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         _thisWindow?.Close();
                         return;
 
                     case LoginResult.BadCredentials:
-                        MessageBox.Show("Error logging in: Username or password was incorrect.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        CustomMessageBox.Show("Error logging in: Username or password was incorrect.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         _thisWindow?.Close();
                         return;
 
                     case LoginResult.TooManyFailedLogins:
-                        MessageBox.Show("Error logging in: Too many failed logins, try again later.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        CustomMessageBox.Show("Error logging in: Too many failed logins, try again later.", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         _thisWindow?.Close();
                         return;
 
                     case LoginResult.GeneralFailure:
-                        MessageBox.Show("Error logging in: Steam returned \"GeneralFailure\".", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        CustomMessageBox.Show("Error logging in: Steam returned \"GeneralFailure\".", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         _thisWindow?.Close();
                         return;
                 }
@@ -370,11 +371,11 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
             if (isRefreshing)
             {
-                MessageBox.Show("Your login session was refreshed.");
+                CustomMessageBox.Show("Your login session was refreshed.");
             }
             else
             {
-                MessageBox.Show("Mobile authenticator successfully linked. Please write down your revocation code: " + Account.RevocationCode);
+                CustomMessageBox.Show("Mobile authenticator successfully linked. Please write down your revocation code: " + Account.RevocationCode);
             }
         }
 

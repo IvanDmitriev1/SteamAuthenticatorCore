@@ -221,7 +221,7 @@
 
                     <Button Content="View Confirmations"
                             Height="30"
-                            IsEnabled="False" >
+                            Command="{Binding Path=ConfirmationsShowCommand}" >
 
                     </Button>
                 </StackPanel>

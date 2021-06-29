@@ -13,6 +13,7 @@ using System.Windows.Threading;
 using Microsoft.Win32;
 using SteamAuthCore;
 using SteamAuthCore.Models;
+using SteamDesktopAuthenticatorCore.Custom;
 using SteamDesktopAuthenticatorCore.Models;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
@@ -177,12 +178,13 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             };
 
             if (settings.ManifestLocation == ManifestLocation.GoogleDrive)
-                if (MessageBox.Show("Import your current files to google drive?", "Import service", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                if (CustomMessageBox.Show("Import your current files to google drive?", "Import service", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                     settings.ImportFiles = true;
 
             await SettingsModelService.SaveSettings();
 
-            MessageBox.Show("Restart application");
+            CustomMessageBox.Show("Restart application");
+
             Application.Current.Shutdown(0);
         });
 
@@ -227,7 +229,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
                 if (!fileNam.Contains(".maFile"))
                 {
-                    MessageBox.Show("This is not .maFile");
+                    CustomMessageBox.Show("This is not .maFile");
                     continue;
                 }
 
@@ -246,7 +248,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             if (SelectedAccount is null) return;
 
-            if (MessageBox.Show("are you sure you want to delete a account from drive?", "Delete account", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) == MessageBoxResult.Yes)
+            if (CustomMessageBox.Show("are you sure you want to delete a account from drive?", "Delete account", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) == MessageBoxResult.Yes)
             {
                 await ManifestModelService.DeleteSteamGuardAccount(SelectedAccount);
             }
@@ -270,13 +272,14 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             if (await RefreshAccountSession())
             {
-                MessageBox.Show("Your session has been refreshed.", "Session refresh", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show("Your session has been refreshed.", "Session refresh", MessageBoxButton.OK, MessageBoxImage.Information);
+                
                 await ManifestModelService.SaveManifest();
 
                 return;
             }
 
-            MessageBox.Show("Failed to refresh your session.\nTry using the \"Login again\" option.", "Session refresh", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show("Failed to refresh your session.\nTry using the \"Login again\" option.", "Session refresh", MessageBoxButton.OK, MessageBoxImage.Error);
         });
 
         public ICommand DeactivateAuthenticator => new AsyncRelayCommand(async o =>
@@ -301,7 +304,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                     throw new ArgumentOutOfRangeException();
             }
 
-            if (MessageBox.Show("Are you sure ?") != MessageBoxResult.Yes)
+            if (CustomMessageBox.Show("Are you sure ?", "", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
                 return;
 
             if (SelectedAccount.GenerateSteamGuardCode() is not { } confCode)
@@ -317,18 +320,18 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             string enteredCode = confirmationDataContext.InputString.ToUpper();
             if (enteredCode != confCode)
             {
-                MessageBox.Show("Confirmation codes do not match. Steam Guard not removed.");
+                CustomMessageBox.Show("Confirmation codes do not match. Steam Guard not removed.");
                 return;
             }
 
             if (SelectedAccount.DeactivateAuthenticator(scheme))
             {
-                MessageBox.Show($"Steam Guard {(scheme == 2 ? "removed completely" : "switched to emails")}. maFile will be deleted after hitting okay. If you need to make a backup, now's the time.");
+                CustomMessageBox.Show($"Steam Guard {(scheme == 2 ? "removed completely" : "switched to emails")}. maFile will be deleted after hitting okay. If you need to make a backup, now's the time.");
                 await ManifestModelService.DeleteSteamGuardAccount(SelectedAccount);
                 await ManifestModelService.GetAccounts();
             }
             else
-                MessageBox.Show("Steam Guard failed to deactivate.");
+                CustomMessageBox.Show("Steam Guard failed to deactivate.");
         });
 
         public ICommand CheckNewVersionCommand => new AsyncRelayCommand(async o =>
@@ -341,18 +344,19 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 bool result = await Task.Run(() => UpdateService.CheckForUpdate(out downloadUrl, out newVersion));
                 if (!result)
                 {
-                    MessageBox.Show("You are using the latest version");
+                    CustomMessageBox.Show("You are using the latest version");
                     return;
                 }
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
-                MessageBox.Show("Failed to check update");
+
+                CustomMessageBox.Show("Failed to check update");
                 return;
             }
 
-            if (MessageBox.Show($"Would you like to download new version {newVersion} ?", "Update service", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) != MessageBoxResult.Yes)
+            if (CustomMessageBox.Show($"Would you like to download new version {newVersion} ?", "Update service", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) != MessageBoxResult.Yes)
                 return;
 
             try
@@ -365,7 +369,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             }
             catch
             {
-                MessageBox.Show("Failed to download update");
+                CustomMessageBox.Show("Failed to download update");
             }
         });
 
@@ -375,6 +379,11 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             window.ShowDialog();
 
             RefreshAccountCommand.Execute(null);
+        });
+
+        public ICommand ConfirmationsShowCommand => new RelayCommand(o =>
+        {
+            
         });
 
         #endregion
