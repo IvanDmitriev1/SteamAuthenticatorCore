@@ -301,7 +301,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                     throw new ArgumentOutOfRangeException();
             }
 
-            if (MessageBox.Show("Are your sure ?") != MessageBoxResult.Yes)
+            if (MessageBox.Show("Are you sure ?") != MessageBoxResult.Yes)
                 return;
 
             if (SelectedAccount.GenerateSteamGuardCode() is not { } confCode)
@@ -411,7 +411,11 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             List<ConfirmationModel> confs = new();
             Dictionary<SteamGuardAccount, List<ConfirmationModel>> autoAcceptConfirmations = new();
-            SteamGuardAccount[] accs = Manifest.Accounts.ToArray();
+            SteamGuardAccount[] accs;
+
+            accs = SelectedAccount is not null
+                ? Manifest.CheckAllAccounts ? Manifest.Accounts.ToArray() : new[] {SelectedAccount}
+                : Manifest.Accounts.ToArray();
 
             StatusText = "Checking confirmations...";
 

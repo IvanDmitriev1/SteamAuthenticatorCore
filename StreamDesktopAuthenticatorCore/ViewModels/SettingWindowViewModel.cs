@@ -23,6 +23,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             _periodicCheckingInterval = _manifest.PeriodicCheckingInterval.ToString();
             _autoConfirmMarketTransactions = _manifest.AutoConfirmMarketTransactions;
             _autoConfirmTrades = _manifest.AutoConfirmTrades;
+            _checkAllAccounts = _manifest.CheckAllAccounts;
         }
 
         #region Variables
@@ -33,6 +34,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         private string _periodicCheckingInterval;
         private bool _autoConfirmMarketTransactions;
         private bool _autoConfirmTrades;
+        private bool _checkAllAccounts;
 
         #endregion
 
@@ -55,6 +57,12 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             set => Set(ref _autoConfirmTrades, value);
         }
 
+        public bool CheckAllAccounts
+        {
+            get => _checkAllAccounts;
+            set => Set(ref _checkAllAccounts, value);
+        }
+
         #endregion
 
         #region Commands
@@ -71,6 +79,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             _manifest.PeriodicCheckingInterval = int.Parse(PeriodicCheckingInterval);
             _manifest.AutoConfirmMarketTransactions = AutoConfirmMarketTransactions;
             _manifest.AutoConfirmTrades = AutoConfirmTrades;
+            _manifest.CheckAllAccounts = CheckAllAccounts;
 
             await ManifestModelService.SaveManifest();
         });
