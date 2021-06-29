@@ -8,7 +8,8 @@
              d:DataContext="{d:DesignInstance {x:Type viewModels:ConfirmationViewModel}}"
              d:DesignHeight="145" d:DesignWidth="220">
 
-    <Grid Background="{StaticResource ContainerBackground}">
+    <Grid Background="{StaticResource ContainerBackground}" 
+          Margin="0 5">
 
         <StackPanel Margin="0,10,0,45">
             <Label Content="{Binding Path=SelectedAccount.AccountName}"
@@ -54,4 +55,6 @@
         </Grid>
 
     </Grid>
+
+
 </UserControl>

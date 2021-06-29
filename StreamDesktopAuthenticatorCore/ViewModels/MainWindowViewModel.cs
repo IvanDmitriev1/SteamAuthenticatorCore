@@ -48,6 +48,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 Manifest = new ManifestModel();
             }
 
+            _selectedAccountFont = 12.0;
             CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
             _confirmationsWindow = new ViewConfirmationsWindowView();
 
@@ -95,6 +96,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         #region Fields
 
         public ManifestModel Manifest { get; set; }
+
         public SteamGuardAccount? SelectedAccount
         {
             get => _selectedAccount;
@@ -128,11 +130,13 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             get => _statusText;
             set => Set(ref _statusText, value);
         }
+
         public string LoginTokenText
         {
             get => _loginTokenText;
             set => Set(ref _loginTokenText, value);
         }
+
         public int ProgressBar
         {
             get => _progressBar;
@@ -278,7 +282,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             if (await RefreshAccountSession())
             {
-                CustomMessageBox.Show("Your session has been refreshed.", "Session refresh", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show("Your session has been refreshed.", "Session refresh", MessageBoxButton.OK, MessageBoxImage.Information, TextAlignment.Center);
                 
                 await ManifestModelService.SaveManifest();
 

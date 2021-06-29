@@ -55,8 +55,8 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (SelectedAccount is null)
                 throw new ArgumentNullException(nameof(SelectedAccount));
 
-            List<ConfirmationModel> confs = new();
             SteamGuardAccount[] accs = _manifest.CheckAllAccounts ? _manifest.Accounts.ToArray() : new[] { SelectedAccount };
+            Dictionary<SteamGuardAccount, List<ConfirmationModel>> confirmations = new();
 
             try
             {
@@ -67,19 +67,10 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                         ConfirmationModel[] tmp = await acc.FetchConfirmationsAsync();
                         foreach (var conf in tmp)
                         {
-                            if (Confirmations.Count < 1)
-                            {
-                                confs.Add(conf);
-                                continue;
-                            }
+                            if (!confirmations.ContainsKey(acc))
+                                confirmations[acc] = new List<ConfirmationModel>();
 
-                            foreach (var confirmation in Confirmations)
-                            {
-                                if (confirmation.Confirmation.Id == conf.Id && confirmation.Confirmation.Key == conf.Key)
-                                    continue;
-
-                                confs.Add(conf);
-                            }
+                            confirmations[acc].Add(conf);
                         }
                     }
                     catch (SteamGuardAccount.WgTokenInvalidException)
@@ -97,14 +88,11 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                     }
                 }
 
-                if (confs.Count > 0)
+                foreach (var account in confirmations.Keys)
                 {
-                    for (var i = 0; i < confs.Count; i++)
+                    foreach (var confirmation in confirmations[account])
                     {
-                        var confirmation = confs[i];
-                        var acc = accs[i];
-
-                        ConfirmationViewModel model = new(acc, confirmation);
+                        ConfirmationViewModel model = new(account, confirmation);
                         model.OnCloseEvent += ModelOnOnCloseEvent;
 
                         Confirmations.Add(model);

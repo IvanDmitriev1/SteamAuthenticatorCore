@@ -58,7 +58,7 @@ namespace SteamDesktopAuthenticatorCore.Custom
 
             Image.Visibility = Visibility.Visible;
             TextBlock.Margin = new Thickness(55, 0, 0, 0);
-            Width = 320;
+            Width = 315;
         }
 
         #region Properties
@@ -248,17 +248,17 @@ namespace SteamDesktopAuthenticatorCore.Custom
     }
     public static class CustomMessageBox
     {
-        public static MessageBoxResult Show(string text, double textFont = 16, TextAlignment mainTextAlignment = TextAlignment.Center, TextWrapping mainTextWrapping = TextWrapping.WrapWithOverflow)
+        public static MessageBoxResult Show(string text, TextAlignment mainTextAlignment = TextAlignment.Center, double textFont = 16, TextWrapping mainTextWrapping = TextWrapping.WrapWithOverflow)
         {
-            return Show(text, "", MessageBoxButton.OK, MessageBoxImage.None, textFont, mainTextAlignment, mainTextWrapping);
+            return Show(text, "", MessageBoxButton.OK, MessageBoxImage.None, mainTextAlignment, textFont, mainTextWrapping);
         }
 
-        public static MessageBoxResult Show(string text, string title, MessageBoxButton button, double textFont = 14, TextAlignment mainTextAlignment = TextAlignment.Left, TextWrapping mainTextWrapping = TextWrapping.WrapWithOverflow)
+        public static MessageBoxResult Show(string text, string title, MessageBoxButton button, TextAlignment mainTextAlignment = TextAlignment.Left, double textFont = 14, TextWrapping mainTextWrapping = TextWrapping.WrapWithOverflow)
         {
-            return Show(text, title, button, MessageBoxImage.None, textFont, mainTextAlignment, mainTextWrapping);
+            return Show(text, title, button, MessageBoxImage.None, mainTextAlignment, textFont, mainTextWrapping);
         }
 
-        public static MessageBoxResult Show(string text, string title, MessageBoxButton button, MessageBoxImage image, double textFont = 14, TextAlignment mainTextAlignment = TextAlignment.Left, TextWrapping mainTextWrapping = TextWrapping.WrapWithOverflow)
+        public static MessageBoxResult Show(string text, string title, MessageBoxButton button, MessageBoxImage image, TextAlignment mainTextAlignment = TextAlignment.Left, double textFont = 14, TextWrapping mainTextWrapping = TextWrapping.WrapWithOverflow)
         {
             CustomMessageBoxWindow messageBoxWindow = new(text, title, button, image)
             {

@@ -51,7 +51,7 @@
                 <Grid Margin="0,0,0,35">
                     <Image x:Name="Image"
                            HorizontalAlignment="Left"
-                           Margin="0 0"
+                           Margin="5 0"
                            Height="40"
                            Width="40"
                            RenderOptions.BitmapScalingMode="Fant"
