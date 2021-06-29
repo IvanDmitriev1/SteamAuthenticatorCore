@@ -49,6 +49,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             }
 
             CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
+            _confirmationsWindow = new ViewConfirmationsWindowView();
 
             #region Timers
 
@@ -87,6 +88,8 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         private int _progressBar;
         private string _switchText = string.Empty;
 
+        private readonly ViewConfirmationsWindowView _confirmationsWindow;
+
         #endregion
 
         #region Fields
@@ -112,6 +115,9 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
                 if (value.AccountName.Length > 46)
                     SelectedAccountFont = 8;
+
+                var dataContext = (_confirmationsWindow.DataContext as ViewConfirmationsWindowViewModel)!;
+                dataContext.SelectedAccount = value;
 
                 Set(ref _selectedAccount, value, nameof(SelectedAccount), nameof(SelectedAccountFont));
             }
@@ -383,7 +389,10 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         public ICommand ConfirmationsShowCommand => new RelayCommand(o =>
         {
-            
+            if (SelectedAccount is null)
+                return;
+
+            _confirmationsWindow.Show();
         });
 
         #endregion

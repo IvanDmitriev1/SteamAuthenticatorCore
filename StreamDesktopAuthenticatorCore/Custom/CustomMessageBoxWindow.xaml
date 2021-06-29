@@ -56,7 +56,6 @@
                            Width="40"
                            RenderOptions.BitmapScalingMode="Fant"
                            RenderOptions.EdgeMode="Unspecified"
-                           RenderOptions.CachingHint="Cache"
                            SnapsToDevicePixels="True"
                            UseLayoutRounding="True"
                            Visibility="Hidden" >

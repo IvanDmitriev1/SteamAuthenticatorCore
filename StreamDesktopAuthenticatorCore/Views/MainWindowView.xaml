@@ -229,7 +229,17 @@
                 <StackPanel Margin="0 10 0 0" >
                     <ListBox ItemsSource="{Binding Path=Manifest.Accounts}"
                              SelectedItem="{Binding Path=SelectedAccount}"
-                             Height="171" >
+                             Height="171"
+                             
+                             VirtualizingPanel.IsVirtualizing="True"
+                             VirtualizingPanel.IsContainerVirtualizable="True"
+                             VirtualizingPanel.VirtualizationMode="Recycling" >
+
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
 
                         <ListBox.ItemTemplate>
                             <DataTemplate >
