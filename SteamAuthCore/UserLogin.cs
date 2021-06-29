@@ -115,7 +115,7 @@ namespace SteamAuthCore
 
         public bool RequiresEmail { get; private set; }
         public string? EmailDomain { get; } = null;
-        public string? EmailCode { get; } = null;
+        public string? EmailCode { get; set; } = null;
 
         public bool Requires2Fa { get; private set; }
 

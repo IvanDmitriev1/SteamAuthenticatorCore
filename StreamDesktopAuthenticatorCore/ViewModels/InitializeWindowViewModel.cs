@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -6,6 +8,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using SteamAuthCore.Models;
+using SteamDesktopAuthenticatorCore.Models;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
@@ -17,16 +20,16 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
     {
         public InitializeWindowViewModel()
         {
-            _buttonTimer = new DispatcherTimer()
+            _buttonDelay = new DispatcherTimer()
             {
                 Interval = TimeSpan.FromSeconds(15)
             };
-            _buttonTimer.Tick += (sender, args) =>
+            _buttonDelay.Tick += (sender, args) =>
             {
                 _refreshButtonClick = true;
-                _buttonTimer.Stop();
+                _buttonDelay.Stop();
             };
-            _buttonTimer.Start();
+            _buttonDelay.Start();
 
             DispatcherTimer timer = new()
             {
@@ -44,10 +47,12 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         #region Variables
 
         private Window _thisWindow = null!;
-        private readonly DispatcherTimer _buttonTimer;
+        private readonly DispatcherTimer _buttonDelay;
         private bool _refreshButtonClick;
         private int _progressBar;
         private bool _closeWindow;
+        private string _text = string.Empty;
+        private bool _windowOpened;
 
         #endregion
 
@@ -57,6 +62,12 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             get => _progressBar;
             set => Set(ref _progressBar, value);
+        }
+
+        public string Text
+        {
+            get => _text;
+            set => Set(ref _text, value);
         }
 
         #endregion
@@ -82,7 +93,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         public ICommand RefreshCommand => new RelayCommand(async o =>
         {
             _refreshButtonClick = false;
-            _buttonTimer.Start();
+            _buttonDelay.Start();
 
             await Init();
         }, o => _refreshButtonClick);
@@ -92,43 +103,93 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         #region PrivateMethods
         private async Task Init()
         {
-            ManifestModel manifestModel = new();
-
-            try
+            if (await SettingsModelService.GetSettingsModel() is not { } settings)
             {
-                manifestModel = await GoogleDriveSetup();
-            }
-            catch (HttpRequestException)
-            {
-                if (!App.GoogleDriveApi.IsAuthenticated)
-                    MessageBox.Show($"Internet error occurred, restarting google drive auth");
-
-                RefreshCommand.Execute(null);
-            }
-            catch
-            {
-                //
-            }
-
-            if (App.GoogleDriveApi.IsAuthenticated == false)
+                ManifestModel manifest = await ManifestModelService.GetManifestFromDrive();
+                StartWindows(ref manifest);
                 return;
+            }
 
-            StartWindows(ref manifestModel);
+            switch (settings.ManifestLocation)
+            {
+                case ManifestLocation.Drive:
+                {
+                    ManifestModel manifest = await ManifestModelService.GetManifestFromDrive();
+                    StartWindows(ref manifest);
+                    return;
+                }
+                case ManifestLocation.GoogleDrive:
+                {
+                    ManifestModel manifest = new();
+
+                    try
+                    {
+                        manifest = await GoogleDriveSetup();
+                    }
+                    catch (HttpRequestException)
+                    {
+                        if (!App.GoogleDriveApi.IsAuthenticated)
+                            MessageBox.Show($"Internet error occurred, restarting google drive auth");
+
+                        RefreshCommand.Execute(null);
+                    }
+                    catch
+                    {
+                        //
+                    }
+
+                    if (!App.GoogleDriveApi.IsAuthenticated || _windowOpened) return;
+
+                    if (settings.ImportFiles)
+                    {
+                        await ImportFilesToGoogleDrive();
+                        settings.ImportFiles = false;
+
+                        await SettingsModelService.SaveSettings();
+                    }
+
+                    StartWindows(ref manifest);
+
+                    return;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
-        private async Task<ManifestModel> GoogleDriveSetup()
+        private static async Task<ManifestModel> GoogleDriveSetup()
         {
             if (!await App.GoogleDriveApi.Init(Assembly.GetExecutingAssembly().GetManifestResourceStream("SteamDesktopAuthenticatorCore.client_secret.json")!))
             {
                 await App.GoogleDriveApi.ConnectGoogleDrive(Assembly.GetExecutingAssembly().GetManifestResourceStream("SteamDesktopAuthenticatorCore.client_secret.json")!);
             }
 
-            return await ManifestModelService.GetManifest(App.GoogleDriveApi);
+            return await ManifestModelService.GetManifestFromGoogleDrive();
+        }
+
+        private static async Task ImportFilesToGoogleDrive()
+        {
+            foreach (var file in Directory.GetFiles(ManifestModelService.MaFilesDirectory))
+            {
+                if (!file.Contains(".maFile")) continue;
+
+                try
+                {
+                    await ManifestModelService.AddSteamGuardAccountInGoogleDrive(Path.GetFileName(file), file);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.Message);
+                }
+            }
+
+            await ManifestModelService.GetAccountsInGoogleDrive();
         }
 
         private void StartWindows(ref ManifestModel manifest)
         {
             _refreshButtonClick = false;
+            _windowOpened = true;
 
             if (manifest.FirstRun)
             {
@@ -136,6 +197,9 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 {
                     WelcomeWindowView welcomeWindow = new();
                     welcomeWindow.Show();
+
+                    _closeWindow = true;
+                    _thisWindow.Close();
                     return;
                 }
 

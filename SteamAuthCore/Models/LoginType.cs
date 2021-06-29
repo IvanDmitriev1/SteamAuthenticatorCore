@@ -1,4 +1,4 @@
-﻿namespace SteamDesktopAuthenticatorCore.Models
+﻿namespace SteamAuthCore.Models
 {
     public enum LoginType
     {

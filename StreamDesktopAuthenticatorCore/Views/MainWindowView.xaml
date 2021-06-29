@@ -14,7 +14,7 @@
         Background="Transparent"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        Title="MainWindow" Height="480" Width="300">
+        Title="MainWindow" Height="485" Width="300">
 
     <b:Interaction.Triggers>
         <b:EventTrigger EventName="Loaded">
@@ -48,13 +48,17 @@
                 </Menu.Resources>
 
                 <MenuItem Header="File" >
-                    <MenuItem Header="Import Account"
+                    <MenuItem Header="Import Accounts"
                               Template="{StaticResource SingleDropDownMenuItem}"
-                              Command="{Binding Path=ImportAccountCommand}" />
+                              Command="{Binding Path=ImportAccountsCommand}" />
 
                     <MenuItem Header="Refresh Account list"
                               Template="{StaticResource SingleDropDownMenuItem}"
                               Command="{Binding Path=RefreshAccountCommand}" />
+
+                    <MenuItem Header="{Binding Path=SwitchText, Mode=OneTime}"
+                              Template="{StaticResource SingleDropDownMenuItem}"
+                              Command="{Binding Path=SwitchCommand}" />
 
                     <MenuItem Header="Settings"
                               Template="{StaticResource SingleDropDownMenuItem}"
@@ -76,6 +80,10 @@
 
                     <Separator/>
 
+                    <MenuItem Header="Delete from drive"
+                              Template="{StaticResource SingleDropDownMenuItem}"
+                              Command="{Binding Path=DeleteAccountCommand}" />
+
                     <MenuItem Header="Deactivate Authenticator"
                               Template="{StaticResource SingleDropDownMenuItem}"
                               Command="{Binding Path=DeactivateAuthenticator}" />
@@ -92,6 +100,7 @@
                                       x:Name="CloseMinimizeButtons" />
 
             <tb:TaskbarIcon MenuActivation="RightClick"
+                            DoubleClickCommand="{Binding Path=ShowWindowCommand}"
                             IconSource="pack://application:,,,/icon.ico" >
 
                 <tb:TaskbarIcon.ContextMenu>
@@ -124,6 +133,9 @@
 
                         <Separator/>
 
+                        <MenuItem Header="Settings"
+                                  Command="{Binding Path=SettingsShowCommand}" />
+
                         <MenuItem Header="Quit"
                                   Command="{Binding Path=WindowCloseCommand}" />
 
@@ -132,7 +144,7 @@
 
             </tb:TaskbarIcon>
 
-            <StackPanel Margin="0 25 0 31">
+            <StackPanel Margin="0 30 0 31">
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -148,12 +160,14 @@
                     </Grid.Resources>
 
                     <Button Grid.Column="0"
-                            Content="Setup New Account" >
+                            Content="Setup New Account"
+                            Command="{Binding Path=SetUpNewAccountCommand}" >
 
                     </Button>
 
                     <Button Grid.Column="1"
-                            Content="Manage Encryption" >
+                            Content="Manage Encryption"
+                            IsEnabled="False" >
 
                     </Button>
                 </Grid>
@@ -201,11 +215,13 @@
 
                         <Label HorizontalAlignment="Left"
                                Content="{Binding Path=SelectedAccount.AccountName}"
-                               Margin="65 0 0 0" />
+                               FontSize="{Binding Path=SelectedAccountFont}"
+                               Margin="60 0 0 0" />
                     </Grid>
 
                     <Button Content="View Confirmations"
-                            Height="30" >
+                            Height="30"
+                            IsEnabled="False" >
 
                     </Button>
                 </StackPanel>
@@ -241,7 +257,15 @@
 
                         <TextBox Margin="45 0 0 0"
                                  VerticalContentAlignment="Center"
+                                 IsEnabled="False"
                                  Padding="5 0" >
+
+                            <b:Interaction.Triggers>
+                                <b:EventTrigger EventName="TextChanged">
+                                    <b:InvokeCommandAction Command="{Binding Path=FilterTextOnChangeCommand}"
+                                                           PassEventArgsToCommand="True" />
+                                </b:EventTrigger>
+                            </b:Interaction.Triggers>
 
                         </TextBox>
                     </Grid>
@@ -262,6 +286,7 @@
 
                 <Label Content="{Binding Path=StatusText}"
                        Width="115"
+                       FontSize="10"
                        HorizontalAlignment="Right"
                        HorizontalContentAlignment="Center"
                        Padding="5"

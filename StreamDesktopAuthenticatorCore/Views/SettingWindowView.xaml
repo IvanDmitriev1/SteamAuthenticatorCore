@@ -12,7 +12,7 @@
         Background="Transparent"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        Title="SettingView" Height="170" Width="220">
+        Title="SettingView" Height="212" Width="220">
 
     <b:Interaction.Triggers>
         <b:EventTrigger EventName="Loaded">
@@ -74,6 +74,13 @@
 
                 <Grid Margin="0 10 0 0">
                     <CheckBox HorizontalAlignment="Left"
+                              IsChecked="{Binding Path=CheckAllAccounts}" />
+
+                    <TextBlock Text="Check all accounts for confirmations" />
+                </Grid>
+
+                <Grid Margin="0 10 0 0">
+                    <CheckBox HorizontalAlignment="Left"
                               IsChecked="{Binding Path=AutoConfirmMarketTransactions}" />
 
                     <TextBlock Text="Auto-confirm market transactions" />
@@ -81,6 +88,7 @@
 
                 <Grid Margin="0 10 0 0">
                     <CheckBox HorizontalAlignment="Left"
+                              IsEnabled="False"
                               IsChecked="{Binding Path=AutoConfirmTrades}" />
 
                     <TextBlock Text="Auto-confirm trades"

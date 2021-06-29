@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using GoogleDrive;
+using SteamDesktopAuthenticatorCore.Services;
 using WpfHelper.Services;
 
 namespace SteamDesktopAuthenticatorCore
@@ -13,9 +14,12 @@ namespace SteamDesktopAuthenticatorCore
         public App()
         {
             UserCredentialPath = $"{Path.GetTempPath()}\\SteamDesktopAuthenticatorCoreToken.json";
+
             GoogleDriveApi = new GoogleDriveApi(UserCredentialPath,
                 new []{ Google.Apis.Drive.v3.DriveService.Scope.DriveFile },
                 "SteamDesktopAuthenticatorCore");
+
+            ManifestModelService.Api = GoogleDriveApi;
 
             UpdateService.GitHubUrl = "https://api.github.com/repos/bduj1/StreamDesktopAuthenticatorCore/releases/latest";
         }
@@ -82,6 +86,8 @@ namespace SteamDesktopAuthenticatorCore
         public void Dispose()
         {
             GoogleDriveApi.Dispose();
+
+            GC.SuppressFinalize(this);
         }
     }
 }
