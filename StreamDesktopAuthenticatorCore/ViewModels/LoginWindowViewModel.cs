@@ -20,7 +20,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             _loginExplanation = "This will activate Steam Desktop Authenticator on your Steam account. This requires a phone number that can receive SMS.";
         }
 
-        #region variabrls
+        #region Variables
 
         private Window? _thisWindow;
         private LoginType _loginType;
@@ -34,6 +34,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         #region Fields
 
         public SteamGuardAccount? Account { get; set; }
+
         public LoginType LoginType
         {
             get => _loginType;

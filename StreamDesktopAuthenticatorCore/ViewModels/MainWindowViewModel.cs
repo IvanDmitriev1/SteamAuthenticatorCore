@@ -168,7 +168,11 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             _thisWindow = window;
         });
 
-        public ICommand WindowCloseCommand => new RelayCommand(o => _thisWindow.Close());
+        public ICommand WindowCloseCommand => new RelayCommand(o =>
+        {
+            _thisWindow.Close();
+            _confirmationsWindow.Close();
+        });
 
         public ICommand TokenOnInputCommand => new RelayCommand(o =>
         {
@@ -395,6 +399,12 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             if (SelectedAccount is null)
                 return;
+
+            if (Manifest.AutoConfirmMarketTransactions)
+            {
+                CustomMessageBox.Show("Disable auto confirm trades to confirm your trades manual ");
+                return;
+            }
 
             _confirmationsWindow.Show();
         });

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Threading;
 using SteamAuthCore.Models;
+using SteamDesktopAuthenticatorCore.Custom;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
@@ -32,60 +32,71 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         #region Fields
 
-        public ObservableCollection<ConfirmationViewModel> Confirmations { get; set; }
+        public bool WindowIsVisible { get; set; }
+
+        public ObservableCollection<ConfirmationViewModel> Confirmations { get; }
 
         public SteamGuardAccount? SelectedAccount
         {
             get => _selectedAccount;
-            set => Set(ref _selectedAccount, value);
+            set
+            {
+                if (WindowIsVisible)
+                {
+                    Confirmations.Clear();
+                    UpdateCommand.Execute(value);
+                }
+
+                Set(ref _selectedAccount, value);
+            }
         }
 
         #endregion
 
         #region Commands
-
-        public ICommand UpdateCommand => new AsyncRelayCommand(async o => await UpdateTrades());
-
-        #endregion
-
-        #region PrivateMethods
-
-        private async Task UpdateTrades()
+        public ICommand UpdateCommand => new AsyncRelayCommand(async o =>
         {
-            if (SelectedAccount is null)
-                throw new ArgumentNullException(nameof(SelectedAccount));
+            if (_manifest.AutoConfirmMarketTransactions)
+            {
+                CustomMessageBox.Show("Disable auto confirm trades to confirm your trades manual ");
+                return;
+            }
 
-            SteamGuardAccount[] accs = _manifest.CheckAllAccounts ? _manifest.Accounts.ToArray() : new[] { SelectedAccount };
+            if (o is not SteamGuardAccount selectedAccount)
+                throw new ArgumentNullException(nameof(selectedAccount));
+
             Dictionary<SteamGuardAccount, List<ConfirmationModel>> confirmations = new();
 
             try
             {
-                foreach (var acc in accs)
+                try
                 {
-                    try
+                    ConfirmationModel[] tmp = await selectedAccount.FetchConfirmationsAsync();
+                    foreach (var confirmationModel in tmp)
                     {
-                        ConfirmationModel[] tmp = await acc.FetchConfirmationsAsync();
-                        foreach (var conf in tmp)
+                        if (confirmationModel.ConfType == ConfirmationModel.ConfirmationType.Trade)
                         {
-                            if (!confirmations.ContainsKey(acc))
-                                confirmations[acc] = new List<ConfirmationModel>();
 
-                            confirmations[acc].Add(conf);
                         }
-                    }
-                    catch (SteamGuardAccount.WgTokenInvalidException)
-                    {
-                        await acc.RefreshSessionAsync();
-                    }
-                    catch (SteamGuardAccount.WgTokenExpiredException)
-                    {
-                        //Prompt to relogin
-                        ShowLoginWindow(LoginType.Refresh);
-                    }
-                    catch (WebException)
-                    {
 
+                        if (!confirmations.ContainsKey(selectedAccount))
+                            confirmations[selectedAccount] = new List<ConfirmationModel>();
+
+                        confirmations[selectedAccount].Add(confirmationModel);
                     }
+                }
+                catch (SteamGuardAccount.WgTokenInvalidException)
+                {
+                    await selectedAccount.RefreshSessionAsync();
+                }
+                catch (SteamGuardAccount.WgTokenExpiredException)
+                {
+                    //Prompt to relogin
+                    ShowLoginWindow(LoginType.Refresh);
+                }
+                catch (WebException)
+                {
+
                 }
 
                 foreach (var account in confirmations.Keys)
@@ -103,7 +114,11 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             {
 
             }
-        }
+        });
+
+        #endregion
+
+        #region PrivateMethods
 
         private void ModelOnOnCloseEvent(object? sender, EventArgs e)
         {

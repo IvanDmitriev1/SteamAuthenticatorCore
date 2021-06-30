@@ -27,7 +27,6 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         #region Variabels
 
-
         private string _statusText = string.Empty;
         private bool _acceptButtonClicked = false;
         private bool _denyButtonClicked = false;
@@ -37,6 +36,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         #region Fields
 
         public SteamGuardAccount SelectedAccount { get; }
+
         public ConfirmationModel Confirmation { get; }
 
         public string StatusText

@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using SteamDesktopAuthenticatorCore.ViewModels;
 
 namespace SteamDesktopAuthenticatorCore.Views
 {
@@ -16,6 +17,12 @@ namespace SteamDesktopAuthenticatorCore.Views
                 return;
 
             listBox.SelectedItem = null;
+        }
+
+        private void ViewConfirmationsWindowView_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            var dataContext = (DataContext as ViewConfirmationsWindowViewModel)!;
+            dataContext.WindowIsVisible = (bool) e.NewValue;
         }
     }
 }
