@@ -1,6 +1,8 @@
 ﻿using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Input;
 using SteamAuthCore.Models;
+using SteamDesktopAuthenticatorCore.Custom;
 using SteamDesktopAuthenticatorCore.Services;
 using WpfHelper;
 using WpfHelper.Commands;
@@ -54,7 +56,14 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         public bool AutoConfirmTrades
         {
             get => _autoConfirmTrades;
-            set => Set(ref _autoConfirmTrades, value);
+            set
+            {
+                if (!AutoConfirmTrades)
+                    if (CustomMessageBox.Show("Be careful with this option. Turn it on?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+                        return;
+
+                Set(ref _autoConfirmTrades, value);
+            }
         }
 
         public bool CheckAllAccounts
