@@ -80,11 +80,10 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         private Int64 _currentSteamChunk;
         private readonly DispatcherTimer _steamGuardTimer;
         private readonly DispatcherTimer _autoTradeConfirmationTimer;
-        private static readonly Regex Regex = new("[^0-9]+");
         private SteamGuardAccount? _selectedAccount;
 
         private double _selectedAccountFont;
-        private string _loginTokenText = string.Empty;
+        private string _loginTokenText = "Login token";
         private string _statusText = string.Empty;
         private int _progressBar;
         private string _switchText = string.Empty;
@@ -441,45 +440,41 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         private async Task AutoTradeConfirmationTimerOnTick()
         {
-            List<ConfirmationModel> confs = new();
             Dictionary<SteamGuardAccount, List<ConfirmationModel>> autoAcceptConfirmations = new();
-            SteamGuardAccount[] accs;
 
-            accs = SelectedAccount is not null
+            SteamGuardAccount[] accounts = SelectedAccount is not null
                 ? Manifest.CheckAllAccounts ? Manifest.Accounts.ToArray() : new[] {SelectedAccount}
                 : Manifest.Accounts.ToArray();
 
             StatusText = "Checking confirmations...";
 
-            foreach (var acc in accs)
+            foreach (var account in accounts)
             {
                 try
                 {
-                    ConfirmationModel[] tmp = await acc.FetchConfirmationsAsync();
-                    foreach (var conf in tmp)
+                    ConfirmationModel[] tmp = await account.FetchConfirmationsAsync();
+                    foreach (var confirmationModel in tmp)
                     {
-                        if ((conf.ConfType == ConfirmationModel.ConfirmationType.MarketSellTransaction && Manifest.AutoConfirmMarketTransactions) ||
-                            (conf.ConfType == ConfirmationModel.ConfirmationType.Trade && Manifest.AutoConfirmTrades))
+                        if (confirmationModel.ConfType == ConfirmationModel.ConfirmationType.MarketSellTransaction && Manifest.AutoConfirmMarketTransactions)
                         {
-                            if (!autoAcceptConfirmations.ContainsKey(acc))
-                                autoAcceptConfirmations[acc] = new List<ConfirmationModel>();
-                            autoAcceptConfirmations[acc].Add(conf);
+                            if (!autoAcceptConfirmations.ContainsKey(account))
+                                autoAcceptConfirmations[account] = new List<ConfirmationModel>();
+
+                            autoAcceptConfirmations[account].Add(confirmationModel);
                         }
-                        else
-                            confs.Add(conf);
                     }
                 }
                 catch (SteamGuardAccount.WgTokenInvalidException)
                 {
                     StatusText = "Refreshing session";
-                    await acc.RefreshSessionAsync(); //Don't save it to the HDD, of course. We'd need their encryption passkey again.
+                    await account.RefreshSessionAsync();
                     StatusText = "";
                 }
                 catch (SteamGuardAccount.WgTokenExpiredException)
                 {
                     //Prompt to relogin
                     ShowLoginWindow(LoginType.Refresh);
-                    break; //Don't bombard a user with login refresh requests if they have multiple accounts. Give them a few seconds to disable the autocheck option if they want.
+                    break;
 
                 }
                 catch (WebException)
@@ -488,10 +483,10 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 }
             }
 
-            foreach (var acc in autoAcceptConfirmations.Keys)
+            foreach (var account in autoAcceptConfirmations.Keys)
             {
-                var confirmations = autoAcceptConfirmations[acc].ToArray();
-                acc.AcceptMultipleConfirmations(confirmations);
+                var confirmations = autoAcceptConfirmations[account].ToArray();
+                account.AcceptMultipleConfirmations(confirmations);
             }
         }
 
