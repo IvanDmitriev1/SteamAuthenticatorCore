@@ -403,9 +403,9 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (SelectedAccount is null)
                 return;
 
-            if (Manifest.AutoConfirmMarketTransactions)
+            if (Manifest.AutoConfirmMarketTransactions && Manifest.AutoConfirmTrades)
             {
-                CustomMessageBox.Show("Disable auto confirm trades to confirm your trades manual ");
+                CustomMessageBox.Show("Disable auto confirm trades, or auto confirmation trades to confirm your trades manual");
                 return;
             }
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Windows.Input;
-using System.Windows.Threading;
 using SteamAuthCore.Models;
 using SteamDesktopAuthenticatorCore.Custom;
 using SteamDesktopAuthenticatorCore.Services;
@@ -56,9 +55,9 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         #region Commands
         public ICommand UpdateCommand => new AsyncRelayCommand(async o =>
         {
-            if (_manifest.AutoConfirmMarketTransactions)
+            if (_manifest.AutoConfirmMarketTransactions && _manifest.AutoConfirmTrades)
             {
-                CustomMessageBox.Show("Disable auto confirm trades to confirm your trades manual ");
+                CustomMessageBox.Show("Disable auto confirm trades, or auto confirmation trades to confirm your trades manual");
                 return;
             }
 
@@ -74,15 +73,13 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                     ConfirmationModel[] tmp = await selectedAccount.FetchConfirmationsAsync();
                     foreach (var confirmationModel in tmp)
                     {
-                        if (confirmationModel.ConfType == ConfirmationModel.ConfirmationType.Trade)
+                        switch (confirmationModel.ConfType)
                         {
-
+                            case ConfirmationModel.ConfirmationType.MarketSellTransaction when !_manifest.AutoConfirmMarketTransactions:
+                            case ConfirmationModel.ConfirmationType.Trade when !_manifest.AutoConfirmTrades:
+                                AddToConfirmations(confirmations, selectedAccount, confirmationModel);
+                                break;
                         }
-
-                        if (!confirmations.ContainsKey(selectedAccount))
-                            confirmations[selectedAccount] = new List<ConfirmationModel>();
-
-                        confirmations[selectedAccount].Add(confirmationModel);
                     }
                 }
                 catch (SteamGuardAccount.WgTokenInvalidException)
@@ -119,6 +116,14 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         #endregion
 
         #region PrivateMethods
+
+        private void AddToConfirmations(Dictionary<SteamGuardAccount, List<ConfirmationModel>> confirmations, SteamGuardAccount selectedAccount, ConfirmationModel confirmationModel)
+        {
+            if (!confirmations.ContainsKey(selectedAccount))
+                confirmations[selectedAccount] = new List<ConfirmationModel>();
+
+            confirmations[selectedAccount].Add(confirmationModel);
+        }
 
         private void ModelOnOnCloseEvent(object? sender, EventArgs e)
         {
