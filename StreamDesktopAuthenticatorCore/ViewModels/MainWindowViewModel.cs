@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -165,6 +164,11 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (o is not RoutedEventArgs { Source: Window window }) return;
 
             _thisWindow = window;
+        });
+
+        public ICommand WindowOnClosingCommand => new RelayCommand(o =>
+        {
+            _confirmationsWindow.Close();
         });
 
         public ICommand WindowCloseCommand => new RelayCommand(o =>
