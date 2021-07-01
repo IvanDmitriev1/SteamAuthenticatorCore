@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using SteamDesktopAuthenticatorCore.Services;
 
 namespace SteamDesktopAuthenticatorCore.Views
@@ -11,7 +12,10 @@ namespace SteamDesktopAuthenticatorCore.Views
         {
             InitializeComponent();
 
-            DeactivateAuthenticatorMenuItemImage.Source = BitmapToBitmapImageService.BitmapToBitmapImage(SystemIcons.Warning.ToBitmap());
+            BitmapImage warningImage = BitmapToBitmapImageService.BitmapToBitmapImage(SystemIcons.Warning.ToBitmap());
+
+            DeactivateAuthenticatorMenuItemImage.Source = warningImage;
+            SingleDropDownMenuItemImage.Source = warningImage;
         }
 
         private void textBox_PreviewExecuted(object sender, ExecutedRoutedEventArgs e)

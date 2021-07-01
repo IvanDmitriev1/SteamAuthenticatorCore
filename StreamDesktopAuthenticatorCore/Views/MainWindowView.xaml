@@ -86,16 +86,24 @@
 
                     <MenuItem Header="Delete from drive"
                               Template="{StaticResource SingleDropDownMenuItem}"
-                              Command="{Binding Path=DeleteAccountCommand}" />
+                              Command="{Binding Path=DeleteAccountCommand}" >
 
-                    <MenuItem Header="Deactivate Authenticator"
+                        <MenuItem.Icon>
+                            <Image x:Name="SingleDropDownMenuItemImage"
+                                   RenderOptions.BitmapScalingMode="HighQuality"
+                                   RenderOptions.EdgeMode="Unspecified"/>
+                        </MenuItem.Icon>
+
+                    </MenuItem>
+
+                        <MenuItem Header="Deactivate Authenticator"
                               Template="{StaticResource SingleDropDownMenuItem}"
                               Command="{Binding Path=DeactivateAuthenticator}" >
 
                         <MenuItem.Icon>
                             <Image x:Name="DeactivateAuthenticatorMenuItemImage"
                                    RenderOptions.BitmapScalingMode="HighQuality"
-                                   RenderOptions.EdgeMode="Unspecified" />
+                                   RenderOptions.EdgeMode="Unspecified"/>
                         </MenuItem.Icon>
 
                     </MenuItem>
@@ -249,7 +257,9 @@
                                     <ContextMenu DataContext="{StaticResource DataContext}">
                                         <MenuItem Header="Delete"
                                                   Template="{StaticResource SingleDropDownMenuItem}"
-                                                  Command="{Binding Path=DeleteAccountCommand}" />
+                                                  Command="{Binding Path=DeleteAccountCommand}" >
+
+                                        </MenuItem>
                                     </ContextMenu>
                                 </StackPanel.ContextMenu>
 
@@ -271,14 +281,6 @@
                              VerticalContentAlignment="Center"
                              IsEnabled="False"
                              Padding="5 0" >
-
-                        <b:Interaction.Triggers>
-                            <b:EventTrigger EventName="TextChanged">
-                                <b:InvokeCommandAction Command="{Binding Path=FilterTextOnChangeCommand}"
-                                                       PassEventArgsToCommand="True" />
-                            </b:EventTrigger>
-                        </b:Interaction.Triggers>
-
                     </TextBox>
                 </Grid>
 

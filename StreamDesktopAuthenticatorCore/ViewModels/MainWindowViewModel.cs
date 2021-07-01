@@ -7,7 +7,6 @@ using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Microsoft.Win32;
@@ -30,7 +29,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (!App.InDesignMode)
             {
                 Manifest = ManifestModelService.GetManifest().Result;
-
+                
                 Task.Run(async () =>
                 {
                     SettingsModel settings = (await SettingsModelService.GetSettingsModel())!;
@@ -94,7 +93,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         #region Fields
 
-        public ManifestModel Manifest { get; set; }
+        public ManifestModel Manifest { get; set; } = null!;
 
         public SteamGuardAccount? SelectedAccount
         {
