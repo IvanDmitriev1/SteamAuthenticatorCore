@@ -27,7 +27,9 @@
 
     <Border Background="{StaticResource BackgroundColour}"
             CornerRadius="10"
-            Padding="10" >
+            Padding="10"
+            BorderThickness="1"
+            BorderBrush="{StaticResource WindowBorderColour}" >
 
         <Grid>
             <custom:CustomWindowStyle Height="20"

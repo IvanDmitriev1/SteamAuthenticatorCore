@@ -12,7 +12,7 @@
         Background="Transparent"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        Title="LoginWindowView" MinHeight="230" MaxHeight="235" Width="307">
+        Title="LoginWindowView" Height="255" Width="307">
 
     <b:Interaction.Triggers>
         <b:EventTrigger EventName="Loaded">
@@ -27,7 +27,9 @@
 
     <Border Background="{StaticResource BackgroundColour}"
             CornerRadius="10"
-            Padding="10" >
+            Padding="10"
+            BorderThickness="1"
+            BorderBrush="{StaticResource WindowBorderColour}" >
 
 
         <Grid>

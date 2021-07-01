@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Drawing;
+using System.Windows;
+using SteamDesktopAuthenticatorCore.Services;
 
 namespace SteamDesktopAuthenticatorCore.Views
 {
@@ -7,6 +9,8 @@ namespace SteamDesktopAuthenticatorCore.Views
         public MainWindowView()
         {
             InitializeComponent();
+
+            DeactivateAuthenticatorMenuItemImage.Source = BitmapToBitmapImageService.BitmapToBitmapImage(SystemIcons.Warning.ToBitmap());
         }
     }
 }

@@ -90,9 +90,17 @@
 
                     <MenuItem Header="Deactivate Authenticator"
                               Template="{StaticResource SingleDropDownMenuItem}"
-                              Command="{Binding Path=DeactivateAuthenticator}" />
+                              Command="{Binding Path=DeactivateAuthenticator}" >
 
-                </MenuItem>
+                        <MenuItem.Icon>
+                            <Image x:Name="DeactivateAuthenticatorMenuItemImage"
+                                   RenderOptions.BitmapScalingMode="HighQuality"
+                                   RenderOptions.EdgeMode="Unspecified" />
+                        </MenuItem.Icon>
+
+                    </MenuItem>
+
+                    </MenuItem>
 
             </Menu>
 
