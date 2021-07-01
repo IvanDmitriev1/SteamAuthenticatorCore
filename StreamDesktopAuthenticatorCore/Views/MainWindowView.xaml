@@ -14,7 +14,7 @@
         Background="Transparent"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        Title="MainWindow" Height="460" Width="300">
+        Title="MainWindow" Height="460" Width="275">
 
     <b:Interaction.Triggers>
         <b:EventTrigger EventName="Loaded">
