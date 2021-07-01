@@ -7,11 +7,11 @@ using System.Windows.Input;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using SteamAuthCore.Models;
-using SteamDesktopAuthenticatorCore.Custom;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
 using WpfHelper.Commands;
+using WpfHelper.Custom;
 
 namespace SteamDesktopAuthenticatorCore.ViewModels
 {

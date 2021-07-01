@@ -289,10 +289,11 @@
                     </Button>
 
                     <Label Content="{Binding Path=StatusText}"
-                           Width="130"
+                           Width="103"
                            FontSize="10"
                            HorizontalAlignment="Left"
                            HorizontalContentAlignment="Stretch"
+                           VerticalContentAlignment="Center"
                            Padding="5"
                            Margin="106,0,0,0" />
 

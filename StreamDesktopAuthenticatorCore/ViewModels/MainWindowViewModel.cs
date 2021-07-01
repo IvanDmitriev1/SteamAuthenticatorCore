@@ -12,12 +12,12 @@ using System.Windows.Threading;
 using Microsoft.Win32;
 using SteamAuthCore;
 using SteamAuthCore.Models;
-using SteamDesktopAuthenticatorCore.Custom;
 using SteamDesktopAuthenticatorCore.Models;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
 using WpfHelper.Commands;
+using WpfHelper.Custom;
 using WpfHelper.Services;
 
 namespace SteamDesktopAuthenticatorCore.ViewModels

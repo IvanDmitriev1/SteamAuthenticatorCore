@@ -4,11 +4,11 @@ using System.Collections.ObjectModel;
 using System.Net;
 using System.Windows.Input;
 using SteamAuthCore.Models;
-using SteamDesktopAuthenticatorCore.Custom;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
 using WpfHelper.Commands;
+using WpfHelper.Custom;
 
 namespace SteamDesktopAuthenticatorCore.ViewModels
 {
