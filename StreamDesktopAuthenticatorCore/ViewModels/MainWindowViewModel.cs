@@ -280,13 +280,6 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             ShowLoginWindow(LoginType.Refresh);
         });
 
-        public ICommand FilterTextOnChangeCommand => new RelayCommand(o =>
-        {
-            if (o is not TextChangedEventArgs {Source: TextBox textBox}) return;
-
-
-        });
-
         public ICommand ForceRefreshSession => new AsyncRelayCommand(async o =>
         {
             if (await RefreshAccountSession())

@@ -193,14 +193,10 @@
                                  FontSize="16"
                                  Text="{Binding Path=LoginTokenText, Mode=OneWay}"
                                  VerticalContentAlignment="Center"
-                                 HorizontalContentAlignment="Center" >
-
-                            <b:Interaction.Triggers>
-                                <b:EventTrigger EventName="PreviewTextInput">
-                                    <b:InvokeCommandAction Command="{Binding Path=TokenOnInputCommand}"
-                                                           PassEventArgsToCommand="True" />
-                                </b:EventTrigger>
-                            </b:Interaction.Triggers>
+                                 HorizontalContentAlignment="Center"
+                                 ContextMenu="{x:Null}"
+                                 PreviewTextInput="textBox_OnPreviewTextInput"
+                                 CommandManager.PreviewExecuted="textBox_PreviewExecuted" >
 
                         </TextBox>
 
