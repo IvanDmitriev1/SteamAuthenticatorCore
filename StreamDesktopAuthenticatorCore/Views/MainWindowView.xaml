@@ -86,9 +86,17 @@
 
                     <MenuItem Header="Delete from drive"
                               Template="{StaticResource SingleDropDownMenuItem}"
-                              Command="{Binding Path=DeleteAccountCommand}" />
+                              Command="{Binding Path=DeleteAccountCommand}" >
 
-                    <MenuItem Header="Deactivate Authenticator"
+                        <MenuItem.Icon>
+                            <Image x:Name="SingleDropDownMenuItemImage"
+                                   RenderOptions.BitmapScalingMode="HighQuality"
+                                   RenderOptions.EdgeMode="Unspecified"/>
+                        </MenuItem.Icon>
+
+                    </MenuItem>
+
+                        <MenuItem Header="Deactivate Authenticator"
                               Template="{StaticResource SingleDropDownMenuItem}"
                               Command="{Binding Path=DeactivateAuthenticator}" >
 
@@ -249,7 +257,9 @@
                                     <ContextMenu DataContext="{StaticResource DataContext}">
                                         <MenuItem Header="Delete"
                                                   Template="{StaticResource SingleDropDownMenuItem}"
-                                                  Command="{Binding Path=DeleteAccountCommand}" />
+                                                  Command="{Binding Path=DeleteAccountCommand}" >
+
+                                        </MenuItem>
                                     </ContextMenu>
                                 </StackPanel.ContextMenu>
 
