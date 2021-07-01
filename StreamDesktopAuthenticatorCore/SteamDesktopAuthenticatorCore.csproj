@@ -15,6 +15,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Custom\**" />
+    <EmbeddedResource Remove="Custom\**" />
+    <None Remove="Custom\**" />
+    <Page Remove="Custom\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="client_secret.json" />
     <None Remove="icon.ico" />
   </ItemGroup>
@@ -35,10 +42,6 @@
 
   <ItemGroup>
     <Resource Include="icon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Custom\" />
   </ItemGroup>
 
 </Project>

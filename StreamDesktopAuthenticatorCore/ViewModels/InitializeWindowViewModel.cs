@@ -175,7 +175,9 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
                 try
                 {
-                    await ManifestModelService.AddSteamGuardAccountInGoogleDrive(Path.GetFileName(file), file);
+                    await using FileStream fileStream = new(file, FileMode.Open);
+                    using StreamReader reader = new(fileStream);
+                    await ManifestModelService.AddSteamGuardAccountInGoogleDrive(Path.GetFileName(file), await reader.ReadToEndAsync());
                 }
                 catch (Exception e)
                 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using SteamAuthCore.Models;
 using SteamDesktopAuthenticatorCore.Models;
@@ -38,9 +39,9 @@ namespace SteamDesktopAuthenticatorCore.Services
             await CheckSettings(GetAccountsInDrive, GetAccountsInGoogleDrive);
         }
 
-        public static async Task AddSteamGuardAccount(string fileName, string filePath)
+        public static async Task AddSteamGuardAccount(string fileName, string fileData)
         {
-            await CheckSettings(AddSteamGuardAccountInDrive(fileName, filePath), AddSteamGuardAccountInGoogleDrive(fileName, filePath));
+            await CheckSettings(AddSteamGuardAccountInDrive(fileName, fileData), AddSteamGuardAccountInGoogleDrive(fileName, fileData));
         }
 
         public static async Task SaveSteamGuardAccount(SteamGuardAccount account)

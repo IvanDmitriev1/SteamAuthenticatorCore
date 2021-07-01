@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -232,16 +233,16 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         public ICommand ImportAccountsCommand => new AsyncRelayCommand(async o =>
         {
-            FileDialog fileDialog = new OpenFileDialog()
+            OpenFileDialog fileDialog = new()
             {
                 Multiselect = true
             };
 
             if (fileDialog.ShowDialog() == false) return;
 
+            Stream[] streams = fileDialog.OpenFiles();
             for (var i = 0; i < fileDialog.FileNames.Length; i++)
             {
-                string filePath = fileDialog.FileNames[i];
                 string fileNam = fileDialog.SafeFileNames[i];
 
                 if (!fileNam.Contains(".maFile"))
@@ -250,7 +251,8 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                     continue;
                 }
 
-                await ManifestModelService.AddSteamGuardAccount(fileNam, filePath);
+                using StreamReader streamReader = new(streams[i]);
+                await ManifestModelService.AddSteamGuardAccount(fileNam, await streamReader.ReadToEndAsync());
             }
 
             await ManifestModelService.GetAccounts();

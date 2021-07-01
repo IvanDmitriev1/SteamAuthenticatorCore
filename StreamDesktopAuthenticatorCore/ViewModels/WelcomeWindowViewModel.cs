@@ -72,7 +72,9 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
             try
             {
-                await ManifestModelService.AddSteamGuardAccountInDrive(fileName, filePath);
+                await using FileStream fileStream = new(filePath, FileMode.Open);
+                using StreamReader reader = new(fileStream);
+                await ManifestModelService.AddSteamGuardAccountInDrive(fileName, await reader.ReadToEndAsync());
             }
             catch (Exception e)
             {

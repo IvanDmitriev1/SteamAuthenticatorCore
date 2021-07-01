@@ -80,19 +80,15 @@ namespace SteamDesktopAuthenticatorCore.Services
             }
         }
 
-        public static async Task AddSteamGuardAccountInDrive(string fileName, string filePath)
+        public static async Task AddSteamGuardAccountInDrive(string fileName, string fileData)
         {
             if (_manifest is null)
                 throw new ArgumentNullException();
 
-            await using FileStream stream = new(filePath, FileMode.Open);
-            using StreamReader reader = new(stream);
-            string data = await reader.ReadToEndAsync();
-
-            if (JsonConvert.DeserializeObject<SteamGuardAccount>(data) is not { } account)
+            if (JsonConvert.DeserializeObject<SteamGuardAccount>(fileData) is not { } account)
                 throw new ArgumentNullException(nameof(account));
 
-            await File.WriteAllTextAsync(Path.Combine(MaFilesDirectory, fileName), data);
+            await File.WriteAllTextAsync(Path.Combine(MaFilesDirectory, fileName), fileData);
 
             _manifest.Accounts.Add(account);
         }
