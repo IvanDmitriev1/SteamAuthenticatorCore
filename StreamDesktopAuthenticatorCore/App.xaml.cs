@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks;
 using System.Windows;
 using GoogleDrive;
 using SteamDesktopAuthenticatorCore.Services;
@@ -37,7 +36,7 @@ namespace SteamDesktopAuthenticatorCore
 
             CheckProcess();
 
-            await DeletePreviousFile();
+            await UpdateService.DeletePreviousFile("SteamDesktopAuthenticatorCore");
 
             base.OnStartup(e);
         }
@@ -55,29 +54,6 @@ namespace SteamDesktopAuthenticatorCore
                     process.Kill();
                 else
                     App.Current.Shutdown();
-            }
-        }
-
-        private static async Task DeletePreviousFile()
-        {
-            await Task.Delay(5000);
-
-            string[] files = await Task.Run(() => Directory.GetFiles(Environment.CurrentDirectory));
-            foreach (var file in files)
-            {
-                string fileName = Path.GetFileName(file);
-
-                if (!fileName.Contains("SteamDesktopAuthenticatorCore") || !fileName.Contains("exe")) continue;
-                if (fileName == Path.GetFileName(Process.GetCurrentProcess().MainModule?.FileName)) continue;
-
-                try
-                {
-                    File.Delete(file);
-                }
-                catch
-                {
-                    Debug.WriteLine("Failed to delete file");
-                }
             }
         }
 

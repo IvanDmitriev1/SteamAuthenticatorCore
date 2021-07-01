@@ -14,12 +14,16 @@
         Background="Transparent"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        Title="MainWindow" Height="485" Width="300">
+        Title="MainWindow" Height="460" Width="275">
 
     <b:Interaction.Triggers>
         <b:EventTrigger EventName="Loaded">
             <b:CallMethodAction TargetObject="{Binding ElementName=CloseMinimizeButtons}" MethodName="OnWindowLoaded" />
             <b:InvokeCommandAction Command="{Binding Path=WindowOnLoadedCommand}" PassEventArgsToCommand="True" />
+        </b:EventTrigger>
+
+        <b:EventTrigger EventName="Closing">
+            <b:InvokeCommandAction Command="{Binding Path=WindowOnClosingCommand}" PassEventArgsToCommand="True" />
         </b:EventTrigger>
     </b:Interaction.Triggers>
 
@@ -86,9 +90,17 @@
 
                     <MenuItem Header="Deactivate Authenticator"
                               Template="{StaticResource SingleDropDownMenuItem}"
-                              Command="{Binding Path=DeactivateAuthenticator}" />
+                              Command="{Binding Path=DeactivateAuthenticator}" >
 
-                </MenuItem>
+                        <MenuItem.Icon>
+                            <Image x:Name="DeactivateAuthenticatorMenuItemImage"
+                                   RenderOptions.BitmapScalingMode="HighQuality"
+                                   RenderOptions.EdgeMode="Unspecified" />
+                        </MenuItem.Icon>
+
+                    </MenuItem>
+
+                    </MenuItem>
 
             </Menu>
 
@@ -144,7 +156,7 @@
 
             </tb:TaskbarIcon>
 
-            <StackPanel Margin="0 30 0 31">
+            <StackPanel Margin="0,30,0,67">
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -155,17 +167,18 @@
                     <Grid.Resources>
                         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
                             <Setter Property="Height" Value="30"/>
-                            <Setter Property="FontSize" Value="14"></Setter>
                         </Style>
                     </Grid.Resources>
 
                     <Button Grid.Column="0"
+                            Margin="0 0 2.5 0"
                             Content="Setup New Account"
                             Command="{Binding Path=SetUpNewAccountCommand}" >
 
                     </Button>
 
                     <Button Grid.Column="1"
+                            Margin="2.5 0 0 0"
                             Content="Manage Encryption"
                             IsEnabled="False" >
 
@@ -173,21 +186,17 @@
                 </Grid>
 
                 <StackPanel Margin="0 10 0 0">
-                    <Label Content="Login Token" />
 
                     <Grid Height="30" >
+
                         <TextBox Margin="0 0 60 0"
                                  FontSize="16"
                                  Text="{Binding Path=LoginTokenText, Mode=OneWay}"
                                  VerticalContentAlignment="Center"
-                                 HorizontalContentAlignment="Center" >
-
-                            <b:Interaction.Triggers>
-                                <b:EventTrigger EventName="PreviewTextInput">
-                                    <b:InvokeCommandAction Command="{Binding Path=TokenOnInputCommand}"
-                                                           PassEventArgsToCommand="True" />
-                                </b:EventTrigger>
-                            </b:Interaction.Triggers>
+                                 HorizontalContentAlignment="Center"
+                                 ContextMenu="{x:Null}"
+                                 PreviewTextInput="textBox_OnPreviewTextInput"
+                                 CommandManager.PreviewExecuted="textBox_PreviewExecuted" >
 
                         </TextBox>
 
@@ -207,94 +216,95 @@
 
                 </StackPanel>
 
-                <StackPanel Margin="0 10 0 0" >
-
-                    <Grid>
-                        <Label Content="Account:"
-                               HorizontalAlignment="Left" />
-
-                        <Label HorizontalAlignment="Left"
-                               Content="{Binding Path=SelectedAccount.AccountName}"
-                               FontSize="{Binding Path=SelectedAccountFont}"
-                               Margin="60 0 0 0" />
-                    </Grid>
-
-                    <Button Content="View Confirmations"
-                            Height="30"
-                            IsEnabled="False" >
-
-                    </Button>
-                </StackPanel>
-
-                <StackPanel Margin="0 10 0 0" >
-                    <ListBox ItemsSource="{Binding Path=Manifest.Accounts}"
-                             SelectedItem="{Binding Path=SelectedAccount}"
-                             Height="171" >
-
-                        <ListBox.ItemTemplate>
-                            <DataTemplate >
-                                <StackPanel >
-                                    <TextBlock Text="{Binding Path=AccountName}"
-                                               Padding="2.5" />
-                                    
-                                    <StackPanel.ContextMenu>
-                                        <ContextMenu DataContext="{StaticResource DataContext}">
-                                            <MenuItem Header="Delete"
-                                                      Template="{StaticResource SingleDropDownMenuItem}"
-                                                      Command="{Binding Path=DeleteAccountCommand}" />
-                                        </ContextMenu>
-                                    </StackPanel.ContextMenu>
-
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-
-                    </ListBox>
-
-                    <Grid Margin="0 5 0 0">
-                        <Label Content="Filter:"
-                               HorizontalAlignment="Left" />
-
-                        <TextBox Margin="45 0 0 0"
-                                 VerticalContentAlignment="Center"
-                                 IsEnabled="False"
-                                 Padding="5 0" >
-
-                            <b:Interaction.Triggers>
-                                <b:EventTrigger EventName="TextChanged">
-                                    <b:InvokeCommandAction Command="{Binding Path=FilterTextOnChangeCommand}"
-                                                           PassEventArgsToCommand="True" />
-                                </b:EventTrigger>
-                            </b:Interaction.Triggers>
-
-                        </TextBox>
-                    </Grid>
-
-                </StackPanel>
-            </StackPanel>
-
-            <Grid VerticalAlignment="Bottom" >
-
-                <Button Content="Check for updates"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Padding="5"
-                        HorizontalAlignment="Left"
-                        Command="{Binding Path=CheckNewVersionCommand}" >
+                <Button Content="View Confirmations"
+                        Margin="0 10 0 0"
+                        Height="30"
+                        Command="{Binding Path=ConfirmationsShowCommand}" >
 
                 </Button>
 
-                <Label Content="{Binding Path=StatusText}"
-                       Width="115"
-                       FontSize="10"
-                       HorizontalAlignment="Right"
-                       HorizontalContentAlignment="Center"
-                       Padding="5"
-                       Margin="0 0 50 0" />
+                <ListBox ItemsSource="{Binding Path=Manifest.Accounts}"
+                         SelectedItem="{Binding Path=SelectedAccount}"
+                         Margin="0 10 0 0"
+                         Height="193"
+                         HorizontalContentAlignment="Stretch"
+                             
+                         VirtualizingPanel.IsVirtualizing="True"
+                         VirtualizingPanel.IsContainerVirtualizable="True"
+                         VirtualizingPanel.VirtualizationMode="Recycling" >
 
-                <Label Content="{Binding Path=CurrentVersion, Mode=OneTime}"
-                       HorizontalAlignment="Right" />
-            </Grid>
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel HorizontalAlignment="Stretch" >
+                                <TextBlock Text="{Binding Path=AccountName}"
+                                           Padding="2.5" />
+
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu DataContext="{StaticResource DataContext}">
+                                        <MenuItem Header="Delete"
+                                                  Template="{StaticResource SingleDropDownMenuItem}"
+                                                  Command="{Binding Path=DeleteAccountCommand}" />
+                                    </ContextMenu>
+                                </StackPanel.ContextMenu>
+
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+
+                </ListBox>
+
+            </StackPanel>
+
+            <StackPanel VerticalAlignment="Bottom" >
+
+                <Grid>
+                    <Label Content="Filter:"
+                           HorizontalAlignment="Left" />
+
+                    <TextBox Margin="44 0 0 0"
+                             VerticalContentAlignment="Center"
+                             IsEnabled="False"
+                             Padding="5 0" >
+
+                        <b:Interaction.Triggers>
+                            <b:EventTrigger EventName="TextChanged">
+                                <b:InvokeCommandAction Command="{Binding Path=FilterTextOnChangeCommand}"
+                                                       PassEventArgsToCommand="True" />
+                            </b:EventTrigger>
+                        </b:Interaction.Triggers>
+
+                    </TextBox>
+                </Grid>
+
+                <Grid Margin="0 5 0 0">
+                    <Button Content="Check for updates"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Padding="5"
+                            HorizontalAlignment="Left"
+                            Command="{Binding Path=CheckNewVersionCommand}" >
+
+                    </Button>
+
+                    <Label Content="{Binding Path=StatusText}"
+                           Width="103"
+                           FontSize="10"
+                           HorizontalAlignment="Left"
+                           HorizontalContentAlignment="Stretch"
+                           VerticalContentAlignment="Center"
+                           Padding="5"
+                           Margin="106,0,0,0" />
+
+                    <Label Content="{Binding Path=CurrentVersion, Mode=OneTime}"
+                           HorizontalAlignment="Right" />
+                </Grid>
+            </StackPanel>
 
         </Grid>
     </Border>

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,6 +18,7 @@ using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
 using WpfHelper.Commands;
+using WpfHelper.Custom;
 using WpfHelper.Services;
 
 namespace SteamDesktopAuthenticatorCore.ViewModels
@@ -47,7 +48,9 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 Manifest = new ManifestModel();
             }
 
+            _selectedAccountFont = 12.0;
             CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
+            _confirmationsWindow = new ViewConfirmationsWindowView();
 
             #region Timers
 
@@ -77,20 +80,22 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         private Int64 _currentSteamChunk;
         private readonly DispatcherTimer _steamGuardTimer;
         private readonly DispatcherTimer _autoTradeConfirmationTimer;
-        private static readonly Regex Regex = new("[^0-9]+");
         private SteamGuardAccount? _selectedAccount;
 
         private double _selectedAccountFont;
-        private string _loginTokenText = string.Empty;
+        private string _loginTokenText = "Login token";
         private string _statusText = string.Empty;
         private int _progressBar;
         private string _switchText = string.Empty;
+
+        private readonly ViewConfirmationsWindowView _confirmationsWindow;
 
         #endregion
 
         #region Fields
 
         public ManifestModel Manifest { get; set; }
+
         public SteamGuardAccount? SelectedAccount
         {
             get => _selectedAccount;
@@ -112,6 +117,9 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 if (value.AccountName.Length > 46)
                     SelectedAccountFont = 8;
 
+                var dataContext = (_confirmationsWindow.DataContext as ViewConfirmationsWindowViewModel)!;
+                dataContext.SelectedAccount = value;
+
                 Set(ref _selectedAccount, value, nameof(SelectedAccount), nameof(SelectedAccountFont));
             }
         }
@@ -121,11 +129,13 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             get => _statusText;
             set => Set(ref _statusText, value);
         }
+
         public string LoginTokenText
         {
             get => _loginTokenText;
             set => Set(ref _loginTokenText, value);
         }
+
         public int ProgressBar
         {
             get => _progressBar;
@@ -157,7 +167,16 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             _thisWindow = window;
         });
 
-        public ICommand WindowCloseCommand => new RelayCommand(o => _thisWindow.Close());
+        public ICommand WindowOnClosingCommand => new RelayCommand(o =>
+        {
+            _confirmationsWindow.Close();
+        });
+
+        public ICommand WindowCloseCommand => new RelayCommand(o =>
+        {
+            _thisWindow.Close();
+            _confirmationsWindow.Close();
+        });
 
         public ICommand TokenOnInputCommand => new RelayCommand(o =>
         {
@@ -177,12 +196,13 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             };
 
             if (settings.ManifestLocation == ManifestLocation.GoogleDrive)
-                if (MessageBox.Show("Import your current files to google drive?", "Import service", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                if (CustomMessageBox.Show("Import your current files to google drive?", "Import service", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                     settings.ImportFiles = true;
 
             await SettingsModelService.SaveSettings();
 
-            MessageBox.Show("Restart application");
+            CustomMessageBox.Show("Restart application");
+
             Application.Current.Shutdown(0);
         });
 
@@ -213,25 +233,26 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         public ICommand ImportAccountsCommand => new AsyncRelayCommand(async o =>
         {
-            FileDialog fileDialog = new OpenFileDialog()
+            OpenFileDialog fileDialog = new()
             {
                 Multiselect = true
             };
 
             if (fileDialog.ShowDialog() == false) return;
 
+            Stream[] streams = fileDialog.OpenFiles();
             for (var i = 0; i < fileDialog.FileNames.Length; i++)
             {
-                string filePath = fileDialog.FileNames[i];
                 string fileNam = fileDialog.SafeFileNames[i];
 
                 if (!fileNam.Contains(".maFile"))
                 {
-                    MessageBox.Show("This is not .maFile");
+                    CustomMessageBox.Show("This is not .maFile");
                     continue;
                 }
 
-                await ManifestModelService.AddSteamGuardAccount(fileNam, filePath);
+                using StreamReader streamReader = new(streams[i]);
+                await ManifestModelService.AddSteamGuardAccount(fileNam, await streamReader.ReadToEndAsync());
             }
 
             await ManifestModelService.GetAccounts();
@@ -246,7 +267,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             if (SelectedAccount is null) return;
 
-            if (MessageBox.Show("are you sure you want to delete a account from drive?", "Delete account", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) == MessageBoxResult.Yes)
+            if (CustomMessageBox.Show("are you sure you want to delete a account from drive?", "Delete account", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) == MessageBoxResult.Yes)
             {
                 await ManifestModelService.DeleteSteamGuardAccount(SelectedAccount);
             }
@@ -259,24 +280,18 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             ShowLoginWindow(LoginType.Refresh);
         });
 
-        public ICommand FilterTextOnChangeCommand => new RelayCommand(o =>
-        {
-            if (o is not TextChangedEventArgs {Source: TextBox textBox}) return;
-
-
-        });
-
         public ICommand ForceRefreshSession => new AsyncRelayCommand(async o =>
         {
             if (await RefreshAccountSession())
             {
-                MessageBox.Show("Your session has been refreshed.", "Session refresh", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show("Your session has been refreshed.", "Session refresh", MessageBoxButton.OK, MessageBoxImage.Information, TextAlignment.Center);
+                
                 await ManifestModelService.SaveManifest();
 
                 return;
             }
 
-            MessageBox.Show("Failed to refresh your session.\nTry using the \"Login again\" option.", "Session refresh", MessageBoxButton.OK, MessageBoxImage.Error);
+            CustomMessageBox.Show("Failed to refresh your session.\nTry using the \"Login again\" option.", "Session refresh", MessageBoxButton.OK, MessageBoxImage.Error);
         });
 
         public ICommand DeactivateAuthenticator => new AsyncRelayCommand(async o =>
@@ -301,7 +316,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                     throw new ArgumentOutOfRangeException();
             }
 
-            if (MessageBox.Show("Are you sure ?") != MessageBoxResult.Yes)
+            if (CustomMessageBox.Show("Are you sure ?", "", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
                 return;
 
             if (SelectedAccount.GenerateSteamGuardCode() is not { } confCode)
@@ -317,18 +332,18 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             string enteredCode = confirmationDataContext.InputString.ToUpper();
             if (enteredCode != confCode)
             {
-                MessageBox.Show("Confirmation codes do not match. Steam Guard not removed.");
+                CustomMessageBox.Show("Confirmation codes do not match. Steam Guard not removed.");
                 return;
             }
 
             if (SelectedAccount.DeactivateAuthenticator(scheme))
             {
-                MessageBox.Show($"Steam Guard {(scheme == 2 ? "removed completely" : "switched to emails")}. maFile will be deleted after hitting okay. If you need to make a backup, now's the time.");
+                CustomMessageBox.Show($"Steam Guard {(scheme == 2 ? "removed completely" : "switched to emails")}. maFile will be deleted after hitting okay. If you need to make a backup, now's the time.");
                 await ManifestModelService.DeleteSteamGuardAccount(SelectedAccount);
                 await ManifestModelService.GetAccounts();
             }
             else
-                MessageBox.Show("Steam Guard failed to deactivate.");
+                CustomMessageBox.Show("Steam Guard failed to deactivate.");
         });
 
         public ICommand CheckNewVersionCommand => new AsyncRelayCommand(async o =>
@@ -341,18 +356,19 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 bool result = await Task.Run(() => UpdateService.CheckForUpdate(out downloadUrl, out newVersion));
                 if (!result)
                 {
-                    MessageBox.Show("You are using the latest version");
+                    CustomMessageBox.Show("You are using the latest version");
                     return;
                 }
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
-                MessageBox.Show("Failed to check update");
+
+                CustomMessageBox.Show("Failed to check update");
                 return;
             }
 
-            if (MessageBox.Show($"Would you like to download new version {newVersion} ?", "Update service", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) != MessageBoxResult.Yes)
+            if (CustomMessageBox.Show($"Would you like to download new version {newVersion} ?", "Update service", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) != MessageBoxResult.Yes)
                 return;
 
             try
@@ -365,7 +381,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             }
             catch
             {
-                MessageBox.Show("Failed to download update");
+                CustomMessageBox.Show("Failed to download update");
             }
         });
 
@@ -375,6 +391,20 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             window.ShowDialog();
 
             RefreshAccountCommand.Execute(null);
+        });
+
+        public ICommand ConfirmationsShowCommand => new RelayCommand(o =>
+        {
+            if (SelectedAccount is null)
+                return;
+
+            if (Manifest.AutoConfirmMarketTransactions && Manifest.AutoConfirmTrades)
+            {
+                CustomMessageBox.Show("Disable auto confirm trades, or auto confirmation trades to confirm your trades manual");
+                return;
+            }
+
+            _confirmationsWindow.Show();
         });
 
         #endregion
@@ -409,45 +439,41 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         private async Task AutoTradeConfirmationTimerOnTick()
         {
-            List<ConfirmationModel> confs = new();
             Dictionary<SteamGuardAccount, List<ConfirmationModel>> autoAcceptConfirmations = new();
-            SteamGuardAccount[] accs;
 
-            accs = SelectedAccount is not null
+            SteamGuardAccount[] accounts = SelectedAccount is not null
                 ? Manifest.CheckAllAccounts ? Manifest.Accounts.ToArray() : new[] {SelectedAccount}
                 : Manifest.Accounts.ToArray();
 
             StatusText = "Checking confirmations...";
 
-            foreach (var acc in accs)
+            foreach (var account in accounts)
             {
                 try
                 {
-                    ConfirmationModel[] tmp = await acc.FetchConfirmationsAsync();
-                    foreach (var conf in tmp)
+                    ConfirmationModel[] tmp = await account.FetchConfirmationsAsync();
+                    foreach (var confirmationModel in tmp)
                     {
-                        if ((conf.ConfType == ConfirmationModel.ConfirmationType.MarketSellTransaction && Manifest.AutoConfirmMarketTransactions) ||
-                            (conf.ConfType == ConfirmationModel.ConfirmationType.Trade && Manifest.AutoConfirmTrades))
+                        if (confirmationModel.ConfType == ConfirmationModel.ConfirmationType.MarketSellTransaction && Manifest.AutoConfirmMarketTransactions)
                         {
-                            if (!autoAcceptConfirmations.ContainsKey(acc))
-                                autoAcceptConfirmations[acc] = new List<ConfirmationModel>();
-                            autoAcceptConfirmations[acc].Add(conf);
+                            if (!autoAcceptConfirmations.ContainsKey(account))
+                                autoAcceptConfirmations[account] = new List<ConfirmationModel>();
+
+                            autoAcceptConfirmations[account].Add(confirmationModel);
                         }
-                        else
-                            confs.Add(conf);
                     }
                 }
                 catch (SteamGuardAccount.WgTokenInvalidException)
                 {
                     StatusText = "Refreshing session";
-                    await acc.RefreshSessionAsync(); //Don't save it to the HDD, of course. We'd need their encryption passkey again.
+                    await account.RefreshSessionAsync();
                     StatusText = "";
                 }
                 catch (SteamGuardAccount.WgTokenExpiredException)
                 {
                     //Prompt to relogin
                     ShowLoginWindow(LoginType.Refresh);
-                    break; //Don't bombard a user with login refresh requests if they have multiple accounts. Give them a few seconds to disable the autocheck option if they want.
+                    break;
 
                 }
                 catch (WebException)
@@ -456,10 +482,10 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 }
             }
 
-            foreach (var acc in autoAcceptConfirmations.Keys)
+            foreach (var account in autoAcceptConfirmations.Keys)
             {
-                var confirmations = autoAcceptConfirmations[acc].ToArray();
-                acc.AcceptMultipleConfirmations(confirmations);
+                var confirmations = autoAcceptConfirmations[account].ToArray();
+                account.AcceptMultipleConfirmations(confirmations);
             }
         }
 

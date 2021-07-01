@@ -7,12 +7,19 @@
     <Nullable>enable</Nullable>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Platform>AnyCPU</Platform>
-    <Version>0.7.0</Version>
+    <Version>0.8.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Custom\**" />
+    <EmbeddedResource Remove="Custom\**" />
+    <None Remove="Custom\**" />
+    <Page Remove="Custom\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove="client_secret.json" />
@@ -31,7 +38,6 @@
 
   <ItemGroup>
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf.NetCore" Version="1.0.18" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
   </ItemGroup>
 
   <ItemGroup>

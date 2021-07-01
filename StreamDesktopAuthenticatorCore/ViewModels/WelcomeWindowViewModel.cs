@@ -11,6 +11,7 @@ using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
 using WpfHelper.Commands;
+using WpfHelper.Custom;
 
 namespace SteamDesktopAuthenticatorCore.ViewModels
 {
@@ -71,7 +72,9 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
             try
             {
-                await ManifestModelService.AddSteamGuardAccountInDrive(fileName, filePath);
+                await using FileStream fileStream = new(filePath, FileMode.Open);
+                using StreamReader reader = new(fileStream);
+                await ManifestModelService.AddSteamGuardAccountInDrive(fileName, await reader.ReadToEndAsync());
             }
             catch (Exception e)
             {
@@ -95,7 +98,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
-                MessageBox.Show($"Your {ManifestModelService.ManifestFileName} is corrupted");
+                CustomMessageBox.Show($"Your {ManifestModelService.ManifestFileName} is corrupted");
             }
         }
 

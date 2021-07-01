@@ -58,14 +58,12 @@ namespace SteamDesktopAuthenticatorCore.Services
             await Api.UploadFile(ManifestFileName, stream);
         }
 
-        public static async Task AddSteamGuardAccountInGoogleDrive(string fileName, string filePath)
+        public static async Task AddSteamGuardAccountInGoogleDrive(string fileName, string fileData)
         {
             if (Api is null || _manifest is null)
                 throw new ArgumentNullException();
 
-            await using FileStream stream = new(filePath, FileMode.Open);
-            using StreamReader reader = new(stream);
-            await using MemoryStream memoryStream = new(Encoding.UTF8.GetBytes(await reader.ReadToEndAsync()));
+            await using MemoryStream memoryStream = new(Encoding.UTF8.GetBytes(fileData));
             await Api.UploadFile(fileName, memoryStream);
         }
 

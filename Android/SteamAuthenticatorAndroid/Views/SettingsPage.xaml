@@ -41,16 +41,15 @@
                 </Grid>
 
                 <Grid>
-                    <CheckBox IsChecked="{Binding Path=AutoConfirmMarketTransactions}" />
+                    <CheckBox IsChecked="{Binding Path=AutoConfirmTrades}" />
 
-                    <Label Text="Auto-confirm market transactions" />
+                    <Label Text="Auto-confirm trades" />
                 </Grid>
 
                 <Grid>
-                    <CheckBox IsChecked="{Binding Path=AutoConfirmTrades}"
-                              IsEnabled="False" />
+                    <CheckBox IsChecked="{Binding Path=AutoConfirmMarketTransactions}" />
 
-                    <Label Text="Auto-confirm trades" />
+                    <Label Text="Auto-confirm market transactions" />
                 </Grid>
             </StackLayout>
 

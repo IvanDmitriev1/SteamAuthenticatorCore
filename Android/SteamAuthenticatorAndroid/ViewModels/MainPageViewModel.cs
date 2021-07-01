@@ -58,7 +58,6 @@ namespace SteamAuthenticatorAndroid.ViewModels
         private ManifestModel _manifest;
         private SteamGuardAccount? _selectedAccount;
         private string _loginTokenText = string.Empty;
-        private string _statusText = string.Empty;
         private double _progressBar;
 
         #endregion
@@ -83,12 +82,6 @@ namespace SteamAuthenticatorAndroid.ViewModels
                 SelectedGuardAccount = value;
                 SetProperty(ref _selectedAccount, value);
             }
-        }
-
-        public string StatusText
-        {
-            get => _statusText;
-            set => SetProperty(ref _statusText, value);
         }
 
         public string LoginTokenText
@@ -142,9 +135,7 @@ namespace SteamAuthenticatorAndroid.ViewModels
 
         private async void SteamGuardTimerOnTick()
         {
-            StatusText = "Aligning time with Steam...";
             _steamTime = await TimeAligner.GetSteamTimeAsync();
-            StatusText = string.Empty;
 
             _currentSteamChunk = _steamTime / 30L;
             var secondsUntilChange = (int) (_steamTime - _currentSteamChunk * 30L);
@@ -217,42 +208,36 @@ namespace SteamAuthenticatorAndroid.ViewModels
 
         private async void AutoTradeConfirmationTimerOnTick()
         {
-            List<ConfirmationModel> confs = new();
             Dictionary<SteamGuardAccount, List<ConfirmationModel>> autoAcceptConfirmations = new();
-            SteamGuardAccount[] accs = Manifest!.Accounts.ToArray();
+            SteamGuardAccount[] accounts = Manifest!.Accounts.ToArray();
 
-            StatusText = "Checking confirmations...";
-
-            foreach (var acc in accs)
+            foreach (var account in accounts)
             {
                 try
                 {
-                    ConfirmationModel[] tmp = await acc.FetchConfirmationsAsync();
-                    foreach (var conf in tmp)
+                    ConfirmationModel[] tmp = await account.FetchConfirmationsAsync();
+                    foreach (var confirmationModel in tmp)
                     {
-                        if ((conf.ConfType == ConfirmationModel.ConfirmationType.MarketSellTransaction && Manifest.AutoConfirmMarketTransactions) ||
-                            (conf.ConfType == ConfirmationModel.ConfirmationType.Trade && Manifest.AutoConfirmTrades))
+                        if ((confirmationModel.ConfType == ConfirmationModel.ConfirmationType.MarketSellTransaction && Manifest.AutoConfirmMarketTransactions) ||
+                            (confirmationModel.ConfType == ConfirmationModel.ConfirmationType.Trade && Manifest.AutoConfirmTrades))
                         {
-                            if (!autoAcceptConfirmations.ContainsKey(acc))
-                                autoAcceptConfirmations[acc] = new List<ConfirmationModel>();
-                            autoAcceptConfirmations[acc].Add(conf);
+                            if (!autoAcceptConfirmations.ContainsKey(account))
+                                autoAcceptConfirmations[account] = new List<ConfirmationModel>();
+
+                            autoAcceptConfirmations[account].Add(confirmationModel);
                         }
-                        else
-                            confs.Add(conf);
                     }
                 }
                 catch (SteamGuardAccount.WgTokenInvalidException)
                 {
-                    StatusText = "Refreshing session";
-                    await acc.RefreshSessionAsync(); //Don't save it to the HDD, of course. We'd need their encryption passkey again.
-                    StatusText = "";
+                    await account.RefreshSessionAsync();
                 }
                 catch (SteamGuardAccount.WgTokenExpiredException)
                 {
                     //Prompt to relogin
                     await Application.Current.MainPage.DisplayAlert("AutoTradeConfirmation error", "Relogin into your account", "Ok");
-                    ShowLoginWindow(acc);
-                    break; //Don't bombard a user with login refresh requests if they have multiple accounts. Give them a few seconds to disable the autocheck option if they want.
+                    ShowLoginWindow(account);
+                    break;
                 }
                 catch (WebException)
                 {
@@ -282,7 +267,7 @@ namespace SteamAuthenticatorAndroid.ViewModels
             try
             {
                 bool refreshed = await SelectedAccount.RefreshSessionAsync();
-                return refreshed; //No exception thrown means that we either successfully refreshed the session or there was a different issue preventing us from doing so.
+                return refreshed;
             }
             catch (SteamGuardAccount.WgTokenExpiredException)
             {
