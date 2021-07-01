@@ -16,8 +16,16 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
     {
         public ViewConfirmationsWindowViewModel()
         {
-            _manifest = ManifestModelService.GetManifest().Result;
+            if (!App.InDesignMode)
+            {
+                _manifest = ManifestModelService.GetManifest().Result;
+            }
+            else
+            {
+                _manifest = new ManifestModel();
+            }
 
+            
             Confirmations = new ObservableCollection<ConfirmationViewModel>();
         }
 

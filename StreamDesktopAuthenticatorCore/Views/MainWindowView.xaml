@@ -95,7 +95,7 @@
                         <MenuItem.Icon>
                             <Image x:Name="DeactivateAuthenticatorMenuItemImage"
                                    RenderOptions.BitmapScalingMode="HighQuality"
-                                   RenderOptions.EdgeMode="Unspecified" />
+                                   RenderOptions.EdgeMode="Unspecified"/>
                         </MenuItem.Icon>
 
                     </MenuItem>
@@ -271,14 +271,6 @@
                              VerticalContentAlignment="Center"
                              IsEnabled="False"
                              Padding="5 0" >
-
-                        <b:Interaction.Triggers>
-                            <b:EventTrigger EventName="TextChanged">
-                                <b:InvokeCommandAction Command="{Binding Path=FilterTextOnChangeCommand}"
-                                                       PassEventArgsToCommand="True" />
-                            </b:EventTrigger>
-                        </b:Interaction.Triggers>
-
                     </TextBox>
                 </Grid>
 
