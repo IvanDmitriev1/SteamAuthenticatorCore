@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using SteamDesktopAuthenticatorCore.Services;
+using WpfHelper.Services;
 
 namespace SteamDesktopAuthenticatorCore.Views
 {
@@ -12,7 +12,7 @@ namespace SteamDesktopAuthenticatorCore.Views
         {
             InitializeComponent();
 
-            BitmapImage warningImage = BitmapToBitmapImageService.BitmapToBitmapImage(SystemIcons.Warning.ToBitmap());
+            BitmapImage warningImage = BitmapToBitmapImageConvertService.BitmapToBitmapImage(SystemIcons.Warning.ToBitmap());
 
             DeactivateAuthenticatorMenuItemImage.Source = warningImage;
             SingleDropDownMenuItemImage.Source = warningImage;
