@@ -347,13 +347,12 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         public ICommand CheckNewVersionCommand => new AsyncRelayCommand(async o =>
         {
-            string downloadUrl = string.Empty;
-            Version newVersion = new();
+            UpdateService.CheckForUpdateModel model;
 
             try
             {
-                bool result = await Task.Run(() => UpdateService.CheckForUpdate(out downloadUrl, out newVersion));
-                if (!result)
+                model = await UpdateService.CheckForUpdate("SteamDesktopAuthenticatorCore.exe");
+                if (!model.NeedUpdate)
                 {
                     CustomMessageBox.Show("You are using the latest version");
                     return;
@@ -367,12 +366,12 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 return;
             }
 
-            if (CustomMessageBox.Show($"Would you like to download new version {newVersion} ?", "Update service", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) != MessageBoxResult.Yes)
+            if (CustomMessageBox.Show($"Would you like to download new version {model.NewVersion} ?", "Update service", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) != MessageBoxResult.Yes)
                 return;
 
             try
             {
-                if (await UpdateService.DownloadAndInstall(downloadUrl, newVersion, "SteamDesktopAuthenticatorCore") is not { } newFile)
+                if (await UpdateService.DownloadAndInstall(model) is not { } newFile)
                     throw new ArgumentNullException();
 
                 Application.Current.Shutdown(0);
