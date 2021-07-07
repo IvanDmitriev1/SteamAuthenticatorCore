@@ -14,7 +14,7 @@ namespace SteamAuthCore
             _session = session;
             DeviceId = GenerateDeviceId();
 
-            session.GetCookies(out _cookies);
+            _cookies = session.GetCookies();
         }
 
         #region HelpEnums
