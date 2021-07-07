@@ -23,8 +23,8 @@ namespace SteamDesktopAuthenticatorCore.Services
 
             return _settings!.ManifestLocation switch
             {
-                ManifestLocation.Drive => await GetManifestFromDrive(),
-                ManifestLocation.GoogleDrive => await GetManifestFromGoogleDrive(),
+                SettingsModel.ManifestLocationModel.Drive => await GetManifestFromDrive(),
+                SettingsModel.ManifestLocationModel.GoogleDrive => await GetManifestFromGoogleDrive(),
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
@@ -73,10 +73,10 @@ namespace SteamDesktopAuthenticatorCore.Services
 
             switch (_settings!.ManifestLocation)
             {
-                case ManifestLocation.Drive:
+                case SettingsModel.ManifestLocationModel.Drive:
                     await onDriveMethod.Invoke();
                     break;
-                case ManifestLocation.GoogleDrive:
+                case SettingsModel.ManifestLocationModel.GoogleDrive:
                     await onGoogleDriveAction.Invoke();
                     break;
                 default:
@@ -90,10 +90,10 @@ namespace SteamDesktopAuthenticatorCore.Services
 
             switch (_settings!.ManifestLocation)
             {
-                case ManifestLocation.Drive:
+                case SettingsModel.ManifestLocationModel.Drive:
                     await onDriveMethod;
                     break;
-                case ManifestLocation.GoogleDrive:
+                case SettingsModel.ManifestLocationModel.GoogleDrive:
                     await onGoogleDriveAction;
                     break;
                 default:

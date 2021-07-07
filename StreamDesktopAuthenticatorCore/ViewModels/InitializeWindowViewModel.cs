@@ -112,13 +112,13 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
             switch (settings.ManifestLocation)
             {
-                case ManifestLocation.Drive:
+                case SettingsModel.ManifestLocationModel.Drive:
                 {
                     ManifestModel manifest = await ManifestModelService.GetManifestFromDrive();
                     StartWindows(ref manifest);
                     return;
                 }
-                case ManifestLocation.GoogleDrive:
+                case SettingsModel.ManifestLocationModel.GoogleDrive:
                 {
                     ManifestModel manifest = new();
 

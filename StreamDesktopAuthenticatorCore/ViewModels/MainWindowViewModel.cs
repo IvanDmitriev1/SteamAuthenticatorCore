@@ -36,8 +36,8 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
                     SwitchText = settings.ManifestLocation switch
                     {
-                        ManifestLocation.Drive => "Switch to using the files on your Google Drive",
-                        ManifestLocation.GoogleDrive => "Switch to using the files on your disk",
+                        SettingsModel.ManifestLocationModel.Drive => "Switch to using the files on your Google Drive",
+                        SettingsModel.ManifestLocationModel.GoogleDrive => "Switch to using the files on your disk",
                         _ => throw new ArgumentOutOfRangeException()
                     };
                 }); 
@@ -189,12 +189,12 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             SettingsModel settings = (await SettingsModelService.GetSettingsModel())!;
             settings.ManifestLocation = settings.ManifestLocation switch
             {
-                ManifestLocation.Drive => ManifestLocation.GoogleDrive,
-                ManifestLocation.GoogleDrive => ManifestLocation.Drive,
+                SettingsModel.ManifestLocationModel.Drive => SettingsModel.ManifestLocationModel.GoogleDrive,
+                SettingsModel.ManifestLocationModel.GoogleDrive => SettingsModel.ManifestLocationModel.Drive,
                 _ => throw new ArgumentOutOfRangeException()
             };
 
-            if (settings.ManifestLocation == ManifestLocation.GoogleDrive)
+            if (settings.ManifestLocation == SettingsModel.ManifestLocationModel.GoogleDrive)
                 if (CustomMessageBox.Show("Import your current files to google drive?", "Import service", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                     settings.ImportFiles = true;
 

@@ -58,7 +58,7 @@ namespace SteamAuthCore.Models
             public bool Success { get; set; }
         }
 
-        private class ConfirmationDetailsResponse
+        public class ConfirmationDetailsResponse
         {
             [JsonProperty("success")]
             public bool Success { get; set; }
@@ -189,31 +189,14 @@ namespace SteamAuthCore.Models
         {
             string url = GenerateConfirmationUrl();
 
-            Session.GetCookies(out var cookies);
-
-            return FetchConfirmationInternal(SteamWeb.Request(url, "GET", "", cookies));
+            return FetchConfirmationInternal(SteamWeb.Request(url, "GET", "", Session.GetCookies()));
         }
 
         public async Task<ConfirmationModel[]> FetchConfirmationsAsync()
         {
             string url = GenerateConfirmationUrl();
 
-            Session.GetCookies(out var cookies);
-
-            return FetchConfirmationInternal(await SteamWeb.RequestAsync(url, "GET", null, cookies));
-        }
-
-        /// <summary>
-        /// Deprecated. Simply returns conf.Creator.
-        /// </summary>
-        /// <param name="conf"></param>
-        /// <returns>The Creator field of conf</returns>
-        public Int64 GetConfirmationTradeOfferId(ConfirmationModel conf)
-        {
-            if (conf.ConfType != ConfirmationModel.ConfirmationType.Trade)
-                throw new ArgumentException("conf must be a trade confirmation.");
-
-            return (Int64)conf.Creator;
+            return FetchConfirmationInternal(await SteamWeb.RequestAsync(url, "GET", null, Session.GetCookies()));
         }
 
         public bool AcceptMultipleConfirmations(ConfirmationModel[] confs)
@@ -234,6 +217,18 @@ namespace SteamAuthCore.Models
         public bool DenyConfirmation(ConfirmationModel conf)
         {
             return SendConfirmationAjax(conf, "cancel");
+        }
+
+        public ConfirmationDetailsResponse? GetConfirmationDetails(ConfirmationModel conf)
+        {
+            string url = ApiEndpoints.CommunityBase + "/mobileconf/details/" + conf.Id + "?";
+            string queryString = GenerateConfirmationQueryParams("details");
+            url += queryString;
+
+            string? response = SteamWeb.Request(url, "GET", "", Session.GetCookies());
+            if (string.IsNullOrEmpty(response)) return null;
+
+            return JsonConvert.DeserializeObject<ConfirmationDetailsResponse>(response) is not { } confResponse ? null : confResponse;
         }
 
         /// <summary>
@@ -291,7 +286,7 @@ namespace SteamAuthCore.Models
             NameValueCollection postData = new NameValueCollection();
             postData.Add("access_token", this.Session.OAuthToken);
 
-            string? response = null;
+            string? response;
             try
             {
                 response = await SteamWeb.RequestAsync(url, "POST", postData);
@@ -398,20 +393,6 @@ namespace SteamAuthCore.Models
             return ret.ToArray();
         }
 
-        private ConfirmationDetailsResponse? GetConfirmationDetails(ConfirmationModel conf)
-        {
-            string url = ApiEndpoints.CommunityBase + "/mobileconf/details/" + conf.Id + "?";
-            string queryString = GenerateConfirmationQueryParams("details");
-            url += queryString;
-
-            Session.GetCookies(out var cookies);
-
-            string? response = SteamWeb.Request(url, "GET", "", cookies, null);
-            if (string.IsNullOrEmpty(response)) return null;
-
-            return JsonConvert.DeserializeObject<ConfirmationDetailsResponse>(response) is not { } confResponse ? null : confResponse;
-        }
-
         private bool SendConfirmationAjax(ConfirmationModel conf, string op)
         {
             string url = ApiEndpoints.CommunityBase + "/mobileconf/ajaxop";
@@ -420,9 +401,7 @@ namespace SteamAuthCore.Models
             queryString += "&cid=" + conf.Id + "&ck=" + conf.Key;
             url += queryString;
 
-            Session.GetCookies(out var cookies);
-
-            if (SteamWeb.Request(url, "GET", "", cookies, null) is not { } response)
+            if (SteamWeb.Request(url, "GET", "", Session.GetCookies(), null) is not { } response)
                 return false;
 
             if (JsonConvert.DeserializeObject<SendConfirmationResponse>(response) is not { } confResponse)
@@ -441,9 +420,7 @@ namespace SteamAuthCore.Models
                 query += "&cid[]=" + conf.Id + "&ck[]=" + conf.Key;
             }
 
-            Session.GetCookies(out var cookies);
-
-            if (SteamWeb.Request(url, "POST", query, cookies, null) is not { } response)
+            if (SteamWeb.Request(url, "POST", query, Session.GetCookies()) is not { } response)
                 return false;
 
             if (JsonConvert.DeserializeObject<SendConfirmationResponse>(response) is not { } confResponse)
@@ -452,7 +429,7 @@ namespace SteamAuthCore.Models
             return confResponse.Success;
         }
 
-        private string? GenerateConfirmationHashForTime(long time, string? tag)
+        private string? GenerateConfirmationHashForTime(Int64 time, string? tag)
         {
             byte[] decode = Convert.FromBase64String(IdentitySecret);
             int n2 = 8;
