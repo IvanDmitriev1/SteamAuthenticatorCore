@@ -27,20 +27,10 @@ namespace SteamDesktopAuthenticatorCore.Services
                 return _manifest!;
             }
 
-            GoogleDriveFileDownloader downloader = new(Api);
-            downloader.OnDataDownloaded += (sender, args) =>
-            {
-                if (JsonConvert.DeserializeObject<ManifestModel>((string)args.UserState! ?? throw new InvalidOperationException()) is not { } manifest)
-                    throw new ArgumentNullException(nameof(manifest));
+            if (JsonConvert.DeserializeObject<ManifestModel>(await Api.DownloadFileAsString(manifestFile.Id)) is not { } manifest)
+                throw new ArgumentNullException(nameof(manifest));
 
-                _manifest = manifest;
-            };
-            await downloader.Download(manifestFile);
-
-            while (_manifest is null)
-            {
-                await Task.Delay(10);
-            }
+            _manifest = manifest;
 
             await GetAccountsInGoogleDrive();
             return _manifest;
@@ -78,25 +68,11 @@ namespace SteamDesktopAuthenticatorCore.Services
             }
 
             _manifest.Accounts.Clear();
-            string downloadedData = string.Empty;
-            GoogleDriveFileDownloader downloader = new(Api);
-            downloader.OnDataDownloaded += (sender, args) =>
-            {
-                downloadedData = (string)args.UserState!;
-            };
-
             foreach (var file in files)
             {
                 if (!file.Name.Contains(".maFile")) continue;
-
-                await downloader.Download(file);
-
-                while (string.IsNullOrEmpty(downloadedData))
-                {
-                    await Task.Delay(10);
-                }
-
-                if (JsonConvert.DeserializeObject<SteamGuardAccount>(downloadedData) is not { } account)
+                
+                if (JsonConvert.DeserializeObject<SteamGuardAccount>(await Api.DownloadFileAsString(file.Id)) is not { } account)
                     throw new ArgumentNullException(nameof(account));
 
                 _manifest.Accounts.Add(account);
@@ -141,21 +117,8 @@ namespace SteamDesktopAuthenticatorCore.Services
             foreach (var file in files)
             {
                 if (!file.Name.Contains(".maFile")) continue;
-                string downloadedData = string.Empty;
 
-                GoogleDriveFileDownloader downloader = new(Api);
-                downloader.OnDataDownloaded += (sender, args) =>
-                {
-                    downloadedData = (string)args.UserState!;
-                };
-                await downloader.Download(file.Name);
-
-                while (string.IsNullOrEmpty(downloadedData))
-                {
-                    await Task.Delay(10);
-                }
-
-                if (JsonConvert.DeserializeObject<SteamGuardAccount>(downloadedData) is not { } account2)
+                if (JsonConvert.DeserializeObject<SteamGuardAccount>(await Api.DownloadFileAsString(file.Id)) is not { } account2)
                     throw new ArgumentNullException(nameof(account2));
 
                 if (account.Secret1 == account2.Secret1 && account.IdentitySecret == account2.IdentitySecret)

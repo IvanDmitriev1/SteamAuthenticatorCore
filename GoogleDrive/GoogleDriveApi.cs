@@ -53,7 +53,29 @@ namespace GoogleDrive
 
         #region Fields
         public bool IsAuthenticated { get; private set; }
-        public bool IsDownloading { get; private set; }
+        private DriveService GoogleDriveService
+        {
+            get
+            {
+                if (_googleDriveService is null)
+                    throw new ArgumentNullException(nameof(GoogleDriveService));
+
+                return _googleDriveService;
+            }
+            set => _googleDriveService = value;
+        }
+
+        private string FolderId
+        {
+            get
+            {
+                if (_folderId is null)
+                    throw new ArgumentNullException(nameof(FolderId));
+
+                return _folderId;
+            }
+            set => _folderId = value;
+        }
 
         #endregion
 
@@ -75,25 +97,23 @@ namespace GoogleDrive
                 CancellationToken.None,
                 new FileDataStore(_userCredentialPath, true));
 
-            _googleDriveService = new DriveService(new BaseClientService.Initializer
+            GoogleDriveService = new DriveService(new BaseClientService.Initializer
             {
                 HttpClientInitializer = _userCredential,
                 ApplicationName = _appName
             });
 
             if (await CheckForFile(_appName) is { } file)
-                _folderId = file.Id;
+                FolderId = file.Id;
             else
-                _folderId = await CreateAppFolder(_appName);
+                FolderId = await CreateAppFolder(_appName);
 
             IsAuthenticated = true;
             OnConnection();
         }
 
-        public async Task<string?> UploadFile(string fileName, MemoryStream stream)
+        public async Task<string> UploadFile(string fileName, MemoryStream stream)
         {
-            if (_googleDriveService is null || _folderId is null) return null;
-
             //updating previous data
             if (await CheckForFile(fileName) is { } file)
                 return await UploadFile(file, stream);
@@ -103,19 +123,17 @@ namespace GoogleDrive
             {
                 Name = fileName,
                 MimeType = "file",
-                Parents = new List<string> {_folderId}
+                Parents = new List<string> {FolderId}
             };
 
             //Creating new file
-            FilesResource.CreateMediaUpload createRequest = _googleDriveService.Files.Create(fileMetadata, stream, contentType);
+            FilesResource.CreateMediaUpload createRequest = GoogleDriveService.Files.Create(fileMetadata, stream, contentType);
             await createRequest.UploadAsync();
             return createRequest.ResponseBody.Id;
         }
 
-        public async Task<string?> UploadFile(GoogleFile file, MemoryStream stream)
+        public async Task<string> UploadFile(GoogleFile file, MemoryStream stream)
         {
-            if (_googleDriveService is null || _folderId is null) return null;
-
             string contentType = $"file/{Path.GetExtension(file.Name).Remove(0, 1)}";
             GoogleFile fileMetadata = new()
             {
@@ -123,20 +141,17 @@ namespace GoogleDrive
             };
 
             //updating previous data
-            FilesResource.UpdateMediaUpload updateRequest = _googleDriveService.Files.Update(fileMetadata, file.Id, stream, contentType);
+            FilesResource.UpdateMediaUpload updateRequest = GoogleDriveService.Files.Update(fileMetadata, file.Id, stream, contentType);
             await updateRequest.UploadAsync();
             return updateRequest.ResponseBody.Id;
         }
 
-        public async Task DownloadFile(string fileId, string fileName)
+        public async Task<MemoryStream> DownloadFileAsStream(string fileId)
         {
-            if (_googleDriveService is null || _folderId is null) return;
-            IsDownloading = true;
-
-            FilesResource.GetRequest? request = _googleDriveService.Files.Get(fileId);
+            FilesResource.GetRequest? request = GoogleDriveService.Files.Get(fileId);
             MemoryStream stream = new();
 
-            request.MediaDownloader.ProgressChanged += async progress =>
+            request.MediaDownloader.ProgressChanged += progress =>
             {
                 switch (progress.Status)
                 {
@@ -146,58 +161,55 @@ namespace GoogleDrive
                     }
                     case DownloadStatus.Completed:
                     {
-                        byte[] bytes = Encoding.Convert(Encoding.Default, Encoding.UTF8, stream.ToArray());
+                        byte[] bytes = Encoding.Convert(Encoding.UTF8, Encoding.UTF8, stream.ToArray());
+                        stream = new MemoryStream(bytes);
 
-                        OnDownloaded(fileName, new MemoryStream(bytes));
-
-                        await stream.DisposeAsync();
-                        IsDownloading = false;
                         break;
                     }
                     case DownloadStatus.Failed:
-                    {
-                        break;
-                    }
+                        throw new Exception("Failed to download");
                     case DownloadStatus.NotStarted:
-                        break;
+                        throw new Exception("Download not started");
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             };
 
             await request.DownloadAsync(stream);
+            return stream;
+        }
+
+        public async Task<string> DownloadFileAsString(string fileId)
+        {
+            await using MemoryStream stream = await DownloadFileAsStream(fileId);
+            using StreamReader reader = new(stream);
+
+            return await reader.ReadToEndAsync();
         }
 
         public async Task<GoogleFile[]?> GetFiles()
         {
-            if (_googleDriveService is null) return null;
-
             // Define parameters of request.
-            FilesResource.ListRequest listRequest = _googleDriveService.Files.List();
+            FilesResource.ListRequest listRequest = GoogleDriveService.Files.List();
             listRequest.Fields = "nextPageToken, files(id, name, parents)";
 
             // List files.
-            IList<GoogleFile> driveData = (await listRequest.ExecuteAsync()).Files;
-            return driveData.ToArray();
+            return (await listRequest.ExecuteAsync()).Files.ToArray();
         }
 
         public async Task<GoogleFile?> CheckForFile(string? fileName)
         {
-            if (_googleDriveService is null || fileName is null) return null;
-
             if (await GetFiles() is not { } files) return null;
             return files.FirstOrDefault(data => data.Name == Path.GetFileName(fileName));
         }
 
         public async Task DeleteFile(string fileId)
         {
-            await _googleDriveService?.Files.Delete(fileId).ExecuteAsync()!;
+            await GoogleDriveService.Files.Delete(fileId).ExecuteAsync();
         }
 
         public async Task RenameFile(string oldFileName, string newFileName)
         {
-            if (_googleDriveService is null) return;
-
             if (await CheckForFile($"{oldFileName}.pm") is { Id: { } id})
             {
                 GoogleFile fileMetadata = new()
@@ -205,22 +217,20 @@ namespace GoogleDrive
                     Name = $"{newFileName}.pm"
                 };
 
-                await _googleDriveService.Files.Update(fileMetadata, id).ExecuteAsync();
+                await GoogleDriveService.Files.Update(fileMetadata, id).ExecuteAsync();
             }
         }
 
         #region PrivateMethods
-        private async Task<string?> CreateAppFolder(string folderName)
+        private async Task<string> CreateAppFolder(string folderName)
         {
-            if (_googleDriveService is null) return null;
-
             GoogleFile fileMetadata = new()
             {
                 Name = folderName,
                 MimeType = "application/vnd.google-apps.folder"
             };
 
-            FilesResource.CreateRequest? request = _googleDriveService.Files.Create(fileMetadata);
+            FilesResource.CreateRequest? request = GoogleDriveService.Files.Create(fileMetadata);
             request!.Fields = "id";
 
             GoogleFile file = await request.ExecuteAsync();
@@ -231,7 +241,7 @@ namespace GoogleDrive
 
         public void Dispose()
         {
-            _googleDriveService?.Dispose();
+            GoogleDriveService.Dispose();
         }
     }
 }

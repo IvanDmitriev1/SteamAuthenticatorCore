@@ -42,7 +42,7 @@ namespace SteamDesktopAuthenticatorCore.Services
         {
             _settingsModel = new SettingsModel()
             {
-                ManifestLocation = ManifestLocation.Drive
+                ManifestLocation = SettingsModel.ManifestLocationModel.Drive
             };
 
             await SaveSettings();
