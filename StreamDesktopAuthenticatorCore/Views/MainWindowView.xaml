@@ -39,7 +39,7 @@
 
     <Border Background="{StaticResource BackgroundColour}"
             CornerRadius="10"
-            Padding="9"
+            Padding="10"
             BorderThickness="1"
             BorderBrush="{StaticResource WindowBorderColour}" >
 
@@ -166,7 +166,7 @@
 
             </tb:TaskbarIcon>
 
-            <StackPanel Margin="0,30,0,67">
+            <StackPanel Margin="0,30,0,65">
 
                 <Grid>
                     <Grid.ColumnDefinitions>
