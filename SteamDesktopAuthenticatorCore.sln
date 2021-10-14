@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31321.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamDesktopAuthenticatorCore", "StreamDesktopAuthenticatorCore\SteamDesktopAuthenticatorCore.csproj", "{D83EB8F1-7716-4261-93F3-6D539E029059}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamDesktopAuthenticatorCore", "SteamDesktopAuthenticatorCore\SteamDesktopAuthenticatorCore.csproj", "{D83EB8F1-7716-4261-93F3-6D539E029059}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthCore", "SteamAuthCore\SteamAuthCore.csproj", "{AE0FC458-6345-46DD-9971-C2E4181EC482}"
 EndProject
