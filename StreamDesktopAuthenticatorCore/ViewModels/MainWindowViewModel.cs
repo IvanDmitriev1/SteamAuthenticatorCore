@@ -30,9 +30,9 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             {
                 Manifest = ManifestModelService.GetManifest().Result;
                 
-                Task.Run(async () =>
+                Task.Run(() =>
                 {
-                    SettingsModel settings = (await SettingsModelService.GetSettingsModel())!;
+                    SettingsModel settings = (SettingsModelService.GetSettingsModel())!;
 
                     SwitchText = settings.ManifestLocation switch
                     {
@@ -184,9 +184,9 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             args.Handled = true;
         });
 
-        public ICommand SwitchCommand => new AsyncRelayCommand(async o =>
+        public ICommand SwitchCommand => new RelayCommand(o =>
         {
-            SettingsModel settings = (await SettingsModelService.GetSettingsModel())!;
+            SettingsModel settings = (SettingsModelService.GetSettingsModel())!;
             settings.ManifestLocation = settings.ManifestLocation switch
             {
                 SettingsModel.ManifestLocationModel.Drive => SettingsModel.ManifestLocationModel.GoogleDrive,
@@ -198,7 +198,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 if (CustomMessageBox.Show("Import your current files to google drive?", "Import service", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                     settings.ImportFiles = true;
 
-            await SettingsModelService.SaveSettings();
+            SettingsModelService.SaveSettings();
 
             CustomMessageBox.Show("Restart application");
 

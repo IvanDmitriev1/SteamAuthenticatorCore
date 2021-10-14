@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using SteamAuthCore.Models;
 using SteamDesktopAuthenticatorCore.Models;
@@ -19,7 +18,7 @@ namespace SteamDesktopAuthenticatorCore.Services
 
         public static async Task<ManifestModel> GetManifest()
         {
-            await CheckSettings();
+            CheckSettings();
 
             return _settings!.ManifestLocation switch
             {
@@ -56,11 +55,11 @@ namespace SteamDesktopAuthenticatorCore.Services
 
         #region PrivateMethods
 
-        private static async Task CheckSettings()
+        private static void CheckSettings()
         {
             if (_settings is null)
             {
-                if (await SettingsModelService.GetSettingsModel() is not { } settings)
+                if (SettingsModelService.GetSettingsModel() is not { } settings)
                     throw new ArgumentNullException(nameof(settings));
 
                 _settings = settings;
@@ -69,7 +68,7 @@ namespace SteamDesktopAuthenticatorCore.Services
 
         private static async Task CheckSettings(Func<Task> onDriveMethod, Func<Task> onGoogleDriveAction)
         {
-            await CheckSettings();
+            CheckSettings();
 
             switch (_settings!.ManifestLocation)
             {
@@ -86,7 +85,7 @@ namespace SteamDesktopAuthenticatorCore.Services
 
         private static async Task CheckSettings(Task onDriveMethod, Task onGoogleDriveAction)
         {
-            await CheckSettings();
+            CheckSettings();
 
             switch (_settings!.ManifestLocation)
             {

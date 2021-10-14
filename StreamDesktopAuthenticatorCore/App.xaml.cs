@@ -12,11 +12,12 @@ namespace SteamDesktopAuthenticatorCore
     {
         public App()
         {
-            UserCredentialPath = $"{Path.GetTempPath()}\\SteamDesktopAuthenticatorCoreToken.json";
+            string appdata = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string appFolder = Path.Combine(appdata, $"{Name}");
+            string userCredentialPath = Path.Combine(appFolder, "Token.json");
 
-            GoogleDriveApi = new GoogleDriveApi(UserCredentialPath,
-                new []{ Google.Apis.Drive.v3.DriveService.Scope.DriveFile },
-                "SteamDesktopAuthenticatorCore");
+            GoogleDriveApi = new GoogleDriveApi(userCredentialPath,
+                new []{ Google.Apis.Drive.v3.DriveService.Scope.DriveFile },$"{Name}");
 
             ManifestModelService.Api = GoogleDriveApi;
 
@@ -26,7 +27,8 @@ namespace SteamDesktopAuthenticatorCore
         #region Fields
         public static bool InDesignMode { get; private set; } = true;
         public static GoogleDriveApi GoogleDriveApi { get; private set; } = null!;
-        private static string UserCredentialPath { get; set; } = null!;
+
+        public const string Name = "SteamDesktopAuthenticatorCore";
 
         #endregion
 
@@ -41,7 +43,7 @@ namespace SteamDesktopAuthenticatorCore
             base.OnStartup(e);
         }
 
-        #region ProvateMethods
+        #region PrivateMethods
 
         private static void CheckProcess()
         {
