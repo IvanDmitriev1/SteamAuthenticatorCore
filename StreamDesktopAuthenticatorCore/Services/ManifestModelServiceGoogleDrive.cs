@@ -64,7 +64,7 @@ namespace SteamDesktopAuthenticatorCore.Services
 
             if (await Api.GetFiles() is not { } files)
             {
-                files = new GoogleFile[0];
+                files = Array.Empty<GoogleFile>();
             }
 
             _manifest.Accounts.Clear();

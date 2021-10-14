@@ -103,7 +103,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         #region PrivateMethods
         private async Task Init()
         {
-            if (await SettingsModelService.GetSettingsModel() is not { } settings)
+            if (SettingsModelService.GetSettingsModel() is not { } settings)
             {
                 ManifestModel manifest = await ManifestModelService.GetManifestFromDrive();
                 StartWindows(ref manifest);
@@ -145,7 +145,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                         await ImportFilesToGoogleDrive();
                         settings.ImportFiles = false;
 
-                        await SettingsModelService.SaveSettings();
+                        SettingsModelService.SaveSettings();
                     }
 
                     StartWindows(ref manifest);

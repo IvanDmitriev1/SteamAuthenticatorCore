@@ -1,51 +1,64 @@
 ﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+using System.Security.AccessControl;
 using SteamDesktopAuthenticatorCore.Models;
+using Microsoft.Win32;
 
 namespace SteamDesktopAuthenticatorCore.Services
 {
     static class SettingsModelService
     {
         private static SettingsModel? _settingsModel;
-        private static readonly string SettingsPath = Path.Combine(Path.GetTempPath(), "SDA_settings.json");
 
-        public static async Task<SettingsModel?> GetSettingsModel()
+        public static SettingsModel? GetSettingsModel()
         {
             if (_settingsModel is not null)
                 return _settingsModel;
 
-            if (!File.Exists(SettingsPath))
+            using RegistryKey softwareKey = Registry.CurrentUser.OpenSubKey("Software")!;
+            using RegistryKey? key = softwareKey.OpenSubKey($"{App.Name}");
+
+            if (key is null)
             {
-                await CreateSettings();
+                CreateSettings();
                 return null;
             }
 
-            if (JsonConvert.DeserializeObject<SettingsModel>(await File.ReadAllTextAsync(SettingsPath)) is not { } settings)
-                throw new ArgumentNullException(nameof(settings));
+            if (key.GetValue("File location") is not string value)
+                throw new ArgumentException();
 
-            _settingsModel = settings;
+            _settingsModel = new SettingsModel()
+            {
+                ManifestLocation = value switch
+                {
+                    nameof(SettingsModel.ManifestLocationModel.Drive) => SettingsModel.ManifestLocationModel.Drive,
+                    nameof(SettingsModel.ManifestLocationModel.GoogleDrive) => SettingsModel.ManifestLocationModel.GoogleDrive,
+                    _ => throw new ArgumentOutOfRangeException()
+                }
+            };
+
+            key.Close();
             return _settingsModel;
         }
 
-        public static async Task SaveSettings()
+        public static void SaveSettings()
         {
             if (_settingsModel is null)
                 throw new ArgumentNullException();
 
-            string serialized = JsonConvert.SerializeObject(_settingsModel);
-            await File.WriteAllTextAsync(SettingsPath, serialized);
+            using RegistryKey softwareKey = Registry.CurrentUser.OpenSubKey("Software", true)!;
+            using RegistryKey key = softwareKey.OpenSubKey($"{App.Name}", true) ?? softwareKey.CreateSubKey($"{App.Name}");
+
+            key.SetValue("File location", $"{_settingsModel.ManifestLocation}");
         }
 
-        private static async Task CreateSettings()
+        private static void CreateSettings()
         {
             _settingsModel = new SettingsModel()
             {
                 ManifestLocation = SettingsModel.ManifestLocationModel.Drive
             };
 
-            await SaveSettings();
+            SaveSettings();
         }
     }
 }
