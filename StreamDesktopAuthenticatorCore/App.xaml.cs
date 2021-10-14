@@ -12,7 +12,9 @@ namespace SteamDesktopAuthenticatorCore
     {
         public App()
         {
-            string userCredentialPath = $"{Path.GetTempPath()}\\{Name}Token.json";
+            string appdata = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string appFolder = Path.Combine(appdata, $"{Name}");
+            string userCredentialPath = Path.Combine(appFolder, "Token.json");
 
             GoogleDriveApi = new GoogleDriveApi(userCredentialPath,
                 new []{ Google.Apis.Drive.v3.DriveService.Scope.DriveFile },$"{Name}");
