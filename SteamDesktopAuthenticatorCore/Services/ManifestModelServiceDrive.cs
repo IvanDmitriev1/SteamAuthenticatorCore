@@ -8,6 +8,8 @@ namespace SteamDesktopAuthenticatorCore.Services
 {
     public static partial class ManifestModelService
     {
+        private const string ManifestFileName = "manifest.json";
+
         static ManifestModelService()
         {
             MaFilesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "maFiles");
@@ -51,6 +53,7 @@ namespace SteamDesktopAuthenticatorCore.Services
 
             await File.WriteAllTextAsync(file, serialized);
         }
+
         public static async Task SaveManifestInDrive()
         {
             if (_manifest is null)
@@ -102,6 +105,17 @@ namespace SteamDesktopAuthenticatorCore.Services
 
             if (await FindFileInDrive(account) is { } file)
                 File.Delete(file);
+        }
+
+        public static async Task CopyManifest(string file)
+        {
+            if (!file.Contains(ManifestFileName))
+                return;
+
+            if (JsonConvert.DeserializeObject<ManifestModel>(await File.ReadAllTextAsync(file)) is not { } manifest)
+                throw new ArgumentNullException(nameof(manifest));
+
+            ManifestModelService.SetManifest(ref manifest);
         }
 
         #region PrivateMethods

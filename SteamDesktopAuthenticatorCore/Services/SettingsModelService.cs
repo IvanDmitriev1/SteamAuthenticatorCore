@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Security.AccessControl;
 using SteamDesktopAuthenticatorCore.Models;
 using Microsoft.Win32;
 
