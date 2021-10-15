@@ -7,7 +7,6 @@ namespace SteamDesktopAuthenticatorCore.Services
 {
     static partial class ManifestModelService
     {
-        public const string ManifestFileName = "manifest.json";
         private static ManifestModel? _manifest;
         private static SettingsModel? _settings;
 

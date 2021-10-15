@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.Win32;
-using Newtonsoft.Json;
 using SteamAuthCore.Models;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
@@ -85,20 +84,14 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         private static async Task CopyManifest(string file)
         {
-            if (!file.Contains(ManifestModelService.ManifestFileName))
-                return;
-
             try
             {
-                if (JsonConvert.DeserializeObject<ManifestModel>(await File.ReadAllTextAsync(file)) is not { } manifest)
-                    throw new ArgumentNullException(nameof(manifest));
-
-                ManifestModelService.SetManifest(ref manifest);
+                await ManifestModelService.CopyManifest(file);
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
-                CustomMessageBox.Show($"Your {ManifestModelService.ManifestFileName} is corrupted");
+                CustomMessageBox.Show($"Your manifest file is corrupted");
             }
         }
 
