@@ -242,16 +242,17 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             Stream[] streams = fileDialog.OpenFiles();
             for (var i = 0; i < fileDialog.FileNames.Length; i++)
             {
-                string fileNam = fileDialog.SafeFileNames[i];
-
-                if (!fileNam.Contains(".maFile"))
-                {
-                    CustomMessageBox.Show("This is not .maFile");
-                    continue;
-                }
-
+                string fileName = fileDialog.SafeFileNames[i];
                 using StreamReader streamReader = new(streams[i]);
-                await ManifestModelService.AddSteamGuardAccount(fileNam, await streamReader.ReadToEndAsync());
+
+                try
+                {
+                    await ManifestModelService.AddSteamGuardAccount(fileName, await streamReader.ReadToEndAsync());
+                }
+                catch
+                {
+                    CustomMessageBox.Show("Your file is corrupted!");
+                }
             }
 
             await ManifestModelService.GetAccounts();
