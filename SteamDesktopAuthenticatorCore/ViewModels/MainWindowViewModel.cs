@@ -93,7 +93,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         #region Fields
 
-        public ManifestModel Manifest { get; set; } = null!;
+        public ManifestModel Manifest { get; set; }
 
         public SteamGuardAccount? SelectedAccount
         {
@@ -403,6 +403,11 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             }
 
             _confirmationsWindow.Show();
+        });
+
+        public ICommand OnFilterTextChangedCommand => new RelayCommand(o =>
+        {
+            
         });
 
         #endregion
