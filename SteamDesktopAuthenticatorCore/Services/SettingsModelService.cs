@@ -8,34 +8,44 @@ namespace SteamDesktopAuthenticatorCore.Services
     {
         private static SettingsModel? _settingsModel;
 
-        public static SettingsModel? GetSettingsModel()
+        public static SettingsModel GetSettingsModel()
         {
             if (_settingsModel is not null)
                 return _settingsModel;
 
             using RegistryKey softwareKey = Registry.CurrentUser.OpenSubKey("Software")!;
-            using RegistryKey? key = softwareKey.OpenSubKey($"{App.Name}");
+            using RegistryKey? key = softwareKey.OpenSubKey($"{App.Name}", true);
 
             if (key is null)
             {
-                CreateSettings();
-                return null;
+                _settingsModel = CreateSettings();
+                SaveSettings();
+                return _settingsModel;
             }
 
-            if (key.GetValue("File location") is not string value)
-                throw new ArgumentException();
+            if (key.GetValue("File location") is not string filesLocation)
+            {
+                key.SetValue("File location", $"{SettingsModel.ManifestLocationModel.Drive}");
+                filesLocation = $"{SettingsModel.ManifestLocationModel.Drive}";
+            }
+
+            if (!bool.TryParse((string?)key.GetValue("FirstRun"), out var firstRun))
+            {
+                key.SetValue("FirstRun", true);
+                firstRun = true;
+            }
 
             _settingsModel = new SettingsModel()
             {
-                ManifestLocation = value switch
+                ManifestLocation = filesLocation switch
                 {
                     nameof(SettingsModel.ManifestLocationModel.Drive) => SettingsModel.ManifestLocationModel.Drive,
                     nameof(SettingsModel.ManifestLocationModel.GoogleDrive) => SettingsModel.ManifestLocationModel.GoogleDrive,
                     _ => throw new ArgumentOutOfRangeException()
-                }
+                },
+                FirstRun = firstRun
             };
 
-            key.Close();
             return _settingsModel;
         }
 
@@ -48,16 +58,18 @@ namespace SteamDesktopAuthenticatorCore.Services
             using RegistryKey key = softwareKey.OpenSubKey($"{App.Name}", true) ?? softwareKey.CreateSubKey($"{App.Name}");
 
             key.SetValue("File location", $"{_settingsModel.ManifestLocation}");
+            key.SetValue("FirstRun", $"{_settingsModel.FirstRun}");
         }
 
-        private static void CreateSettings()
+        private static SettingsModel CreateSettings()
         {
-            _settingsModel = new SettingsModel()
+            SettingsModel settings = new SettingsModel()
             {
-                ManifestLocation = SettingsModel.ManifestLocationModel.Drive
+                ManifestLocation = SettingsModel.ManifestLocationModel.Drive,
+                FirstRun = true
             };
 
-            SaveSettings();
+            return settings;
         }
     }
 }

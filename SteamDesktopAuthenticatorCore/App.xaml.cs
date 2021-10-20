@@ -2,8 +2,10 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using System.Windows.Threading;
 using GoogleDrive;
 using SteamDesktopAuthenticatorCore.Services;
+using WpfHelper.Custom;
 using WpfHelper.Services;
 
 namespace SteamDesktopAuthenticatorCore
@@ -15,6 +17,8 @@ namespace SteamDesktopAuthenticatorCore
             string appdata = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             string appFolder = Path.Combine(appdata, $"{Name}");
             string userCredentialPath = Path.Combine(appFolder, "Token.json");
+
+            this.Dispatcher.UnhandledException += DispatcherOnUnhandledException;
 
             GoogleDriveApi = new GoogleDriveApi(userCredentialPath,
                 new []{ Google.Apis.Drive.v3.DriveService.Scope.DriveFile },$"{Name}");
@@ -44,6 +48,16 @@ namespace SteamDesktopAuthenticatorCore
         }
 
         #region PrivateMethods
+
+        private void DispatcherOnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            // Process unhandled exception
+
+            MessageBox.Show( $"{e.Exception.Message}\n\n{e.Exception.StackTrace}", "Exception occurred", MessageBoxButton.OK, MessageBoxImage.Error);
+
+            // Prevent default unhandled exception processing
+            e.Handled = true;
+        }
 
         private static void CheckProcess()
         {
