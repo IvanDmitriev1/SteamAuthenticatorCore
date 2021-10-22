@@ -242,7 +242,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             Stream[] streams = fileDialog.OpenFiles();
             for (var i = 0; i < fileDialog.FileNames.Length; i++)
             {
-                string fileName = fileDialog.SafeFileNames[i];
+                string fileName = Path.ChangeExtension(Path.GetFileNameWithoutExtension(fileDialog.SafeFileNames[i]), ".maFile");
                 using StreamReader streamReader = new(streams[i]);
 
                 try
