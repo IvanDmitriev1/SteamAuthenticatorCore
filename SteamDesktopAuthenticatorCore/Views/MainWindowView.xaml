@@ -245,6 +245,9 @@
                          VirtualizingPanel.VirtualizationMode="Recycling" >
 
                     <b:Interaction.Triggers>
+                        <b:EventTrigger EventName="DragOver">
+                            <b:InvokeCommandAction Command="{Binding Path=DragOverCommand}" PassEventArgsToCommand="True" />
+                        </b:EventTrigger>
                         <b:EventTrigger EventName="Drop">
                             <b:InvokeCommandAction Command="{Binding Path=DragAndDropCommand}" PassEventArgsToCommand="True" />
                         </b:EventTrigger>

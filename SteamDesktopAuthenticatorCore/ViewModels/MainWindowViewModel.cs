@@ -397,15 +397,62 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             _confirmationsWindow.Show();
         });
 
-        public ICommand DragAndDropCommand => new AsyncRelayCommand(async o =>
+        public ICommand DragOverCommand => new RelayCommand(o =>
         {
             if (o is not DragEventArgs eventArgs)
+                return;
+
+            if (!eventArgs.Data.GetDataPresent(DataFormats.FileDrop))
                 return;
 
             if (eventArgs.Data.GetData(DataFormats.FileDrop) is not string[] files)
                 return;
 
-            await ImportFiles(files);
+            foreach (var file in files)
+            {
+                string extention = Path.GetExtension(file);
+
+                if (Directory.Exists(file))
+                {
+                    eventArgs.Effects = DragDropEffects.None;
+                    eventArgs.Handled = true;
+                    return;
+                }
+
+                if (!extention.Contains(".exe")) continue;
+
+                eventArgs.Effects = DragDropEffects.None;
+                eventArgs.Handled = true;
+                return;
+            }
+
+            eventArgs.Effects = DragDropEffects.Copy;
+            eventArgs.Handled = true;
+        });
+
+        public ICommand DragAndDropCommand => new AsyncRelayCommand(async o =>
+        {
+            if (o is not DragEventArgs eventArgs)
+                return;
+
+            if (!eventArgs.Data.GetDataPresent(DataFormats.FileDrop))
+                return;
+
+            if (eventArgs.Data.GetData(DataFormats.FileDrop) is not string[] files)
+                return;
+
+            try
+            {
+                await ImportFiles(files);
+            }
+            catch
+            {
+                CustomMessageBox.Show("Something went wrong.\nMaybe you're not dragging a .maFile?");
+            }
+            finally
+            {
+                eventArgs.Handled = true;
+            }
         });
 
         public ICommand OnFilterTextChangedCommand => new RelayCommand(o =>
@@ -432,7 +479,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 }
                 catch
                 {
-                    CustomMessageBox.Show("Your file is corrupted!");
+                    CustomMessageBox.Show("Your file is corrupted!\nOr you didn't drag .maFile");
                 }
             }
 
