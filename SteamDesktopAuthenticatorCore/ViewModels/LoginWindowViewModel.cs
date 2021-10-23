@@ -223,6 +223,10 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                         CustomMessageBox.Show("Error logging in: Steam returned \"GeneralFailure\".", "Login Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         _thisWindow?.Close();
                         return;
+                    case LoginResult.LoginOkay:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 
@@ -321,6 +325,10 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                         await ManifestModelService.DeleteSteamGuardAccount(linker.LinkedAccount);
                         _thisWindow?.Close();
                         return;
+                    case AuthenticatorLinker.FinalizeResult.Success:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
 
                 //Linked, finally. Re-save with FullyEnrolled property.

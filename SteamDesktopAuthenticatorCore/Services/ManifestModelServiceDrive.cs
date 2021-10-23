@@ -115,7 +115,7 @@ namespace SteamDesktopAuthenticatorCore.Services
             if (JsonConvert.DeserializeObject<ManifestModel>(await File.ReadAllTextAsync(file)) is not { } manifest)
                 throw new ArgumentNullException(nameof(manifest));
 
-            ManifestModelService.SetManifest(ref manifest);
+            SetManifest(manifest);
         }
 
         #region PrivateMethods

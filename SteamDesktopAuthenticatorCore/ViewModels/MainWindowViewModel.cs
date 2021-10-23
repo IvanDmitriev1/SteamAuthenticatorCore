@@ -12,7 +12,7 @@ using System.Windows.Threading;
 using Microsoft.Win32;
 using SteamAuthCore;
 using SteamAuthCore.Models;
-using SteamDesktopAuthenticatorCore.Models;
+using SteamDesktopAuthenticatorCore.classes;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
@@ -32,12 +32,12 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 
                 Task.Run(() =>
                 {
-                    SettingsModel settings = (SettingsModelService.GetSettingsModel())!;
+                    var settings = Settings.GetSettings();
 
                     SwitchText = settings.ManifestLocation switch
                     {
-                        SettingsModel.ManifestLocationModel.Drive => "Switch to using the files on your Google Drive",
-                        SettingsModel.ManifestLocationModel.GoogleDrive => "Switch to using the files on your disk",
+                        Settings.ManifestLocationModel.Drive => "Switch to using the files on your Google Drive",
+                        Settings.ManifestLocationModel.GoogleDrive => "Switch to using the files on your disk",
                         _ => throw new ArgumentOutOfRangeException()
                     };
                 }); 
@@ -186,23 +186,26 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         public ICommand SwitchCommand => new RelayCommand(o =>
         {
-            SettingsModel settings = (SettingsModelService.GetSettingsModel())!;
+            var settings = Settings.GetSettings();
+
             settings.ManifestLocation = settings.ManifestLocation switch
             {
-                SettingsModel.ManifestLocationModel.Drive => SettingsModel.ManifestLocationModel.GoogleDrive,
-                SettingsModel.ManifestLocationModel.GoogleDrive => SettingsModel.ManifestLocationModel.Drive,
+                Settings.ManifestLocationModel.Drive => Settings.ManifestLocationModel.GoogleDrive,
+                Settings.ManifestLocationModel.GoogleDrive => Settings.ManifestLocationModel.Drive,
                 _ => throw new ArgumentOutOfRangeException()
             };
 
-            if (settings.ManifestLocation == SettingsModel.ManifestLocationModel.GoogleDrive)
+            if (settings.ManifestLocation == Settings.ManifestLocationModel.GoogleDrive)
                 if (CustomMessageBox.Show("Import your current files to google drive?", "Import service", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                     settings.ImportFiles = true;
 
-            SettingsModelService.SaveSettings();
+            settings.SaveSettings();
 
             CustomMessageBox.Show("Restart application");
 
+            //Process.Start();
             Application.Current.Shutdown(0);
+            
         });
 
         public ICommand ShowWindowCommand => new RelayCommand(o =>
@@ -239,23 +242,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
             if (fileDialog.ShowDialog() == false) return;
 
-            Stream[] streams = fileDialog.OpenFiles();
-            for (var i = 0; i < fileDialog.FileNames.Length; i++)
-            {
-                string fileName = Path.ChangeExtension(Path.GetFileNameWithoutExtension(fileDialog.SafeFileNames[i]), ".maFile");
-                using StreamReader streamReader = new(streams[i]);
-
-                try
-                {
-                    await ManifestModelService.AddSteamGuardAccount(fileName, await streamReader.ReadToEndAsync());
-                }
-                catch
-                {
-                    CustomMessageBox.Show("Your file is corrupted!");
-                }
-            }
-
-            await ManifestModelService.GetAccounts();
+            await ImportFiles(fileDialog.FileNames);
         });
 
         public ICommand RefreshAccountCommand => new AsyncRelayCommand(async o =>
@@ -375,6 +362,10 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 if (await UpdateService.DownloadAndInstall(model) is not { } newFile)
                     throw new ArgumentNullException();
 
+                var settings = Settings.GetSettings();
+                settings.Updated = true;
+                settings.SaveSettings();
+
                 Application.Current.Shutdown(0);
                 Process.Start(newFile);
             }
@@ -406,6 +397,64 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             _confirmationsWindow.Show();
         });
 
+        public ICommand DragOverCommand => new RelayCommand(o =>
+        {
+            if (o is not DragEventArgs eventArgs)
+                return;
+
+            if (!eventArgs.Data.GetDataPresent(DataFormats.FileDrop))
+                return;
+
+            if (eventArgs.Data.GetData(DataFormats.FileDrop) is not string[] files)
+                return;
+
+            foreach (var file in files)
+            {
+                string extention = Path.GetExtension(file);
+
+                if (Directory.Exists(file))
+                {
+                    eventArgs.Effects = DragDropEffects.None;
+                    eventArgs.Handled = true;
+                    return;
+                }
+
+                if (!extention.Contains(".exe")) continue;
+
+                eventArgs.Effects = DragDropEffects.None;
+                eventArgs.Handled = true;
+                return;
+            }
+
+            eventArgs.Effects = DragDropEffects.Copy;
+            eventArgs.Handled = true;
+        });
+
+        public ICommand DragAndDropCommand => new AsyncRelayCommand(async o =>
+        {
+            if (o is not DragEventArgs eventArgs)
+                return;
+
+            if (!eventArgs.Data.GetDataPresent(DataFormats.FileDrop))
+                return;
+
+            if (eventArgs.Data.GetData(DataFormats.FileDrop) is not string[] files)
+                return;
+
+            try
+            {
+                await ImportFiles(files);
+            }
+            catch
+            {
+                CustomMessageBox.Show("Something went wrong.\nMaybe you're not dragging a .maFile?");
+            }
+            finally
+            {
+                eventArgs.Handled = true;
+            }
+        });
+
         public ICommand OnFilterTextChangedCommand => new RelayCommand(o =>
         {
             
@@ -414,6 +463,28 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         #endregion
 
         #region PrivateMethods
+
+        private static async Task ImportFiles(IEnumerable<string> files)
+        {
+            foreach (var file in files)
+            {
+                string fileName = Path.ChangeExtension(Path.GetFileNameWithoutExtension(file), ".maFile");
+
+                await using FileStream stream = File.OpenRead(file);
+                using StreamReader streamReader = new(stream);
+
+                try
+                {
+                    await ManifestModelService.AddSteamGuardAccount(fileName, await streamReader.ReadToEndAsync());
+                }
+                catch
+                {
+                    CustomMessageBox.Show("Your file is corrupted!\nOr you didn't drag .maFile");
+                }
+            }
+
+            await ManifestModelService.GetAccounts();
+        }
 
         private void LoadAccountInfo()
         {

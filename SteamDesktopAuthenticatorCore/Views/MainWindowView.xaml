@@ -238,10 +238,20 @@
                          Margin="0 10 0 0"
                          Height="193"
                          HorizontalContentAlignment="Stretch"
-                             
+                         AllowDrop="True"
+
                          VirtualizingPanel.IsVirtualizing="True"
                          VirtualizingPanel.IsContainerVirtualizable="True"
                          VirtualizingPanel.VirtualizationMode="Recycling" >
+
+                    <b:Interaction.Triggers>
+                        <b:EventTrigger EventName="DragOver">
+                            <b:InvokeCommandAction Command="{Binding Path=DragOverCommand}" PassEventArgsToCommand="True" />
+                        </b:EventTrigger>
+                        <b:EventTrigger EventName="Drop">
+                            <b:InvokeCommandAction Command="{Binding Path=DragAndDropCommand}" PassEventArgsToCommand="True" />
+                        </b:EventTrigger>
+                    </b:Interaction.Triggers>
 
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
