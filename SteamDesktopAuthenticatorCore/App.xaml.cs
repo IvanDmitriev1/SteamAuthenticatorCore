@@ -41,11 +41,17 @@ namespace SteamDesktopAuthenticatorCore
         protected override async void OnStartup(StartupEventArgs e)
         {
             InDesignMode = false;
+            var settings = Settings.GetSettings();
 
             await Task.Run(CheckProcess);
 
-            if (Settings.GetSettings().Updated)
+            if (settings.Updated)
+            {
                 await UpdateService.DeletePreviousFile($"{Name}");
+
+                settings.Updated = false;
+                settings.SaveSettings();
+            }
 
             base.OnStartup(e);
         }
