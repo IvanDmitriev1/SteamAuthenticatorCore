@@ -242,23 +242,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
             if (fileDialog.ShowDialog() == false) return;
 
-            Stream[] streams = fileDialog.OpenFiles();
-            for (var i = 0; i < fileDialog.FileNames.Length; i++)
-            {
-                string fileName = Path.ChangeExtension(Path.GetFileNameWithoutExtension(fileDialog.SafeFileNames[i]), ".maFile");
-                using StreamReader streamReader = new(streams[i]);
-
-                try
-                {
-                    await ManifestModelService.AddSteamGuardAccount(fileName, await streamReader.ReadToEndAsync());
-                }
-                catch
-                {
-                    CustomMessageBox.Show("Your file is corrupted!");
-                }
-            }
-
-            await ManifestModelService.GetAccounts();
+            await ImportFiles(fileDialog.FileNames);
         });
 
         public ICommand RefreshAccountCommand => new AsyncRelayCommand(async o =>
@@ -413,6 +397,17 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             _confirmationsWindow.Show();
         });
 
+        public ICommand DragAndDropCommand => new AsyncRelayCommand(async o =>
+        {
+            if (o is not DragEventArgs eventArgs)
+                return;
+
+            if (eventArgs.Data.GetData(DataFormats.FileDrop) is not string[] files)
+                return;
+
+            await ImportFiles(files);
+        });
+
         public ICommand OnFilterTextChangedCommand => new RelayCommand(o =>
         {
             
@@ -421,6 +416,28 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         #endregion
 
         #region PrivateMethods
+
+        private static async Task ImportFiles(IEnumerable<string> files)
+        {
+            foreach (var file in files)
+            {
+                string fileName = Path.ChangeExtension(Path.GetFileNameWithoutExtension(file), ".maFile");
+
+                await using FileStream stream = File.OpenRead(file);
+                using StreamReader streamReader = new(stream);
+
+                try
+                {
+                    await ManifestModelService.AddSteamGuardAccount(fileName, await streamReader.ReadToEndAsync());
+                }
+                catch
+                {
+                    CustomMessageBox.Show("Your file is corrupted!");
+                }
+            }
+
+            await ManifestModelService.GetAccounts();
+        }
 
         private void LoadAccountInfo()
         {
