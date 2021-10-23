@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Threading;
 using GoogleDrive;
 using SteamDesktopAuthenticatorCore.Services;
-using WpfHelper.Custom;
 using WpfHelper.Services;
 
 namespace SteamDesktopAuthenticatorCore

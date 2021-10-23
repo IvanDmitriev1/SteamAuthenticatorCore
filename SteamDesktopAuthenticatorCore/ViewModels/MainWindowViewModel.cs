@@ -12,7 +12,7 @@ using System.Windows.Threading;
 using Microsoft.Win32;
 using SteamAuthCore;
 using SteamAuthCore.Models;
-using SteamDesktopAuthenticatorCore.Models;
+using SteamDesktopAuthenticatorCore.classes;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
@@ -32,12 +32,12 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 
                 Task.Run(() =>
                 {
-                    SettingsModel settings = (SettingsModelService.GetSettingsModel())!;
+                    var settings = Settings.GetSettings();
 
                     SwitchText = settings.ManifestLocation switch
                     {
-                        SettingsModel.ManifestLocationModel.Drive => "Switch to using the files on your Google Drive",
-                        SettingsModel.ManifestLocationModel.GoogleDrive => "Switch to using the files on your disk",
+                        Settings.ManifestLocationModel.Drive => "Switch to using the files on your Google Drive",
+                        Settings.ManifestLocationModel.GoogleDrive => "Switch to using the files on your disk",
                         _ => throw new ArgumentOutOfRangeException()
                     };
                 }); 
@@ -186,19 +186,20 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         public ICommand SwitchCommand => new RelayCommand(o =>
         {
-            SettingsModel settings = (SettingsModelService.GetSettingsModel())!;
+            var settings = Settings.GetSettings();
+
             settings.ManifestLocation = settings.ManifestLocation switch
             {
-                SettingsModel.ManifestLocationModel.Drive => SettingsModel.ManifestLocationModel.GoogleDrive,
-                SettingsModel.ManifestLocationModel.GoogleDrive => SettingsModel.ManifestLocationModel.Drive,
+                Settings.ManifestLocationModel.Drive => Settings.ManifestLocationModel.GoogleDrive,
+                Settings.ManifestLocationModel.GoogleDrive => Settings.ManifestLocationModel.Drive,
                 _ => throw new ArgumentOutOfRangeException()
             };
 
-            if (settings.ManifestLocation == SettingsModel.ManifestLocationModel.GoogleDrive)
+            if (settings.ManifestLocation == Settings.ManifestLocationModel.GoogleDrive)
                 if (CustomMessageBox.Show("Import your current files to google drive?", "Import service", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                     settings.ImportFiles = true;
 
-            SettingsModelService.SaveSettings();
+            settings.SaveSettings();
 
             CustomMessageBox.Show("Restart application");
 

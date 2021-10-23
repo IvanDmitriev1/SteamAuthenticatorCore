@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using SteamAuthCore.Models;
-using SteamDesktopAuthenticatorCore.Models;
+using SteamDesktopAuthenticatorCore.classes;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
@@ -103,17 +103,17 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         #region PrivateMethods
         private async Task Init()
         {
-            var settings = SettingsModelService.GetSettingsModel();
+            var settings = Settings.GetSettings();
 
             switch (settings.ManifestLocation)
             {
-                case SettingsModel.ManifestLocationModel.Drive:
+                case Settings.ManifestLocationModel.Drive:
                 {
                     ManifestModel manifest = await ManifestModelService.GetManifestFromDrive();
                     StartWindows(manifest, settings);
                     return;
                 }
-                case SettingsModel.ManifestLocationModel.GoogleDrive:
+                case Settings.ManifestLocationModel.GoogleDrive:
                 {
                     ManifestModel manifest = new();
 
@@ -140,7 +140,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                         await ImportFilesToGoogleDrive();
                         settings.ImportFiles = false;
 
-                        SettingsModelService.SaveSettings();
+                        settings.SaveSettings();
                     }
 
                     StartWindows(manifest, settings);
@@ -183,7 +183,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             await ManifestModelService.GetAccountsInGoogleDrive();
         }
 
-        private void StartWindows(ManifestModel manifest, SettingsModel settings)
+        private void StartWindows(ManifestModel manifest, Settings settings)
         {
             _refreshButtonClick = false;
             _windowOpened = true;
@@ -193,7 +193,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 if (manifest.Accounts.Count == 0)
                 {
                     settings.FirstRun = false;
-                    SettingsModelService.SaveSettings();
+                    settings.SaveSettings();
 
                     WelcomeWindowView welcomeWindow = new();
                     welcomeWindow.Show();
@@ -204,7 +204,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 }
 
                 settings.FirstRun = false;
-                SettingsModelService.SaveSettings();
+                settings.SaveSettings();
 
                 MainWindowView mainWindow = new();
                 mainWindow.Show();
