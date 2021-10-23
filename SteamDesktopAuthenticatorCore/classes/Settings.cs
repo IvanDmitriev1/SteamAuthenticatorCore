@@ -13,6 +13,7 @@ namespace SteamDesktopAuthenticatorCore.classes
         }
         public ManifestLocationModel ManifestLocation { get; set; }
         public bool FirstRun { get; set; }
+        public bool Updated { get; set; }
 
         public bool ImportFiles { get; set; } = false;
 
@@ -59,6 +60,7 @@ namespace SteamDesktopAuthenticatorCore.classes
 
             key.SetValue($"{nameof(_settings.ManifestLocation)}", $"{_settings.ManifestLocation}");
             key.SetValue($"{nameof(_settings.FirstRun)}", $"{_settings.FirstRun}");
+            key.SetValue($"{nameof(_settings.Updated)}", $"{_settings.Updated}");
         }
 
         private static Settings CreateSettings()
@@ -66,7 +68,8 @@ namespace SteamDesktopAuthenticatorCore.classes
             Settings settings = new()
             {
                 ManifestLocation = ManifestLocationModel.Drive,
-                FirstRun = true
+                FirstRun = true,
+                Updated = false
             };
 
             return settings;
@@ -86,6 +89,12 @@ namespace SteamDesktopAuthenticatorCore.classes
                 firstRun = true;
             }
 
+            if (!bool.TryParse((string?)key.GetValue($"{nameof(_settings.Updated)}"), out var updated))
+            {
+                key.SetValue($"{nameof(_settings.Updated)}", false);
+                updated = false;
+            }
+
             return new Settings()
             {
                 ManifestLocation = filesLocation switch
@@ -94,7 +103,8 @@ namespace SteamDesktopAuthenticatorCore.classes
                     nameof(ManifestLocationModel.GoogleDrive) => ManifestLocationModel.GoogleDrive,
                     _ => throw new ArgumentOutOfRangeException()
                 },
-                FirstRun = firstRun
+                FirstRun = firstRun,
+                Updated = updated
             };
         }
 

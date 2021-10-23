@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using GoogleDrive;
+using SteamDesktopAuthenticatorCore.classes;
 using SteamDesktopAuthenticatorCore.Services;
 using WpfHelper.Services;
 
@@ -39,16 +42,17 @@ namespace SteamDesktopAuthenticatorCore
         {
             InDesignMode = false;
 
-            CheckProcess();
+            await Task.Run(CheckProcess);
 
-            await UpdateService.DeletePreviousFile("SteamDesktopAuthenticatorCore");
+            if (Settings.GetSettings().Updated)
+                await UpdateService.DeletePreviousFile($"{Name}");
 
             base.OnStartup(e);
         }
 
         #region PrivateMethods
 
-        private void DispatcherOnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        private static void DispatcherOnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             // Process unhandled exception
 
@@ -61,7 +65,7 @@ namespace SteamDesktopAuthenticatorCore
         private static void CheckProcess()
         {
             Process thisProcess = Process.GetCurrentProcess();
-            foreach (var process in Process.GetProcessesByName(thisProcess.ProcessName))
+            foreach (var process in (from p in Process.GetProcesses() where p.ProcessName.Contains(Name) select p))
             {
                 if (thisProcess.Id == process.Id) continue;
 

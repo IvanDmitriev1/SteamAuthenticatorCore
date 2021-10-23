@@ -203,7 +203,9 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
             CustomMessageBox.Show("Restart application");
 
+            //Process.Start();
             Application.Current.Shutdown(0);
+            
         });
 
         public ICommand ShowWindowCommand => new RelayCommand(o =>
@@ -375,6 +377,10 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             {
                 if (await UpdateService.DownloadAndInstall(model) is not { } newFile)
                     throw new ArgumentNullException();
+
+                var settings = Settings.GetSettings();
+                settings.Updated = true;
+                settings.SaveSettings();
 
                 Application.Current.Shutdown(0);
                 Process.Start(newFile);
