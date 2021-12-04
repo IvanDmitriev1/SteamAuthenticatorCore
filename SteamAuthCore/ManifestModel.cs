@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
-namespace SteamAuthCore.Models
+namespace SteamAuthCore
 {
     public class ManifestModel
     {
@@ -26,28 +26,28 @@ namespace SteamAuthCore.Models
             PeriodicCheckingInterval = model.PeriodicCheckingInterval;
         }
 
-        [JsonProperty("encrypted")]
+        [JsonPropertyName("encrypted")]
         public bool Encrypted { get; set; } = false;
 
-        [JsonProperty("first_run")]
+        [JsonPropertyName("first_run")]
         public bool FirstRun { get; set; }
 
-        [JsonProperty("accounts")]
+        [JsonPropertyName("accounts")]
         public ObservableCollection<SteamGuardAccount> Accounts { get; set; } = new();
 
-        [JsonProperty("periodic_checking")]
+        [JsonPropertyName("periodic_checking")]
         public bool PeriodicChecking { get; set; } = false;
 
-        [JsonProperty("periodic_checking_interval")]
+        [JsonPropertyName("periodic_checking_interval")]
         public int PeriodicCheckingInterval { get; set; } = 10;
 
-        [JsonProperty("periodic_checking_checkall")]
+        [JsonPropertyName("periodic_checking_checkall")]
         public bool CheckAllAccounts { get; set; } = false;
 
-        [JsonProperty("auto_confirm_market_transactions")]
+        [JsonPropertyName("auto_confirm_market_transactions")]
         public bool AutoConfirmMarketTransactions { get; set; } = false;
 
-        [JsonProperty("auto_confirm_trades")]
+        [JsonPropertyName("auto_confirm_trades")]
         public bool AutoConfirmTrades { get; set; } = false;
 
     }

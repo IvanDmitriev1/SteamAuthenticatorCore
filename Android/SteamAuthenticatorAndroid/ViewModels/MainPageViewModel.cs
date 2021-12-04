@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using SteamAuthCore;
-using SteamAuthCore.Models;
 using SteamAuthenticatorAndroid.Services;
 using SteamAuthenticatorAndroid.Views;
 using Xamarin.Essentials;

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-using SteamAuthCore.Models;
+using SteamAuthCore;
 using SteamDesktopAuthenticatorCore.classes;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;

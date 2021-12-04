@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using GoogleDrive;
-using Newtonsoft.Json;
-using SteamAuthCore.Models;
+using SteamAuthCore;
 using GoogleFile = Google.Apis.Drive.v3.Data.File;
 
 namespace SteamDesktopAuthenticatorCore.Services
@@ -27,7 +27,7 @@ namespace SteamDesktopAuthenticatorCore.Services
                 return _manifest!;
             }
 
-            if (JsonConvert.DeserializeObject<ManifestModel>(await Api.DownloadFileAsString(manifestFile.Id)) is not { } manifest)
+            if (JsonSerializer.Deserialize<ManifestModel>(await Api.DownloadFileAsString(manifestFile.Id)) is not { } manifest)
                 throw new ArgumentNullException(nameof(manifest));
 
             _manifest = manifest;
@@ -43,7 +43,7 @@ namespace SteamDesktopAuthenticatorCore.Services
 
             ManifestModel newModel = new(_manifest);
 
-            string serialized = JsonConvert.SerializeObject(newModel);
+            string serialized = JsonSerializer.Serialize(newModel);
             await using MemoryStream stream = new(Encoding.UTF8.GetBytes(serialized));
             await Api.UploadFile(ManifestFileName, stream);
         }
@@ -72,7 +72,7 @@ namespace SteamDesktopAuthenticatorCore.Services
             {
                 if (!file.Name.Contains(".maFile")) continue;
                 
-                if (JsonConvert.DeserializeObject<SteamGuardAccount>(await Api.DownloadFileAsString(file.Id)) is not { } account)
+                if (JsonSerializer.Deserialize<SteamGuardAccount>(await Api.DownloadFileAsString(file.Id)) is not { } account)
                     throw new ArgumentNullException(nameof(account));
 
                 _manifest.Accounts.Add(account);
@@ -94,7 +94,7 @@ namespace SteamDesktopAuthenticatorCore.Services
 
         public static async Task SaveAccountInGoogleDrive(SteamGuardAccount account)
         {
-            string serialized = JsonConvert.SerializeObject(account);
+            string serialized = JsonSerializer.Serialize(account);
 
             if (await FindMaFileInGoogleDrive(account) is { } file)
             {
@@ -118,7 +118,7 @@ namespace SteamDesktopAuthenticatorCore.Services
             {
                 if (!file.Name.Contains(".maFile")) continue;
 
-                if (JsonConvert.DeserializeObject<SteamGuardAccount>(await Api.DownloadFileAsString(file.Id)) is not { } account2)
+                if (JsonSerializer.Deserialize<SteamGuardAccount>(await Api.DownloadFileAsString(file.Id)) is not { } account2)
                     throw new ArgumentNullException(nameof(account2));
 
                 if (account.Secret1 == account2.Secret1 && account.IdentitySecret == account2.IdentitySecret)

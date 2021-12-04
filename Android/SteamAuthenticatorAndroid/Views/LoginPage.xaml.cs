@@ -1,4 +1,4 @@
-﻿using SteamAuthCore.Models;
+﻿using SteamAuthCore;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 

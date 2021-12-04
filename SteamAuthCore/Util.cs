@@ -2,7 +2,7 @@
 
 namespace SteamAuthCore
 {
-    public class Util
+    public static class Util
     {
         public static long GetSystemUnixTime()
         {

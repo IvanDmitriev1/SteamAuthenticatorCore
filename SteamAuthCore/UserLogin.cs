@@ -3,9 +3,9 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
-using Newtonsoft.Json;
-using SteamAuthCore.Models;
 
 namespace SteamAuthCore
 {
@@ -35,69 +35,69 @@ namespace SteamAuthCore
 
         private class LoginResponse
         {
-            [JsonProperty("success")]
+            [JsonPropertyName("success")]
             public bool Success { get; set; }
 
-            [JsonProperty("login_complete")]
+            [JsonPropertyName("login_complete")]
             public bool LoginComplete { get; set; }
 
-            [JsonProperty("oauth")]
+            [JsonPropertyName("oauth")]
             public string? OAuthDataString { get; set; }
 
-            public OAuth? OAuthData => OAuthDataString != null ? JsonConvert.DeserializeObject<OAuth>(OAuthDataString) : null;
+            public OAuth? OAuthData => OAuthDataString != null ? JsonSerializer.Deserialize<OAuth>(OAuthDataString) : null;
 
-            [JsonProperty("captcha_needed")]
+            [JsonPropertyName("captcha_needed")]
             public bool CaptchaNeeded { get; set; }
 
-            [JsonProperty("captcha_gid")]
+            [JsonPropertyName("captcha_gid")]
             public string CaptchaGid { get; set; } = null!;
 
-            [JsonProperty("emailsteamid")]
+            [JsonPropertyName("emailsteamid")]
             public ulong EmailSteamID { get; set; }
 
-            [JsonProperty("emailauth_needed")]
+            [JsonPropertyName("emailauth_needed")]
             public bool EmailAuthNeeded { get; set; }
 
-            [JsonProperty("requires_twofactor")]
+            [JsonPropertyName("requires_twofactor")]
             public bool TwoFactorNeeded { get; set; }
 
-            [JsonProperty("message")]
+            [JsonPropertyName("message")]
             public string? Message { get; set; }
 
             internal class OAuth
             {
-                [JsonProperty("steamid")]
+                [JsonPropertyName("steamid")]
                 public ulong SteamId { get; set; }
 
-                [JsonProperty("oauth_token")]
+                [JsonPropertyName("oauth_token")]
                 public string? OAuthToken { get; set; }
 
-                [JsonProperty("wgtoken")]
+                [JsonPropertyName("wgtoken")]
                 public string SteamLogin { get; set; } = null!;
 
-                [JsonProperty("wgtoken_secure")]
+                [JsonPropertyName("wgtoken_secure")]
                 public string SteamLoginSecure { get; set; } = null!;
 
-                [JsonProperty("webcookie")]
+                [JsonPropertyName("webcookie")]
                 public string Webcookie { get; set; } = null!;
             }
         }
 
         private class RsaResponse
         {
-            [JsonProperty("success")]
+            [JsonPropertyName("success")]
             public bool Success { get; set; }
 
-            [JsonProperty("publickey_exp")]
+            [JsonPropertyName("publickey_exp")]
             public string Exponent { get; set; } = null!;
 
-            [JsonProperty("publickey_mod")]
+            [JsonPropertyName("publickey_mod")]
             public string Modulus { get; set; } = null!;
 
-            [JsonProperty("timestamp")]
+            [JsonPropertyName("timestamp")]
             public string Timestamp { get; set; } = null!;
 
-            [JsonProperty("steamid")]
+            [JsonPropertyName("steamid")]
             public ulong SteamId { get; set; }
         }
 
@@ -147,20 +147,20 @@ namespace SteamAuthCore
                 NameValueCollection headers = new NameValueCollection();
                 headers.Add("X-Requested-With", "com.valvesoftware.android.steam.community");
 
-                SteamWeb.MobileLoginRequest("https://steamcommunity.com/login?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client", "GET", null, cookies, headers);
+                SteamApi.MobileLoginRequest("https://steamcommunity.com/login?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client", SteamApi.RequestMethod.Get, null, cookies, headers);
             }
 
             postData.Add("donotcache", (TimeAligner.GetSteamTime() * 1000).ToString());
             postData.Add("username", Username);
 
 
-            if (SteamWeb.MobileLoginRequest(ApiEndpoints.CommunityBase + "/login/getrsakey", "POST", postData, cookies) is not { } response)
+            if (SteamApi.MobileLoginRequest(ApiEndpoints.CommunityBase + "/login/getrsakey", SteamApi.RequestMethod.Post, postData, cookies) is not { } response)
                 return LoginResult.GeneralFailure;
 
             if (response.Contains("<BODY>\nAn error occurred while processing your request."))
                 return LoginResult.GeneralFailure;
 
-            if (JsonConvert.DeserializeObject<RsaResponse>(response) is not { } rsaResponse)
+            if (JsonSerializer.Deserialize<RsaResponse>(response) is not { } rsaResponse)
                 throw new ArgumentNullException(nameof(rsaResponse));
 
             if (!rsaResponse.Success)
@@ -200,10 +200,10 @@ namespace SteamAuthCore
             postData.Add("oauth_client_id", "DE45CD61");
             postData.Add("oauth_scope", "read_profile write_profile read_client write_client");
 
-            if (SteamWeb.MobileLoginRequest(ApiEndpoints.CommunityBase + "/login/dologin", "POST", postData, cookies) is not { } newResponse)
+            if (SteamApi.MobileLoginRequest(ApiEndpoints.CommunityBase + "/login/dologin", SteamApi.RequestMethod.Post, postData, cookies) is not { } newResponse)
                 return LoginResult.GeneralFailure;
 
-            if (JsonConvert.DeserializeObject<LoginResponse>(newResponse) is not {} loginResponse)
+            if (JsonSerializer.Deserialize<LoginResponse>(newResponse) is not {} loginResponse)
                 throw new ArgumentNullException(nameof(loginResponse));
 
             if (loginResponse.Message is not null)

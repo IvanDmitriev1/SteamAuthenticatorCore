@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SteamAuthCore.Models;
+using SteamAuthCore;
 
 namespace SteamDesktopAuthenticatorCore.Services
 {
@@ -34,7 +34,7 @@ namespace SteamDesktopAuthenticatorCore.Services
                 return _manifest!;
             }
 
-            if (JsonConvert.DeserializeObject<ManifestModel>(await File.ReadAllTextAsync(ManifestFilePath)) is not { } manifest)
+            if (JsonSerializer.Deserialize<ManifestModel>(await File.ReadAllTextAsync(ManifestFilePath)) is not { } manifest)
                 throw new ArgumentNullException(nameof(manifest));
 
             _manifest = manifest;
@@ -49,7 +49,7 @@ namespace SteamDesktopAuthenticatorCore.Services
             if (await FindFileInDrive(account) is not { } file)
                 return;
 
-            string serialized = JsonConvert.SerializeObject(account);
+            string serialized = JsonSerializer.Serialize(account);
 
             await File.WriteAllTextAsync(file, serialized);
         }
@@ -61,7 +61,7 @@ namespace SteamDesktopAuthenticatorCore.Services
 
             ManifestModel newModel = new(_manifest);
 
-            string serialized = JsonConvert.SerializeObject(newModel);
+            string serialized = JsonSerializer.Serialize(newModel);
             await File.WriteAllTextAsync(ManifestFilePath, serialized);
         }
 
@@ -76,7 +76,7 @@ namespace SteamDesktopAuthenticatorCore.Services
             {
                 if (!file.Contains(".maFile")) continue;
 
-                if (JsonConvert.DeserializeObject<SteamGuardAccount>(await File.ReadAllTextAsync(file)) is not { } account)
+                if (JsonSerializer.Deserialize<SteamGuardAccount>(await File.ReadAllTextAsync(file)) is not { } account)
                     throw new ArgumentNullException(nameof(account));
 
                 _manifest.Accounts.Add(account);
@@ -88,7 +88,7 @@ namespace SteamDesktopAuthenticatorCore.Services
             if (_manifest is null)
                 throw new ArgumentNullException();
 
-            if (JsonConvert.DeserializeObject<SteamGuardAccount>(fileData) is not { } account)
+            if (JsonSerializer.Deserialize<SteamGuardAccount>(fileData) is not { } account)
                 throw new ArgumentNullException(nameof(account));
 
             await File.WriteAllTextAsync(Path.Combine(MaFilesDirectory, fileName), fileData);
@@ -112,7 +112,7 @@ namespace SteamDesktopAuthenticatorCore.Services
             if (!file.Contains(ManifestFileName))
                 return;
 
-            if (JsonConvert.DeserializeObject<ManifestModel>(await File.ReadAllTextAsync(file)) is not { } manifest)
+            if (JsonSerializer.Deserialize<ManifestModel>(await File.ReadAllTextAsync(file)) is not { } manifest)
                 throw new ArgumentNullException(nameof(manifest));
 
             SetManifest(manifest);
@@ -133,7 +133,7 @@ namespace SteamDesktopAuthenticatorCore.Services
             {
                 if (!file.Contains(".maFile")) continue;
 
-                if (JsonConvert.DeserializeObject<SteamGuardAccount>(await File.ReadAllTextAsync(file)) is not { } account2)
+                if (JsonSerializer.Deserialize<SteamGuardAccount>(await File.ReadAllTextAsync(file)) is not { } account2)
                     throw new ArgumentNullException(nameof(account));
 
                 if (account.Secret1 == account2.Secret1 && account.IdentitySecret == account2.IdentitySecret)

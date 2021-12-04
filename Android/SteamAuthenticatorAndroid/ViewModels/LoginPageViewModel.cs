@@ -1,6 +1,5 @@
 ﻿using System;
 using SteamAuthCore;
-using SteamAuthCore.Models;
 using SteamAuthenticatorAndroid.Services;
 using Xamarin.Forms;
 

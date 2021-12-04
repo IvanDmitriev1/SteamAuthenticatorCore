@@ -11,7 +11,6 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using Microsoft.Win32;
 using SteamAuthCore;
-using SteamAuthCore.Models;
 using SteamDesktopAuthenticatorCore.classes;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
@@ -559,8 +558,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
             foreach (var account in autoAcceptConfirmations.Keys)
             {
-                var confirmations = autoAcceptConfirmations[account].ToArray();
-                account.AcceptMultipleConfirmations(confirmations);
+                account.SendConfirmationAjax(autoAcceptConfirmations[account], SteamGuardAccount.Confirmation.Allow);
             }
         }
 

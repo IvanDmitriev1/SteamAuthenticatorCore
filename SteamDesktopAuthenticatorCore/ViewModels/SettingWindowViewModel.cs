@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
-using SteamAuthCore.Models;
+using SteamAuthCore;
 using SteamDesktopAuthenticatorCore.Services;
 using WpfHelper;
 using WpfHelper.Commands;

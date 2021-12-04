@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Net;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
-using Newtonsoft.Json;
-using SteamAuthCore.Models;
 
 namespace SteamAuthCore
 {
@@ -41,40 +41,40 @@ namespace SteamAuthCore
         #region HelpClasses
         private class AddAuthenticatorResponse
         {
-            [JsonProperty("response")]
+            [JsonPropertyName("response")]
             public SteamGuardAccount? Response { get; set; }
         }
 
         private class FinalizeAuthenticatorResponse
         {
-            [JsonProperty("response")]
+            [JsonPropertyName("response")]
             public FinalizeAuthenticatorInternalResponse? Response { get; set; }
 
             internal class FinalizeAuthenticatorInternalResponse
             {
-                [JsonProperty("status")]
+                [JsonPropertyName("status")]
                 public int Status { get; set; }
 
-                [JsonProperty("server_time")]
+                [JsonPropertyName("server_time")]
                 public long ServerTime { get; set; }
 
-                [JsonProperty("want_more")]
+                [JsonPropertyName("want_more")]
                 public bool WantMore { get; set; }
 
-                [JsonProperty("success")]
+                [JsonPropertyName("success")]
                 public bool Success { get; set; }
             }
         }
 
         private class HasPhoneResponse
         {
-            [JsonProperty("has_phone")]
+            [JsonPropertyName("has_phone")]
             public bool HasPhone { get; set; }
         }
 
         private class AddPhoneResponse
         {
-            [JsonProperty("success")]
+            [JsonPropertyName("success")]
             public bool Success { get; set; }
         }
 
@@ -147,10 +147,10 @@ namespace SteamAuthCore
                 {"sms_phone_id", "1"}
             };
 
-            string? response = SteamWeb.MobileLoginRequest(ApiEndpoints.SteamApiBase + "/ITwoFactorService/AddAuthenticator/v0001", "POST", postData);
+            string? response = SteamApi.MobileLoginRequest(ApiEndpoints.SteamApiBase + "/ITwoFactorService/AddAuthenticator/v0001", SteamApi.RequestMethod.Post, postData);
             if (response is null) return LinkResult.GeneralFailure;
 
-            AddAuthenticatorResponse? addAuthenticatorResponse = JsonConvert.DeserializeObject<AddAuthenticatorResponse>(response);
+            AddAuthenticatorResponse? addAuthenticatorResponse = JsonSerializer.Deserialize<AddAuthenticatorResponse>(response);
             if (addAuthenticatorResponse?.Response is null)
                 return LinkResult.GeneralFailure;
 
@@ -190,10 +190,10 @@ namespace SteamAuthCore
                 postData.Set("authenticator_code", LinkedAccount.GenerateSteamGuardCode());
                 postData.Set("authenticator_time", TimeAligner.GetSteamTime().ToString());
 
-                if (SteamWeb.MobileLoginRequest(ApiEndpoints.SteamApiBase + "/ITwoFactorService/FinalizeAddAuthenticator/v0001", "POST", postData) is not { } response)
+                if (SteamApi.MobileLoginRequest(ApiEndpoints.SteamApiBase + "/ITwoFactorService/FinalizeAddAuthenticator/v0001", SteamApi.RequestMethod.Post, postData) is not { } response)
                     return FinalizeResult.GeneralFailure;
 
-                if (JsonConvert.DeserializeObject<FinalizeAuthenticatorResponse>(response) is not { } finalizeResponse)
+                if (JsonSerializer.Deserialize<FinalizeAuthenticatorResponse>(response) is not { } finalizeResponse)
                     throw new ArgumentNullException(nameof(finalizeResponse));
 
                 if (finalizeResponse.Response is null)
@@ -234,10 +234,10 @@ namespace SteamAuthCore
                 {"sessionid", _session.SessionId}
             };
 
-            if (SteamWeb.Request(ApiEndpoints.CommunityBase + "/steamguard/phoneajax", "POST", postData, _cookies) is not { } response)
+            if (SteamApi.Request(ApiEndpoints.CommunityBase + "/steamguard/phoneajax", SteamApi.RequestMethod.Post, postData, _cookies) is not { } response)
                 return false;
 
-            if (JsonConvert.DeserializeObject<AddPhoneResponse>(response) is not { } addPhoneNumberResponse)
+            if (JsonSerializer.Deserialize<AddPhoneResponse>(response) is not { } addPhoneNumberResponse)
                 throw new ArgumentNullException(nameof(addPhoneNumberResponse));
 
             if (addPhoneNumberResponse.Success) return true;
@@ -255,10 +255,10 @@ namespace SteamAuthCore
                 {"sessionid", _session.SessionId}
             };
 
-            if (SteamWeb.Request(ApiEndpoints.CommunityBase + "/steamguard/phoneajax", "POST", postData, _cookies) is not { } response)
+            if (SteamApi.Request(ApiEndpoints.CommunityBase + "/steamguard/phoneajax", SteamApi.RequestMethod.Post, postData, _cookies) is not { } response)
                 return false;
 
-            if (JsonConvert.DeserializeObject<AddPhoneResponse>(response) is not { } addPhoneNumberResponse)
+            if (JsonSerializer.Deserialize<AddPhoneResponse>(response) is not { } addPhoneNumberResponse)
                 throw new ArgumentNullException(nameof(addPhoneNumberResponse));
 
             return addPhoneNumberResponse.Success;
@@ -273,10 +273,10 @@ namespace SteamAuthCore
                 {"sessionid", _session.SessionId}
             };
 
-            if (SteamWeb.Request(ApiEndpoints.CommunityBase + "/steamguard/phoneajax", "POST", postData, _cookies) is not { } response)
+            if (SteamApi.Request(ApiEndpoints.CommunityBase + "/steamguard/phoneajax", SteamApi.RequestMethod.Post, postData, _cookies) is not { } response)
                 return false;
 
-            if (JsonConvert.DeserializeObject<AddPhoneResponse>(response) is not { } emailConfirmationResponse)
+            if (JsonSerializer.Deserialize<AddPhoneResponse>(response) is not { } emailConfirmationResponse)
                 throw new ArgumentNullException(nameof(emailConfirmationResponse));
 
             return emailConfirmationResponse.Success;
@@ -291,10 +291,10 @@ namespace SteamAuthCore
                 {"sessionid", _session.SessionId}
             };
 
-            if (SteamWeb.Request(ApiEndpoints.CommunityBase + "/steamguard/phoneajax", "POST", postData, _cookies) is not { } response)
+            if (SteamApi.Request(ApiEndpoints.CommunityBase + "/steamguard/phoneajax", SteamApi.RequestMethod.Post, postData, _cookies) is not { } response)
                 return false;
 
-            if (JsonConvert.DeserializeObject<HasPhoneResponse>(response) is not { } hasPhoneResponse)
+            if (JsonSerializer.Deserialize<HasPhoneResponse>(response) is not { } hasPhoneResponse)
                 throw new ArgumentException(nameof(hasPhoneResponse));
 
             return hasPhoneResponse.HasPhone;
