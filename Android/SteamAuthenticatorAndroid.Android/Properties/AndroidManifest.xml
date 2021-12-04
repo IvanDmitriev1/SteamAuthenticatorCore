@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="0.8" package="com.companyname.steamauthenticatorandroid" android:installLocation="auto">
-	<uses-sdk android:minSdkVersion="24" android:targetSdkVersion="30" />
-	<application android:label="SteamAuthenticatorAndroid.Android" android:theme="@style/MainTheme" android:icon="@mipmap/icon"></application>
+	<uses-sdk android:minSdkVersion="24" android:targetSdkVersion="31" />
+	<application android:label="SteamAuthenticator.Android" android:theme="@style/MainTheme" android:icon="@mipmap/icon"></application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />

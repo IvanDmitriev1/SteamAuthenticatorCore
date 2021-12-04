@@ -247,7 +247,7 @@ namespace SteamAuthenticatorAndroid.ViewModels
             foreach (var acc in autoAcceptConfirmations.Keys)
             {
                 var confirmations = autoAcceptConfirmations[acc].ToArray();
-                acc.AcceptMultipleConfirmations(confirmations);
+                acc.SendConfirmationAjax(confirmations, SteamGuardAccount.Confirmation.Allow);
             }
         }
 
