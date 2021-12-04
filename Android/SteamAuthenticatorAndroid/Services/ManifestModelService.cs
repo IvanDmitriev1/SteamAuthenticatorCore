@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using SteamAuthCore;
 using Xamarin.Essentials;
 
@@ -30,7 +30,7 @@ namespace SteamAuthenticatorAndroid.Services
 
             await using FileStream stream = new(ManifestFileName, FileMode.Open);
             using StreamReader reader = new(stream);
-            if (JsonConvert.DeserializeObject<ManifestModel>(await reader.ReadToEndAsync()) is not { } manifest)
+            if (JsonSerializer.Deserialize<ManifestModel>(await reader.ReadToEndAsync()) is not { } manifest)
             {
                 await CreateNewManifest();
                 return _manifest!;
@@ -46,7 +46,7 @@ namespace SteamAuthenticatorAndroid.Services
             if (_manifest is null)
                 throw new ArgumentNullException();
 
-            string serialized = JsonConvert.SerializeObject(_manifest);
+            string serialized = JsonSerializer.Serialize(_manifest);
             await File.WriteAllTextAsync(ManifestFileName, serialized);
         }
 
@@ -57,7 +57,7 @@ namespace SteamAuthenticatorAndroid.Services
 
             await using FileStream stream = new(filePath, FileMode.Open);
             using StreamReader reader = new(stream);
-            if (JsonConvert.DeserializeObject<SteamGuardAccount>(await reader.ReadToEndAsync()) is not { } account)
+            if (JsonSerializer.Deserialize<SteamGuardAccount>(await reader.ReadToEndAsync()) is not { } account)
                 throw new ArgumentNullException(nameof(account));
 
             _manifest.Accounts.Add(account);

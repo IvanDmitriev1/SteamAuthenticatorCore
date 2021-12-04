@@ -62,6 +62,12 @@
                               Template="{StaticResource SingleDropDownMenuItem}"
                               Command="{Binding Path=RefreshAccountCommand}" />
 
+                    <MenuItem Header="Show account files folder"
+                              Template="{StaticResource SingleDropDownMenuItem}"
+                              Command="{Binding Path=ShowAccountFilesFolder}" >
+
+                    </MenuItem>
+
                     <MenuItem Header="{Binding Path=SwitchText, Mode=OneTime}"
                               Template="{StaticResource SingleDropDownMenuItem}"
                               Command="{Binding Path=SwitchCommand}" />
