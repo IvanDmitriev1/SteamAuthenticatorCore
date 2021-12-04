@@ -176,13 +176,6 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             _confirmationsWindow.Close();
         });
 
-        public ICommand TokenOnInputCommand => new RelayCommand(o =>
-        {
-            if (o is not TextCompositionEventArgs args) return;
-
-            args.Handled = true;
-        });
-
         public ICommand SwitchCommand => new RelayCommand(o =>
         {
             var settings = Settings.GetSettings();
@@ -256,6 +249,27 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (CustomMessageBox.Show("are you sure you want to delete a account from drive?", "Delete account", MessageBoxButton.YesNo, MessageBoxImage.Asterisk) == MessageBoxResult.Yes)
             {
                 await ManifestModelService.DeleteSteamGuardAccount(SelectedAccount);
+            }
+        });
+
+        public ICommand ShowAccountFilesFolder => new RelayCommand(o =>
+        {
+            if (Settings.GetSettings().ManifestLocation != Settings.ManifestLocationModel.Drive)
+                return;
+
+            try
+            {
+                var startInfo = new ProcessStartInfo
+                {
+                    Arguments = Path.Combine(Directory.GetCurrentDirectory(), "maFiles"),
+                    FileName = "explorer.exe"
+                };
+
+                Process.Start(startInfo);
+            }
+            catch(Exception e)
+            {
+                Debug.WriteLine(e);
             }
         });
 
