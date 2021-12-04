@@ -558,8 +558,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
             foreach (var account in autoAcceptConfirmations.Keys)
             {
-                var confirmations = autoAcceptConfirmations[account].ToArray();
-                account.AcceptMultipleConfirmations(confirmations);
+                account.SendConfirmationAjax(autoAcceptConfirmations[account], SteamGuardAccount.Confirmation.Allow);
             }
         }
 

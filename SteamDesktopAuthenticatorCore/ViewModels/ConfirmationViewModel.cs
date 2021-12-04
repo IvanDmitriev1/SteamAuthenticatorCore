@@ -59,7 +59,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             }
 
             StatusText = "Accepting...";
-            SelectedAccount.AcceptConfirmation(Confirmation);
+            SelectedAccount.SendConfirmationAjax(Confirmation, SteamGuardAccount.Confirmation.Allow);
             OnOnCloseEvent();
         });
 
@@ -73,7 +73,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             }
 
             StatusText = "Denying...";
-            SelectedAccount.DenyConfirmation(Confirmation);
+            SelectedAccount.SendConfirmationAjax(Confirmation, SteamGuardAccount.Confirmation.Deny);
             OnOnCloseEvent();
         });
 

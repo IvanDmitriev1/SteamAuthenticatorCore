@@ -27,6 +27,12 @@ namespace SteamAuthCore
 
         #region HelpClasess
 
+        public enum Confirmation
+        {
+            Allow,
+            Deny,
+        }
+
         private class RefreshSessionDataResponse
         {
             [JsonPropertyName("response")]
@@ -199,24 +205,40 @@ namespace SteamAuthCore
             return FetchConfirmationInternal(await SteamApi.RequestAsync(url, SteamApi.RequestMethod.Get, "", Session.GetCookies()));
         }
 
-        public bool AcceptMultipleConfirmations(ConfirmationModel[] confs)
+        public bool SendConfirmationAjax(ConfirmationModel conf, Confirmation op)
         {
-            return SendMultiConfirmationAjax(confs, "allow");
+            string url = ApiEndpoints.CommunityBase + "/mobileconf/ajaxop";
+            string queryString = "?op=" + op.ToString().ToLower() + "&";
+            queryString += GenerateConfirmationQueryParams(op.ToString().ToLower());
+            queryString += "&cid=" + conf.Id + "&ck=" + conf.Key;
+            url += queryString;
+
+            if (SteamApi.Request(url, SteamApi.RequestMethod.Get, "", Session.GetCookies(), null) is not { } response)
+                return false;
+
+            if (JsonSerializer.Deserialize<SendConfirmationResponse>(response) is not { } confResponse)
+                throw new ArgumentNullException(nameof(confResponse));
+
+            return confResponse.Success;
         }
 
-        public bool DenyMultipleConfirmations(ConfirmationModel[] confs)
+        public bool SendConfirmationAjax(IEnumerable<ConfirmationModel> confs, Confirmation op)
         {
-            return SendMultiConfirmationAjax(confs, "cancel");
-        }
+            string url = ApiEndpoints.CommunityBase + "/mobileconf/multiajaxop";
 
-        public bool AcceptConfirmation(ConfirmationModel conf)
-        {
-            return SendConfirmationAjax(conf, "allow");
-        }
+            string query = "op=" + op.ToString().ToLower() + "&" + GenerateConfirmationQueryParams(op.ToString().ToLower());
+            foreach (var conf in confs)
+            {
+                query += "&cid[]=" + conf.Id + "&ck[]=" + conf.Key;
+            }
 
-        public bool DenyConfirmation(ConfirmationModel conf)
-        {
-            return SendConfirmationAjax(conf, "cancel");
+            if (SteamApi.Request(url, SteamApi.RequestMethod.Post, query, Session.GetCookies()) is not { } response)
+                return false;
+
+            if (JsonSerializer.Deserialize<SendConfirmationResponse>(response) is not { } confResponse)
+                throw new ArgumentNullException(nameof(confResponse));
+
+            return confResponse.Success;
         }
 
         public ConfirmationDetailsResponse? GetConfirmationDetails(ConfirmationModel conf)
@@ -326,7 +348,7 @@ namespace SteamAuthCore
 
         public string GenerateConfirmationQueryParams(string tag)
         {
-            if (String.IsNullOrEmpty(DeviceId))
+            if (string.IsNullOrEmpty(DeviceId))
                 throw new ArgumentException("Device ID is not present");
 
             var queryParams = GenerateConfirmationQueryParamsAsNvc(tag);
@@ -391,42 +413,6 @@ namespace SteamAuthCore
             }
 
             return ret.ToArray();
-        }
-
-        private bool SendConfirmationAjax(ConfirmationModel conf, string op)
-        {
-            string url = ApiEndpoints.CommunityBase + "/mobileconf/ajaxop";
-            string queryString = "?op=" + op + "&";
-            queryString += GenerateConfirmationQueryParams(op);
-            queryString += "&cid=" + conf.Id + "&ck=" + conf.Key;
-            url += queryString;
-
-            if (SteamApi.Request(url, SteamApi.RequestMethod.Get, "", Session.GetCookies(), null) is not { } response)
-                return false;
-
-            if (JsonSerializer.Deserialize<SendConfirmationResponse>(response) is not { } confResponse)
-                throw new ArgumentNullException(nameof(confResponse));
-
-            return confResponse.Success;
-        }
-
-        private bool SendMultiConfirmationAjax(ConfirmationModel[] confs, string op)
-        {
-            string url = ApiEndpoints.CommunityBase + "/mobileconf/multiajaxop";
-
-            string query = "op=" + op + "&" + GenerateConfirmationQueryParams(op);
-            foreach (var conf in confs)
-            {
-                query += "&cid[]=" + conf.Id + "&ck[]=" + conf.Key;
-            }
-
-            if (SteamApi.Request(url, SteamApi.RequestMethod.Post, query, Session.GetCookies()) is not { } response)
-                return false;
-
-            if (JsonSerializer.Deserialize<SendConfirmationResponse>(response) is not { } confResponse)
-                throw new ArgumentNullException(nameof(confResponse));
-
-            return confResponse.Success;
         }
 
         private string? GenerateConfirmationHashForTime(Int64 time, string? tag)
