@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SteamAuthCore
@@ -26,6 +27,7 @@ namespace SteamAuthCore
         {
             return Request(url, method, data, cookies, headers, ApiEndpoints.CommunityBase + "/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client");
         }
+
 
         public static string? Request(string url, RequestMethod method, NameValueCollection? data = null, CookieContainer? cookies = null, NameValueCollection? headers = null, string referer = ApiEndpoints.CommunityBase)
         {
@@ -72,6 +74,43 @@ namespace SteamAuthCore
             }
         }
 
+
+        public static async Task<T?> RequestAsync<T>(string url, RequestMethod method, NameValueCollection? data = null, CookieContainer? cookies = null, NameValueCollection? headers = null, string referer = ApiEndpoints.CommunityBase)
+        {
+            string query = CreateQuery(data);
+            return await RequestAsync<T>(url, method, query, cookies, headers, referer);
+        }
+
+        public static async Task<T?> RequestAsync<T>(string url, RequestMethod method, string query, CookieContainer? cookies = null, NameValueCollection? headers = null, string referer = ApiEndpoints.CommunityBase)
+        {
+            if (method == RequestMethod.Get)
+                url += (url.Contains("?") ? "&" : "?") + query;
+
+            var request = CreateHttpWebRequest(url, method, cookies, headers, referer);
+
+            if (method == RequestMethod.Post)
+                request = await WritePostData(request, query);
+
+            try
+            {
+                using var response = (HttpWebResponse)await request.GetResponseAsync();
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    HandleFailedWebRequestResponse(response, url);
+                    return default;
+                }
+
+                var result = await JsonSerializer.DeserializeAsync<T>(response.GetResponseStream() ?? throw new InvalidOperationException());
+                return result;
+            }
+            catch (WebException e)
+            {
+                HandleFailedWebRequestResponse(e.Response as HttpWebResponse, url);
+                return default;
+            }
+        }
+
+
         public static async Task<string?> RequestAsync(string url, RequestMethod method, NameValueCollection? data = null, CookieContainer? cookies = null, NameValueCollection? headers = null, string referer = ApiEndpoints.CommunityBase)
         {
             string query = CreateQuery(data);
@@ -108,6 +147,8 @@ namespace SteamAuthCore
             }
         }
 
+
+
         private static HttpWebRequest CreateHttpWebRequest(string url, RequestMethod method, CookieContainer? cookies = null, NameValueCollection? headers = null, string referer = ApiEndpoints.CommunityBase)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
@@ -125,7 +166,6 @@ namespace SteamAuthCore
 
             return request;
         }
-
 
         private static void HandleFailedWebRequestResponse(HttpWebResponse? response, string requestUrl)
         {

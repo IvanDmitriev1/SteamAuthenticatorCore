@@ -192,13 +192,6 @@ namespace SteamAuthCore
             return Encoding.UTF8.GetString(codeArray);
         }
 
-        public ConfirmationModel[] FetchConfirmations()
-        {
-            string url = GenerateConfirmationUrl();
-
-            return FetchConfirmationInternal(SteamApi.Request(url, SteamApi.RequestMethod.Get, "", Session.GetCookies()));
-        }
-
         public async Task<ConfirmationModel[]> FetchConfirmationsAsync()
         {
             string url = GenerateConfirmationUrl();
@@ -251,51 +244,6 @@ namespace SteamAuthCore
             if (string.IsNullOrEmpty(response)) return null;
 
             return JsonSerializer.Deserialize<ConfirmationDetailsResponse>(response) is not { } confResponse ? null : confResponse;
-        }
-
-        /// <summary>
-        /// Refreshes the Steam session. Necessary to perform confirmations if your session has expired or changed.
-        /// </summary>
-        /// <returns></returns>
-        public bool RefreshSession()
-        {
-            string url = ApiEndpoints.MobileauthGetwgtoken;
-            NameValueCollection postData = new NameValueCollection();
-            postData.Add("access_token", this.Session.OAuthToken);
-
-            string response;
-            try
-            {
-                string? request = SteamApi.Request(url, SteamApi.RequestMethod.Post, postData);
-                if (request is null)
-                    return false;
-
-                response = request;
-            }
-            catch (WebException)
-            {
-                return false;
-            }
-
-            try
-            {
-                if (JsonSerializer.Deserialize<RefreshSessionDataResponse>(response) is not { } refreshResponse)
-                    return false;
-
-                if (refreshResponse.Response == null || string.IsNullOrEmpty(refreshResponse.Response.Token))
-                    return false;
-
-                string token = Session.SteamId + "%7C%7C" + refreshResponse.Response.Token;
-                string tokenSecure = Session.SteamId + "%7C%7C" + refreshResponse.Response.TokenSecure;
-
-                Session.SteamLogin = token;
-                Session.SteamLoginSecure = tokenSecure;
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
         }
 
         /// <summary>
@@ -373,6 +321,7 @@ namespace SteamAuthCore
 
             return ret;
         }
+
 
         #region PrivateMethods
 

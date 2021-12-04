@@ -30,8 +30,8 @@ namespace SteamAuthCore
 
         #region Variabels
 
-        private static bool _aligned = false;
-        private static int _timeDifference = 0;
+        private static bool _aligned;
+        private static int _timeDifference;
 
         #endregion
 
@@ -53,39 +53,33 @@ namespace SteamAuthCore
 
         public static void AlignTime()
         {
-            using WebClient client = new();
             try
             {
-                string response = client.UploadString(ApiEndpoints.TwoFactorTimeQuery, "steamid=0");
-                TimeAligning(response, Util.GetSystemUnixTime());
+                string response = SteamApi.Request(ApiEndpoints.TwoFactorTimeQuery, SteamApi.RequestMethod.Post, "steamid=0") ?? string.Empty;
+                if (JsonSerializer.Deserialize<TimeQuery>(response) is not { } query)
+                    throw new ArgumentNullException(nameof(query));
+
+                _timeDifference = (int)(Int64.Parse(query.Response.ServerTime) - Util.GetSystemUnixTime());
+                _aligned = true;
             }
             catch (WebException)
             {
-                return;
             }
         }
 
         public static async Task AlignTimeAsync()
         {
-            WebClient client = new();
             try
             {
-                string response = await client.UploadStringTaskAsync(new Uri(ApiEndpoints.TwoFactorTimeQuery), "steamid=0");
-                TimeAligning(response, Util.GetSystemUnixTime());
+                if (await SteamApi.RequestAsync<TimeQuery>(ApiEndpoints.TwoFactorTimeQuery, SteamApi.RequestMethod.Post, "steamid=0") is not {} query)
+                    return;
+
+                _timeDifference = (int)(Int64.Parse(query.Response.ServerTime) - Util.GetSystemUnixTime());
+                _aligned = true;
             }
             catch (WebException)
             {
-                return;
             }
-        }
-
-        private static void TimeAligning(in string response, in Int64 currentTime)
-        {
-            if (JsonSerializer.Deserialize<TimeQuery>(response) is not { } query)
-                throw new ArgumentNullException(nameof(query));
-
-            _timeDifference = (int)(Int64.Parse(query.Response.ServerTime) - currentTime);
-            _aligned = true;
         }
     }
 }
