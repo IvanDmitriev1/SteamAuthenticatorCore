@@ -4,9 +4,10 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace SteamAuthCore
 {
@@ -28,42 +29,42 @@ namespace SteamAuthCore
 
         private class RefreshSessionDataResponse
         {
-            [JsonProperty("response")]
+            [JsonPropertyName("response")]
             public RefreshSessionDataInternalResponse? Response { get; set; }
             internal class RefreshSessionDataInternalResponse
             {
-                [JsonProperty("token")]
+                [JsonPropertyName("token")]
                 public string Token { get; set; } = null!;
 
-                [JsonProperty("token_secure")]
+                [JsonPropertyName("token_secure")]
                 public string TokenSecure { get; set; } = null!;
             }
         }
 
         private class RemoveAuthenticatorResponse
         {
-            [JsonProperty("response")]
+            [JsonPropertyName("response")]
             public RemoveAuthenticatorInternalResponse? Response { get; set; }
 
             internal class RemoveAuthenticatorInternalResponse
             {
-                [JsonProperty("success")]
+                [JsonPropertyName("success")]
                 public bool Success { get; set; }
             }
         }
 
         private class SendConfirmationResponse
         {
-            [JsonProperty("success")]
+            [JsonPropertyName("success")]
             public bool Success { get; set; }
         }
 
         public class ConfirmationDetailsResponse
         {
-            [JsonProperty("success")]
+            [JsonPropertyName("success")]
             public bool Success { get; set; }
 
-            [JsonProperty("html")]
+            [JsonPropertyName("html")]
             public string Html { get; set; } = null!;
         }
 
@@ -71,43 +72,43 @@ namespace SteamAuthCore
 
         #region Properties
 
-        [JsonProperty("shared_secret")]
+        [JsonPropertyName("shared_secret")]
         public string? SharedSecret { get; set; }
 
-        [JsonProperty("serial_number")]
+        [JsonPropertyName("serial_number")]
         public string SerialNumber { get; set; } = null!;
 
-        [JsonProperty("revocation_code")]
+        [JsonPropertyName("revocation_code")]
         public string RevocationCode { get; set; } = null!;
 
-        [JsonProperty("uri")]
+        [JsonPropertyName("uri")]
         public string Uri { get; set; } = null!;
 
-        [JsonProperty("server_time")]
+        [JsonPropertyName("server_time")]
         public long ServerTime { get; set; }
 
-        [JsonProperty("account_name")]
+        [JsonPropertyName("account_name")]
         public string AccountName { get; set; } = null!;
 
-        [JsonProperty("token_gid")]
+        [JsonPropertyName("token_gid")]
         public string TokenGid { get; set; } = null!;
 
-        [JsonProperty("identity_secret")]
+        [JsonPropertyName("identity_secret")]
         public string IdentitySecret { get; set; } = null!;
 
-        [JsonProperty("secret_1")]
+        [JsonPropertyName("secret_1")]
         public string Secret1 { get; set; } = null!;
 
-        [JsonProperty("status")]
+        [JsonPropertyName("status")]
         public int Status { get; set; }
 
-        [JsonProperty("device_id")]
+        [JsonPropertyName("device_id")]
         public string DeviceId { get; set; } = null!;
 
         /// <summary>
         /// Set to true if the authenticator has actually been applied to the account.
         /// </summary>
-        [JsonProperty("fully_enrolled")]
+        [JsonPropertyName("fully_enrolled")]
         public bool FullyEnrolled { get; set; }
 
         public SessionData Session { get; set; } = null!;
@@ -131,7 +132,7 @@ namespace SteamAuthCore
                 if (SteamApi.MobileLoginRequest(ApiEndpoints.SteamApiBase + "/ITwoFactorService/RemoveAuthenticator/v0001", SteamApi.RequestMethod.Post, postData) is not { } response)
                     throw new ArgumentNullException(nameof(response));
 
-                return JsonConvert.DeserializeObject<RemoveAuthenticatorResponse>(response) is {Response: {Success: true}};
+                return JsonSerializer.Deserialize<RemoveAuthenticatorResponse>(response) is {Response: {Success: true}};
             }
             catch (Exception)
             {
@@ -227,7 +228,7 @@ namespace SteamAuthCore
             string? response = SteamApi.Request(url, SteamApi.RequestMethod.Get, "", Session.GetCookies());
             if (string.IsNullOrEmpty(response)) return null;
 
-            return JsonConvert.DeserializeObject<ConfirmationDetailsResponse>(response) is not { } confResponse ? null : confResponse;
+            return JsonSerializer.Deserialize<ConfirmationDetailsResponse>(response) is not { } confResponse ? null : confResponse;
         }
 
         /// <summary>
@@ -256,7 +257,7 @@ namespace SteamAuthCore
 
             try
             {
-                if (JsonConvert.DeserializeObject<RefreshSessionDataResponse>(response) is not { } refreshResponse)
+                if (JsonSerializer.Deserialize<RefreshSessionDataResponse>(response) is not { } refreshResponse)
                     return false;
 
                 if (refreshResponse.Response == null || string.IsNullOrEmpty(refreshResponse.Response.Token))
@@ -299,7 +300,7 @@ namespace SteamAuthCore
 
             try
             {
-                RefreshSessionDataResponse? refreshResponse = JsonConvert.DeserializeObject<RefreshSessionDataResponse>(response);
+                RefreshSessionDataResponse? refreshResponse = JsonSerializer.Deserialize<RefreshSessionDataResponse>(response);
                 if (refreshResponse?.Response == null || string.IsNullOrEmpty(refreshResponse.Response.Token))
                     return false;
 
@@ -403,7 +404,7 @@ namespace SteamAuthCore
             if (SteamApi.Request(url, SteamApi.RequestMethod.Get, "", Session.GetCookies(), null) is not { } response)
                 return false;
 
-            if (JsonConvert.DeserializeObject<SendConfirmationResponse>(response) is not { } confResponse)
+            if (JsonSerializer.Deserialize<SendConfirmationResponse>(response) is not { } confResponse)
                 throw new ArgumentNullException(nameof(confResponse));
 
             return confResponse.Success;
@@ -422,7 +423,7 @@ namespace SteamAuthCore
             if (SteamApi.Request(url, SteamApi.RequestMethod.Post, query, Session.GetCookies()) is not { } response)
                 return false;
 
-            if (JsonConvert.DeserializeObject<SendConfirmationResponse>(response) is not { } confResponse)
+            if (JsonSerializer.Deserialize<SendConfirmationResponse>(response) is not { } confResponse)
                 throw new ArgumentNullException(nameof(confResponse));
 
             return confResponse.Success;

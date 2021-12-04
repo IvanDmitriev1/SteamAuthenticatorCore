@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Net;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+
 namespace SteamAuthCore
 {
     /// <summary>
@@ -16,11 +18,11 @@ namespace SteamAuthCore
         {
             internal class TimeQueryResponse
             {
-                [JsonProperty("server_time")]
+                [JsonPropertyName("server_time")]
                 public string ServerTime { get; set; } = null!;
             }
 
-            [JsonProperty("response")]
+            [JsonPropertyName("response")]
             public TimeQueryResponse Response { get; set; } = null!;
         }
 
@@ -79,7 +81,7 @@ namespace SteamAuthCore
 
         private static void TimeAligning(in string response, in Int64 currentTime)
         {
-            if (JsonConvert.DeserializeObject<TimeQuery>(response) is not { } query)
+            if (JsonSerializer.Deserialize<TimeQuery>(response) is not { } query)
                 throw new ArgumentNullException(nameof(query));
 
             _timeDifference = (int)(Int64.Parse(query.Response.ServerTime) - currentTime);
