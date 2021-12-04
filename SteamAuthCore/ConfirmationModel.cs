@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SteamAuthCore.Models
+namespace SteamAuthCore
 {
     public class ConfirmationModel
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
-using SteamAuthCore.Models;
+using SteamAuthCore;
 using WpfHelper;
 using WpfHelper.Commands;
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using SteamAuthCore.Models;
+using SteamAuthCore;
 using SteamDesktopAuthenticatorCore.classes;
 
 namespace SteamDesktopAuthenticatorCore.Services

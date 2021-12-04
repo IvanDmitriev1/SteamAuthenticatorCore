@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace SteamAuthCore.Models
+namespace SteamAuthCore
 {
     public class SteamGuardAccount
     {
@@ -128,7 +128,7 @@ namespace SteamAuthCore.Models
 
             try
             {
-                if (SteamWeb.MobileLoginRequest(ApiEndpoints.SteamApiBase + "/ITwoFactorService/RemoveAuthenticator/v0001", "POST", postData) is not { } response)
+                if (SteamApi.MobileLoginRequest(ApiEndpoints.SteamApiBase + "/ITwoFactorService/RemoveAuthenticator/v0001", SteamApi.RequestMethod.Post, postData) is not { } response)
                     throw new ArgumentNullException(nameof(response));
 
                 return JsonConvert.DeserializeObject<RemoveAuthenticatorResponse>(response) is {Response: {Success: true}};
@@ -189,14 +189,13 @@ namespace SteamAuthCore.Models
         {
             string url = GenerateConfirmationUrl();
 
-            return FetchConfirmationInternal(SteamWeb.Request(url, "GET", "", Session.GetCookies()));
+            return FetchConfirmationInternal(SteamApi.Request(url, SteamApi.RequestMethod.Get, "", Session.GetCookies()));
         }
 
         public async Task<ConfirmationModel[]> FetchConfirmationsAsync()
         {
             string url = GenerateConfirmationUrl();
-
-            return FetchConfirmationInternal(await SteamWeb.RequestAsync(url, "GET", null, Session.GetCookies()));
+            return FetchConfirmationInternal(await SteamApi.RequestAsync(url, SteamApi.RequestMethod.Get, "", Session.GetCookies()));
         }
 
         public bool AcceptMultipleConfirmations(ConfirmationModel[] confs)
@@ -225,7 +224,7 @@ namespace SteamAuthCore.Models
             string queryString = GenerateConfirmationQueryParams("details");
             url += queryString;
 
-            string? response = SteamWeb.Request(url, "GET", "", Session.GetCookies());
+            string? response = SteamApi.Request(url, SteamApi.RequestMethod.Get, "", Session.GetCookies());
             if (string.IsNullOrEmpty(response)) return null;
 
             return JsonConvert.DeserializeObject<ConfirmationDetailsResponse>(response) is not { } confResponse ? null : confResponse;
@@ -244,7 +243,7 @@ namespace SteamAuthCore.Models
             string response;
             try
             {
-                string? request = SteamWeb.Request(url, "POST", postData);
+                string? request = SteamApi.Request(url, SteamApi.RequestMethod.Post, postData);
                 if (request is null)
                     return false;
 
@@ -289,7 +288,7 @@ namespace SteamAuthCore.Models
             string? response;
             try
             {
-                response = await SteamWeb.RequestAsync(url, "POST", postData);
+                response = await SteamApi.RequestAsync(url, SteamApi.RequestMethod.Post, postData);
             }
             catch (WebException)
             {
@@ -401,7 +400,7 @@ namespace SteamAuthCore.Models
             queryString += "&cid=" + conf.Id + "&ck=" + conf.Key;
             url += queryString;
 
-            if (SteamWeb.Request(url, "GET", "", Session.GetCookies(), null) is not { } response)
+            if (SteamApi.Request(url, SteamApi.RequestMethod.Get, "", Session.GetCookies(), null) is not { } response)
                 return false;
 
             if (JsonConvert.DeserializeObject<SendConfirmationResponse>(response) is not { } confResponse)
@@ -420,7 +419,7 @@ namespace SteamAuthCore.Models
                 query += "&cid[]=" + conf.Id + "&ck[]=" + conf.Key;
             }
 
-            if (SteamWeb.Request(url, "POST", query, Session.GetCookies()) is not { } response)
+            if (SteamApi.Request(url, SteamApi.RequestMethod.Post, query, Session.GetCookies()) is not { } response)
                 return false;
 
             if (JsonConvert.DeserializeObject<SendConfirmationResponse>(response) is not { } confResponse)

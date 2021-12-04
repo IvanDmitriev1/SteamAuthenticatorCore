@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace SteamAuthCore.Models
+namespace SteamAuthCore
 {
     public class SessionData
     {

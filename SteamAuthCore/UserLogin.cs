@@ -5,7 +5,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using Newtonsoft.Json;
-using SteamAuthCore.Models;
 
 namespace SteamAuthCore
 {
@@ -147,14 +146,14 @@ namespace SteamAuthCore
                 NameValueCollection headers = new NameValueCollection();
                 headers.Add("X-Requested-With", "com.valvesoftware.android.steam.community");
 
-                SteamWeb.MobileLoginRequest("https://steamcommunity.com/login?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client", "GET", null, cookies, headers);
+                SteamApi.MobileLoginRequest("https://steamcommunity.com/login?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client", SteamApi.RequestMethod.Get, null, cookies, headers);
             }
 
             postData.Add("donotcache", (TimeAligner.GetSteamTime() * 1000).ToString());
             postData.Add("username", Username);
 
 
-            if (SteamWeb.MobileLoginRequest(ApiEndpoints.CommunityBase + "/login/getrsakey", "POST", postData, cookies) is not { } response)
+            if (SteamApi.MobileLoginRequest(ApiEndpoints.CommunityBase + "/login/getrsakey", SteamApi.RequestMethod.Post, postData, cookies) is not { } response)
                 return LoginResult.GeneralFailure;
 
             if (response.Contains("<BODY>\nAn error occurred while processing your request."))
@@ -200,7 +199,7 @@ namespace SteamAuthCore
             postData.Add("oauth_client_id", "DE45CD61");
             postData.Add("oauth_scope", "read_profile write_profile read_client write_client");
 
-            if (SteamWeb.MobileLoginRequest(ApiEndpoints.CommunityBase + "/login/dologin", "POST", postData, cookies) is not { } newResponse)
+            if (SteamApi.MobileLoginRequest(ApiEndpoints.CommunityBase + "/login/dologin", SteamApi.RequestMethod.Post, postData, cookies) is not { } newResponse)
                 return LoginResult.GeneralFailure;
 
             if (JsonConvert.DeserializeObject<LoginResponse>(newResponse) is not {} loginResponse)

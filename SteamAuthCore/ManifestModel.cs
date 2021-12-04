@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 
-namespace SteamAuthCore.Models
+namespace SteamAuthCore
 {
     public class ManifestModel
     {

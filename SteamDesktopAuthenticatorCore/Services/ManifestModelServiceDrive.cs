@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using SteamAuthCore.Models;
+using SteamAuthCore;
 
 namespace SteamDesktopAuthenticatorCore.Services
 {

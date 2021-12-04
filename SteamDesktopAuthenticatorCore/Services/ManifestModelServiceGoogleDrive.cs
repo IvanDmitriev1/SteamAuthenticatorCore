@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GoogleDrive;
 using Newtonsoft.Json;
-using SteamAuthCore.Models;
+using SteamAuthCore;
 using GoogleFile = Google.Apis.Drive.v3.Data.File;
 
 namespace SteamDesktopAuthenticatorCore.Services

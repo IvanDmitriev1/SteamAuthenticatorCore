@@ -1,4 +1,4 @@
-﻿namespace SteamAuthCore.Models
+﻿namespace SteamAuthCore
 {
     public enum LoginType
     {

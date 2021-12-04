@@ -1,4 +1,4 @@
-﻿using SteamAuthCore.Models;
+﻿using SteamAuthCore;
 using SteamAuthenticatorAndroid.Services;
 
 namespace SteamAuthenticatorAndroid.ViewModels
