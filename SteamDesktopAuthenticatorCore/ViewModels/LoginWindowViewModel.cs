@@ -15,12 +15,15 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
     {
         public LoginWindowViewModel()
         {
+            _manifestModelService = App.ManifestModelService;
+
             LoginType = LoginType.Initial;
             _loginExplanation = "This will activate Steam Desktop Authenticator on your Steam account. This requires a phone number that can receive SMS.";
         }
 
         #region Variables
 
+        private readonly IManifestModelService _manifestModelService;
         private Window? _thisWindow;
         private LoginType _loginType;
         private string _userName = string.Empty;
@@ -274,7 +277,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             }
 
             //Save the file immediately; losing this would be bad.
-            await ManifestModelService.SaveSteamGuardAccount(linker.LinkedAccount);
+            await _manifestModelService.SaveSteamGuardAccount(linker.LinkedAccount);
 
             MessageBox.Show("The Mobile Authenticator has not yet been linked. Before finalizing the authenticator, please write down your revocation code: " + linker.LinkedAccount.RevocationCode);
 
@@ -287,7 +290,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
                 if (smsCodeWindow.ShowDialog() == false)
                 {
-                    await ManifestModelService.DeleteSteamGuardAccount(linker.LinkedAccount);
+                    await _manifestModelService.DeleteSteamGuardAccount(linker.LinkedAccount);
                     _thisWindow?.Close();
                     return;
                 }
@@ -300,7 +303,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 if (confirmRevocationCodeDataContext.InputString.ToUpper() != linker.LinkedAccount.RevocationCode)
                 {
                     MessageBox.Show("Revocation code incorrect; the authenticator has not been linked.");
-                    await ManifestModelService.DeleteSteamGuardAccount(linker.LinkedAccount);
+                    await _manifestModelService.DeleteSteamGuardAccount(linker.LinkedAccount);
                     _thisWindow?.Close();
                     return;
                 }
@@ -315,13 +318,13 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
                     case AuthenticatorLinker.FinalizeResult.UnableToGenerateCorrectCodes:
                         MessageBox.Show("Unable to generate the proper codes to finalize this authenticator. The authenticator should not have been linked. In the off-chance it was, please write down your revocation code, as this is the last chance to see it: " + linker.LinkedAccount.RevocationCode);
-                        await ManifestModelService.DeleteSteamGuardAccount(linker.LinkedAccount);
+                        await _manifestModelService.DeleteSteamGuardAccount(linker.LinkedAccount);
                         _thisWindow?.Close();
                         return;
 
                     case AuthenticatorLinker.FinalizeResult.GeneralFailure:
                         MessageBox.Show("Unable to finalize this authenticator. The authenticator should not have been linked. In the off-chance it was, please write down your revocation code, as this is the last chance to see it: " + linker.LinkedAccount.RevocationCode);
-                        await ManifestModelService.DeleteSteamGuardAccount(linker.LinkedAccount);
+                        await _manifestModelService.DeleteSteamGuardAccount(linker.LinkedAccount);
                         _thisWindow?.Close();
                         return;
                     case AuthenticatorLinker.FinalizeResult.Success:
@@ -331,7 +334,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 }
 
                 //Linked, finally. Re-save with FullyEnrolled property.
-                await ManifestModelService.SaveSteamGuardAccount(linker.LinkedAccount);
+                await _manifestModelService.SaveSteamGuardAccount(linker.LinkedAccount);
                 MessageBox.Show("Mobile authenticator successfully linked. Please write down your revocation code: " + linker.LinkedAccount.RevocationCode);
                 _thisWindow?.Close();
             }
@@ -375,7 +378,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (Account is null)
                 throw new ArgumentNullException(nameof(Account));
 
-            await ManifestModelService.SaveSteamGuardAccount(Account);
+            await _manifestModelService.SaveSteamGuardAccount(Account);
 
             if (isRefreshing)
             {

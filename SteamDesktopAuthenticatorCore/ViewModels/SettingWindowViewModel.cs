@@ -1,8 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
-using SteamAuthCore;
-using SteamDesktopAuthenticatorCore.Services;
 using WpfHelper;
 using WpfHelper.Commands;
 using WpfHelper.Custom;
@@ -13,24 +11,16 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
     {
         public SettingWindowViewModel()
         {
-            if (!App.InDesignMode)
-            {
-                _manifest = ManifestModelService.GetManifest().Result;
-            }
-            else
-            {
-                _manifest = new ManifestModel();
-            }
-            
-            _periodicCheckingInterval = _manifest.PeriodicCheckingInterval.ToString();
-            _autoConfirmMarketTransactions = _manifest.AutoConfirmMarketTransactions;
-            _autoConfirmTrades = _manifest.AutoConfirmTrades;
-            _checkAllAccounts = _manifest.CheckAllAccounts;
+            var manifest = App.ManifestModelService.GetManifestModel();
+
+            _periodicCheckingInterval = manifest.PeriodicCheckingInterval.ToString();
+            _autoConfirmMarketTransactions = manifest.AutoConfirmMarketTransactions;
+            _autoConfirmTrades = manifest.AutoConfirmTrades;
+            _checkAllAccounts = manifest.CheckAllAccounts;
         }
 
         #region Variables
 
-        private readonly ManifestModel _manifest;
         private static readonly Regex Regex = new("[^0-9]+");
 
         private string _periodicCheckingInterval;
@@ -83,14 +73,16 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             args.Handled = Regex.IsMatch(args.Text);
         });
 
-        public ICommand OnWindowCloseCommand => new AsyncRelayCommand(async o =>
+        public ICommand OnWindowCloseCommand => new RelayCommand(o =>
         {
-            _manifest.PeriodicCheckingInterval = int.Parse(PeriodicCheckingInterval);
-            _manifest.AutoConfirmMarketTransactions = AutoConfirmMarketTransactions;
-            _manifest.AutoConfirmTrades = AutoConfirmTrades;
-            _manifest.CheckAllAccounts = CheckAllAccounts;
+            var manifest = App.ManifestModelService.GetManifestModel();
 
-            await ManifestModelService.SaveManifest();
+            manifest.PeriodicCheckingInterval = int.Parse(PeriodicCheckingInterval);
+            manifest.AutoConfirmMarketTransactions = AutoConfirmMarketTransactions;
+            manifest.AutoConfirmTrades = AutoConfirmTrades;
+            manifest.CheckAllAccounts = CheckAllAccounts;
+
+            App.ManifestModelService.SaveManifest();
         });
 
         #endregion

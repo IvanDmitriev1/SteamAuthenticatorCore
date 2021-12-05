@@ -112,7 +112,7 @@ namespace GoogleDrive
             OnConnection();
         }
 
-        public async Task<string> UploadFile(string fileName, MemoryStream stream)
+        public async Task<string> UploadFile(string fileName, Stream stream)
         {
             //updating previous data
             if (await CheckForFile(fileName) is { } file)
@@ -132,7 +132,7 @@ namespace GoogleDrive
             return createRequest.ResponseBody.Id;
         }
 
-        public async Task<string> UploadFile(GoogleFile file, MemoryStream stream)
+        public async Task<string> UploadFile(GoogleFile file, Stream stream)
         {
             string contentType = $"file/{Path.GetExtension(file.Name).Remove(0, 1)}";
             GoogleFile fileMetadata = new()

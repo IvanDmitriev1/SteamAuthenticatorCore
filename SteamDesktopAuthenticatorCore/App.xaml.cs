@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using GoogleDrive;
+using SteamAuthCore;
 using SteamDesktopAuthenticatorCore.classes;
 using SteamDesktopAuthenticatorCore.Services;
 using WpfHelper.Services;
@@ -25,14 +26,14 @@ namespace SteamDesktopAuthenticatorCore
             GoogleDriveApi = new GoogleDriveApi(userCredentialPath,
                 new []{ Google.Apis.Drive.v3.DriveService.Scope.DriveFile },$"{Name}");
 
-            ManifestModelService.Api = GoogleDriveApi;
-
             UpdateService.GitHubUrl = "https://api.github.com/repos/bduj1/StreamDesktopAuthenticatorCore/releases/latest";
         }
 
         #region Fields
+
         public static bool InDesignMode { get; private set; } = true;
         public static GoogleDriveApi GoogleDriveApi { get; private set; } = null!;
+        public static IManifestModelService ManifestModelService { get; private set; } = null!;
 
         public const string Name = "SteamDesktopAuthenticatorCore";
 
@@ -54,6 +55,24 @@ namespace SteamDesktopAuthenticatorCore
             }
 
             base.OnStartup(e);
+        }
+
+        public static async Task InitializeManifestService()
+        {
+            var settings = Settings.GetSettings();
+            switch (settings.ManifestLocation)
+            {
+                case Settings.ManifestLocationModel.Drive:
+                    ManifestModelService = new LocalDriveManifestModelService();
+                    break;
+                case Settings.ManifestLocationModel.GoogleDrive:
+                    ManifestModelService = new GoogleDriveManifestModelService();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            await ManifestModelService.Initialize();
         }
 
         #region PrivateMethods

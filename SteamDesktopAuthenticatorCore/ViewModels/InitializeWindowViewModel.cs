@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -9,7 +7,6 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using SteamAuthCore;
 using SteamDesktopAuthenticatorCore.classes;
-using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
 using WpfHelper.Commands;
@@ -20,6 +17,8 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
     {
         public InitializeWindowViewModel()
         {
+            _manifestModelService = App.ManifestModelService;
+
             _buttonDelay = new DispatcherTimer()
             {
                 Interval = TimeSpan.FromSeconds(15)
@@ -46,6 +45,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         #region Variables
 
+        private readonly IManifestModelService _manifestModelService;
         private Window _thisWindow = null!;
         private readonly DispatcherTimer _buttonDelay;
         private bool _refreshButtonClick;
@@ -101,6 +101,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         #endregion
 
         #region PrivateMethods
+
         private async Task Init()
         {
             var settings = Settings.GetSettings();
@@ -109,17 +110,14 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             {
                 case Settings.ManifestLocationModel.Drive:
                 {
-                    ManifestModel manifest = await ManifestModelService.GetManifestFromDrive();
-                    StartWindows(manifest, settings);
+                    await StartWindows(settings);
                     return;
                 }
                 case Settings.ManifestLocationModel.GoogleDrive:
                 {
-                    ManifestModel manifest = new();
-
                     try
                     {
-                        manifest = await GoogleDriveSetup();
+                        await GoogleDriveSetup();
                     }
                     catch (HttpRequestException)
                     {
@@ -135,15 +133,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
                     if (!App.GoogleDriveApi.IsAuthenticated || _windowOpened) return;
 
-                    if (settings.ImportFiles)
-                    {
-                        await ImportFilesToGoogleDrive();
-                        settings.ImportFiles = false;
-
-                        settings.SaveSettings();
-                    }
-
-                    StartWindows(manifest, settings);
+                    await StartWindows(settings);
 
                     return;
                 }
@@ -152,57 +142,23 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             }
         }
 
-        private static async Task<ManifestModel> GoogleDriveSetup()
+        private static async Task GoogleDriveSetup()
         {
             if (!await App.GoogleDriveApi.Init(Assembly.GetExecutingAssembly().GetManifestResourceStream("SteamDesktopAuthenticatorCore.client_secret.json")!))
             {
                 await App.GoogleDriveApi.ConnectGoogleDrive(Assembly.GetExecutingAssembly().GetManifestResourceStream("SteamDesktopAuthenticatorCore.client_secret.json")!);
             }
-
-            return await ManifestModelService.GetManifestFromGoogleDrive();
         }
 
-        private static async Task ImportFilesToGoogleDrive()
+        private async Task StartWindows(Settings settings)
         {
-            foreach (var file in Directory.GetFiles(ManifestModelService.MaFilesDirectory))
-            {
-                if (!file.Contains(".maFile")) continue;
+            await App.InitializeManifestService();
 
-                try
-                {
-                    await using FileStream fileStream = new(file, FileMode.Open);
-                    using StreamReader reader = new(fileStream);
-                    await ManifestModelService.AddSteamGuardAccountInGoogleDrive(Path.GetFileName(file), await reader.ReadToEndAsync());
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e.Message);
-                }
-            }
-
-            await ManifestModelService.GetAccountsInGoogleDrive();
-        }
-
-        private void StartWindows(ManifestModel manifest, Settings settings)
-        {
             _refreshButtonClick = false;
             _windowOpened = true;
 
             if (settings.FirstRun)
             {
-                if (manifest.Accounts.Count == 0)
-                {
-                    settings.FirstRun = false;
-                    settings.SaveSettings();
-
-                    WelcomeWindowView welcomeWindow = new();
-                    welcomeWindow.Show();
-
-                    _closeWindow = true;
-                    _thisWindow.Close();
-                    return;
-                }
-
                 settings.FirstRun = false;
                 settings.SaveSettings();
 

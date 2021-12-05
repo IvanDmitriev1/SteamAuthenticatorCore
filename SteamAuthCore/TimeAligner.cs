@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
@@ -31,7 +30,7 @@ namespace SteamAuthCore
         #region Variabels
 
         private static bool _aligned;
-        private static int _timeDifference;
+        private static Int64 _timeDifference;
 
         #endregion
 
@@ -51,35 +50,22 @@ namespace SteamAuthCore
             return Util.GetSystemUnixTime() + _timeDifference;
         }
 
-        public static void AlignTime()
+        private static void AlignTime()
         {
-            try
-            {
-                string response = SteamApi.Request(ApiEndpoints.TwoFactorTimeQuery, SteamApi.RequestMethod.Post, "steamid=0") ?? string.Empty;
-                if (JsonSerializer.Deserialize<TimeQuery>(response) is not { } query)
-                    throw new ArgumentNullException(nameof(query));
+            if (SteamApi.Request<TimeQuery>(ApiEndpoints.TwoFactorTimeQuery, SteamApi.RequestMethod.Post, "steamid=0") is not { } query)
+                return;
 
-                _timeDifference = (int)(Int64.Parse(query.Response.ServerTime) - Util.GetSystemUnixTime());
-                _aligned = true;
-            }
-            catch (WebException)
-            {
-            }
+            _timeDifference = Int64.Parse(query.Response.ServerTime) - Util.GetSystemUnixTime();
+            _aligned = true;
         }
 
-        public static async Task AlignTimeAsync()
+        private static async Task AlignTimeAsync()
         {
-            try
-            {
-                if (await SteamApi.RequestAsync<TimeQuery>(ApiEndpoints.TwoFactorTimeQuery, SteamApi.RequestMethod.Post, "steamid=0") is not {} query)
-                    return;
+            if (await SteamApi.RequestAsync<TimeQuery>(ApiEndpoints.TwoFactorTimeQuery, SteamApi.RequestMethod.Post, "steamid=0") is not { } query)
+                return;
 
-                _timeDifference = (int)(Int64.Parse(query.Response.ServerTime) - Util.GetSystemUnixTime());
-                _aligned = true;
-            }
-            catch (WebException)
-            {
-            }
+            _timeDifference = Int64.Parse(query.Response.ServerTime) - Util.GetSystemUnixTime();
+            _aligned = true;
         }
     }
 }

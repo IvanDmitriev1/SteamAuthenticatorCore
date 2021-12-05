@@ -145,7 +145,7 @@
 
                         <Separator/>
 
-                        <ComboBox ItemsSource="{Binding Path=Manifest.Accounts}"
+                        <ComboBox ItemsSource="{Binding Path=SteamGuardAccounts}"
                                   SelectedItem="{Binding Path=SelectedAccount}" >
 
                             <ComboBox.ItemTemplate>
@@ -239,7 +239,7 @@
 
                 </Button>
 
-                <ListBox ItemsSource="{Binding Path=Manifest.Accounts}"
+                <ListBox ItemsSource="{Binding Path=SteamGuardAccounts}"
                          SelectedItem="{Binding Path=SelectedAccount}"
                          Margin="0 10 0 0"
                          Height="193"

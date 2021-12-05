@@ -26,6 +26,8 @@ namespace SteamAuthCore
             PeriodicCheckingInterval = model.PeriodicCheckingInterval;
         }
 
+        #region Properties
+
         [JsonPropertyName("encrypted")]
         public bool Encrypted { get; set; } = false;
 
@@ -33,7 +35,7 @@ namespace SteamAuthCore
         public bool FirstRun { get; set; }
 
         [JsonPropertyName("accounts")]
-        public ObservableCollection<SteamGuardAccount> Accounts { get; set; } = new();
+        public ObservableCollection<SteamGuardAccount>? Accounts { get; set; }
 
         [JsonPropertyName("periodic_checking")]
         public bool PeriodicChecking { get; set; } = false;
@@ -50,5 +52,6 @@ namespace SteamAuthCore
         [JsonPropertyName("auto_confirm_trades")]
         public bool AutoConfirmTrades { get; set; } = false;
 
+        #endregion
     }
 }

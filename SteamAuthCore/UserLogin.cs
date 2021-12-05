@@ -154,14 +154,8 @@ namespace SteamAuthCore
             postData.Add("username", Username);
 
 
-            if (SteamApi.MobileLoginRequest(ApiEndpoints.CommunityBase + "/login/getrsakey", SteamApi.RequestMethod.Post, postData, cookies) is not { } response)
+            if (SteamApi.MobileLoginRequest<RsaResponse>(ApiEndpoints.CommunityBase + "/login/getrsakey", SteamApi.RequestMethod.Post, postData, cookies) is not {  } rsaResponse)
                 return LoginResult.GeneralFailure;
-
-            if (response.Contains("<BODY>\nAn error occurred while processing your request."))
-                return LoginResult.GeneralFailure;
-
-            if (JsonSerializer.Deserialize<RsaResponse>(response) is not { } rsaResponse)
-                throw new ArgumentNullException(nameof(rsaResponse));
 
             if (!rsaResponse.Success)
                 return LoginResult.BadRsa;
@@ -200,11 +194,8 @@ namespace SteamAuthCore
             postData.Add("oauth_client_id", "DE45CD61");
             postData.Add("oauth_scope", "read_profile write_profile read_client write_client");
 
-            if (SteamApi.MobileLoginRequest(ApiEndpoints.CommunityBase + "/login/dologin", SteamApi.RequestMethod.Post, postData, cookies) is not { } newResponse)
+            if (SteamApi.MobileLoginRequest<LoginResponse>(ApiEndpoints.CommunityBase + "/login/dologin", SteamApi.RequestMethod.Post, postData, cookies) is not { } loginResponse)
                 return LoginResult.GeneralFailure;
-
-            if (JsonSerializer.Deserialize<LoginResponse>(newResponse) is not {} loginResponse)
-                throw new ArgumentNullException(nameof(loginResponse));
 
             if (loginResponse.Message is not null)
             {
