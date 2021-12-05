@@ -36,9 +36,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GoogleDrive\GoogleDrive.csproj" />
-    <ProjectReference Include="..\SteamAuthCore\SteamAuthCore.csproj" />
-    <ProjectReference Include="..\WpfHelper\WpfHelper.csproj" />
+    <ProjectReference Include="..\FrameWorks\GoogleDrive\GoogleDrive.csproj" />
+    <ProjectReference Include="..\FrameWorks\SteamAuthCore\SteamAuthCore.csproj" />
+    <ProjectReference Include="..\FrameWorks\WpfHelper\WpfHelper.csproj" />
   </ItemGroup>
 
   <ItemGroup>
