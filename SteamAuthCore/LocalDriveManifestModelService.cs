@@ -46,11 +46,6 @@ namespace SteamAuthCore
             await File.WriteAllTextAsync(ManifestFilePath, serialized);
         }
 
-        public Task DeleteManifest()
-        {
-            throw new System.NotImplementedException();
-        }
-
         public async Task<ICollection<SteamGuardAccount>> GetAccounts()
         {
             if (_manifestModel.Accounts is not null)

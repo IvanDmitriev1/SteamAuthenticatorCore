@@ -41,14 +41,11 @@ namespace SteamDesktopAuthenticatorCore.Services
             return _manifestModel;
         }
 
-        public Task SaveManifest()
+        public async Task SaveManifest()
         {
-            throw new NotImplementedException();
-        }
-
-        public Task DeleteManifest()
-        {
-            throw new NotImplementedException();
+            string serialized = JsonSerializer.Serialize(_manifestModel);
+            await using MemoryStream stream = new(Encoding.UTF8.GetBytes(serialized));
+            await _api.UploadFile(IManifestModelService.ManifestFileName, stream);
         }
 
         public async Task<ICollection<SteamGuardAccount>> GetAccounts()
@@ -84,7 +81,10 @@ namespace SteamDesktopAuthenticatorCore.Services
             string serialized = JsonSerializer.Serialize(_manifestModel);
 
             if (await FindMaFileInGoogleDrive(account) is { } file)
+            {
+                await using MemoryStream stream = new(Encoding.UTF8.GetBytes(serialized));
                 await _api.UploadFile(file, new MemoryStream(Encoding.UTF8.GetBytes(serialized)));
+            }
         }
 
         public async Task DeleteSteamGuardAccount(SteamGuardAccount account)

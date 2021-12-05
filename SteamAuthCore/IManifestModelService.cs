@@ -12,7 +12,6 @@ namespace SteamAuthCore
 
         public ManifestModel GetManifestModel();
         public Task SaveManifest();
-        public Task DeleteManifest();
 
         public Task<ICollection<SteamGuardAccount>> GetAccounts();
         public Task<SteamGuardAccount?> AddSteamGuardAccount(FileStream fileStream);
