@@ -1,0 +1,3 @@
+[submodule "FrameWorks/WpfHelper"]
+	path = FrameWorks/WpfHelper
+	url = https://github.com/bduj1/WpfHelper
