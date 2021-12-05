@@ -54,7 +54,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
             _steamGuardTimer = new DispatcherTimer()
             {
-                Interval = new TimeSpan(0, 0, 1),
+                Interval = new TimeSpan(0, 0, 2),
             };
             _steamGuardTimer.Tick += SteamGuardTimerOnTick;
             _steamGuardTimer.Start();

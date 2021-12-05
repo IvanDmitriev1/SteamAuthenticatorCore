@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -55,7 +53,7 @@ namespace SteamAuthCore
 
             foreach (var file in Directory.GetFiles(MaFilesDirectory))
             {
-                if (!file.Contains(".maFile")) continue;
+                if (!file.Contains(IManifestModelService.FileExtension)) continue;
 
                 await using var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
 
@@ -104,7 +102,7 @@ namespace SteamAuthCore
             var files = Directory.GetFiles(MaFilesDirectory);
             foreach (var file in files)
             {
-                if (!file.Contains(".maFile")) continue;
+                if (!file.Contains(IManifestModelService.FileExtension)) continue;
 
                 await using var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
 

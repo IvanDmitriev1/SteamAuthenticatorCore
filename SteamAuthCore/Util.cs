@@ -4,9 +4,9 @@ namespace SteamAuthCore
 {
     public static class Util
     {
-        public static long GetSystemUnixTime()
+        public static Int64 GetSystemUnixTime()
         {
-            return (long)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            return Convert.ToInt64(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
         }
 
         public static byte[] HexStringToByteArray(string hex)

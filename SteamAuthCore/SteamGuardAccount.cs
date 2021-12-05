@@ -4,7 +4,6 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -133,17 +132,9 @@ namespace SteamAuthCore
                 {"access_token", Session.OAuthToken}
             };
 
-            try
-            {
-                if (SteamApi.MobileLoginRequest(ApiEndpoints.SteamApiBase + "/ITwoFactorService/RemoveAuthenticator/v0001", SteamApi.RequestMethod.Post, postData) is not { } response)
-                    throw new ArgumentNullException(nameof(response));
-
-                return JsonSerializer.Deserialize<RemoveAuthenticatorResponse>(response) is {Response: {Success: true}};
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return SteamApi.MobileLoginRequest<RemoveAuthenticatorResponse>(
+                ApiEndpoints.SteamApiBase + "/ITwoFactorService/RemoveAuthenticator/v0001",
+                SteamApi.RequestMethod.Post, postData) is not { Response: { Success: true } };
         }
 
         public string? GenerateSteamGuardCode()
@@ -206,13 +197,10 @@ namespace SteamAuthCore
             queryString += "&cid=" + conf.Id + "&ck=" + conf.Key;
             url += queryString;
 
-            if (SteamApi.Request(url, SteamApi.RequestMethod.Get, "", Session.GetCookies(), null) is not { } response)
-                return false;
-
-            if (JsonSerializer.Deserialize<SendConfirmationResponse>(response) is not { } confResponse)
-                throw new ArgumentNullException(nameof(confResponse));
-
-            return confResponse.Success;
+            return SteamApi.Request<SendConfirmationResponse>(url, SteamApi.RequestMethod.Get, "", Session.GetCookies(), null) is
+            {
+                Success: true
+            };
         }
 
         public bool SendConfirmationAjax(IEnumerable<ConfirmationModel> confs, Confirmation op)
@@ -225,13 +213,10 @@ namespace SteamAuthCore
                 query += "&cid[]=" + conf.Id + "&ck[]=" + conf.Key;
             }
 
-            if (SteamApi.Request(url, SteamApi.RequestMethod.Post, query, Session.GetCookies()) is not { } response)
-                return false;
-
-            if (JsonSerializer.Deserialize<SendConfirmationResponse>(response) is not { } confResponse)
-                throw new ArgumentNullException(nameof(confResponse));
-
-            return confResponse.Success;
+            return SteamApi.Request<SendConfirmationResponse>(url, SteamApi.RequestMethod.Post, query, Session.GetCookies()) is
+            {
+                Success: true
+            };
         }
 
         public ConfirmationDetailsResponse? GetConfirmationDetails(ConfirmationModel conf)
@@ -240,51 +225,23 @@ namespace SteamAuthCore
             string queryString = GenerateConfirmationQueryParams("details");
             url += queryString;
 
-            string? response = SteamApi.Request(url, SteamApi.RequestMethod.Get, "", Session.GetCookies());
-            if (string.IsNullOrEmpty(response)) return null;
-
-            return JsonSerializer.Deserialize<ConfirmationDetailsResponse>(response) is not { } confResponse ? null : confResponse;
+            return SteamApi.Request<ConfirmationDetailsResponse>(url, SteamApi.RequestMethod.Get, "", Session.GetCookies());
         }
 
-        /// <summary>
-        /// Refreshes the Steam session. Necessary to perform confirmations if your session has expired or changed.
-        /// </summary>
-        /// <returns></returns>
         public async Task<bool> RefreshSessionAsync()
         {
             string url = ApiEndpoints.MobileauthGetwgtoken;
-            NameValueCollection postData = new NameValueCollection();
-            postData.Add("access_token", this.Session.OAuthToken);
+            NameValueCollection postData = new NameValueCollection {{"access_token", Session.OAuthToken}};
 
-            string? response;
-            try
-            {
-                response = await SteamApi.RequestAsync(url, SteamApi.RequestMethod.Post, postData);
-            }
-            catch (WebException)
-            {
+            if (await SteamApi.RequestAsync<RefreshSessionDataResponse>(url, SteamApi.RequestMethod.Post, postData) is not { Response: not null } refreshResponse)
                 return false;
-            }
 
-            if (response is null) return false;
+            string token = Session.SteamId + "%7C%7C" + refreshResponse.Response.Token;
+            string tokenSecure = Session.SteamId + "%7C%7C" + refreshResponse.Response.TokenSecure;
 
-            try
-            {
-                RefreshSessionDataResponse? refreshResponse = JsonSerializer.Deserialize<RefreshSessionDataResponse>(response);
-                if (refreshResponse?.Response == null || string.IsNullOrEmpty(refreshResponse.Response.Token))
-                    return false;
-
-                string token = Session.SteamId + "%7C%7C" + refreshResponse.Response.Token;
-                string tokenSecure = Session.SteamId + "%7C%7C" + refreshResponse.Response.TokenSecure;
-
-                Session.SteamLogin = token;
-                Session.SteamLoginSecure = tokenSecure;
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            Session.SteamLogin = token;
+            Session.SteamLoginSecure = tokenSecure;
+            return true;
         }
 
         public string GenerateConfirmationUrl(string tag = "conf")
@@ -306,18 +263,20 @@ namespace SteamAuthCore
 
         public NameValueCollection GenerateConfirmationQueryParamsAsNvc(string tag)
         {
-            if (String.IsNullOrEmpty(DeviceId))
+            if (string.IsNullOrEmpty(DeviceId))
                 throw new ArgumentException("Device ID is not present");
 
-            long time = TimeAligner.GetSteamTime();
+            var time = TimeAligner.GetSteamTime();
 
-            var ret = new NameValueCollection();
-            ret.Add("p", this.DeviceId);
-            ret.Add("a", this.Session.SteamId.ToString());
-            ret.Add("k", GenerateConfirmationHashForTime(time, tag));
-            ret.Add("t", time.ToString());
-            ret.Add("m", "android");
-            ret.Add("tag", tag);
+            var ret = new NameValueCollection
+            {
+                {"p", DeviceId},
+                {"a", Session.SteamId.ToString()},
+                {"k", GenerateConfirmationHashForTime(time, tag)},
+                {"t", time.ToString()},
+                {"m", "android"},
+                {"tag", tag}
+            };
 
             return ret;
         }
@@ -340,7 +299,7 @@ namespace SteamAuthCore
                 if (response is null || !response.Contains("<div>Nothing to confirm</div>"))
                     throw new WgTokenInvalidException();
 
-                return new ConfirmationModel[0];
+                return Array.Empty<ConfirmationModel>();
             }
 
             MatchCollection confirmations = confRegex.Matches(response);

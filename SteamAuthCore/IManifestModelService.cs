@@ -6,6 +6,7 @@ namespace SteamAuthCore
 {
     public interface IManifestModelService
     {
+        public const string FileExtension = ".maFile";
         protected const string ManifestFileName = "manifest.json";
 
         public Task Initialize();
