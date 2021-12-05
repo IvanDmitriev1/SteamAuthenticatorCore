@@ -145,7 +145,7 @@
 
                         <Separator/>
 
-                        <ComboBox ItemsSource="{Binding Path=Manifest.Accounts}"
+                        <ComboBox ItemsSource="{Binding Path=SteamGuardAccounts}"
                                   SelectedItem="{Binding Path=SelectedAccount}" >
 
                             <ComboBox.ItemTemplate>

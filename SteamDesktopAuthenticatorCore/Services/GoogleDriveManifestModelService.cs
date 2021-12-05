@@ -73,25 +73,46 @@ namespace SteamDesktopAuthenticatorCore.Services
             return accounts;
         }
 
-        public Task<SteamGuardAccount?> AddSteamGuardAccount(FileStream fileStream)
+        public async Task<SteamGuardAccount?> AddSteamGuardAccount(FileStream fileStream)
         {
-            throw new NotImplementedException();
+            await _api.UploadFile(fileStream.Name, fileStream);
+            return await JsonSerializer.DeserializeAsync<SteamGuardAccount>(fileStream);
         }
 
-        public Task SaveSteamGuardAccount(SteamGuardAccount account)
+        public async Task SaveSteamGuardAccount(SteamGuardAccount account)
         {
-            throw new NotImplementedException();
+            string serialized = JsonSerializer.Serialize(_manifestModel);
+
+            if (await FindMaFileInGoogleDrive(account) is { } file)
+                await _api.UploadFile(file, new MemoryStream(Encoding.UTF8.GetBytes(serialized)));
         }
 
-        public Task DeleteSteamGuardAccount(SteamGuardAccount account)
+        public async Task DeleteSteamGuardAccount(SteamGuardAccount account)
         {
-            throw new NotImplementedException();
+            if (await FindMaFileInGoogleDrive(account) is { } file)
+                await _api.DeleteFile(file.Id);
         }
 
         private async Task<T?> ApiDownload<T>(string id)
         {
-            using var stream = await _api.DownloadFileAsStream(id);
+            await using var stream = await _api.DownloadFileAsStream(id);
             return await JsonSerializer.DeserializeAsync<T>(stream);
+        }
+
+        private async Task<GoogleFile?> FindMaFileInGoogleDrive(SteamGuardAccount account)
+        {
+            if (await _api.GetFiles() is not { } files) return null;
+            foreach (var file in files)
+            {
+                if (!file.Name.Contains(".maFile")) continue;
+                if (JsonSerializer.Deserialize<SteamGuardAccount>(await _api.DownloadFileAsString(file.Id)) is not { } account2)
+                    return default;
+
+                if (account.Secret1 == account2.Secret1 && account.IdentitySecret == account2.IdentitySecret)
+                    return file;
+            }
+
+            return default;
         }
     }
 }
