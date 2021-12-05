@@ -13,7 +13,7 @@ using WpfHelper.Services;
 
 namespace SteamDesktopAuthenticatorCore
 {
-    public partial class App : Application, IDisposable
+    public sealed partial class App : Application, IDisposable
     {
         public App()
         {
@@ -106,8 +106,6 @@ namespace SteamDesktopAuthenticatorCore
         public void Dispose()
         {
             GoogleDriveApi.Dispose();
-
-            GC.SuppressFinalize(this);
         }
     }
 }
