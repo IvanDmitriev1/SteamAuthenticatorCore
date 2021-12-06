@@ -4,11 +4,14 @@ using System.Threading.Tasks;
 
 namespace SteamAuthCore
 {
-    public interface IManifestModelService
+    public static class ManifestModelServiceConstants
     {
         public const string FileExtension = ".maFile";
-        protected const string ManifestFileName = "manifest.json";
+        public const string ManifestFileName = "manifest.json";
+    }
 
+    public interface IManifestModelService
+    {
         public Task Initialize();
 
         public ManifestModel GetManifestModel();

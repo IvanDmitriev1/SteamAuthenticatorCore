@@ -251,7 +251,7 @@ namespace SteamAuthCore
             request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
             request.ContentLength = query.Length;
 
-            await using StreamWriter requestStream = new(request.GetRequestStream());
+            using StreamWriter requestStream = new(request.GetRequestStream());
             await requestStream.WriteAsync(query);
 
             return request;
