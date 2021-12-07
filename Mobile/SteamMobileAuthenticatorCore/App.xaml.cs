@@ -1,24 +1,24 @@
 ﻿using SteamMobileAuthenticatorCore.Services;
-using SteamMobileAuthenticatorCore.Views;
-using System;
+using SteamAuthCore;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 
 namespace SteamMobileAuthenticatorCore
 {
     public partial class App : Application
     {
+        public static IManifestModelService ManifestModelService { get; private set; }
 
         public App()
         {
             InitializeComponent();
 
-            DependencyService.Register<MockDataStore>();
             MainPage = new AppShell();
+            ManifestModelService = new LocalDriveManifestModelService(new MobileDirectoryService());
         }
 
         protected override void OnStart()
         {
+            //await ManifestModelService.Initialize();
         }
 
         protected override void OnSleep()

@@ -27,6 +27,9 @@
                     </VisualStateGroupList>
                 </Setter>
             </Style>
+
+            <Color x:Key="DarkBackgroundColor">#222222</Color>
+            <Color x:Key="LightBackgroundColor">#ffffff</Color>
         </ResourceDictionary>        
     </Application.Resources>
 </Application>

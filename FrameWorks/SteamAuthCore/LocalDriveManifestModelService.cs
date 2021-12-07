@@ -1,28 +1,50 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SteamAuthCore
 {
-    public class LocalDriveManifestModelService : IManifestModelService
+    public class DesktopManifestDirectoryService : IManifestDirectoryService
     {
-        private ManifestModel _manifestModel = null!;
-        private static readonly string MaFilesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "maFiles");
-        private static readonly string ManifestFilePath = Path.Combine(MaFilesDirectory, ManifestModelServiceConstants.ManifestFileName);
+        public DesktopManifestDirectoryService()
+        {
+            MaFilesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "maFiles");
+            ManifestFilePath = Path.Combine(MaFilesDirectory, ManifestModelServiceConstants.ManifestFileName);
+        }
 
-        public async Task Initialize()
+        public string MaFilesDirectory { get; }
+        public string ManifestFilePath { get; }
+
+        public void CheckAndCreateDirectory()
         {
             if (!Directory.Exists(MaFilesDirectory))
                 Directory.CreateDirectory(MaFilesDirectory);
+        }
+    }
 
-            if (!File.Exists(ManifestFilePath))
+    public class LocalDriveManifestModelService : IManifestModelService
+    {
+        public LocalDriveManifestModelService(IManifestDirectoryService directoryService)
+        {
+            _manifestDirectoryService = directoryService;
+        }
+
+        private readonly IManifestDirectoryService _manifestDirectoryService;
+        private ManifestModel? _manifestModel;
+
+        public async Task Initialize()
+        {
+            _manifestDirectoryService.CheckAndCreateDirectory();
+
+            if (!File.Exists(_manifestDirectoryService.ManifestFilePath))
             {
                 _manifestModel = new ManifestModel();
                 return;
             }
 
-            using (var fileStream = new FileStream(ManifestFilePath, FileMode.Open, FileAccess.Read))
+            using (var fileStream = new FileStream(_manifestDirectoryService.ManifestFilePath, FileMode.Open, FileAccess.Read))
             {
                 if (await JsonSerializer.DeserializeAsync<ManifestModel>(fileStream) is not { } manifest)
                     manifest = new ManifestModel();
@@ -35,26 +57,29 @@ namespace SteamAuthCore
 
         public ManifestModel GetManifestModel()
         {
-            return _manifestModel;
+            return _manifestModel!;
         }
 
         public async Task SaveManifest()
         {
             string serialized = JsonSerializer.Serialize(_manifestModel);
 
-            using var fileStream = new FileStream(ManifestFilePath, FileMode.Create, FileAccess.Write);
+            using var fileStream = new FileStream(_manifestDirectoryService.ManifestFilePath, FileMode.Create, FileAccess.Write);
             using var streamWriter = new StreamWriter(fileStream);
             await streamWriter.WriteAsync(serialized);
         }
 
         public async Task<ICollection<SteamGuardAccount>> GetAccounts()
         {
-            if (_manifestModel.Accounts is not null)
+            if (_manifestModel is null)
+                await Initialize();
+
+            if (_manifestModel!.Accounts is not null)
                 return _manifestModel.Accounts;
 
             var accounts = new List<SteamGuardAccount>();
 
-            foreach (var file in Directory.GetFiles(MaFilesDirectory))
+            foreach (var file in Directory.GetFiles(_manifestDirectoryService.MaFilesDirectory))
             {
                 if (!file.Contains(ManifestModelServiceConstants.FileExtension)) continue;
 
@@ -74,7 +99,7 @@ namespace SteamAuthCore
             var account = await JsonSerializer.DeserializeAsync<SteamGuardAccount>(fileStream);
 
             string fileName = Path.ChangeExtension(Path.GetFileNameWithoutExtension(fileStream.Name), ".maFile");
-            string newFilePath = Path.Combine(MaFilesDirectory, fileName);
+            string newFilePath = Path.Combine(_manifestDirectoryService.MaFilesDirectory, fileName);
 
             fileStream.Seek(0, SeekOrigin.Begin);
 
@@ -102,9 +127,9 @@ namespace SteamAuthCore
                 File.Delete(path);
         }
 
-        private static async Task<string?> FindFileInDrive(SteamGuardAccount account)
+        private async Task<string?> FindFileInDrive(SteamGuardAccount account)
         {
-            var files = Directory.GetFiles(MaFilesDirectory);
+            var files = Directory.GetFiles(_manifestDirectoryService.MaFilesDirectory);
             foreach (var file in files)
             {
                 if (!file.Contains(ManifestModelServiceConstants.FileExtension)) continue;

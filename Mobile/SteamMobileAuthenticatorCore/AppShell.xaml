@@ -2,6 +2,7 @@
 <Shell xmlns="http://xamarin.com/schemas/2014/forms" 
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        xmlns:local="clr-namespace:SteamMobileAuthenticatorCore.Views"
+       xmlns:steamMobileAuthenticatorCore="clr-namespace:SteamMobileAuthenticatorCore;assembly=SteamMobileAuthenticatorCore"
        Title="SteamMobileAuthenticatorCore"
        x:Class="SteamMobileAuthenticatorCore.AppShell"
        Visual="Material">
@@ -31,17 +32,26 @@
     </Shell.Resources>
 
     <TabBar>
-        <ShellContent Title="About" Icon="icon_about.png" Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
-        <ShellContent Title="Browse" Icon="icon_feed.png" ContentTemplate="{DataTemplate local:ItemsPage}" />
+        <ShellContent Title="Main"  Route="MainPage" ContentTemplate="{DataTemplate local:MainPage}" >
+            <ShellContent.Icon>
+                <x:FontImage FontFamily="Material"
+                             Glyph="{x:Static steamMobileAuthenticatorCore:MaterialDesignIcons.Home}"></x:FontImage>
+            </ShellContent.Icon>
+        </ShellContent>
+        <ShellContent Title="Settings" ContentTemplate="{DataTemplate local:SettingsPage}" >
+            <ShellContent.Icon>
+                <x:FontImage FontFamily="Material"
+                             Glyph="{x:Static steamMobileAuthenticatorCore:MaterialDesignIcons.Settings}"></x:FontImage>
+            </ShellContent.Icon>
+        </ShellContent>
     </TabBar>
 
     <!--
         If you would like to navigate to this content you can do so by calling
         await Shell.Current.GoToAsync("//LoginPage");
     -->
-    <TabBar>
+    <!--<TabBar>
         <ShellContent Route="LoginPage" ContentTemplate="{DataTemplate local:LoginPage}" />
-    </TabBar>
-
+    </TabBar>-->
 
 </Shell>
