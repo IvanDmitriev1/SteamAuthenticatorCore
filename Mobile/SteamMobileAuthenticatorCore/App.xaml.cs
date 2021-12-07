@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using SteamAuthCore;
 using SteamMobileAuthenticatorCore.Services;
@@ -13,7 +14,7 @@ namespace SteamMobileAuthenticatorCore
     {
         public static IManifestModelService ManifestModelService { get; private set; } = null!;
         public static ObservableCollection<SteamGuardAccount> Accounts { get; private set; } = null!;
-        public static Timer AutoMarketSetTimer { get; private set; } = null!;
+        public static Timer AutoMarketSellTimer { get; private set; } = null!;
 
         public App()
         {
@@ -21,7 +22,7 @@ namespace SteamMobileAuthenticatorCore
 
             MainPage = new AppShell();
             Accounts = new ObservableCollection<SteamGuardAccount>();
-            AutoMarketSetTimer = new Timer(AutoTradeConfirmationTimerOnTick);
+            AutoMarketSellTimer = new Timer(AutoTradeConfirmationTimerOnTick);
             ManifestModelService = new LocalDriveManifestModelService(new MobileDirectoryService());
         }
 
@@ -43,8 +44,9 @@ namespace SteamMobileAuthenticatorCore
         private static async Task AutoTradeConfirmationTimerOnTick()
         {
             Dictionary<SteamGuardAccount, List<ConfirmationModel>> autoAcceptConfirmations = new();
+            SteamGuardAccount[] accounts = Accounts.ToArray();
 
-            foreach (var account in Accounts)
+            foreach (var account in accounts)
             {
                 try
                 {

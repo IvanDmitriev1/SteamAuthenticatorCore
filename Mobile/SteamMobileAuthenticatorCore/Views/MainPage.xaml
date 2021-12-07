@@ -6,7 +6,7 @@
              x:Class="SteamMobileAuthenticatorCore.Views.MainPage"
              Title="Main page"
              Visual="Material"
-             Shell.NavBarHasShadow="True" >
+             Shell.NavBarHasShadow="True">
 
     <ContentPage.Behaviors>
         <behaviors:EventToCommandBehavior EventName="Appearing"

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using SteamAuthCore;
@@ -12,15 +13,15 @@ using Xamarin.Forms;
 
 namespace SteamMobileAuthenticatorCore.ViewModels
 {
-    class MainPageViewModel : BaseViewModel, IDisposable
+    class MainPageViewModel : BaseViewModel
     {
         public MainPageViewModel()
         {
             _manifestModelService = App.ManifestModelService;
-            Accounts = App.Accounts;
+            Accounts = new ObservableCollection<SteamGuardAccount>();
 
-            _steamGuardTimer = new Timer(SteamGuardTimerOnTick);
-            _steamGuardTimer.Start(TimeSpan.FromSeconds(2));
+            var steamGuardTimer = new Timer(SteamGuardTimerOnTick);
+            steamGuardTimer.Start(TimeSpan.FromSeconds(2));
         }
 
         private readonly IManifestModelService _manifestModelService;
@@ -30,7 +31,6 @@ namespace SteamMobileAuthenticatorCore.ViewModels
         private SteamGuardAccount? _selectedSteamGuardAccount;
         private double _progressBar;
         private string _loginToken = string.Empty;
-        private readonly Timer _steamGuardTimer;
 
         public ObservableCollection<SteamGuardAccount> Accounts { get; }
 
@@ -64,7 +64,7 @@ namespace SteamMobileAuthenticatorCore.ViewModels
 
             var manifest = _manifestModelService.GetManifestModel();
             if (manifest.AutoConfirmMarketTransactions)
-                App.AutoMarketSetTimer.Start(TimeSpan.FromSeconds(manifest.PeriodicCheckingInterval));
+                App.AutoMarketSellTimer.Start(TimeSpan.FromSeconds(manifest.PeriodicCheckingInterval));
         });
 
         public ICommand ImportCommand => new AsyncCommand(async () =>
@@ -120,11 +120,6 @@ namespace SteamMobileAuthenticatorCore.ViewModels
                 LoginToken = SelectedSteamGuardAccount.GenerateSteamGuardCodeForTime(steamTime) ?? string.Empty;
                 ProgressBar = Convert.ToDouble(30 - secondsUntilChange) / 30;
             });
-        }
-
-        public void Dispose()
-        {
-            _steamGuardTimer.Stop();
         }
     }
 }
