@@ -39,6 +39,10 @@
                 <Setter Property="PlaceholderColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}"/>
             </Style>
 
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}"/>
+            </Style>
+
         </ResourceDictionary>        
     </Application.Resources>
 </Application>

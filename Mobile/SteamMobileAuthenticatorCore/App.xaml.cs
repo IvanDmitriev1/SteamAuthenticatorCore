@@ -33,7 +33,7 @@ namespace SteamMobileAuthenticatorCore
 
         protected override void OnSleep()
         {
-            
+            ManifestModelService.SaveManifest();
         }
 
         protected override void OnResume()

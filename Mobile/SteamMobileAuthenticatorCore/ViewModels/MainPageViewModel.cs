@@ -18,7 +18,7 @@ namespace SteamMobileAuthenticatorCore.ViewModels
         public MainPageViewModel()
         {
             _manifestModelService = App.ManifestModelService;
-            Accounts = new ObservableCollection<SteamGuardAccount>();
+            Accounts = App.Accounts;
 
             var steamGuardTimer = new Timer(SteamGuardTimerOnTick);
             steamGuardTimer.Start(TimeSpan.FromSeconds(2));
@@ -28,6 +28,7 @@ namespace SteamMobileAuthenticatorCore.ViewModels
 
         #region Properties
 
+        private bool _loaded;
         private SteamGuardAccount? _selectedSteamGuardAccount;
         private double _progressBar;
         private string _loginToken = string.Empty;
@@ -56,11 +57,14 @@ namespace SteamMobileAuthenticatorCore.ViewModels
 
         public ICommand OnLoadCommand => new AsyncCommand(async () =>
         {
+            if (_loaded)
+                return;
+
+            _loaded = true;
             Accounts.Clear();
 
             foreach (var accounts in await _manifestModelService.GetAccounts())
                 Accounts.Add(accounts);
-
 
             var manifest = _manifestModelService.GetManifestModel();
             if (manifest.AutoConfirmMarketTransactions)
@@ -101,6 +105,12 @@ namespace SteamMobileAuthenticatorCore.ViewModels
         public ICommand CopyCommand => new AsyncCommand(async () =>
         {
             await Clipboard.SetTextAsync(LoginToken);
+        });
+
+        public ICommand DeleteCommand => new AsyncCommand<SteamGuardAccount>(async o =>
+        {
+            await _manifestModelService.DeleteSteamGuardAccount(o!);
+            Accounts.Remove(o!);
         });
 
         private async Task SteamGuardTimerOnTick()
