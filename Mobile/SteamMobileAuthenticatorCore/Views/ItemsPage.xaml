@@ -5,7 +5,8 @@
              Title="{Binding Title}"
              xmlns:local="clr-namespace:SteamMobileAuthenticatorCore.ViewModels"  
              xmlns:model="clr-namespace:SteamMobileAuthenticatorCore.Models"  
-             x:Name="BrowseItemsPage">
+             x:Name="BrowseItemsPage"
+             Visual="Material" >
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Add" Command="{Binding AddItemCommand}" />

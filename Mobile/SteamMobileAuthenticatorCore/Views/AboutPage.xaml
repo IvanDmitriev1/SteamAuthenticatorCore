@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SteamMobileAuthenticatorCore.Views.AboutPage"
              xmlns:vm="clr-namespace:SteamMobileAuthenticatorCore.ViewModels"
-             Title="{Binding Title}">
+             Title="{Binding Title}"
+             Visual="Material" >
     
     <ContentPage.BindingContext>
         <vm:AboutViewModel />
@@ -12,10 +13,11 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <Color x:Key="Accent">#96d1ff</Color>
+            <Color x:Key="Dark">#000</Color>
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid>
+    <Grid BackgroundColor="{AppThemeBinding Dark={StaticResource Dark}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />

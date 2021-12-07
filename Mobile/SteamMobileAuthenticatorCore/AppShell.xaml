@@ -3,7 +3,8 @@
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        xmlns:local="clr-namespace:SteamMobileAuthenticatorCore.Views"
        Title="SteamMobileAuthenticatorCore"
-       x:Class="SteamMobileAuthenticatorCore.AppShell">
+       x:Class="SteamMobileAuthenticatorCore.AppShell"
+       Visual="Material">
 
     <!--
         The overall app visual hierarchy is defined here, along with navigation.
