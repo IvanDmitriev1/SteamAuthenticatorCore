@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 
-namespace SteamAuthCore
+namespace SteamAuthCore.Manifest
 {
     public class ManifestModel
     {

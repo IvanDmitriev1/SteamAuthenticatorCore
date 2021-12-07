@@ -30,6 +30,15 @@
 
             <Color x:Key="DarkBackgroundColor">#222222</Color>
             <Color x:Key="LightBackgroundColor">#ffffff</Color>
+
+            <Color x:Key="DarkTextColor">#ffff</Color>
+            <Color x:Key="LightTextColor">#222222</Color>
+
+            <Style TargetType="Entry">
+                <Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}"/>
+                <Setter Property="PlaceholderColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}"/>
+            </Style>
+
         </ResourceDictionary>        
     </Application.Resources>
 </Application>

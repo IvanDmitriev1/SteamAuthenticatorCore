@@ -1,4 +1,4 @@
-﻿namespace SteamAuthCore
+﻿namespace SteamAuthCore.Manifest
 {
     public interface IManifestDirectoryService
     {

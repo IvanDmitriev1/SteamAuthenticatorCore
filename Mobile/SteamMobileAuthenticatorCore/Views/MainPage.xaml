@@ -5,6 +5,7 @@
              xmlns:behaviors="http://xamarin.com/schemas/2020/toolkit"
              x:Class="SteamMobileAuthenticatorCore.Views.MainPage"
              Title="Main page"
+             Visual="Material"
              Shell.NavBarHasShadow="True" >
 
     <ContentPage.Behaviors>
@@ -42,15 +43,16 @@
                            HorizontalOptions="FillAndExpand"
                            IsReadOnly="True"
                            Text="{Binding Path=LoginToken}"
-                           Placeholder="Login token"></Entry>
+                           Placeholder="Login token"/>
 
                     <Button Grid.Column="1"
-                            Margin="10, 0"
                             Text="Copy"
+                            Padding="10"
                             Command="{Binding Path=CopyCommand}" />
                 </Grid>
 
-                <ProgressBar Progress="{Binding Path=ProgressBar}"/>
+                <ProgressBar Progress="{Binding Path=ProgressBar}"
+                             ProgressColor="{StaticResource Primary}" />
 
                 
                 <Grid Margin="0, 5, 0, 0">

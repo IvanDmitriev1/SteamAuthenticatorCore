@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Threading;
 using GoogleDrive;
 using SteamAuthCore;
+using SteamAuthCore.Manifest;
 using SteamDesktopAuthenticatorCore.classes;
 using SteamDesktopAuthenticatorCore.Services;
 using WpfHelper.Services;

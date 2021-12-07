@@ -1,16 +1,56 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:SteamMobileAuthenticatorCore.ViewModels;assembly=SteamMobileAuthenticatorCore"
+             xmlns:behaviors="http://xamarin.com/schemas/2020/toolkit"
              x:Class="SteamMobileAuthenticatorCore.Views.SettingsPage"
-             Title="Settings" >
+             Visual="Material"
+             Title="Settings">
+
+    <ContentPage.Behaviors>
+        <behaviors:EventToCommandBehavior EventName="Disappearing"
+                                          Command="{Binding Path=OnClosingCommand}" />
+    </ContentPage.Behaviors>
+
+    <ContentPage.BindingContext>
+        <viewModels:SettingsViewModel/>
+    </ContentPage.BindingContext>
 
     <ContentPage.Content>
-        <Grid BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor}, Light={StaticResource LightBackgroundColor}}">
-            <Label Text="Welcome to Xamarin.Forms!"
-                   VerticalOptions="CenterAndExpand" 
-                   HorizontalOptions="CenterAndExpand" />
+        <StackLayout BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor}, Light={StaticResource LightBackgroundColor}}"
+                     Padding="20, 20"
+                     Orientation="Vertical"
+                     Spacing="20" >
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
 
-        </Grid>
+                <Entry Grid.Column="0"
+                       Keyboard="Numeric"
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center"
+                       Text="{Binding Path=TradePeriodicCheckingInterval}"/>
+
+                <Label Grid.Column="1"
+                       Text="Seconds between checking for trade confirmations"
+                       VerticalTextAlignment="Center" />
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+
+                <Switch Grid.Column="0" IsToggled="{Binding Path=AutoConfirmMarket}" ></Switch>
+                <Label Grid.Column="1" Text="Auto-confirm trades"/>
+            </Grid>
+
+        </StackLayout>
     </ContentPage.Content>
 </ContentPage>

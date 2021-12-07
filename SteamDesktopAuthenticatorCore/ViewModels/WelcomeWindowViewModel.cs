@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using SteamAuthCore;
+using SteamAuthCore.Manifest;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
 using WpfHelper.Commands;

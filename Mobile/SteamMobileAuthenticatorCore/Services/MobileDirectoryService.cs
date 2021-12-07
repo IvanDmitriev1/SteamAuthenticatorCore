@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using SteamAuthCore;
+using SteamAuthCore.Manifest;
 using Xamarin.Essentials;
 
 namespace SteamMobileAuthenticatorCore.Services

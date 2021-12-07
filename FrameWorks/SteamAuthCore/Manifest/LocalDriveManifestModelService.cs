@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace SteamAuthCore
+namespace SteamAuthCore.Manifest
 {
     public class DesktopManifestDirectoryService : IManifestDirectoryService
     {
@@ -26,12 +25,14 @@ namespace SteamAuthCore
 
     public class LocalDriveManifestModelService : IManifestModelService
     {
-        public LocalDriveManifestModelService(IManifestDirectoryService directoryService)
+        public LocalDriveManifestModelService(IManifestDirectoryService directoryService, IManifestAdditionalSettingsService manifestAdditionalSettings)
         {
             _manifestDirectoryService = directoryService;
+            _manifestAdditionalSettingsService = manifestAdditionalSettings;
         }
 
         private readonly IManifestDirectoryService _manifestDirectoryService;
+        private readonly IManifestAdditionalSettingsService _manifestAdditionalSettingsService;
         private ManifestModel? _manifestModel;
 
         public async Task Initialize()
@@ -55,13 +56,14 @@ namespace SteamAuthCore
             await SaveManifest();
         }
 
-        public ManifestModel GetManifestModel()
-        {
-            return _manifestModel!;
-        }
+        public ManifestAdditionalSettings GetAdditionalSettings() => _manifestAdditionalSettingsService.GetSettings();
+
+        public ManifestModel GetManifestModel() => _manifestModel!;
 
         public async Task SaveManifest()
         {
+            _manifestAdditionalSettingsService.SaveSettings(_manifestModel!);
+
             string serialized = JsonSerializer.Serialize(_manifestModel);
 
             using var fileStream = new FileStream(_manifestDirectoryService.ManifestFilePath, FileMode.Create, FileAccess.Write);
@@ -94,12 +96,12 @@ namespace SteamAuthCore
             return accounts;
         }
 
-        public async Task<SteamGuardAccount?> AddSteamGuardAccount(FileStream fileStream)
+        public async Task<SteamGuardAccount?> AddSteamGuardAccount(Stream fileStream, string fileName)
         {
             var account = await JsonSerializer.DeserializeAsync<SteamGuardAccount>(fileStream);
 
-            string fileName = Path.ChangeExtension(Path.GetFileNameWithoutExtension(fileStream.Name), ".maFile");
-            string newFilePath = Path.Combine(_manifestDirectoryService.MaFilesDirectory, fileName);
+            string newFileName = Path.ChangeExtension(Path.GetFileNameWithoutExtension(fileName), ".maFile");
+            string newFilePath = Path.Combine(_manifestDirectoryService.MaFilesDirectory, newFileName);
 
             fileStream.Seek(0, SeekOrigin.Begin);
 

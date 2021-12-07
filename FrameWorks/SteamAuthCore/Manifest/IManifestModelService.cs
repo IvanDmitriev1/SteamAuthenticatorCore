@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace SteamAuthCore
+namespace SteamAuthCore.Manifest
 {
     public static class ManifestModelServiceConstants
     {
@@ -14,11 +14,12 @@ namespace SteamAuthCore
     {
         public Task Initialize();
 
+        public ManifestAdditionalSettings GetAdditionalSettings();
         public ManifestModel GetManifestModel();
         public Task SaveManifest();
 
         public Task<ICollection<SteamGuardAccount>> GetAccounts();
-        public Task<SteamGuardAccount?> AddSteamGuardAccount(FileStream fileStream);
+        public Task<SteamGuardAccount?> AddSteamGuardAccount(Stream fileStream, string fileName);
         public Task SaveSteamGuardAccount(SteamGuardAccount account);
         public Task DeleteSteamGuardAccount(SteamGuardAccount account);
     }

@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using Microsoft.Win32;
 using SteamAuthCore;
+using SteamAuthCore.Manifest;
 using SteamDesktopAuthenticatorCore.classes;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
@@ -39,7 +40,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 };
             }
             else
-            {
+            { 
                 _manifestModelService = new LocalDriveManifestModelService();
             }
 
