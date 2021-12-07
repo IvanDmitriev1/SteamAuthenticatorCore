@@ -14,7 +14,6 @@ namespace SteamAuthCore.Manifest
     {
         public Task Initialize();
 
-        public ManifestAdditionalSettings GetAdditionalSettings();
         public ManifestModel GetManifestModel();
         public Task SaveManifest();
 

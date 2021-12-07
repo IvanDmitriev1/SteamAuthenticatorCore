@@ -8,6 +8,9 @@
              Title="Settings">
 
     <ContentPage.Behaviors>
+        <behaviors:EventToCommandBehavior EventName="Appearing"
+                                          Command="{Binding Path=OnLoading}" />
+
         <behaviors:EventToCommandBehavior EventName="Disappearing"
                                           Command="{Binding Path=OnClosingCommand}" />
     </ContentPage.Behaviors>
@@ -48,7 +51,7 @@
 
 
                 <Switch Grid.Column="0" IsToggled="{Binding Path=AutoConfirmMarket}" ></Switch>
-                <Label Grid.Column="1" Text="Auto-confirm trades"/>
+                <Label Grid.Column="1" Text="Auto-confirm market sett transactions"/>
             </Grid>
 
         </StackLayout>

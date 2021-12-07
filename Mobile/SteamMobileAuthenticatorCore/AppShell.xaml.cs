@@ -11,6 +11,5 @@ namespace SteamMobileAuthenticatorCore
             Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
             Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));
         }
-
     }
 }

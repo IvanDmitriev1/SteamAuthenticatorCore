@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Windows.Input;
 using SteamAuthCore.Manifest;
 using Xamarin.Forms;
 
@@ -32,6 +33,12 @@ namespace SteamMobileAuthenticatorCore.ViewModels
             set => SetProperty(ref _autoConfirmMarket, value);
         }
 
+
+        public ICommand OnLoading => new Command(() =>
+        {
+            App.AutoMarketSetTimer.Stop();
+        });
+
         public ICommand OnClosingCommand => new Command(() =>
         {
             var manifest = _manifestModelService.GetManifestModel();
@@ -39,6 +46,7 @@ namespace SteamMobileAuthenticatorCore.ViewModels
             manifest.PeriodicCheckingInterval = TradePeriodicCheckingInterval;
 
             _manifestModelService.SaveManifest();
+            App.AutoMarketSetTimer.Start(TimeSpan.FromSeconds(manifest.PeriodicCheckingInterval));
         });
     }
 }

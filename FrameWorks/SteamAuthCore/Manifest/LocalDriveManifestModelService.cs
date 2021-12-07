@@ -25,14 +25,12 @@ namespace SteamAuthCore.Manifest
 
     public class LocalDriveManifestModelService : IManifestModelService
     {
-        public LocalDriveManifestModelService(IManifestDirectoryService directoryService, IManifestAdditionalSettingsService manifestAdditionalSettings)
+        public LocalDriveManifestModelService(IManifestDirectoryService directoryService)
         {
             _manifestDirectoryService = directoryService;
-            _manifestAdditionalSettingsService = manifestAdditionalSettings;
         }
 
         private readonly IManifestDirectoryService _manifestDirectoryService;
-        private readonly IManifestAdditionalSettingsService _manifestAdditionalSettingsService;
         private ManifestModel? _manifestModel;
 
         public async Task Initialize()
@@ -56,14 +54,10 @@ namespace SteamAuthCore.Manifest
             await SaveManifest();
         }
 
-        public ManifestAdditionalSettings GetAdditionalSettings() => _manifestAdditionalSettingsService.GetSettings();
-
         public ManifestModel GetManifestModel() => _manifestModel!;
 
         public async Task SaveManifest()
         {
-            _manifestAdditionalSettingsService.SaveSettings(_manifestModel!);
-
             string serialized = JsonSerializer.Serialize(_manifestModel);
 
             using var fileStream = new FileStream(_manifestDirectoryService.ManifestFilePath, FileMode.Create, FileAccess.Write);

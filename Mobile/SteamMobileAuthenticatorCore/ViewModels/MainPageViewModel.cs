@@ -1,27 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
+using SteamMobileAuthenticatorCore.Helpers;
 using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace SteamMobileAuthenticatorCore.ViewModels
 {
-    class MainPageViewModel : BaseViewModel
+    class MainPageViewModel : BaseViewModel, IDisposable
     {
         public MainPageViewModel()
         {
             _manifestModelService = App.ManifestModelService;
-            Accounts = new ObservableCollection<SteamGuardAccount>();
+            Accounts = App.Accounts;
 
-            Device.StartTimer(TimeSpan.FromSeconds(2), () =>
-            {
-                SteamGuardTimerOnTick();
-                return true;
-            });
+            _steamGuardTimer = new Timer(SteamGuardTimerOnTick);
+            _steamGuardTimer.Start(TimeSpan.FromSeconds(2));
         }
 
         private readonly IManifestModelService _manifestModelService;
@@ -31,6 +30,7 @@ namespace SteamMobileAuthenticatorCore.ViewModels
         private SteamGuardAccount? _selectedSteamGuardAccount;
         private double _progressBar;
         private string _loginToken = string.Empty;
+        private readonly Timer _steamGuardTimer;
 
         public ObservableCollection<SteamGuardAccount> Accounts { get; }
 
@@ -60,6 +60,11 @@ namespace SteamMobileAuthenticatorCore.ViewModels
 
             foreach (var accounts in await _manifestModelService.GetAccounts())
                 Accounts.Add(accounts);
+
+
+            var manifest = _manifestModelService.GetManifestModel();
+            if (manifest.AutoConfirmMarketTransactions)
+                App.AutoMarketSetTimer.Start(TimeSpan.FromSeconds(manifest.PeriodicCheckingInterval));
         });
 
         public ICommand ImportCommand => new AsyncCommand(async () =>
@@ -98,7 +103,7 @@ namespace SteamMobileAuthenticatorCore.ViewModels
             await Clipboard.SetTextAsync(LoginToken);
         });
 
-        private async void SteamGuardTimerOnTick()
+        private async Task SteamGuardTimerOnTick()
         {
             if (SelectedSteamGuardAccount is null)
                 return;
@@ -110,8 +115,16 @@ namespace SteamMobileAuthenticatorCore.ViewModels
             var currentSteamTime = steamTime / 30L;
             var secondsUntilChange = (int)(steamTime - currentSteamTime * 30L);
 
-            LoginToken = SelectedSteamGuardAccount.GenerateSteamGuardCodeForTime(steamTime) ?? string.Empty;
-            ProgressBar = Convert.ToDouble(30 - secondsUntilChange) / 30;
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                LoginToken = SelectedSteamGuardAccount.GenerateSteamGuardCodeForTime(steamTime) ?? string.Empty;
+                ProgressBar = Convert.ToDouble(30 - secondsUntilChange) / 30;
+            });
+        }
+
+        public void Dispose()
+        {
+            _steamGuardTimer.Stop();
         }
     }
 }
