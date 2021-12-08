@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using SteamMobileAuthenticatorCore.Helpers;
+using SteamMobileAuthenticatorCore.Views;
 using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -109,8 +109,22 @@ namespace SteamMobileAuthenticatorCore.ViewModels
 
         public ICommand DeleteCommand => new AsyncCommand<SteamGuardAccount>(async o =>
         {
-            await _manifestModelService.DeleteSteamGuardAccount(o!);
-            Accounts.Remove(o!);
+            if (await Application.Current.MainPage.DisplayAlert("Delete account", "are you sure?", "yes", "no"))
+            {
+                await _manifestModelService.DeleteSteamGuardAccount(o!);
+                Accounts.Remove(o!);
+            }
+        });
+
+        public ICommand OnLoginCommand => new AsyncCommand<SteamGuardAccount>(async (o) =>
+        {
+            await Shell.Current.GoToAsync($"{nameof(LoginPage)}?id={Accounts.IndexOf(o!)}");
+        });
+
+        public ICommand ForceRefreshSession => new AsyncCommand<SteamGuardAccount>(async (o) =>
+        {
+            if (await o!.RefreshSessionAsync())
+                await Application.Current.MainPage.DisplayAlert("Refresh session", "the session has been refreshed", "Ok");
         });
 
         private async Task SteamGuardTimerOnTick()

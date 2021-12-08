@@ -89,17 +89,27 @@
 
                             <SwipeView>
                                 <SwipeView.RightItems>
-                                    <SwipeItems SwipeBehaviorOnInvoked="RemainOpen">
-                                        <SwipeItem Text="Login"
-                                                   BackgroundColor="{StaticResource Primary}" />
-
+                                    <SwipeItems SwipeBehaviorOnInvoked="Auto">
                                         <SwipeItem Text="Delete"
                                                    BackgroundColor="IndianRed"
                                                    Command="{Binding Source={StaticResource ViewModel}, Path=DeleteCommand}"
-                                                   CommandParameter="{Binding}" >
-                                        </SwipeItem>
+                                                   CommandParameter="{Binding}" />
                                     </SwipeItems>
                                 </SwipeView.RightItems>
+
+                                <SwipeView.LeftItems>
+                                    <SwipeItems SwipeBehaviorOnInvoked="Auto">
+                                        <SwipeItem Text="Login"
+                                                   BackgroundColor="{StaticResource Primary}"
+                                                   Command="{Binding Source={StaticResource ViewModel}, Path=OnLoginCommand}"
+                                                   CommandParameter="{Binding}"/>
+
+                                        <SwipeItem Text="Refresh session"
+                                                   BackgroundColor="{StaticResource Primary}"
+                                                   Command="{Binding Source={StaticResource ViewModel}, Path=ForceRefreshSession}"
+                                                   CommandParameter="{Binding}"/>
+                                    </SwipeItems>
+                                </SwipeView.LeftItems>
 
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup Name="CommonStates">

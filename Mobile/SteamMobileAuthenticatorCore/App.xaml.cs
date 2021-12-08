@@ -6,6 +6,7 @@ using SteamAuthCore;
 using SteamMobileAuthenticatorCore.Services;
 using SteamAuthCore.Manifest;
 using SteamMobileAuthenticatorCore.Helpers;
+using SteamMobileAuthenticatorCore.Views;
 using Xamarin.Forms;
 
 namespace SteamMobileAuthenticatorCore
@@ -69,6 +70,8 @@ namespace SteamMobileAuthenticatorCore
                 catch (SteamGuardAccount.WgTokenExpiredException)
                 {
                     //Prompt to relogin
+                    if (await Application.Current.MainPage.DisplayAlert("Auto-market confirmation", $"You must re-log in to {account.AccountName} account", "Re-log", "not now"))
+                        await Shell.Current.GoToAsync($"{nameof(LoginPage)}?id={Accounts.IndexOf(account)}");
                     break;
 
                 }
