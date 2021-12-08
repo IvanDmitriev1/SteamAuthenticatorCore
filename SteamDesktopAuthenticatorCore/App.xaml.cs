@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using GoogleDrive;
-using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using SteamDesktopAuthenticatorCore.classes;
 using SteamDesktopAuthenticatorCore.Services;
@@ -14,7 +13,7 @@ using WpfHelper.Services;
 
 namespace SteamDesktopAuthenticatorCore
 {
-    public sealed partial class App : Application, IDisposable
+    public sealed partial class App : Application
     {
         public App()
         {
@@ -114,10 +113,5 @@ namespace SteamDesktopAuthenticatorCore
         }
 
         #endregion
-
-        public void Dispose()
-        {
-            GoogleDriveApi.Dispose();
-        }
     }
 }

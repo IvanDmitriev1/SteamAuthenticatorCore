@@ -71,9 +71,9 @@ namespace SteamDesktopAuthenticatorCore.Services
             return accounts;
         }
 
-        public async Task<SteamGuardAccount?> AddSteamGuardAccount(FileStream fileStream)
+        public async Task<SteamGuardAccount?> AddSteamGuardAccount(Stream fileStream, string fileName)
         {
-            await _api.UploadFile(fileStream.Name, fileStream);
+            await _api.UploadFile(fileName, fileStream);
             return await JsonSerializer.DeserializeAsync<SteamGuardAccount>(fileStream);
         }
 

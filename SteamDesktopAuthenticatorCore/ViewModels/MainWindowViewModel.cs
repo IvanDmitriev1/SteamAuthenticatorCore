@@ -14,7 +14,6 @@ using Microsoft.Win32;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using SteamDesktopAuthenticatorCore.classes;
-using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;
 using WpfHelper.Commands;
@@ -27,24 +26,17 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
     {
         public MainWindowViewModel()
         {
-            if (!App.InDesignMode)
+            _manifestModelService = App.ManifestModelService;
+
+            var settings = Settings.GetSettings();
+            SwitchText = settings.ManifestLocation switch
             {
-                _manifestModelService = App.ManifestModelService;
+                Settings.ManifestLocationModel.Drive => "Switch to using the files on your Google Drive",
+                Settings.ManifestLocationModel.GoogleDrive => "Switch to using the files on your disk",
+                _ => throw new ArgumentOutOfRangeException()
+            };
 
-                var settings = Settings.GetSettings();
-                SwitchText = settings.ManifestLocation switch
-                {
-                    Settings.ManifestLocationModel.Drive => "Switch to using the files on your Google Drive",
-                    Settings.ManifestLocationModel.GoogleDrive => "Switch to using the files on your disk",
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-            }
-            else
-            { 
-                _manifestModelService = new LocalDriveManifestModelService();
-            }
 
-            
             SteamGuardAccounts = new ObservableCollection<SteamGuardAccount>();
             _selectedAccountFont = 12.0;
             CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
@@ -485,7 +477,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
                 try
                 {
-                    if (await _manifestModelService.AddSteamGuardAccount(stream) is {} account)
+                    if (await _manifestModelService.AddSteamGuardAccount(stream, stream.Name) is {} account)
                         SteamGuardAccounts.Add(account);
                 }
                 catch
