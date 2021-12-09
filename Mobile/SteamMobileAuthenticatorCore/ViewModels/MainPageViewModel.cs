@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using SteamAuthCore;
@@ -97,7 +98,7 @@ namespace SteamMobileAuthenticatorCore.ViewModels
                 }
                 catch
                 {
-                    //
+                    await Application.Current.MainPage.DisplayAlert("Import account", $"failed to import {file.FileName}, maybe your file is corrupted?", "Ok");
                 }
             }
         });
