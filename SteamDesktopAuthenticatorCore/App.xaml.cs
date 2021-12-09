@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using GoogleDrive;
-using SteamAuthCore;
+using SteamAuthCore.Manifest;
 using SteamDesktopAuthenticatorCore.classes;
 using SteamDesktopAuthenticatorCore.Services;
 using WpfHelper.Services;
 
 namespace SteamDesktopAuthenticatorCore
 {
-    public partial class App : Application, IDisposable
+    public sealed partial class App : Application
     {
         public App()
         {
@@ -29,6 +29,11 @@ namespace SteamDesktopAuthenticatorCore
             UpdateService.GitHubUrl = "https://api.github.com/repos/bduj1/StreamDesktopAuthenticatorCore/releases/latest";
         }
 
+        static App()
+        {
+            ManifestDirectoryService = new DesktopManifestDirectoryService();
+        }
+
         #region Fields
 
         public static bool InDesignMode { get; private set; } = true;
@@ -36,6 +41,12 @@ namespace SteamDesktopAuthenticatorCore
         public static IManifestModelService ManifestModelService { get; private set; } = null!;
 
         public const string Name = "SteamDesktopAuthenticatorCore";
+
+        #endregion
+
+        #region Variables
+
+        private static readonly IManifestDirectoryService ManifestDirectoryService;
 
         #endregion
 
@@ -63,7 +74,7 @@ namespace SteamDesktopAuthenticatorCore
             switch (settings.ManifestLocation)
             {
                 case Settings.ManifestLocationModel.Drive:
-                    ManifestModelService = new LocalDriveManifestModelService();
+                    ManifestModelService = new LocalDriveManifestModelService(ManifestDirectoryService);
                     break;
                 case Settings.ManifestLocationModel.GoogleDrive:
                     ManifestModelService = new GoogleDriveManifestModelService();
@@ -102,12 +113,5 @@ namespace SteamDesktopAuthenticatorCore
         }
 
         #endregion
-
-        public void Dispose()
-        {
-            GoogleDriveApi.Dispose();
-
-            GC.SuppressFinalize(this);
-        }
     }
 }

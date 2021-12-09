@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using SteamAuthCore;
+using SteamAuthCore.Manifest;
 using SteamDesktopAuthenticatorCore.classes;
 using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper;

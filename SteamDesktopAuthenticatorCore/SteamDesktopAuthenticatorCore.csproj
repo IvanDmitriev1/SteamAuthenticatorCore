@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Platform>AnyCPU</Platform>
-    <Version>0.8.3.5</Version>
+    <Version>0.8.4.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -36,9 +36,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GoogleDrive\GoogleDrive.csproj" />
-    <ProjectReference Include="..\SteamAuthCore\SteamAuthCore.csproj" />
-    <ProjectReference Include="..\WpfHelper\WpfHelper.csproj" />
+    <ProjectReference Include="..\FrameWorks\GoogleDrive\GoogleDrive.csproj" />
+    <ProjectReference Include="..\FrameWorks\SteamAuthCore\SteamAuthCore.csproj" />
+    <ProjectReference Include="..\FrameWorks\WpfHelper\WpfHelper.csproj" />
   </ItemGroup>
 
   <ItemGroup>

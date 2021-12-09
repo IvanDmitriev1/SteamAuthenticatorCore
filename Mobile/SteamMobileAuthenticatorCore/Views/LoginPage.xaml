@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:SteamMobileAuthenticatorCore.ViewModels;assembly=SteamMobileAuthenticatorCore"
+             x:Class="SteamMobileAuthenticatorCore.Views.LoginPage"
+             Shell.NavBarHasShadow="True"
+             Shell.PresentationMode="ModalAnimated"
+             Title="Login page" >
+
+    <ContentPage.BindingContext>
+        <viewModels:LoginViewModel/>
+    </ContentPage.BindingContext>
+
+    <ContentPage.Content>
+        <StackLayout HorizontalOptions="FillAndExpand"
+                     Spacing="10"
+                     Margin="10" >
+
+            <Entry Placeholder="Login"
+                   IsReadOnly="True"
+                   Text="{Binding Path=SelectedAccount.AccountName}" />
+
+            <Entry IsPassword="True"
+                   Placeholder="Password" 
+                   Text="{Binding Path=Password}" />
+
+            <Button Text="Login"
+                    Command="{Binding Path=OnLoginCommand}" />
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

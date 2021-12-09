@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using GoogleDrive;
 using SteamAuthCore;
+using SteamAuthCore.Manifest;
 using GoogleFile = Google.Apis.Drive.v3.Data.File;
 
 namespace SteamDesktopAuthenticatorCore.Services
@@ -24,7 +25,7 @@ namespace SteamDesktopAuthenticatorCore.Services
 
         public async Task Initialize()
         {
-            if (await _api.CheckForFile(IManifestModelService.ManifestFileName) is not { } manifestFile)
+            if (await _api.CheckForFile(ManifestModelServiceConstants.ManifestFileName) is not { } manifestFile)
             {
                 _manifestModel = new ManifestModel();
                 return;
@@ -45,7 +46,7 @@ namespace SteamDesktopAuthenticatorCore.Services
         {
             string serialized = JsonSerializer.Serialize(_manifestModel);
             await using MemoryStream stream = new(Encoding.UTF8.GetBytes(serialized));
-            await _api.UploadFile(IManifestModelService.ManifestFileName, stream);
+            await _api.UploadFile(ManifestModelServiceConstants.ManifestFileName, stream);
         }
 
         public async Task<ICollection<SteamGuardAccount>> GetAccounts()
@@ -70,9 +71,9 @@ namespace SteamDesktopAuthenticatorCore.Services
             return accounts;
         }
 
-        public async Task<SteamGuardAccount?> AddSteamGuardAccount(FileStream fileStream)
+        public async Task<SteamGuardAccount?> AddSteamGuardAccount(Stream fileStream, string fileName)
         {
-            await _api.UploadFile(fileStream.Name, fileStream);
+            await _api.UploadFile(fileName, fileStream);
             return await JsonSerializer.DeserializeAsync<SteamGuardAccount>(fileStream);
         }
 
