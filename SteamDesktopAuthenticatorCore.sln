@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamMobileAuthenticatorCor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamMobileAuthenticatorCore.UWP", "Mobile\SteamMobileAuthenticatorCore.UWP\SteamMobileAuthenticatorCore.UWP.csproj", "{28C2FA6A-F3E9-49F1-872A-7C866E74B640}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPFUI", "..\wpfui\WPFUI\WPFUI.csproj", "{1ADC87D1-8963-4100-845A-18477824718E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -217,6 +219,26 @@ Global
 		{28C2FA6A-F3E9-49F1-872A-7C866E74B640}.Release|x64.ActiveCfg = Release|x64
 		{28C2FA6A-F3E9-49F1-872A-7C866E74B640}.Release|x64.Build.0 = Release|x64
 		{28C2FA6A-F3E9-49F1-872A-7C866E74B640}.Release|x64.Deploy.0 = Release|x64
+		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|ARM.Build.0 = Debug|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|x64.Build.0 = Debug|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Release|ARM.ActiveCfg = Release|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Release|ARM.Build.0 = Release|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Release|iPhone.Build.0 = Release|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Release|x64.ActiveCfg = Release|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -229,6 +251,7 @@ Global
 		{C7A53E2B-F6C5-4177-A33F-149C293173B4} = {E2DA7B9F-123E-481C-BCB6-59D7980FE294}
 		{34333FA7-57CC-4D97-AD17-ABC053089F01} = {E2DA7B9F-123E-481C-BCB6-59D7980FE294}
 		{28C2FA6A-F3E9-49F1-872A-7C866E74B640} = {E2DA7B9F-123E-481C-BCB6-59D7980FE294}
+		{1ADC87D1-8963-4100-845A-18477824718E} = {FACD3AD6-1EC4-4F97-BE36-9E2FBF5FEDDC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {03A98404-F097-4449-B4E2-D2A82D25EFFF}

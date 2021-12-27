@@ -2,9 +2,9 @@
 
 namespace SteamDesktopAuthenticatorCore.Views
 {
-    public partial class InitializeWindowView : Window
+    public partial class Container : Window
     {
-        public InitializeWindowView()
+        public Container()
         {
             InitializeComponent();
         }

@@ -21,9 +21,13 @@
 
   <ItemGroup>
     <Compile Remove="Custom\**" />
+    <Compile Remove="Models\**" />
     <EmbeddedResource Remove="Custom\**" />
+    <EmbeddedResource Remove="Models\**" />
     <None Remove="Custom\**" />
+    <None Remove="Models\**" />
     <Page Remove="Custom\**" />
+    <Page Remove="Models\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\wpfui\WPFUI\WPFUI.csproj" />
     <ProjectReference Include="..\FrameWorks\GoogleDrive\GoogleDrive.csproj" />
     <ProjectReference Include="..\FrameWorks\SteamAuthCore\SteamAuthCore.csproj" />
     <ProjectReference Include="..\FrameWorks\WpfHelper\WpfHelper.csproj" />
@@ -50,7 +55,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
+    <Folder Include="ViewModels\" />
   </ItemGroup>
 
 </Project>

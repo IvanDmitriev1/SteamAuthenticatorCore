@@ -52,6 +52,8 @@ namespace SteamDesktopAuthenticatorCore
 
         protected override async void OnStartup(StartupEventArgs e)
         {
+            WPFUI.Theme.Manager.SetSystemTheme(false);
+
             InDesignMode = false;
             var settings = Settings.GetSettings();
 
