@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Windows;
 using System.Windows.Threading;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using SteamAuthCore.Manifest;
 using SteamDesktopAuthenticatorCore.Common;
+using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.ViewModels;
-using WpfHelper.Common;
+using SteamDesktopAuthenticatorCore.Views;
+using WpfHelper.Services;
 
 namespace SteamDesktopAuthenticatorCore
 {
@@ -13,39 +17,93 @@ namespace SteamDesktopAuthenticatorCore
     {
         public App()
         {
-            string appdata = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string appFolder = Path.Combine(appdata, $"{Name}");
-            string userCredentialPath = Path.Combine(appFolder, "Token.json");
-
             this.Dispatcher.UnhandledException += DispatcherOnUnhandledException;
+
+            _host = Host.CreateDefaultBuilder().ConfigureServices((context, collection) =>
+            {
+                ConfigureOptions(collection);
+                ConfigureServices(collection);
+            }).Build();
         }
 
-        static App()
-        {
-            ViewModels = new Dictionary<Type, BaseViewModel>()
-            {
-                {typeof(InitializingViewModel), new InitializingViewModel()},
-            };
-        }
+        private readonly IHost _host;
 
         #region Fields
 
         public const string Name = "SteamDesktopAuthenticatorCore";
-        public static IReadOnlyDictionary<Type, BaseViewModel> ViewModels { get; }
 
         #endregion
 
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
             WPFUI.Theme.Manager.SetSystemTheme(false);
+
+            await _host.StartAsync();
+            var mainWindow = _host.Services.GetRequiredService<InitializingWindow>();
+            mainWindow.Show();
+
+            base.OnStartup(e);
         }
 
-        protected override void OnExit(ExitEventArgs e)
+        protected override async void OnExit(ExitEventArgs e)
         {
-            Settings.GetSettings().SaveSettings();
+            _host.Services.GetRequiredService<SettingService>().SaveSettings();
+
+            await _host.StopAsync();
+            _host.Dispose();
+
+            base.OnExit(e);
         }
 
         #region PrivateMethods
+
+        private static void ConfigureOptions(IServiceCollection service)
+        {
+            service.Configure<SettingsServiceOptions>(options =>
+            {
+                options.AppName = Name;
+                options.SettingsMap = new Dictionary<Type, ISettings>()
+                {
+                    {typeof(AppSettings), new AppSettings()}
+                };
+            });
+            service.Configure<UpdateServiceOptions>(options =>
+            {
+                options.GitHubUrl = "https://api.github.com/repos/bduj1/StreamDesktopAuthenticatorCore/releases/latest";
+            });
+        }
+
+        private static void ConfigureServices(IServiceCollection service)
+        {
+            service.AddSingleton<InitializingWindow>();
+            service.AddSingleton<InitializingViewModel>();
+
+            service.AddSingleton<SimpleHttpRequestService>();
+            service.AddSingleton<UpdateService>();
+            service.AddSingleton<SettingService>();
+            service.AddGoogleDriveApi(Name);
+
+
+            service.AddSingleton<GoogleDriveManifestModelService>();
+
+            service.AddSingleton<IManifestDirectoryService, DesktopManifestDirectoryService>();
+            service.AddSingleton<LocalDriveManifestModelService>();
+
+            service.AddTransient<ManifestServiceResolver>(provider => () => 
+            {
+                var appSettings = provider.GetRequiredService<SettingService>().Get<AppSettings>();
+                return appSettings.ManifestLocation switch
+                {
+                    AppSettings.ManifestLocationModel.Drive => provider
+                        .GetRequiredService<LocalDriveManifestModelService>(),
+                    AppSettings.ManifestLocationModel.GoogleDrive => provider
+                        .GetRequiredService<GoogleDriveManifestModelService>(),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+            });
+        }
+
+        public delegate IManifestModelService ManifestServiceResolver();
 
         private static void DispatcherOnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
@@ -56,6 +114,7 @@ namespace SteamDesktopAuthenticatorCore
             // Prevent default unhandled exception processing
             e.Handled = true;
         }
+
         #endregion
     }
 }

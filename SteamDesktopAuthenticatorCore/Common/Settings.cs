@@ -1,34 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using WpfHelper.Common;
+﻿using WpfHelper.Common;
+using WpfHelper.Services;
 
 namespace SteamDesktopAuthenticatorCore.Common
 {
-    internal class Settings : BaseSettings
-    {
-        public Settings() : base(App.Name)
-        {
-            SettingsMap = new Dictionary<Type, ISettings>()
-            {
-                {typeof(AppSettings), new AppSettings()}
-            };
-        }
-
-        private static Settings? _settingsModel;
-
-        public static Settings GetSettings()
-        {
-            if (_settingsModel is not null)
-                return _settingsModel;
-
-            _settingsModel = new Settings();
-            CreateBaseSettings(_settingsModel, App.Name);
-
-            return _settingsModel;
-        }
-    }
-
-    internal class AppSettings : BaseViewModel, ISettings
+    public class AppSettings : BaseViewModel, ISettings
     {
         public AppSettings()
         {

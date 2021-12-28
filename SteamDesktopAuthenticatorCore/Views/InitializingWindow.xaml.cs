@@ -1,13 +1,14 @@
 ﻿using System.Windows;
+using SteamDesktopAuthenticatorCore.ViewModels;
 
 namespace SteamDesktopAuthenticatorCore.Views
 {
     public partial class InitializingWindow : Window
     {
-        public InitializingWindow()
+        public InitializingWindow(InitializingViewModel viewModel)
         {
             InitializeComponent();
-            DataContext = App.ViewModels[typeof(InitializingWindow)];
+            DataContext = viewModel;
         }
     }
 }
