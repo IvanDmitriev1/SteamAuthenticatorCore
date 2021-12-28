@@ -10,6 +10,7 @@
     Title="Container"
     Width="800"
     Height="450"
+    MinWidth="700"
     Style="{StaticResource UiWindow}"
     mc:Ignorable="d">
     <Grid>

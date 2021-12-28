@@ -6,6 +6,7 @@
     xmlns:controls="clr-namespace:WPFUI.Controls;assembly=WPFUI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:steamAuthCore="clr-namespace:SteamAuthCore;assembly=SteamAuthCore"
     xmlns:viewModels="clr-namespace:SteamDesktopAuthenticatorCore.ViewModels"
     x:Name="Page"
     Title="TokenPage"
@@ -62,11 +63,21 @@
         <ListBox
             Grid.Row="1"
             Margin="0,5,0,0"
+            AllowDrop="True"
             ItemsSource="{Binding Path=Accounts, Mode=OneTime}"
             SelectedItem="{Binding Path=SelectedAccount}"
             VirtualizingPanel.IsContainerVirtualizable="True"
             VirtualizingPanel.IsVirtualizing="True"
             VirtualizingPanel.VirtualizationMode="Recycling">
+
+            <b:Interaction.Triggers>
+                <b:EventTrigger EventName="DragOver">
+                    <b:InvokeCommandAction Command="{Binding Path=ListBoxDragOverCommand}" PassEventArgsToCommand="True" />
+                </b:EventTrigger>
+                <b:EventTrigger EventName="Drop">
+                    <b:InvokeCommandAction Command="{Binding Path=ListBoxDragAndDropCommand}" PassEventArgsToCommand="True" />
+                </b:EventTrigger>
+            </b:Interaction.Triggers>
 
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -78,6 +89,15 @@
                 <DataTemplate>
                     <StackPanel HorizontalAlignment="Stretch">
                         <TextBlock Padding="2.5" Text="{Binding Path=AccountName}" />
+
+                        <StackPanel.ContextMenu>
+                            <ContextMenu DataContext="{Binding Source={x:Reference Page}, Path=DataContext}">
+                                <MenuItem
+                                    Command="{Binding Path=DeleteAccountCommand}"
+                                    Header="Delete"
+                                    Style="{StaticResource {x:Type MenuItem}}" />
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
 
                     </StackPanel>
                 </DataTemplate>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using SteamDesktopAuthenticatorCore.Common;
@@ -18,11 +19,16 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             _updateService = updateService;
             AppSettings = settingsService.Get<AppSettings>();
+
+            CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
         }
 
         private readonly UpdateService _updateService;
 
         public AppSettings AppSettings { get; }
+
+        public string CurrentVersion { get; }
+
 
         public ICommand CheckForUpdatesCommand => new AsyncRelayCommand(async o =>
         {

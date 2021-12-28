@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using SteamAuthCore;
@@ -9,7 +12,10 @@ using SteamDesktopAuthenticatorCore.Common;
 using WpfHelper.Commands;
 using WpfHelper.Common;
 using WpfHelper.Services;
+using WPFUI.Common;
 using WPFUI.Controls;
+using MessageBox = WPFUI.Controls.MessageBox;
+using RelayCommand = WpfHelper.Commands.RelayCommand;
 
 namespace SteamDesktopAuthenticatorCore.ViewModels
 {
@@ -90,8 +96,60 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         public ICommand DeleteAccountCommand => new AsyncRelayCommand(async o =>
         {
+            if (SelectedAccount is null)
+                return;
+
             var dialog = Dialog.GetCurrentInstance();
-            var result = await dialog.ShowDialog("Are you sure", "Yes", "No");
+            if (await dialog.ShowDialog("Are you sure", App.Name, "Yes", "No") != ButtonPressed.Left)
+                return;
+
+            await _manifestModelService.DeleteSteamGuardAccount(SelectedAccount);
+            Accounts.Remove(SelectedAccount);
+        });
+
+        public ICommand ListBoxDragOverCommand => new RelayCommand(o =>
+        {
+            DragEventArgs eventArgs = (o as DragEventArgs)!;
+
+            if (!eventArgs.Data.GetDataPresent(DataFormats.FileDrop))
+                return;
+
+            if (eventArgs.Data.GetData(DataFormats.FileDrop) is not string[] files)
+                return;
+
+            foreach (var file in files)
+            {
+                string extension = Path.GetExtension(file);
+
+                if (Directory.Exists(file))
+                {
+                    eventArgs.Effects = DragDropEffects.None;
+                    eventArgs.Handled = true;
+                    return;
+                }
+
+                if (extension.Contains(ManifestModelServiceConstants.FileExtension)) continue;
+
+                eventArgs.Effects = DragDropEffects.None;
+                eventArgs.Handled = true;
+                return;
+            }
+
+            eventArgs.Effects = DragDropEffects.Copy;
+            eventArgs.Handled = true;
+        });
+
+        public ICommand ListBoxDragAndDropCommand => new AsyncRelayCommand(async o =>
+        {
+            DragEventArgs eventArgs = (o as DragEventArgs)!;
+
+            if (!eventArgs.Data.GetDataPresent(DataFormats.FileDrop))
+                return;
+
+            if (eventArgs.Data.GetData(DataFormats.FileDrop) is not string[] files)
+                return;
+
+            await ImportSteamGuardAccount(files);
         });
 
         #endregion
@@ -141,6 +199,24 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                     RightButtonName = "Cancel"
                 };
                 box.Show(App.Name, "One of your files is corrupted");
+            }
+        }
+
+        private async Task ImportSteamGuardAccount(IEnumerable<string> files)
+        {
+            foreach (var file in files)
+            {
+                await using FileStream stream = new FileStream(file, FileMode.Open, FileAccess.Read);
+
+                try
+                {
+                    if (await _manifestModelService.AddSteamGuardAccount(stream, stream.Name) is { } account)
+                        Accounts.Add(account);
+                }
+                catch
+                {
+                    await Dialog.GetCurrentInstance().ShowDialog("Your file is corrupted!");
+                }
             }
         }
 

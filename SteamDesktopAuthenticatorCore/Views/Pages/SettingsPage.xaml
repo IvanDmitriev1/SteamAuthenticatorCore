@@ -14,7 +14,12 @@
     mc:Ignorable="d">
 
     <Grid>
-        <StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
             <StackPanel.Resources>
                 <Style BasedOn="{StaticResource {x:Type controls:CardControl}}" TargetType="{x:Type controls:CardControl}">
                     <Setter Property="Margin" Value="0,5,0,0" />
@@ -41,23 +46,19 @@
             </controls:CardControl>
         </StackPanel>
 
-        <controls:Card VerticalAlignment="Bottom">
+        <controls:Card Grid.Row="1" VerticalAlignment="Bottom">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <StackPanel
+
+                <TextBlock
                     Grid.Column="0"
                     VerticalAlignment="Center"
-                    Orientation="Horizontal">
-                    <TextBlock Foreground="{DynamicResource TextFillColorPrimaryBrush}" Text="Current version:" />
-                    <TextBlock
-                        Margin="10,0,0,0"
-                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                        Text="0.8.4" />
-                </StackPanel>
+                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                    Text="{Binding Path=CurrentVersion, StringFormat={} Current version: {0}}" />
 
                 <controls:Button
                     Grid.Column="1"
