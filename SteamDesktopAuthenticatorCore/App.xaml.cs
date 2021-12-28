@@ -19,7 +19,12 @@ namespace SteamDesktopAuthenticatorCore
         {
             this.Dispatcher.UnhandledException += DispatcherOnUnhandledException;
 
-            _host = Host.CreateDefaultBuilder().ConfigureServices((context, collection) =>
+            
+        }
+
+        static App()
+        {
+            Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().ConfigureServices((context, collection) =>
             {
                 ConfigureOptions(collection);
                 ConfigureServices(collection);
@@ -27,23 +32,27 @@ namespace SteamDesktopAuthenticatorCore
         }
 
         public const string Name = "SteamDesktopAuthenticatorCore";
-        private readonly IHost _host;
+        private static readonly IHost Host;
+
+        public static IServiceProvider ServiceProvider => Host.Services;
+
+        #region Overrides
 
         protected override async void OnStartup(StartupEventArgs e)
         {
             WPFUI.Theme.Manager.SetSystemTheme(false);
 
-            await _host.StartAsync();
+            await Host.StartAsync();
 
-            var appSettings = _host.Services.GetRequiredService<SettingService>().Get<AppSettings>();
+            var appSettings = Host.Services.GetRequiredService<SettingService>().Get<AppSettings>();
             switch (appSettings.ManifestLocation)
             {
                 case AppSettings.ManifestLocationModel.Drive:
-                    var mainWindow = _host.Services.GetRequiredService<Container>();
+                    var mainWindow = Host.Services.GetRequiredService<Container>();
                     mainWindow.Show();
                     break;
                 case AppSettings.ManifestLocationModel.GoogleDrive:
-                    var initializingWindow = _host.Services.GetRequiredService<InitializingWindow>();
+                    var initializingWindow = Host.Services.GetRequiredService<InitializingWindow>();
                     initializingWindow.Show();
                     break;
                 default:
@@ -55,13 +64,15 @@ namespace SteamDesktopAuthenticatorCore
 
         protected override async void OnExit(ExitEventArgs e)
         {
-            _host.Services.GetRequiredService<SettingService>().SaveSettings();
+            Host.Services.GetRequiredService<SettingService>().SaveSettings();
 
-            await _host.StopAsync();
-            _host.Dispose();
+            await Host.StopAsync();
+            Host.Dispose();
 
             base.OnExit(e);
         }
+
+        #endregion
 
         #region PrivateMethods
 
@@ -87,6 +98,9 @@ namespace SteamDesktopAuthenticatorCore
             service.AddSingleton<Container>();
 
             service.AddSingleton<InitializingViewModel>();
+            service.AddSingleton<TokenViewModel>();
+            service.AddSingleton<SettingsViewModel>();
+            service.AddSingleton<ConfirmationViewModel>();
 
             service.AddSingleton<SimpleHttpRequestService>();
             service.AddSingleton<UpdateService>();

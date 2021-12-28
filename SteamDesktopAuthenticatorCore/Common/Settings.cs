@@ -20,6 +20,7 @@ namespace SteamDesktopAuthenticatorCore.Common
         private ManifestLocationModel _manifestLocation;
         private bool _firstRun;
         private bool _updated;
+        private int _periodicCheckingInterval;
 
         public ManifestLocationModel ManifestLocation
         {
@@ -37,6 +38,12 @@ namespace SteamDesktopAuthenticatorCore.Common
         {
             get => _updated;
             set => Set(ref _updated, value);
+        }
+
+        public int PeriodicCheckingInterval
+        {
+            get => _periodicCheckingInterval;
+            set => Set(ref _periodicCheckingInterval, value);
         }
 
 
