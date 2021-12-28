@@ -31,7 +31,9 @@ namespace SteamDesktopAuthenticatorCore
             }).Build();
         }
 
-        public const string Name = "SteamDesktopAuthenticatorCore";
+        public const string InternalName = "SteamDesktopAuthenticatorCore";
+
+        public const string Name = "Steam desktop authenticator core";
         private static readonly IHost Host;
 
         public static IServiceProvider ServiceProvider => Host.Services;
@@ -80,7 +82,7 @@ namespace SteamDesktopAuthenticatorCore
         {
             service.Configure<SettingsServiceOptions>(options =>
             {
-                options.AppName = Name;
+                options.AppName = InternalName;
                 options.SettingsMap = new Dictionary<Type, ISettings>()
                 {
                     {typeof(AppSettings), new AppSettings()}

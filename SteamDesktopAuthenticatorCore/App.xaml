@@ -2,7 +2,8 @@
     x:Class="SteamDesktopAuthenticatorCore.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:commands="clr-namespace:WpfHelper.Commands;assembly=WpfHelper">
+    xmlns:commands="clr-namespace:WpfHelper.Commands;assembly=WpfHelper"
+    xmlns:converters="clr-namespace:WpfHelper.Converters;assembly=WpfHelper">
 
     <Application.Resources>
         <ResourceDictionary>
@@ -13,6 +14,8 @@
 
 
             <commands:CopyCommand x:Key="CopyCommand" />
+            <converters:DoubleToIntConverter x:Key="DoubleToIntConverter" />
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

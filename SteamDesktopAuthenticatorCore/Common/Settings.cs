@@ -21,6 +21,9 @@ namespace SteamDesktopAuthenticatorCore.Common
         private bool _firstRun;
         private bool _updated;
         private int _periodicCheckingInterval;
+        private bool _autoConfirmMarketTransactions;
+        private bool _checkAllAccounts;
+
 
         public ManifestLocationModel ManifestLocation
         {
@@ -43,7 +46,25 @@ namespace SteamDesktopAuthenticatorCore.Common
         public int PeriodicCheckingInterval
         {
             get => _periodicCheckingInterval;
-            set => Set(ref _periodicCheckingInterval, value);
+            set
+            {
+                if (value == 0)
+                    return;
+
+                Set(ref _periodicCheckingInterval, value);
+            }
+        }
+
+        public bool AutoConfirmMarketTransactions
+        {
+            get => _autoConfirmMarketTransactions;
+            set => Set(ref _autoConfirmMarketTransactions, value);
+        }
+
+        public bool CheckAllAccounts
+        {
+            get => _checkAllAccounts;
+            set => Set(ref _checkAllAccounts, value);
         }
 
 
@@ -52,6 +73,9 @@ namespace SteamDesktopAuthenticatorCore.Common
             ManifestLocation = ManifestLocationModel.Drive;
             FirstRun = true;
             Updated = false;
+            PeriodicCheckingInterval = 10;
+            AutoConfirmMarketTransactions = false;
+            CheckAllAccounts = true;
         }
     }
 }

@@ -47,7 +47,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         private Int64 _steamTime;
 
         private SteamGuardAccount? _selectedAccount;
-        private string _token = string.Empty;
+        private string _token = "Login token";
         private int _tokenProgressBar;
 
         #endregion
@@ -79,6 +79,11 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         public ICommand WindowLoadedCommand => new AsyncRelayCommand(async o =>
         {
             _steamGuardTimer.Start();
+
+            if (_appSettings.AutoConfirmMarketTransactions)
+                _autoTradeConfirmationTimer.Start();
+
+
 
             await RefreshAccounts();
         });

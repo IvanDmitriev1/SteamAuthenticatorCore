@@ -88,8 +88,8 @@
             x:Name="RootDialog"
             Grid.Row="0"
             Grid.RowSpan="2"
-            DefaultLeftButtonText="Yes"
-            DefaultRightButtonText="Cancel"
+            DefaultLeftButtonText="Ok"
+            DefaultRightButtonText="Close"
             DefaultTitle="Steam desktop authenticator core" />
 
         <!--  Contains buttons responsible for maximizing, minimizing and closing the app. It also has a background colored strip that allows you to move the application around  -->

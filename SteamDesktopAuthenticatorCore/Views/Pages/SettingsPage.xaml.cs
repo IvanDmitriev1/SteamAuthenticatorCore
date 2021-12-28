@@ -1,4 +1,6 @@
 ﻿using System.Windows.Controls;
+using Microsoft.Extensions.DependencyInjection;
+using SteamDesktopAuthenticatorCore.ViewModels;
 
 namespace SteamDesktopAuthenticatorCore.Views.Pages
 {
@@ -7,6 +9,7 @@ namespace SteamDesktopAuthenticatorCore.Views.Pages
         public SettingsPage()
         {
             InitializeComponent();
+            DataContext = App.ServiceProvider.GetRequiredService<SettingsViewModel>();
         }
     }
 }
