@@ -1,4 +1,6 @@
-﻿using WpfHelper.Common;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SteamDesktopAuthenticatorCore.ViewModels;
+using WpfHelper.Common;
 using WpfHelper.Services;
 
 namespace SteamDesktopAuthenticatorCore.Common
@@ -12,6 +14,7 @@ namespace SteamDesktopAuthenticatorCore.Common
 
         public enum ManifestLocationModel
         {
+            None,
             Drive,
             GoogleDrive
         }
@@ -28,7 +31,15 @@ namespace SteamDesktopAuthenticatorCore.Common
         public ManifestLocationModel ManifestLocation
         {
             get => _manifestLocation;
-            set => Set(ref _manifestLocation, value);
+            set
+            {
+                if (!Set(ref _manifestLocation, value)) return;
+
+                var manifestServiceResolver = App.ServiceProvider.GetRequiredService<App.ManifestServiceResolver>();
+
+                var viewModel = App.ServiceProvider.GetRequiredService<TokenViewModel>();
+                viewModel.UpdateManifestService(manifestServiceResolver.Invoke());
+            }
         }
 
         public bool FirstRun
@@ -70,7 +81,7 @@ namespace SteamDesktopAuthenticatorCore.Common
 
         public void DefaultSettings()
         {
-            ManifestLocation = ManifestLocationModel.Drive;
+            ManifestLocation = ManifestLocationModel.None;
             FirstRun = true;
             Updated = false;
             PeriodicCheckingInterval = 10;

@@ -21,10 +21,9 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 {
     public class TokenViewModel : BaseViewModel
     {
-        public TokenViewModel(App.ManifestServiceResolver manifestServiceResolver, SettingService settingsService)
+        public TokenViewModel(SettingService settingsService)
         {
             _appSettings = settingsService.Get<AppSettings>();
-            _manifestModelService = manifestServiceResolver.Invoke();
             Accounts = new ObservableCollection<SteamGuardAccount>();
 
             _steamGuardTimer = new DispatcherTimer()
@@ -44,7 +43,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         #region Variabls
 
-        private readonly IManifestModelService _manifestModelService;
+        private IManifestModelService _manifestModelService = null!;
         private readonly DispatcherTimer _steamGuardTimer;
         private readonly DispatcherTimer _autoTradeConfirmationTimer;
         private readonly AppSettings _appSettings;
@@ -82,16 +81,12 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         #region Commands
 
-        public ICommand WindowLoadedCommand => new AsyncRelayCommand(async o =>
+        public ICommand WindowLoadedCommand => new RelayCommand( o =>
         {
             _steamGuardTimer.Start();
 
             if (_appSettings.AutoConfirmMarketTransactions)
                 _autoTradeConfirmationTimer.Start();
-
-
-
-            await RefreshAccounts();
         });
 
         public ICommand DeleteAccountCommand => new AsyncRelayCommand(async o =>
@@ -153,6 +148,13 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         });
 
         #endregion
+
+        public async void UpdateManifestService(IManifestModelService manifestModelService)
+        {
+            _manifestModelService = manifestModelService;
+            await manifestModelService.Initialize();
+            await RefreshAccounts();
+        }
 
         #region PrivateMethods
 

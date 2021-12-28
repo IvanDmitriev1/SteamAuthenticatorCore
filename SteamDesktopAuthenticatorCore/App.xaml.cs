@@ -47,19 +47,8 @@ namespace SteamDesktopAuthenticatorCore
             await Host.StartAsync();
 
             var appSettings = Host.Services.GetRequiredService<SettingService>().Get<AppSettings>();
-            switch (appSettings.ManifestLocation)
-            {
-                case AppSettings.ManifestLocationModel.Drive:
-                    var mainWindow = Host.Services.GetRequiredService<Container>();
-                    mainWindow.Show();
-                    break;
-                case AppSettings.ManifestLocationModel.GoogleDrive:
-                    var initializingWindow = Host.Services.GetRequiredService<InitializingWindow>();
-                    initializingWindow.Show();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            var mainWindow = Host.Services.GetRequiredService<Container>();
+            mainWindow.Show();
 
             base.OnStartup(e);
         }
@@ -96,7 +85,6 @@ namespace SteamDesktopAuthenticatorCore
 
         private static void ConfigureServices(IServiceCollection service)
         {
-            service.AddSingleton<InitializingWindow>();
             service.AddSingleton<Container>();
 
             service.AddSingleton<InitializingViewModel>();
