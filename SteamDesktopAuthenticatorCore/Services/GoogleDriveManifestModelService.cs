@@ -26,9 +26,7 @@ namespace SteamDesktopAuthenticatorCore.Services
         public async Task Initialize()
         {
             if (!await _api.Init(Assembly.GetExecutingAssembly().GetManifestResourceStream("SteamDesktopAuthenticatorCore.client_secret.json")!))
-            {
                 await _api.ConnectGoogleDrive(Assembly.GetExecutingAssembly().GetManifestResourceStream("SteamDesktopAuthenticatorCore.client_secret.json")!);
-            }
 
             if (await _api.CheckForFile(ManifestModelServiceConstants.ManifestFileName) is not { } manifestFile)
             {

@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:SteamDesktopAuthenticatorCore.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pages="clr-namespace:SteamDesktopAuthenticatorCore.Views.Pages"
     Title="Container"
     Width="800"
     Height="450"
@@ -35,7 +36,27 @@
                 Grid.Row="1"
                 Grid.Column="0"
                 Margin="0,0,12,0"
-                Frame="{Binding ElementName=RootFrame}" />
+                Frame="{Binding ElementName=RootFrame}"
+                Loaded="RootNavigation_OnLoaded"
+                Navigated="RootNavigation_OnNavigated">
+                <controls:NavigationFluent.Items>
+                    <controls:NavigationItem
+                        Content="Token"
+                        Tag="Token"
+                        Type="{x:Type pages:TokenPage}" />
+                    <controls:NavigationItem
+                        Content="Confirmations"
+                        Tag="Confirmations"
+                        Type="{x:Type pages:ConfirmationsPage}" />
+                </controls:NavigationFluent.Items>
+                <controls:NavigationFluent.Footer>
+                    <controls:NavigationItem
+                        Content="Settings"
+                        Icon="Settings28"
+                        Tag="Settings"
+                        Type="{x:Type pages:SettingsPage}" />
+                </controls:NavigationFluent.Footer>
+            </controls:NavigationFluent>
 
             <!--  Pages are presented here  -->
             <Grid

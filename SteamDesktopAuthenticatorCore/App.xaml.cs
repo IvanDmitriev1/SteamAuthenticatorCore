@@ -26,21 +26,29 @@ namespace SteamDesktopAuthenticatorCore
             }).Build();
         }
 
-        private readonly IHost _host;
-
-        #region Fields
-
         public const string Name = "SteamDesktopAuthenticatorCore";
-
-        #endregion
+        private readonly IHost _host;
 
         protected override async void OnStartup(StartupEventArgs e)
         {
             WPFUI.Theme.Manager.SetSystemTheme(false);
 
             await _host.StartAsync();
-            var mainWindow = _host.Services.GetRequiredService<InitializingWindow>();
-            mainWindow.Show();
+
+            var appSettings = _host.Services.GetRequiredService<SettingService>().Get<AppSettings>();
+            switch (appSettings.ManifestLocation)
+            {
+                case AppSettings.ManifestLocationModel.Drive:
+                    var mainWindow = _host.Services.GetRequiredService<Container>();
+                    mainWindow.Show();
+                    break;
+                case AppSettings.ManifestLocationModel.GoogleDrive:
+                    var initializingWindow = _host.Services.GetRequiredService<InitializingWindow>();
+                    initializingWindow.Show();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
             base.OnStartup(e);
         }
@@ -76,6 +84,8 @@ namespace SteamDesktopAuthenticatorCore
         private static void ConfigureServices(IServiceCollection service)
         {
             service.AddSingleton<InitializingWindow>();
+            service.AddSingleton<Container>();
+
             service.AddSingleton<InitializingViewModel>();
 
             service.AddSingleton<SimpleHttpRequestService>();
