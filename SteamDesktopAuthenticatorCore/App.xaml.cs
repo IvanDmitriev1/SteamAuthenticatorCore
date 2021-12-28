@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-using GoogleDrive;
-using SteamAuthCore.Manifest;
-using SteamDesktopAuthenticatorCore.classes;
-using SteamDesktopAuthenticatorCore.Services;
-using WpfHelper.Services;
+using SteamDesktopAuthenticatorCore.Common;
+using SteamDesktopAuthenticatorCore.ViewModels;
+using WpfHelper.Common;
 
 namespace SteamDesktopAuthenticatorCore
 {
@@ -22,70 +18,31 @@ namespace SteamDesktopAuthenticatorCore
             string userCredentialPath = Path.Combine(appFolder, "Token.json");
 
             this.Dispatcher.UnhandledException += DispatcherOnUnhandledException;
-
-            GoogleDriveApi = new GoogleDriveApi(userCredentialPath,
-                new []{ Google.Apis.Drive.v3.DriveService.Scope.DriveFile },$"{Name}");
-
-            UpdateService.GitHubUrl = "https://api.github.com/repos/bduj1/StreamDesktopAuthenticatorCore/releases/latest";
         }
 
         static App()
         {
-            ManifestDirectoryService = new DesktopManifestDirectoryService();
+            ViewModels = new Dictionary<Type, BaseViewModel>()
+            {
+                {typeof(InitializingViewModel), new InitializingViewModel()},
+            };
         }
 
         #region Fields
 
-        public static bool InDesignMode { get; private set; } = true;
-        public static GoogleDriveApi GoogleDriveApi { get; private set; } = null!;
-        public static IManifestModelService ManifestModelService { get; private set; } = null!;
-
         public const string Name = "SteamDesktopAuthenticatorCore";
+        public static IReadOnlyDictionary<Type, BaseViewModel> ViewModels { get; }
 
         #endregion
 
-        #region Variables
-
-        private static readonly IManifestDirectoryService ManifestDirectoryService;
-
-        #endregion
-
-        protected override async void OnStartup(StartupEventArgs e)
+        protected override void OnStartup(StartupEventArgs e)
         {
             WPFUI.Theme.Manager.SetSystemTheme(false);
-
-            InDesignMode = false;
-            var settings = Settings.GetSettings();
-
-            await Task.Run(CheckProcess);
-
-            if (settings.Updated)
-            {
-                await UpdateService.DeletePreviousFile($"{Name}");
-
-                settings.Updated = false;
-                settings.SaveSettings();
-            }
-
-            base.OnStartup(e);
         }
 
-        public static async Task InitializeManifestService()
+        protected override void OnExit(ExitEventArgs e)
         {
-            var settings = Settings.GetSettings();
-            switch (settings.ManifestLocation)
-            {
-                case Settings.ManifestLocationModel.Drive:
-                    ManifestModelService = new LocalDriveManifestModelService(ManifestDirectoryService);
-                    break;
-                case Settings.ManifestLocationModel.GoogleDrive:
-                    ManifestModelService = new GoogleDriveManifestModelService();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            await ManifestModelService.Initialize();
+            Settings.GetSettings().SaveSettings();
         }
 
         #region PrivateMethods
@@ -99,21 +56,6 @@ namespace SteamDesktopAuthenticatorCore
             // Prevent default unhandled exception processing
             e.Handled = true;
         }
-
-        private static void CheckProcess()
-        {
-            Process thisProcess = Process.GetCurrentProcess();
-            foreach (var process in (from p in Process.GetProcesses() where p.ProcessName.Contains(Name) select p))
-            {
-                if (thisProcess.Id == process.Id) continue;
-
-                if (MessageBox.Show("Another of this app running\nClose previous app instance ?\nIf no this app would be closed", "Process manager", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                    process.Kill();
-                else
-                    App.Current.Shutdown();
-            }
-        }
-
         #endregion
     }
 }
