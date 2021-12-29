@@ -13,6 +13,7 @@
     d:DataContext="{d:DesignInstance viewModels:SettingsViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    Style="{StaticResource UiPage}"
     mc:Ignorable="d">
 
     <Grid>
@@ -39,10 +40,6 @@
                     Value="{Binding Path=AppSettings.PeriodicCheckingInterval, Mode=TwoWay, Converter={StaticResource DoubleToIntConverter}}" />
             </controls:CardControl>
 
-            <controls:CardControl Title="Check all accounts for confirmations" Subtitle="Check all accounts for confirmations">
-                <ToggleButton IsChecked="{Binding Path=AppSettings.CheckAllAccounts}" />
-            </controls:CardControl>
-
             <controls:CardControl Title="Auto-confirm market transactions" Subtitle="Auto-confirm market transactions">
                 <ToggleButton IsChecked="{Binding Path=AppSettings.AutoConfirmMarketTransactions}" />
             </controls:CardControl>
@@ -66,7 +63,6 @@
                 <TextBlock
                     Grid.Column="0"
                     VerticalAlignment="Center"
-                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                     Text="{Binding Path=CurrentVersion, StringFormat={} Current version: {0}}" />
 
                 <controls:Button
