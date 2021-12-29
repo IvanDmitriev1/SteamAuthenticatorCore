@@ -38,14 +38,14 @@
             </Menu.Resources>
 
             <MenuItem Header="File">
-                <MenuItem Header="Import accounts" />
-                <MenuItem Header="Refresh account list" />
-                <MenuItem Header="Show accounts file folder" />
+                <MenuItem Command="{Binding Path=ImportAccountsCommand}" Header="Import accounts" />
+                <MenuItem Command="{Binding Path=RefreshAccountsListCommand}" Header="Refresh account list" />
+                <MenuItem Command="{Binding Path=ShowAccountFilesFolder}" Header="Show accounts file folder" />
             </MenuItem>
 
             <MenuItem Header="Selected account">
-                <MenuItem Header="Login again" />
-                <MenuItem Header="Force refresh session" />
+                <MenuItem Command="{Binding Path=LoginInSelectedAccountCommand}" Header="Login again" />
+                <MenuItem Command="{Binding Path=ForceRefreshSessionCommand}" Header="Force refresh session" />
             </MenuItem>
         </Menu>
 

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Microsoft.Win32;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using SteamDesktopAuthenticatorCore.Common;
@@ -145,6 +147,61 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 return;
 
             await ImportSteamGuardAccount(files);
+        });
+
+        public ICommand ImportAccountsCommand => new AsyncRelayCommand(async o =>
+        {
+            OpenFileDialog fileDialog = new()
+            {
+                Multiselect = true,
+                CheckFileExists = true,
+                Filter = $"mafile| *{ManifestModelServiceConstants.FileExtension}"
+            };
+
+            if (fileDialog.ShowDialog() == false) return;
+
+            await ImportSteamGuardAccount(fileDialog.FileNames);
+        });
+
+        public ICommand RefreshAccountsListCommand => new AsyncRelayCommand(async o =>
+        {
+            await RefreshAccounts();
+        });
+
+        public ICommand ShowAccountFilesFolder => new RelayCommand(o =>
+        {
+            if (_appSettings.ManifestLocation == AppSettings.ManifestLocationModel.GoogleDrive)
+            {
+                var dialog = Dialog.GetCurrentInstance();
+                dialog.ShowDialog($"Your accounts are stored in the google drive {App.InternalName} folder");
+
+                return;
+            }
+
+            try
+            {
+                var startInfo = new ProcessStartInfo
+                {
+                    Arguments = Path.Combine(Directory.GetCurrentDirectory(), "maFiles"),
+                    FileName = "explorer.exe"
+                };
+
+                Process.Start(startInfo);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+        });
+
+        public ICommand LoginInSelectedAccountCommand => new RelayCommand(o =>
+        {
+
+        });
+
+        public ICommand ForceRefreshSessionCommand => new AsyncRelayCommand(async o =>
+        {
+
         });
 
         #endregion
