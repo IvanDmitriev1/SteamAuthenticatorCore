@@ -7,9 +7,9 @@ namespace SteamDesktopAuthenticatorCore.Views
 {
     public partial class Container : Window
     {
-        public Container(SettingService settingService)
+        public Container(AppSettings appSettings)
         {
-            _appSettings = settingService.Get<AppSettings>();
+            _appSettings = appSettings;
             WPFUI.Background.Manager.Apply(this);
 
             InitializeComponent();

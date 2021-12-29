@@ -46,7 +46,9 @@ namespace SteamDesktopAuthenticatorCore
 
             await Host.StartAsync();
 
-            var appSettings = Host.Services.GetRequiredService<SettingService>().Get<AppSettings>();
+            var settingsService = Host.Services.GetRequiredService<SettingService>();
+            settingsService.LoadSettings();
+
             var mainWindow = Host.Services.GetRequiredService<Container>();
             mainWindow.Show();
 
@@ -69,14 +71,6 @@ namespace SteamDesktopAuthenticatorCore
 
         private static void ConfigureOptions(IServiceCollection service)
         {
-            service.Configure<SettingsServiceOptions>(options =>
-            {
-                options.AppName = InternalName;
-                options.SettingsMap = new Dictionary<Type, ISettings>()
-                {
-                    {typeof(AppSettings), new AppSettings()}
-                };
-            });
             service.Configure<UpdateServiceOptions>(options =>
             {
                 options.GitHubUrl = "https://api.github.com/repos/bduj1/StreamDesktopAuthenticatorCore/releases/latest";
@@ -87,25 +81,23 @@ namespace SteamDesktopAuthenticatorCore
         {
             service.AddSingleton<Container>();
 
-            service.AddSingleton<InitializingViewModel>();
             service.AddSingleton<TokenViewModel>();
             service.AddSingleton<SettingsViewModel>();
             service.AddSingleton<ConfirmationViewModel>();
 
             service.AddSingleton<SimpleHttpRequestService>();
             service.AddSingleton<UpdateService>();
-            service.AddSingleton<SettingService>();
             service.AddGoogleDriveApi(Name);
-
+            service.AddSettings(InternalName);
 
             service.AddSingleton<GoogleDriveManifestModelService>();
 
             service.AddSingleton<IManifestDirectoryService, DesktopManifestDirectoryService>();
             service.AddSingleton<LocalDriveManifestModelService>();
 
-            service.AddTransient<ManifestServiceResolver>(provider => () => 
+            service.AddTransient<ManifestServiceResolver>(provider => () =>
             {
-                var appSettings = provider.GetRequiredService<SettingService>().Get<AppSettings>();
+                var appSettings = provider.GetRequiredService<AppSettings>();
                 return appSettings.ManifestLocation switch
                 {
                     AppSettings.ManifestLocationModel.Drive => provider

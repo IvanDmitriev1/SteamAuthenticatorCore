@@ -13,7 +13,6 @@ using SteamAuthCore.Manifest;
 using SteamDesktopAuthenticatorCore.Common;
 using WpfHelper.Commands;
 using WpfHelper.Common;
-using WpfHelper.Services;
 using WPFUI.Common;
 using WPFUI.Controls;
 using MessageBox = WPFUI.Controls.MessageBox;
@@ -23,9 +22,9 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 {
     public class TokenViewModel : BaseViewModel
     {
-        public TokenViewModel(SettingService settingsService)
+        public TokenViewModel(AppSettings appSettings)
         {
-            _appSettings = settingsService.Get<AppSettings>();
+            _appSettings = appSettings;
             Accounts = new ObservableCollection<SteamGuardAccount>();
 
             _steamGuardTimer = new DispatcherTimer()

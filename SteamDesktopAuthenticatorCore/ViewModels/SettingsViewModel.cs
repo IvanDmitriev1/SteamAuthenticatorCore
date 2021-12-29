@@ -15,10 +15,10 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 {
     public class SettingsViewModel : BaseViewModel
     {
-        public SettingsViewModel(SettingService settingsService, UpdateService updateService)
+        public SettingsViewModel(AppSettings appSettings, UpdateService updateService)
         {
             _updateService = updateService;
-            AppSettings = settingsService.Get<AppSettings>();
+            AppSettings = appSettings;
 
             CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
         }
