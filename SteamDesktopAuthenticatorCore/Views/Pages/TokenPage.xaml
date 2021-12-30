@@ -46,6 +46,8 @@
             <MenuItem Header="Selected account">
                 <MenuItem Command="{Binding Path=LoginInSelectedAccountCommand}" Header="Login again" />
                 <MenuItem Command="{Binding Path=ForceRefreshSessionCommand}" Header="Force refresh session" />
+                <Separator />
+                <MenuItem Command="{Binding Path=DeleteAccountCommand}" Header="Delete from list" />
             </MenuItem>
         </Menu>
 
@@ -113,10 +115,10 @@
 
                         <StackPanel.ContextMenu>
                             <ContextMenu DataContext="{Binding Source={x:Reference Page}, Path=DataContext}">
-                                <MenuItem
-                                    Command="{Binding Path=DeleteAccountCommand}"
-                                    Header="Delete"
-                                    Style="{StaticResource {x:Type MenuItem}}" />
+                                <MenuItem Command="{Binding Path=LoginInSelectedAccountCommand}" Header="Login again" />
+                                <MenuItem Command="{Binding Path=ForceRefreshSessionCommand}" Header="Force refresh session" />
+                                <Separator />
+                                <MenuItem Command="{Binding Path=DeleteAccountCommand}" Header="Delete from list" />
                             </ContextMenu>
                         </StackPanel.ContextMenu>
 

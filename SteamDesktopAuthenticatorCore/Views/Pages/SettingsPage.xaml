@@ -30,9 +30,17 @@
             </StackPanel.Resources>
 
             <controls:CardControl
-                Title="Seconds between checking for confirmations"
+                Title=".maFiles location"
                 Margin="0,0,0,0"
-                Subtitle="Seconds between checking for confirmations">
+                Subtitle=".maFiles location">
+                <ComboBox
+                    MinWidth="105"
+                    ItemsSource="{markupExtension:EnumBindingSource {x:Type common:AppSettings+ManifestLocationModel},
+                                                                    Offset=1}"
+                    SelectedValue="{Binding Path=AppSettings.ManifestLocation}" />
+            </controls:CardControl>
+
+            <controls:CardControl Title="Seconds between checking for confirmations" Subtitle="Seconds between checking for confirmations">
                 <controls:NumberBox
                     IntegersOnly="True"
                     Max="100"
@@ -42,14 +50,6 @@
 
             <controls:CardControl Title="Auto-confirm market transactions" Subtitle="Auto-confirm market transactions">
                 <ToggleButton IsChecked="{Binding Path=AppSettings.AutoConfirmMarketTransactions}" />
-            </controls:CardControl>
-
-            <controls:CardControl Title="Auto-confirm market transactions" Subtitle="Auto-confirm market transactions">
-                <ComboBox
-                    MinWidth="105"
-                    ItemsSource="{markupExtension:EnumBindingSource {x:Type common:AppSettings+ManifestLocationModel},
-                                                                    Offset=1}"
-                    SelectedValue="{Binding Path=AppSettings.ManifestLocation}" />
             </controls:CardControl>
         </StackPanel>
 

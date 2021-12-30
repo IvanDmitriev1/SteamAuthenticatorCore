@@ -32,12 +32,6 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 Interval = TimeSpan.FromSeconds(2)
             };
             _steamGuardTimer.Tick += async (sender, args) => await SteamGuardTimerOnTick();
-
-            _autoTradeConfirmationTimer = new DispatcherTimer()
-            {
-                Interval = TimeSpan.FromSeconds(_appSettings.PeriodicCheckingInterval)
-            };
-            _autoTradeConfirmationTimer.Tick += async (sender, args) => await AutoTradeConfirmationTimerOnTick();
         }
 
         public ObservableCollection<SteamGuardAccount> Accounts { get; }
@@ -46,7 +40,6 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         private IManifestModelService _manifestModelService = null!;
         private readonly DispatcherTimer _steamGuardTimer;
-        private readonly DispatcherTimer _autoTradeConfirmationTimer;
         private readonly AppSettings _appSettings;
 
         private Int64 _currentSteamChunk;
@@ -85,9 +78,6 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         public ICommand WindowLoadedCommand => new RelayCommand( o =>
         {
             _steamGuardTimer.Start();
-
-            if (_appSettings.AutoConfirmMarketTransactions)
-                _autoTradeConfirmationTimer.Start();
         });
 
         public ICommand DeleteAccountCommand => new AsyncRelayCommand(async o =>
@@ -96,7 +86,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 return;
 
             var dialog = Dialog.GetCurrentInstance();
-            if (await dialog.ShowDialog("Are you sure", App.Name, "Yes", "No") != ButtonPressed.Left)
+            if (await dialog.ShowDialog($"Are you sure you want to delete {SelectedAccount.AccountName}?", App.Name, "Yes", "No") != ButtonPressed.Left)
                 return;
 
             await _manifestModelService.DeleteSteamGuardAccount(SelectedAccount);
@@ -223,11 +213,6 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             SetAccountToken();
             if (SelectedAccount is not null)
                 TokenProgressBar = 30 - secondsUntilChange;
-        }
-
-        private async Task AutoTradeConfirmationTimerOnTick()
-        {
-
         }
 
         private void SetAccountToken()
