@@ -57,6 +57,13 @@
                         Tag="Settings"
                         Type="{x:Type pages:SettingsPage}" />
                 </controls:NavigationFluent.Footer>
+
+                <controls:NavigationFluent.HiddenItems>
+                    <controls:NavigationItem
+                        Content="Login"
+                        Tag="Login"
+                        Type="{x:Type pages:LoginPage}" />
+                </controls:NavigationFluent.HiddenItems>
             </controls:NavigationFluent>
 
             <!--  Pages are presented here  -->

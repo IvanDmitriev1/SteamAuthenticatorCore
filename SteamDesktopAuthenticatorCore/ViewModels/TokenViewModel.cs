@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using SteamDesktopAuthenticatorCore.Common;
+using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper.Commands;
 using WpfHelper.Common;
 using WPFUI.Common;
@@ -185,7 +187,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         public ICommand LoginInSelectedAccountCommand => new RelayCommand(o =>
         {
-
+            
         });
 
         public ICommand ForceRefreshSessionCommand => new AsyncRelayCommand(async o =>
