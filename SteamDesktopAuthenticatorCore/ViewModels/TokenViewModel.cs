@@ -7,16 +7,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using SteamDesktopAuthenticatorCore.Common;
-using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper.Commands;
-using WpfHelper.Common;
 using WPFUI.Common;
 using WPFUI.Controls;
+using WPFUI.Taskbar;
 using BaseViewModel = WPFUI.Common.BaseViewModel;
 using MessageBox = WPFUI.Controls.MessageBox;
 using RelayCommand = WpfHelper.Commands.RelayCommand;
@@ -197,12 +195,16 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         #endregion
 
+        #region Public methods
+
         public async void UpdateManifestService(IManifestModelService manifestModelService)
         {
             _manifestModelService = manifestModelService;
             await manifestModelService.Initialize();
             await RefreshAccounts();
         }
+
+        #endregion
 
         #region PrivateMethods
 
@@ -229,6 +231,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         private async Task RefreshAccounts()
         {
+            Progress.SetState(ProgressState.Indeterminate);
             Accounts.Clear();
 
             try
@@ -244,6 +247,10 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                     RightButtonName = "Cancel"
                 };
                 box.Show(App.Name, "One of your files is corrupted");
+            }
+            finally
+            {
+                Progress.SetState(ProgressState.None);
             }
         }
 

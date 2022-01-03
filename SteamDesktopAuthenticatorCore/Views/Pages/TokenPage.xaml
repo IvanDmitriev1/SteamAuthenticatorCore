@@ -78,7 +78,10 @@
                         Content="Copy" />
                 </Grid>
 
-                <ProgressBar Margin="0,5,0,0" Value="{Binding Path=TokenProgressBar, Mode=OneWay}" />
+                <ProgressBar
+                    Margin="0,5,0,0"
+                    Maximum="30"
+                    Value="{Binding Path=TokenProgressBar, Mode=OneWay}" />
 
             </StackPanel>
         </controls:Card>

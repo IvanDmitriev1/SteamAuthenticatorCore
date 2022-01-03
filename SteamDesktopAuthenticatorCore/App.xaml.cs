@@ -24,12 +24,7 @@ namespace SteamDesktopAuthenticatorCore
         {
             this.Dispatcher.UnhandledException += DispatcherOnUnhandledException;
 
-            
-        }
-
-        static App()
-        {
-            Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder().ConfigureServices((context, collection) =>
+            _host = Host.CreateDefaultBuilder().ConfigureServices((context, collection) =>
             {
                 ConfigureOptions(collection);
                 ConfigureServices(collection);
@@ -39,7 +34,7 @@ namespace SteamDesktopAuthenticatorCore
         public const string InternalName = "SteamDesktopAuthenticatorCore";
 
         public const string Name = "Steam desktop authenticator core";
-        private static readonly IHost Host;
+        private readonly IHost _host;
 
         #region Overrides
 
@@ -47,25 +42,21 @@ namespace SteamDesktopAuthenticatorCore
         {
             WPFUI.Theme.Manager.SetSystemTheme(false);
 
-            await Host.StartAsync();
+            await _host.StartAsync();
 
-            var settingsService = Host.Services.GetRequiredService<SettingService>();
+            var settingsService = _host.Services.GetRequiredService<SettingService>();
             settingsService.LoadSettings();
 
-            var mainWindow = Host.Services.GetRequiredService<Container>();
+            var mainWindow = _host.Services.GetRequiredService<Container>();
             mainWindow.Show();
-
-            base.OnStartup(e);
         }
 
         protected override async void OnExit(ExitEventArgs e)
         {
-            Host.Services.GetRequiredService<SettingService>().SaveSettings();
+            _host.Services.GetRequiredService<SettingService>().SaveSettings();
 
-            await Host.StopAsync();
-            Host.Dispose();
-
-            base.OnExit(e);
+            await _host.StopAsync();
+            _host.Dispose();
         }
 
         #endregion
@@ -83,18 +74,15 @@ namespace SteamDesktopAuthenticatorCore
             {
                 configuration.StartupPageTag = nameof(TokenPage);
 
-                configuration.Items = new Dictionary<string, INavigationItem>()
+                configuration.VisableItems = new Dictionary<string, INavigationItem>()
                 {
                     {nameof(TokenPage), new DefaultNavigationItem(typeof(TokenPage), "Token")},
                     {nameof(ConfirmationsPage), new DefaultNavigationItem(typeof(ConfirmationsPage), "Confirmations")},
+                };
 
-
-                    {
-                        nameof(SettingsPage), new DefaultNavigationItem(typeof(SettingsPage), "Settings", Icon.Settings24)
-                        {
-                            Footer = true
-                        }
-                    },
+                configuration.VisableFooterItems = new Dictionary<string, INavigationItem>()
+                {
+                    {nameof(SettingsPage), new DefaultNavigationItem(typeof(SettingsPage), "Settings", Icon.Settings24)}
                 };
             });
         }
@@ -106,9 +94,9 @@ namespace SteamDesktopAuthenticatorCore
             service.AddSingleton<Snackbar>();
             service.AddSingleton<DefaultNavigation>();
 
-            service.AddScoped<TokenViewModel>();
-            service.AddScoped<SettingsViewModel>();
-            service.AddScoped<ConfirmationViewModel>();
+            service.AddSingleton<TokenViewModel>();
+            service.AddSingleton<SettingsViewModel>();
+            service.AddSingleton<ConfirmationViewModel>();
 
             service.AddTransient<TokenPage>();
             service.AddTransient<SettingsPage>();
@@ -121,7 +109,6 @@ namespace SteamDesktopAuthenticatorCore
             service.AddSettings(InternalName);
 
             service.AddSingleton<GoogleDriveManifestModelService>();
-
             service.AddSingleton<IManifestDirectoryService, DesktopManifestDirectoryService>();
             service.AddSingleton<LocalDriveManifestModelService>();
 
