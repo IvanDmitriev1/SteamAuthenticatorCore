@@ -1,31 +1,30 @@
 ﻿using System.Windows;
 using SteamDesktopAuthenticatorCore.Common;
-using WpfHelper.Services;
 using WPFUI.Controls;
+using WPFUI.Controls.Navigation;
 
 namespace SteamDesktopAuthenticatorCore.Views
 {
     public partial class Container : Window
     {
-        public Container(AppSettings appSettings)
+        public Container(AppSettings appSettings, DefaultNavigation navigation, Dialog dialog, Snackbar snackbar)
         {
+            InitializeComponent();
+
             _appSettings = appSettings;
             WPFUI.Background.Manager.Apply(this);
 
-            InitializeComponent();
+            RootDialog.Content = dialog;
+            RootSnackbar.Content = snackbar;
+
+
+            Breadcrumb.Navigation = navigation;
+            RootNavigation.Content = navigation;
+            RootTitleBar.Navigation = navigation;
+
+            navigation.AddFrame(RootFrame);
         }
 
         private readonly AppSettings _appSettings;
-
-        private void RootNavigation_OnLoaded(object sender, RoutedEventArgs e)
-        {
-            var navigation = (NavigationFluent)(sender);
-            navigation.Navigate("Token");
-        }
-
-        private void RootNavigation_OnNavigated(object sender, RoutedEventArgs e)
-        {
-            
-        }
     }
 }

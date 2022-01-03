@@ -6,10 +6,10 @@ namespace SteamDesktopAuthenticatorCore.Views.Pages
 {
     public partial class LoginPage : Page
     {
-        public LoginPage()
+        public LoginPage(LoginViewModel viewModel)
         {
             InitializeComponent();
-            DataContext = App.ServiceProvider.GetService<LoginViewModel>();
+            DataContext = viewModel;
         }
     }
 }

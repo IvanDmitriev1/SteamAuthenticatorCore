@@ -9,7 +9,12 @@ using SteamDesktopAuthenticatorCore.Common;
 using SteamDesktopAuthenticatorCore.Services;
 using SteamDesktopAuthenticatorCore.ViewModels;
 using SteamDesktopAuthenticatorCore.Views;
+using SteamDesktopAuthenticatorCore.Views.Pages;
 using WpfHelper.Services;
+using WPFUI.Controls;
+using WPFUI.Controls.Navigation;
+using Icon = WPFUI.Common.Icon;
+using MessageBox = System.Windows.MessageBox;
 
 namespace SteamDesktopAuthenticatorCore
 {
@@ -35,8 +40,6 @@ namespace SteamDesktopAuthenticatorCore
 
         public const string Name = "Steam desktop authenticator core";
         private static readonly IHost Host;
-
-        public static IServiceProvider ServiceProvider => Host.Services;
 
         #region Overrides
 
@@ -75,15 +78,42 @@ namespace SteamDesktopAuthenticatorCore
             {
                 options.GitHubUrl = "https://api.github.com/repos/bduj1/StreamDesktopAuthenticatorCore/releases/latest";
             });
+
+            service.Configure<DefaultNavigationConfiguration>(configuration =>
+            {
+                configuration.StartupPageTag = nameof(TokenPage);
+
+                configuration.Items = new Dictionary<string, INavigationItem>()
+                {
+                    {nameof(TokenPage), new DefaultNavigationItem(typeof(TokenPage), "Token")},
+                    {nameof(ConfirmationsPage), new DefaultNavigationItem(typeof(ConfirmationsPage), "Confirmations")},
+
+
+                    {
+                        nameof(SettingsPage), new DefaultNavigationItem(typeof(SettingsPage), "Settings", Icon.Settings24)
+                        {
+                            Footer = true
+                        }
+                    },
+                };
+            });
         }
 
         private static void ConfigureServices(IServiceCollection service)
         {
             service.AddSingleton<Container>();
+            service.AddSingleton<Dialog>();
+            service.AddSingleton<Snackbar>();
+            service.AddSingleton<DefaultNavigation>();
 
-            service.AddSingleton<TokenViewModel>();
-            service.AddSingleton<SettingsViewModel>();
-            service.AddSingleton<ConfirmationViewModel>();
+            service.AddScoped<TokenViewModel>();
+            service.AddScoped<SettingsViewModel>();
+            service.AddScoped<ConfirmationViewModel>();
+
+            service.AddTransient<TokenPage>();
+            service.AddTransient<SettingsPage>();
+            service.AddTransient<LoginPage>();
+            service.AddTransient<ConfirmationsPage>();
 
             service.AddSingleton<SimpleHttpRequestService>();
             service.AddSingleton<UpdateService>();

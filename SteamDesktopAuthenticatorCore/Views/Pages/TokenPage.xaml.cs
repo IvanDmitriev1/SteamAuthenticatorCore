@@ -6,9 +6,9 @@ namespace SteamDesktopAuthenticatorCore.Views.Pages
 {
     public partial class TokenPage : Page
     {
-        public TokenPage()
+        public TokenPage(TokenViewModel viewModel)
         {
-            DataContext = App.ServiceProvider.GetRequiredService<TokenViewModel>();
+            DataContext = viewModel;
             InitializeComponent();
         }
     }

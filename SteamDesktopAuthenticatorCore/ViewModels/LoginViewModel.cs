@@ -2,9 +2,8 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 using SteamAuthCore;
-using SteamDesktopAuthenticatorCore.Views;
 using WpfHelper.Commands;
-using WpfHelper.Common;
+using BaseViewModel = WPFUI.Common.BaseViewModel;
 
 namespace SteamDesktopAuthenticatorCore.ViewModels
 {

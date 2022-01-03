@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using SteamDesktopAuthenticatorCore.ViewModels;
 using WpfHelper.Common;
 using WpfHelper.Services;
@@ -7,8 +8,9 @@ namespace SteamDesktopAuthenticatorCore.Common
 {
     public class AppSettings : BaseViewModel, ISettings
     {
-        public AppSettings()
+        public AppSettings(IServiceProvider serviceProvider)
         {
+            _serviceProvider = serviceProvider;
             DefaultSettings();
         }
 
@@ -19,7 +21,7 @@ namespace SteamDesktopAuthenticatorCore.Common
             GoogleDrive
         }
 
-
+        private readonly IServiceProvider _serviceProvider;
         private ManifestLocationModel _manifestLocation;
         private bool _firstRun;
         private bool _updated;
@@ -34,9 +36,9 @@ namespace SteamDesktopAuthenticatorCore.Common
             {
                 if (!Set(ref _manifestLocation, value)) return;
 
-                var manifestServiceResolver = App.ServiceProvider.GetRequiredService<App.ManifestServiceResolver>();
+                var manifestServiceResolver = _serviceProvider.GetRequiredService<App.ManifestServiceResolver>();
 
-                var viewModel = App.ServiceProvider.GetRequiredService<TokenViewModel>();
+                var viewModel = _serviceProvider.GetRequiredService<TokenViewModel>();
                 viewModel.UpdateManifestService(manifestServiceResolver.Invoke());
             }
         }

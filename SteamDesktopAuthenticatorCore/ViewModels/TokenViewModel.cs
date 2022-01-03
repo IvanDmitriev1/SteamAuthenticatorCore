@@ -17,6 +17,7 @@ using WpfHelper.Commands;
 using WpfHelper.Common;
 using WPFUI.Common;
 using WPFUI.Controls;
+using BaseViewModel = WPFUI.Common.BaseViewModel;
 using MessageBox = WPFUI.Controls.MessageBox;
 using RelayCommand = WpfHelper.Commands.RelayCommand;
 
@@ -24,9 +25,10 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 {
     public class TokenViewModel : BaseViewModel
     {
-        public TokenViewModel(AppSettings appSettings)
+        public TokenViewModel(AppSettings appSettings, Dialog dialog)
         {
             _appSettings = appSettings;
+            _dialog = dialog;
             Accounts = new ObservableCollection<SteamGuardAccount>();
 
             _steamGuardTimer = new DispatcherTimer()
@@ -43,6 +45,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         private IManifestModelService _manifestModelService = null!;
         private readonly DispatcherTimer _steamGuardTimer;
         private readonly AppSettings _appSettings;
+        private readonly Dialog _dialog;
 
         private Int64 _currentSteamChunk;
         private Int64 _steamTime;
@@ -87,8 +90,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (SelectedAccount is null)
                 return;
 
-            var dialog = Dialog.GetCurrentInstance();
-            if (await dialog.ShowDialog($"Are you sure you want to delete {SelectedAccount.AccountName}?", App.Name, "Yes", "No") != ButtonPressed.Left)
+            if (await _dialog.ShowDialog($"Are you sure you want to delete {SelectedAccount.AccountName}?", App.Name, "Yes", "No") != ButtonPressed.Left)
                 return;
 
             await _manifestModelService.DeleteSteamGuardAccount(SelectedAccount);
@@ -163,9 +165,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             if (_appSettings.ManifestLocation == AppSettings.ManifestLocationModel.GoogleDrive)
             {
-                var dialog = Dialog.GetCurrentInstance();
-                dialog.ShowDialog($"Your accounts are stored in the google drive {App.InternalName} folder");
-
+                _dialog.ShowDialog($"Your accounts are stored in the google drive {App.InternalName} folder");
                 return;
             }
 
@@ -260,7 +260,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 }
                 catch
                 {
-                    await Dialog.GetCurrentInstance().ShowDialog("Your file is corrupted!");
+                    await _dialog.ShowDialog("Your file is corrupted!");
                 }
             }
         }

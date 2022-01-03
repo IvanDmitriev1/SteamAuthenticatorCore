@@ -1,4 +1,4 @@
-﻿using WpfHelper.Common;
+﻿using BaseViewModel = WPFUI.Common.BaseViewModel;
 
 namespace SteamDesktopAuthenticatorCore.ViewModels
 {

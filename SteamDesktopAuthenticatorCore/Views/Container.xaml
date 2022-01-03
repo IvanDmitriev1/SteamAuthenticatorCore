@@ -32,39 +32,11 @@
             </Grid.ColumnDefinitions>
 
             <!--  This element displays the navigation items  -->
-            <controls:NavigationFluent
+            <ContentControl
                 x:Name="RootNavigation"
                 Grid.Row="1"
                 Grid.Column="0"
-                Margin="0,0,12,0"
-                Frame="{Binding ElementName=RootFrame}"
-                Loaded="RootNavigation_OnLoaded"
-                Navigated="RootNavigation_OnNavigated">
-                <controls:NavigationFluent.Items>
-                    <controls:NavigationItem
-                        Content="Token"
-                        Tag="Token"
-                        Type="{x:Type pages:TokenPage}" />
-                    <controls:NavigationItem
-                        Content="Confirmations"
-                        Tag="Confirmations"
-                        Type="{x:Type pages:ConfirmationsPage}" />
-                </controls:NavigationFluent.Items>
-                <controls:NavigationFluent.Footer>
-                    <controls:NavigationItem
-                        Content="Settings"
-                        Icon="Settings28"
-                        Tag="Settings"
-                        Type="{x:Type pages:SettingsPage}" />
-                </controls:NavigationFluent.Footer>
-
-                <controls:NavigationFluent.HiddenItems>
-                    <controls:NavigationItem
-                        Content="Login"
-                        Tag="Login"
-                        Type="{x:Type pages:LoginPage}" />
-                </controls:NavigationFluent.HiddenItems>
-            </controls:NavigationFluent>
+                Width="250" />
 
             <!--  Pages are presented here  -->
             <Grid
@@ -76,29 +48,27 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <controls:Breadcrumb
+                    x:Name="Breadcrumb"
                     Grid.Row="0"
-                    Margin="0,0,0,18"
-                    Navigation="{Binding ElementName=RootNavigation}" />
-                <Frame x:Name="RootFrame" Grid.Row="1" />
+                    Margin="15,0,0,18" />
+                <Frame
+                    x:Name="RootFrame"
+                    Grid.Row="1"
+                    Margin="15,0,0,0" />
             </Grid>
 
-            <controls:Snackbar
+            <ContentControl
                 x:Name="RootSnackbar"
-                Title="Steam desktop authenticator core"
                 Grid.Row="0"
                 Grid.RowSpan="2"
-                Grid.Column="1"
-                Timeout="5000" />
+                Grid.Column="1" />
         </Grid>
 
         <!--  Dialogue is above all controls except the navigation buttons. So it covers all the content, but allows you to close or move the application.  -->
-        <controls:Dialog
+        <ContentControl
             x:Name="RootDialog"
             Grid.Row="0"
-            Grid.RowSpan="2"
-            DefaultLeftButtonText="Ok"
-            DefaultRightButtonText="Close"
-            DefaultTitle="Steam desktop authenticator core" />
+            Grid.RowSpan="2" />
 
         <!--  Contains buttons responsible for maximizing, minimizing and closing the app. It also has a background colored strip that allows you to move the application around  -->
         <controls:TitleBar
@@ -108,7 +78,6 @@
             ApplicationNavigation="True"
             BackButtonVisibility="Hidden"
             MinimizeToTray="True"
-            Navigation="{Binding ElementName=RootNavigation}"
             NotifyIconImage="pack://application:,,,/icon.ico"
             NotifyIconTooltip="Steam desktop authenticator core"
             UseNotifyIcon="True"
