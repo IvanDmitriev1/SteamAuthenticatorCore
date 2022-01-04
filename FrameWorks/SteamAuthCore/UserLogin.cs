@@ -197,14 +197,14 @@ namespace SteamAuthCore
             if (SteamApi.MobileLoginRequest<LoginResponse>(ApiEndpoints.CommunityBase + "/login/dologin", SteamApi.RequestMethod.Post, postData, cookies) is not { } loginResponse)
                 return LoginResult.GeneralFailure;
 
-            if (loginResponse.Message is not null)
-            {
-                if (loginResponse.Message.Contains("There have been too many login failures"))
-                    return LoginResult.TooManyFailedLogins;
+            if (loginResponse.Message is null)
+                return LoginResult.GeneralFailure;
 
-                if (loginResponse.Message.Contains("Incorrect login"))
-                    return LoginResult.BadCredentials;
-            }
+            if (loginResponse.Message.Contains("There have been too many login failures"))
+                return LoginResult.TooManyFailedLogins;
+
+            if (loginResponse.Message.Contains("Incorrect login"))
+                return LoginResult.BadCredentials;
 
             if (loginResponse.CaptchaNeeded)
             {

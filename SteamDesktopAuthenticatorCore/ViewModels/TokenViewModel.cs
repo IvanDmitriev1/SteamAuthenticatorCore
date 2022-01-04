@@ -11,9 +11,11 @@ using Microsoft.Win32;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using SteamDesktopAuthenticatorCore.Common;
+using SteamDesktopAuthenticatorCore.Views.Pages;
 using WpfHelper.Commands;
 using WPFUI.Common;
 using WPFUI.Controls;
+using WPFUI.Controls.Navigation;
 using WPFUI.Taskbar;
 using BaseViewModel = WPFUI.Common.BaseViewModel;
 using MessageBox = WPFUI.Controls.MessageBox;
@@ -23,9 +25,10 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 {
     public class TokenViewModel : BaseViewModel
     {
-        public TokenViewModel(AppSettings appSettings, Dialog dialog)
+        public TokenViewModel(AppSettings appSettings, DefaultNavigation navigation, Dialog dialog)
         {
             _appSettings = appSettings;
+            _navigation = navigation;
             _dialog = dialog;
             Accounts = new ObservableCollection<SteamGuardAccount>();
 
@@ -43,6 +46,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         private IManifestModelService _manifestModelService = null!;
         private readonly DispatcherTimer _steamGuardTimer;
         private readonly AppSettings _appSettings;
+        private readonly DefaultNavigation _navigation;
         private readonly Dialog _dialog;
 
         private Int64 _currentSteamChunk;
@@ -54,7 +58,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         #endregion
 
-        #region Fields
+        #region Properties
 
         public string Token
         {
@@ -185,7 +189,10 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         public ICommand LoginInSelectedAccountCommand => new RelayCommand(o =>
         {
-            
+            if (SelectedAccount == null)
+                return;
+
+            _navigation.NavigateTo(nameof(LoginPage), new object[] {SelectedAccount});
         });
 
         public ICommand ForceRefreshSessionCommand => new AsyncRelayCommand(async o =>
