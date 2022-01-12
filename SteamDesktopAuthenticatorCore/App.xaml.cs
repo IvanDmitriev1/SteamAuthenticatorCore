@@ -40,7 +40,7 @@ namespace SteamDesktopAuthenticatorCore
 
         protected override async void OnStartup(StartupEventArgs e)
         {
-            WPFUI.Theme.Manager.SetSystemTheme(false);
+            WPFUI.Theme.Manager.SetSystemTheme(true, true);
 
             await _host.StartAsync();
 

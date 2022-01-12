@@ -75,7 +75,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (ars is null)
                 return false;
 
-            if (navigation.CurrentNavigationItem.PageType == typeof(CaptchaPage))
+            if (navigation.NavigationStack[^1].PageType == typeof(CaptchaPage))
             {
                 _userLogin!.CaptchaText = (string?) ars[0];
                 LoginCommand.Execute(null);
