@@ -8,7 +8,6 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using SteamAuthCore;
 using WpfHelper.Commands;
-using WPFUI.Controls.Navigation;
 using BaseViewModel = WPFUI.Common.BaseViewModel;
 
 namespace SteamDesktopAuthenticatorCore.ViewModels
@@ -70,7 +69,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         });
     }
 
-    public class ConfirmationViewModel : BaseViewModel, INavigable
+    public class ConfirmationViewModel : BaseViewModel
     {
         public ConfirmationViewModel(ObservableCollection<SteamGuardAccount> steamGuardAccounts)
         {
@@ -85,11 +84,6 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             await CheckConfirmations();
         });
-
-        public async void OnNavigationRequest(INavigation navigation, object[]? ars)
-        {
-            await CheckConfirmations();
-        }
 
         private async Task CheckConfirmations()
         {
@@ -126,7 +120,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         private static async Task<ConfirmationAccountViewModel?> CreateConfirmationAccountViewModel(SteamGuardAccount account)
         {
-            var confirmations = await account.FetchConfirmationsAsync();
+            var confirmations = (await account.FetchConfirmationsAsync()).ToArray();
             return confirmations.Length > 0 ? new ConfirmationAccountViewModel(account, confirmations) : null;
         }
     }

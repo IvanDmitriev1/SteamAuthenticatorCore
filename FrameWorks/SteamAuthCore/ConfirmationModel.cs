@@ -58,7 +58,7 @@ namespace SteamAuthCore
 
         public string ImageSource { get; }
 
-        public object BitMapImage { get; set; }
+        public object? BitMapImage { get; set; }
 
         public string ItemName { get; }
 

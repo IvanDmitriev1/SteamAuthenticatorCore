@@ -186,7 +186,7 @@ namespace SteamAuthCore
             return Encoding.UTF8.GetString(codeArray);
         }
 
-        public async Task<ConfirmationModel[]> FetchConfirmationsAsync()
+        public async Task<IEnumerable<ConfirmationModel>> FetchConfirmationsAsync()
         {
             string url = GenerateConfirmationUrl();
             return FetchConfirmationInternal(await SteamApi.RequestAsync(url, SteamApi.RequestMethod.Get, "", Session.GetCookies()));
@@ -287,7 +287,7 @@ namespace SteamAuthCore
 
         #region PrivateMethods
 
-        private static ConfirmationModel[] FetchConfirmationInternal(string? response)
+        private static IEnumerable<ConfirmationModel> FetchConfirmationInternal(string? response)
         {
             if (response is null)
                 throw new WgTokenInvalidException();
@@ -319,7 +319,7 @@ namespace SteamAuthCore
                 confirmationModels.Add(new ConfirmationModel(attributesValue, imageSource, descriptionArray));
             }
 
-            return confirmationModels.ToArray();
+            return confirmationModels;
         }
 
         private string? GenerateConfirmationHashForTime(Int64 time, string? tag)

@@ -84,10 +84,11 @@
             UseSnapLayout="False">
             <controls:TitleBar.NotifyIconMenu>
                 <ContextMenu>
-                    <MenuItem Header="Open" />
+                    <MenuItem Click="TokenPage_OnClick" Header="Token page" />
+                    <MenuItem Click="ConfirmationsPage_OnClick" Header="Confirmations page" />
                     <Separator />
-                    <MenuItem Header="Settings" />
-                    <MenuItem Header="Close" />
+                    <MenuItem Click="SettingsPage_OnClick" Header="Settings" />
+                    <MenuItem Click="CloseMenuItem_OnClick" Header="Close" />
                 </ContextMenu>
             </controls:TitleBar.NotifyIconMenu>
         </controls:TitleBar>
