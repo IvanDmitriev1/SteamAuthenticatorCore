@@ -42,15 +42,13 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         #region Public methods
 
-        public bool OnNavigationRequest(INavigation navigation, object[]? ars)
+        public void OnNavigationRequest(INavigation navigation, object[]? ars)
         {
             if (ars is null)
-                return false;
+                return;
 
             string captchaUri = SteamUrl + ars[0];
             Image = new BitmapImage(new Uri(captchaUri, UriKind.Absolute));
-
-            return true;
         }
 
         #endregion

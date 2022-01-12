@@ -25,12 +25,12 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 {
     public class TokenViewModel : BaseViewModel
     {
-        public TokenViewModel(AppSettings appSettings, DefaultNavigation navigation, Dialog dialog)
+        public TokenViewModel(AppSettings appSettings, DefaultNavigation navigation, Dialog dialog, ObservableCollection<SteamGuardAccount> steamGuardAccounts)
         {
             _appSettings = appSettings;
             _navigation = navigation;
             _dialog = dialog;
-            Accounts = new ObservableCollection<SteamGuardAccount>();
+            Accounts = steamGuardAccounts;
 
             _steamGuardTimer = new DispatcherTimer()
             {
@@ -192,7 +192,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (SelectedAccount == null)
                 return;
 
-            _navigation.NavigateTo(nameof(LoginPage), new object[] {SelectedAccount});
+            _navigation.NavigateTo($"//{nameof(LoginPage)}", new object[] {SelectedAccount});
         });
 
         public ICommand ForceRefreshSessionCommand => new AsyncRelayCommand(async o =>

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using SteamDesktopAuthenticatorCore.Common;
 using SteamDesktopAuthenticatorCore.Services;
@@ -32,8 +34,8 @@ namespace SteamDesktopAuthenticatorCore
         }
 
         public const string InternalName = "SteamDesktopAuthenticatorCore";
-
         public const string Name = "Steam desktop authenticator core";
+
         private readonly IHost _host;
 
         #region Overrides
@@ -120,6 +122,8 @@ namespace SteamDesktopAuthenticatorCore
             service.AddSingleton<GoogleDriveManifestModelService>();
             service.AddSingleton<IManifestDirectoryService, DesktopManifestDirectoryService>();
             service.AddSingleton<LocalDriveManifestModelService>();
+
+            service.AddSingleton<ObservableCollection<SteamGuardAccount>>();
 
             service.AddTransient<ManifestServiceResolver>(provider => () =>
             {

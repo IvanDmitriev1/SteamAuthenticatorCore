@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using SteamDesktopAuthenticatorCore.Common;
+using SteamDesktopAuthenticatorCore.ViewModels;
 using SteamDesktopAuthenticatorCore.Views.Pages;
 using WPFUI.Controls;
 using WPFUI.Controls.Navigation;
@@ -32,7 +33,7 @@ namespace SteamDesktopAuthenticatorCore.Views
 
         private void NavigationOnNavigated(object sender, RoutedEventArgs e)
         {
-
+            
         }
     }
 }

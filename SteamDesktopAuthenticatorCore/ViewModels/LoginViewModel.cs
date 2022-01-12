@@ -70,22 +70,19 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         #region Piblic methods
 
-        public bool OnNavigationRequest(INavigation navigation, object[]? ars)
+        public void OnNavigationRequest(INavigation navigation, object[]? ars)
         {
             if (ars is null)
-                return false;
+                return;
 
             if (navigation.NavigationStack[^1].PageType == typeof(CaptchaPage))
             {
                 _userLogin!.CaptchaText = (string?) ars[0];
                 LoginCommand.Execute(null);
-                return true;
             }
 
             _account = (SteamGuardAccount?) ars[0];
             OnPropertyChanged(nameof(IsEnabledUserNameTextBox), nameof(UserName));
-
-            return true;
         }
 
         #endregion
@@ -100,7 +97,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             switch (_userLogin.DoLogin())
             {
                 case LoginResult.NeedCaptcha:
-                    _navigation.NavigateTo(nameof(CaptchaPage), new object[] { _userLogin.CaptchaGid ?? string.Empty });
+                    _navigation.NavigateTo($"//{nameof(CaptchaPage)}", new object[] { _userLogin.CaptchaGid ?? string.Empty });
                     return;
                 case LoginResult.Need2Fa:
                     _userLogin.TwoFactorCode = _account!.GenerateSteamGuardCodeForTime(steamTime);

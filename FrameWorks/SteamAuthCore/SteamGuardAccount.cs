@@ -7,6 +7,8 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AngleSharp.Html.Dom;
+using AngleSharp.Html.Parser;
 
 namespace SteamAuthCore
 {
@@ -121,6 +123,7 @@ namespace SteamAuthCore
         #endregion
 
         private static readonly byte[] SteamGuardCodeTranslations = { 50, 51, 52, 53, 54, 55, 56, 57, 66, 67, 68, 70, 71, 72, 74, 75, 77, 78, 80, 81, 82, 84, 86, 87, 88, 89 };
+        private static readonly HtmlParser Parser = new HtmlParser();
 
         public bool DeactivateAuthenticator(int scheme = 2)
         {
@@ -286,41 +289,37 @@ namespace SteamAuthCore
 
         private static ConfirmationModel[] FetchConfirmationInternal(string? response)
         {
+            if (response is null)
+                throw new WgTokenInvalidException();
 
-            /*So you're going to see this abomination and you're going to be upset.
-              It's understandable. But the thing is, regex for HTML -- while awful -- makes this way faster than parsing a DOM, plus we don't need another library.
-              And because the data is always in the same place and same format... It's not as if we're trying to naturally understand HTML here. Just extract strings.
-              I'm sorry. */
-
-            Regex confRegex = new("<div class=\"mobileconf_list_entry\" id=\"conf[0-9]+\" data-confid=\"(\\d+)\" data-key=\"(\\d+)\" data-type=\"(\\d+)\" data-creator=\"(\\d+)\"");
-
-            if (response is null || !confRegex.IsMatch(response))
-            {
-                if (response is null || !response.Contains("<div>Nothing to confirm</div>"))
-                    throw new WgTokenInvalidException();
-
+            if (response.Contains("<div>Nothing to confirm</div>"))
                 return Array.Empty<ConfirmationModel>();
-            }
 
-            MatchCollection confirmations = confRegex.Matches(response);
+            using var document = Parser.ParseDocument(response);
+            List<ConfirmationModel> confirmationModels = new();
 
-            List<ConfirmationModel> ret = new();
-            foreach (Match confirmation in confirmations)
+            foreach (var confirmationElement in document.GetElementsByClassName("mobileconf_list_entry"))
             {
-                if (confirmation.Groups.Count != 5) continue;
+                UInt64[] attributesValue = new UInt64[5];
+                for (var i = 2; i <= 5; i++)
+                    attributesValue[i - 2] = UInt64.Parse(confirmationElement.Attributes[i]!.Value);
 
-                if (!ulong.TryParse(confirmation.Groups[1].Value, out ulong confID) ||
-                    !ulong.TryParse(confirmation.Groups[2].Value, out ulong confKey) ||
-                    !int.TryParse(confirmation.Groups[3].Value, out int confType) ||
-                    !ulong.TryParse(confirmation.Groups[4].Value, out ulong confCreator))
+                var confirmationElementContent = confirmationElement.FirstElementChild!;
+
+                string imageSource = ((IHtmlImageElement)confirmationElementContent.QuerySelector("img")!).Source!;
+
+                var children = confirmationElementContent.Children[confirmationElementContent.Children.Length - 1].Children;
+                string[] descriptionArray = new string[3];
+                for (var i = 0; i < 3; i++)
                 {
-                    continue;
+                    var description = children[i];
+                    descriptionArray[i] = description.TextContent;
                 }
 
-                ret.Add(new ConfirmationModel(confID, confKey, confType, confCreator));
+                confirmationModels.Add(new ConfirmationModel(attributesValue, imageSource, descriptionArray));
             }
 
-            return ret.ToArray();
+            return confirmationModels.ToArray();
         }
 
         private string? GenerateConfirmationHashForTime(Int64 time, string? tag)
