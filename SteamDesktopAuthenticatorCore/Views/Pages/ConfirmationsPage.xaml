@@ -107,14 +107,14 @@
                                     <Button
                                         Grid.Column="0"
                                         Margin="0,0,2.5,0"
-                                        Command="{Binding Path=AllowCommand}"
+                                        Command="{Binding Path=ConfirmCommand}"
                                         CommandParameter="{Binding ElementName=ListBox, Path=SelectedItems}"
                                         Content="Confirm selected" />
 
                                     <Button
                                         Grid.Column="1"
                                         Margin="2.5,0,0,0"
-                                        Command="{Binding Path=DenyCommand}"
+                                        Command="{Binding Path=CancelCommand}"
                                         CommandParameter="{Binding ElementName=ListBox, Path=SelectedItems}"
                                         Content="Cancel selected" />
                                 </Grid>

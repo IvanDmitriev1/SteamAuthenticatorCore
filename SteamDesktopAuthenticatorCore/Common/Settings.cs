@@ -17,7 +17,7 @@ namespace SteamDesktopAuthenticatorCore.Common
         public enum ManifestLocationModel
         {
             None,
-            Drive,
+            LocalDrive,
             GoogleDrive
         }
 

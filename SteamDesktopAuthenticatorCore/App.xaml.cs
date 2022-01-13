@@ -130,7 +130,7 @@ namespace SteamDesktopAuthenticatorCore
                 var appSettings = provider.GetRequiredService<AppSettings>();
                 return appSettings.ManifestLocation switch
                 {
-                    AppSettings.ManifestLocationModel.Drive => provider
+                    AppSettings.ManifestLocationModel.LocalDrive => provider
                         .GetRequiredService<LocalDriveManifestModelService>(),
                     AppSettings.ManifestLocationModel.GoogleDrive => provider
                         .GetRequiredService<GoogleDriveManifestModelService>(),

@@ -197,7 +197,16 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         public ICommand ForceRefreshSessionCommand => new AsyncRelayCommand(async o =>
         {
+            if (SelectedAccount is null)
+                return;
 
+            if (await RefreshAccountSession(SelectedAccount))
+            {
+                await _dialog.ShowDialog("Your session has been refreshed.", "Session refresh");
+                return;
+            }
+
+            await _dialog.ShowDialog("Failed to refresh your session.\nTry using the \"Login again\" option.", "Session refresh");
         });
 
         #endregion
@@ -276,6 +285,20 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 {
                     await _dialog.ShowDialog("Your file is corrupted!");
                 }
+            }
+        }
+
+        private async Task<bool> RefreshAccountSession(SteamGuardAccount account)
+        {
+            try
+            {
+                return await account.RefreshSessionAsync();
+            }
+            catch (SteamGuardAccount.WgTokenExpiredException)
+            {
+                _navigation.NavigateTo($"//{nameof(LoginPage)}");
+
+                return await RefreshAccountSession(account);
             }
         }
 

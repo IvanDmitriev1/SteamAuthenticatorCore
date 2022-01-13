@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,46 +29,46 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         public SteamGuardAccount Account { get; }
         public ObservableCollection<ConfirmationModel> Confirmations { get; }
 
-        public ICommand AllowCommand => new RelayCommand( o =>
+        public ICommand ConfirmCommand => new RelayCommand( o =>
         {
             Task.Run(() =>
             {
                 var list = (IList)o!;
-                var confirmations = list.Cast<ConfirmationModel>().ToArray();
+                var confirmations = list.OfType<ConfirmationModel>();
 
-                Account.SendConfirmationAjax(confirmations, SteamGuardAccount.Confirmation.Allow);
-
-                foreach (var confirmation in confirmations)
-                {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        Confirmations.Remove(confirmation);
-                    });
-                }
+                SendConfirmations(ref confirmations, SteamGuardAccount.Confirmation.Allow);
             });
         });
 
-        public ICommand DenyCommand => new AsyncRelayCommand( async o =>
+        public ICommand CancelCommand => new AsyncRelayCommand( async o =>
         {
             await Task.Run(() =>
             {
                 var list = (IList)o!;
-                var confirmations = list.Cast<ConfirmationModel>().ToArray();
+                var confirmations = list.OfType<ConfirmationModel>();
 
-                Account.SendConfirmationAjax(confirmations, SteamGuardAccount.Confirmation.Deny);
-
-                foreach (var confirmation in confirmations)
-                {
-                    var q = Account.GetConfirmationDetails(confirmation);
-
-
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        Confirmations.Remove(confirmation);
-                    });
-                }
+                SendConfirmations(ref confirmations, SteamGuardAccount.Confirmation.Deny);
             });
         });
+
+        public void SendConfirmations(ref IEnumerable<ConfirmationModel> confirmations, SteamGuardAccount.Confirmation command)
+        {
+            var confirmationModels = confirmations as ConfirmationModel[] ?? confirmations.ToArray();
+            SendConfirmations(confirmationModels, command);
+        }
+
+        public void SendConfirmations(IReadOnlyCollection<ConfirmationModel> confirmations, SteamGuardAccount.Confirmation command)
+        {
+            Account.SendConfirmationAjax(confirmations, command);
+
+            foreach (var confirmation in confirmations)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Confirmations.Remove(confirmation);
+                });
+            }
+        }
     }
 
     public class ConfirmationViewModel : BaseViewModel
@@ -108,7 +109,18 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         private async Task TradeAutoConfirmationTimerOnTick()
         {
+            await CheckConfirmations();
 
+            foreach (var confirmationAccountViewModel in Accounts)
+            {
+                List<ConfirmationModel> confirmations = new List<ConfirmationModel>();
+
+                foreach (var confirmationModel in confirmationAccountViewModel.Confirmations)
+                    if (confirmationModel.ConfType == ConfirmationModel.ConfirmationType.MarketSellTransaction)
+                        confirmations.Add(confirmationModel);
+
+                confirmationAccountViewModel.SendConfirmations(confirmations, SteamGuardAccount.Confirmation.Allow);
+            }
         }
 
         private async Task CheckConfirmations()
