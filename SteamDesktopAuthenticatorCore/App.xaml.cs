@@ -103,8 +103,8 @@ namespace SteamDesktopAuthenticatorCore
             service.AddSingleton<DefaultNavigation>();
 
             service.AddSingleton<TokenViewModel>();
-            service.AddSingleton<SettingsViewModel>();
             service.AddSingleton<ConfirmationViewModel>();
+            service.AddTransient<SettingsViewModel>();
             service.AddTransient<LoginViewModel>();
             service.AddTransient<CaptchaViewModel>();
 

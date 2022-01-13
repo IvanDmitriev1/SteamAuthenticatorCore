@@ -60,8 +60,11 @@ namespace SteamDesktopAuthenticatorCore.Common
             get => _periodicCheckingInterval;
             set
             {
-                if (value == 0)
+                if (value < 10)
                     return;
+
+                var confirmationViewModel = _serviceProvider.GetRequiredService<ConfirmationViewModel>();
+                confirmationViewModel.ChangeTradeAutoConfirmationTimerInterval(value);
 
                 Set(ref _periodicCheckingInterval, value);
             }
@@ -70,7 +73,13 @@ namespace SteamDesktopAuthenticatorCore.Common
         public bool AutoConfirmMarketTransactions
         {
             get => _autoConfirmMarketTransactions;
-            set => Set(ref _autoConfirmMarketTransactions, value);
+            set
+            {
+                var confirmationViewModel = _serviceProvider.GetRequiredService<ConfirmationViewModel>();
+                confirmationViewModel.ChangeTradeAutoConfirmationTimerInterval(PeriodicCheckingInterval, value);
+
+                Set(ref _autoConfirmMarketTransactions, value);
+            }
         }
 
         public void DefaultSettings()

@@ -40,16 +40,16 @@
                     SelectedValue="{Binding Path=AppSettings.ManifestLocation}" />
             </controls:CardControl>
 
+            <controls:CardControl Title="Auto-confirm market transactions" Subtitle="Auto-confirm market transactions">
+                <ToggleButton IsChecked="{Binding Path=AppSettings.AutoConfirmMarketTransactions}" />
+            </controls:CardControl>
+
             <controls:CardControl Title="Seconds between checking for confirmations" Subtitle="Seconds between checking for confirmations">
                 <controls:NumberBox
                     IntegersOnly="True"
                     Max="100"
                     Min="10"
                     Value="{Binding Path=AppSettings.PeriodicCheckingInterval, Mode=TwoWay, Converter={StaticResource DoubleToIntConverter}}" />
-            </controls:CardControl>
-
-            <controls:CardControl Title="Auto-confirm market transactions" Subtitle="Auto-confirm market transactions">
-                <ToggleButton IsChecked="{Binding Path=AppSettings.AutoConfirmMarketTransactions}" />
             </controls:CardControl>
         </StackPanel>
 

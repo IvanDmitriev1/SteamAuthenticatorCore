@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using SteamAuthCore;
 using WpfHelper.Commands;
 using BaseViewModel = WPFUI.Common.BaseViewModel;
@@ -74,16 +75,41 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         public ConfirmationViewModel(ObservableCollection<SteamGuardAccount> steamGuardAccounts)
         {
             _steamGuardAccounts = steamGuardAccounts;
+            _tradeAutoConfirmationTimer = new DispatcherTimer();
+            _tradeAutoConfirmationTimer.Tick += async (sender, args) => await TradeAutoConfirmationTimerOnTick();
+
             Accounts = new ObservableCollection<ConfirmationAccountViewModel>();
         }
 
         private readonly ObservableCollection<SteamGuardAccount> _steamGuardAccounts;
+        private readonly DispatcherTimer _tradeAutoConfirmationTimer;
+
         public ObservableCollection<ConfirmationAccountViewModel> Accounts { get; }
+
+        public void ChangeTradeAutoConfirmationTimerInterval(int interval, bool? startTimer = null)
+        {
+            _tradeAutoConfirmationTimer.Interval = TimeSpan.FromSeconds(interval);
+
+            switch (startTimer)
+            {
+                case true:
+                    _tradeAutoConfirmationTimer.Start();
+                    break;
+                case false:
+                    _tradeAutoConfirmationTimer.Stop();
+                    break;
+            }
+        }
 
         public ICommand CheckConfirmationsCommand => new AsyncRelayCommand(async o =>
         {
             await CheckConfirmations();
         });
+
+        private async Task TradeAutoConfirmationTimerOnTick()
+        {
+
+        }
 
         private async Task CheckConfirmations()
         {

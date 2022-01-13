@@ -5,12 +5,10 @@ using System.Windows;
 using System.Windows.Input;
 using SteamDesktopAuthenticatorCore.Common;
 using WpfHelper.Commands;
-using WpfHelper.Common;
 using WpfHelper.Services;
 using WPFUI.Common;
 using WPFUI.Controls;
 using BaseViewModel = WPFUI.Common.BaseViewModel;
-using MessageBox = WPFUI.Controls.MessageBox;
 
 namespace SteamDesktopAuthenticatorCore.ViewModels
 {
