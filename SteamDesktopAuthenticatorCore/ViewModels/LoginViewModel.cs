@@ -60,10 +60,12 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             if (_account is null)
             {
                 await InitLogin();
+                _navigation.NavigateTo($"{nameof(TokenPage)}");
                 return;
             }
 
             await RefreshLogin();
+            _navigation.NavigateTo($"{nameof(TokenPage)}");
         });
 
         #endregion
@@ -91,39 +93,41 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         private async Task RefreshLogin()
         {
-            _userLogin ??= new UserLogin(UserName, Password);
-            var steamTime = await TimeAligner.GetSteamTimeAsync();
-
-            switch (_userLogin.DoLogin())
+            while (true)
             {
-                case LoginResult.NeedCaptcha:
-                    _navigation.NavigateTo($"//{nameof(CaptchaPage)}", new object[] { _userLogin.CaptchaGid ?? string.Empty });
-                    return;
-                case LoginResult.Need2Fa:
-                    _userLogin.TwoFactorCode = _account!.GenerateSteamGuardCodeForTime(steamTime);
-                    await RefreshLogin();
-                    break;
-                case LoginResult.BadRsa:
-                    await _dialog.ShowDialog("Error logging in: Steam returned \"BadRSA\"", "Login Error");
-                    return;
-                case LoginResult.BadCredentials:
-                    await _dialog.ShowDialog("Error logging in: Username or password was incorrect", "Login Error");
-                    return;
-                case LoginResult.TooManyFailedLogins:
-                    await _dialog.ShowDialog("Error logging in: Too many failed logins, try again later", "Login Error");
-                    return;
-                case LoginResult.GeneralFailure:
-                    await _dialog.ShowDialog("Error logging in: Steam returned \"GeneralFailure\".", "Login Error");
-                    return;
-                case LoginResult.LoginOkay:
-                    _account!.Session = _userLogin.Session;
+                _userLogin ??= new UserLogin(UserName, Password);
+                var steamTime = await TimeAligner.GetSteamTimeAsync();
 
-                    var manifestService = _manifestServiceResolver.Invoke();
-                    await manifestService.SaveSteamGuardAccount(_account);
-                    _snackbar.Expand("Login success", "Your login session was refreshed");
-                    return;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                switch (_userLogin.DoLogin())
+                {
+                    case LoginResult.NeedCaptcha:
+                        _navigation.NavigateTo($"//{nameof(CaptchaPage)}", new object[] {_userLogin.CaptchaGid ?? string.Empty});
+                        return;
+                    case LoginResult.Need2Fa:
+                        _userLogin.TwoFactorCode = _account!.GenerateSteamGuardCodeForTime(steamTime);
+                        continue;
+                    case LoginResult.BadRsa:
+                        await _dialog.ShowDialog("Error logging in: Steam returned \"BadRSA\"", "Login Error");
+                        return;
+                    case LoginResult.BadCredentials:
+                        await _dialog.ShowDialog("Error logging in: Username or password was incorrect", "Login Error");
+                        return;
+                    case LoginResult.TooManyFailedLogins:
+                        await _dialog.ShowDialog("Error logging in: Too many failed logins, try again later", "Login Error");
+                        return;
+                    case LoginResult.GeneralFailure:
+                        await _dialog.ShowDialog("Error logging in: Steam returned \"GeneralFailure\".", "Login Error");
+                        return;
+                    case LoginResult.LoginOkay:
+                        _account!.Session = _userLogin.Session;
+
+                        var manifestService = _manifestServiceResolver.Invoke();
+                        await manifestService.SaveSteamGuardAccount(_account);
+                        _snackbar.Expand("Login success", "Your login session was refreshed");
+                        return;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
         }
 

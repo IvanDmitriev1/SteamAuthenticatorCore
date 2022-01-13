@@ -82,7 +82,7 @@ namespace SteamDesktopAuthenticatorCore.Services
 
         public async Task SaveSteamGuardAccount(SteamGuardAccount account)
         {
-            string serialized = JsonSerializer.Serialize(_manifestModel);
+            string serialized = JsonSerializer.Serialize(account);
 
             if (await FindMaFileInGoogleDrive(account) is { } file)
             {
