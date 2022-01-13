@@ -35,7 +35,8 @@
                 Subtitle=".maFiles location">
                 <ComboBox
                     MinWidth="105"
-                    ItemsSource="{markupExtension:EnumBindingSource {x:Type common:AppSettings+ManifestLocationModel}}"
+                    ItemsSource="{markupExtension:EnumBindingSource {x:Type common:AppSettings+ManifestLocationModel},
+                                                                    Offset=1}"
                     SelectedValue="{Binding Path=AppSettings.ManifestLocation}" />
             </controls:CardControl>
 
