@@ -47,6 +47,7 @@ namespace SteamDesktopAuthenticatorCore
             await _host.StartAsync();
 
             var settingsService = _host.Services.GetRequiredService<SettingService>();
+            settingsService.RestoreSettings();
             settingsService.LoadSettings();
 
             var mainWindow = _host.Services.GetRequiredService<Container>();
@@ -149,6 +150,8 @@ namespace SteamDesktopAuthenticatorCore
 
             // Prevent default unhandled exception processing
             e.Handled = true;
+
+            Application.Current.Shutdown();
         }
 
         #endregion

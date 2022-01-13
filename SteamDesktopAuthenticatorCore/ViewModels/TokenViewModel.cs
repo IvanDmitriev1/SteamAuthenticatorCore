@@ -25,12 +25,14 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 {
     public class TokenViewModel : BaseViewModel
     {
-        public TokenViewModel(AppSettings appSettings, DefaultNavigation navigation, Dialog dialog, ObservableCollection<SteamGuardAccount> steamGuardAccounts)
+        public TokenViewModel(AppSettings appSettings, App.ManifestServiceResolver manifestServiceResolver, DefaultNavigation navigation, Dialog dialog, ObservableCollection<SteamGuardAccount> steamGuardAccounts)
         {
             _appSettings = appSettings;
             _navigation = navigation;
             _dialog = dialog;
             Accounts = steamGuardAccounts;
+            _manifestServiceResolver = manifestServiceResolver;
+            _isInitialized = false;
 
             _steamGuardTimer = new DispatcherTimer()
             {
@@ -43,6 +45,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         #region Variabls
 
+        private readonly App.ManifestServiceResolver _manifestServiceResolver;
         private IManifestModelService _manifestModelService = null!;
         private readonly DispatcherTimer _steamGuardTimer;
         private readonly AppSettings _appSettings;
@@ -55,6 +58,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         private SteamGuardAccount? _selectedAccount;
         private string _token = "Login token";
         private int _tokenProgressBar;
+        private bool _isInitialized;
 
         #endregion
 
@@ -84,6 +88,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         public ICommand WindowLoadedCommand => new RelayCommand( o =>
         {
+            _isInitialized = true;
             _steamGuardTimer.Start();
         });
 
@@ -213,11 +218,13 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         #region Public methods
 
-        public async void UpdateManifestService(IManifestModelService manifestModelService)
+        public async void UpdateManifestService()
         {
-            _manifestModelService = manifestModelService;
-            await manifestModelService.Initialize();
-            await RefreshAccounts();
+            _manifestModelService = _manifestServiceResolver.Invoke();
+            await _manifestModelService.Initialize();
+
+            if (_isInitialized)
+                await RefreshAccounts();
         }
 
         #endregion

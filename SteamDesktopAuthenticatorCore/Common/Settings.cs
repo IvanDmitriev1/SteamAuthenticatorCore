@@ -11,12 +11,11 @@ namespace SteamDesktopAuthenticatorCore.Common
         public AppSettings(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            DefaultSettings();
+            _initialized = false;
         }
 
         public enum ManifestLocationModel
         {
-            None,
             LocalDrive,
             GoogleDrive
         }
@@ -27,7 +26,7 @@ namespace SteamDesktopAuthenticatorCore.Common
         private bool _updated;
         private int _periodicCheckingInterval;
         private bool _autoConfirmMarketTransactions;
-
+        private bool _initialized;
 
         public ManifestLocationModel ManifestLocation
         {
@@ -36,10 +35,14 @@ namespace SteamDesktopAuthenticatorCore.Common
             {
                 if (!Set(ref _manifestLocation, value)) return;
 
-                var manifestServiceResolver = _serviceProvider.GetRequiredService<App.ManifestServiceResolver>();
+                if (!_initialized)
+                {
+                    _initialized = true;
+                    return;
+                }
 
                 var viewModel = _serviceProvider.GetRequiredService<TokenViewModel>();
-                viewModel.UpdateManifestService(manifestServiceResolver.Invoke());
+                viewModel.UpdateManifestService();
             }
         }
 
@@ -75,16 +78,19 @@ namespace SteamDesktopAuthenticatorCore.Common
             get => _autoConfirmMarketTransactions;
             set
             {
+                Set(ref _autoConfirmMarketTransactions, value);
+
+                if (!_initialized)
+                    return;
+
                 var confirmationViewModel = _serviceProvider.GetRequiredService<ConfirmationViewModel>();
                 confirmationViewModel.ChangeTradeAutoConfirmationTimerInterval(PeriodicCheckingInterval, value);
-
-                Set(ref _autoConfirmMarketTransactions, value);
             }
         }
 
         public void DefaultSettings()
         {
-            ManifestLocation = ManifestLocationModel.None;
+            ManifestLocation = ManifestLocationModel.LocalDrive;
             FirstRun = true;
             Updated = false;
             PeriodicCheckingInterval = 10;
