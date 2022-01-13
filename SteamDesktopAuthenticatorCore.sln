@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamMobileAuthenticatorCor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamMobileAuthenticatorCore.UWP", "Mobile\SteamMobileAuthenticatorCore.UWP\SteamMobileAuthenticatorCore.UWP.csproj", "{28C2FA6A-F3E9-49F1-872A-7C866E74B640}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPFUI", "..\wpfui\WPFUI\WPFUI.csproj", "{1ADC87D1-8963-4100-845A-18477824718E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPFUI", "FrameWorks\WpfUi\WPFUI\WPFUI.csproj", "{1ADC87D1-8963-4100-845A-18477824718E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
