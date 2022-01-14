@@ -22,6 +22,7 @@ namespace SteamDesktopAuthenticatorCore.Common
         }
 
         private readonly IServiceProvider _serviceProvider;
+
         private ManifestLocationModel _manifestLocation;
         private bool _firstRun;
         private bool _updated;
@@ -37,10 +38,7 @@ namespace SteamDesktopAuthenticatorCore.Common
                 if (!Set(ref _manifestLocation, value)) return;
 
                 if (!_initialized)
-                {
-                    _initialized = true;
                     return;
-                }
 
                 var viewModel = _serviceProvider.GetRequiredService<TokenViewModel>();
                 viewModel.UpdateManifestService();
@@ -96,6 +94,8 @@ namespace SteamDesktopAuthenticatorCore.Common
             Updated = false;
             PeriodicCheckingInterval = 10;
             AutoConfirmMarketTransactions = false;
+
+            _initialized = true;
         }
     }
 }
