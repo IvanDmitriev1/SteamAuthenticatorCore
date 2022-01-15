@@ -67,7 +67,7 @@ namespace SteamAuthCore
             internal class OAuth
             {
                 [JsonPropertyName("steamid")]
-                public ulong SteamId { get; set; }
+                public string SteamId { get; set; }
 
                 [JsonPropertyName("oauth_token")]
                 public string? OAuthToken { get; set; }
@@ -197,14 +197,33 @@ namespace SteamAuthCore
             if (SteamApi.MobileLoginRequest<LoginResponse>(ApiEndpoints.CommunityBase + "/login/dologin", SteamApi.RequestMethod.Post, postData, cookies) is not { } loginResponse)
                 return LoginResult.GeneralFailure;
 
-            if (loginResponse.Message is not null)
+            if (loginResponse.LoginComplete)
             {
-                if (loginResponse.Message.Contains("There have been too many login failures"))
-                    return LoginResult.TooManyFailedLogins;
+                CookieCollection readableCookies = cookies.GetCookies(new Uri("https://steamcommunity.com"));
+                var oAuthData = loginResponse.OAuthData;
 
-                if (loginResponse.Message.Contains("Incorrect login"))
-                    return LoginResult.BadCredentials;
+                UInt64 id = UInt64.Parse(oAuthData.SteamId);
+
+                Session = new SessionData(
+                    readableCookies["sessionid"]!.Value,
+                    oAuthData.SteamId + "%7C%7C" + oAuthData.SteamLogin,
+                    oAuthData.SteamId + "%7C%7C" + oAuthData.SteamLogin,
+                    oAuthData.Webcookie,
+                    oAuthData.OAuthToken,
+                    id);
+
+                LoggedIn = true;
+                return LoginResult.LoginOkay;
             }
+
+            if (loginResponse.Message is null)
+                return LoginResult.GeneralFailure;
+
+            if (loginResponse.Message.Contains("There have been too many login failures"))
+                return LoginResult.TooManyFailedLogins;
+
+            if (loginResponse.Message.Contains("Incorrect login"))
+                return LoginResult.BadCredentials;
 
             if (loginResponse.CaptchaNeeded)
             {
@@ -222,7 +241,7 @@ namespace SteamAuthCore
 
             if (loginResponse.TwoFactorNeeded && !loginResponse.Success)
             {
-                this.Requires2Fa = true;
+                Requires2Fa = true;
                 return LoginResult.Need2Fa;
             }
 
@@ -232,19 +251,7 @@ namespace SteamAuthCore
             if (!loginResponse.LoginComplete)
                 return LoginResult.BadCredentials;
 
-            CookieCollection readableCookies = cookies.GetCookies(new Uri("https://steamcommunity.com"));
-            var oAuthData = loginResponse.OAuthData;
-
-            Session = new SessionData(
-                readableCookies["sessionid"]!.Value,
-                oAuthData.SteamId + "%7C%7C" + oAuthData.SteamLogin,
-                oAuthData.SteamId + "%7C%7C" + oAuthData.SteamLogin,
-                oAuthData.Webcookie,
-                oAuthData.OAuthToken,
-                oAuthData.SteamId);
-
-            LoggedIn = true;
-            return LoginResult.LoginOkay;
+            return LoginResult.GeneralFailure;
         }
     }
 }

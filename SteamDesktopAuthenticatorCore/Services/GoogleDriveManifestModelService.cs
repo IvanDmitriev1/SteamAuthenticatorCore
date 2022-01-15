@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -13,10 +14,9 @@ namespace SteamDesktopAuthenticatorCore.Services
 {
     public class GoogleDriveManifestModelService : IManifestModelService
     {
-        public GoogleDriveManifestModelService()
+        public GoogleDriveManifestModelService(GoogleDriveApi api)
         {
-            _api = App.GoogleDriveApi;
-            
+            _api = api;
         }
 
         private readonly GoogleDriveApi _api;
@@ -25,6 +25,9 @@ namespace SteamDesktopAuthenticatorCore.Services
 
         public async Task Initialize()
         {
+            if (!await _api.Init(Assembly.GetExecutingAssembly().GetManifestResourceStream("SteamDesktopAuthenticatorCore.client_secret.json")!))
+                await _api.ConnectGoogleDrive(Assembly.GetExecutingAssembly().GetManifestResourceStream("SteamDesktopAuthenticatorCore.client_secret.json")!);
+
             if (await _api.CheckForFile(ManifestModelServiceConstants.ManifestFileName) is not { } manifestFile)
             {
                 _manifestModel = new ManifestModel();
@@ -79,7 +82,7 @@ namespace SteamDesktopAuthenticatorCore.Services
 
         public async Task SaveSteamGuardAccount(SteamGuardAccount account)
         {
-            string serialized = JsonSerializer.Serialize(_manifestModel);
+            string serialized = JsonSerializer.Serialize(account);
 
             if (await FindMaFileInGoogleDrive(account) is { } file)
             {

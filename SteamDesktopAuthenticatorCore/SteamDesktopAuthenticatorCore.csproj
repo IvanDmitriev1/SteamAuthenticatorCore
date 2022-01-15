@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Platform>AnyCPU</Platform>
-    <Version>0.8.4.0</Version>
+    <Version>0.9.0.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -21,9 +21,13 @@
 
   <ItemGroup>
     <Compile Remove="Custom\**" />
+    <Compile Remove="Models\**" />
     <EmbeddedResource Remove="Custom\**" />
+    <EmbeddedResource Remove="Models\**" />
     <None Remove="Custom\**" />
+    <None Remove="Models\**" />
     <Page Remove="Custom\**" />
+    <Page Remove="Models\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,10 +43,7 @@
     <ProjectReference Include="..\FrameWorks\GoogleDrive\GoogleDrive.csproj" />
     <ProjectReference Include="..\FrameWorks\SteamAuthCore\SteamAuthCore.csproj" />
     <ProjectReference Include="..\FrameWorks\WpfHelper\WpfHelper.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Hardcodet.NotifyIcon.Wpf.NetCore" Version="1.0.18" />
+    <ProjectReference Include="..\FrameWorks\WpfUi\WPFUI\WPFUI.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,7 +51,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
   </ItemGroup>
 
 </Project>
