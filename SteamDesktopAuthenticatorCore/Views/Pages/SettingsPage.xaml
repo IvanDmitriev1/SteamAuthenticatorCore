@@ -41,7 +41,7 @@
             </controls:CardControl>
 
             <controls:CardControl Title="Auto-confirm market transactions" Subtitle="Auto-confirm market transactions">
-                <ToggleButton IsChecked="{Binding Path=AppSettings.AutoConfirmMarketTransactions}" />
+                <controls:ToggleSwitch IsChecked="{Binding Path=AppSettings.AutoConfirmMarketTransactions}" />
             </controls:CardControl>
 
             <controls:CardControl Title="Seconds between checking for confirmations" Subtitle="Seconds between checking for confirmations">

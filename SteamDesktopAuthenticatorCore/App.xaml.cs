@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +34,8 @@ namespace SteamDesktopAuthenticatorCore
             }).Build();
         }
 
+        public delegate IManifestModelService ManifestServiceResolver();
+
         public const string InternalName = "SteamDesktopAuthenticatorCore";
         public const string Name = "Steam desktop authenticator core";
 
@@ -49,6 +52,8 @@ namespace SteamDesktopAuthenticatorCore
             var settingsService = _host.Services.GetRequiredService<SettingService>();
             settingsService.RestoreSettings();
             settingsService.LoadSettings();
+
+            await OnStartupTask(_host.Services);
 
             var mainWindow = _host.Services.GetRequiredService<Container>();
             mainWindow.Show();
@@ -140,8 +145,6 @@ namespace SteamDesktopAuthenticatorCore
             });
         }
 
-        public delegate IManifestModelService ManifestServiceResolver();
-
         private static void DispatcherOnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             // Process unhandled exception
@@ -152,6 +155,17 @@ namespace SteamDesktopAuthenticatorCore
             e.Handled = true;
 
             Application.Current.Shutdown();
+        }
+
+        private static async Task OnStartupTask(IServiceProvider services)
+        {
+            var appSettings = services.GetRequiredService<AppSettings>();
+            if (appSettings.Updated)
+            {
+                var updateService = services.GetRequiredService<UpdateService>();
+                await updateService.DeletePreviousFile(InternalName);
+                appSettings.Updated = false;
+            }
         }
 
         #endregion
