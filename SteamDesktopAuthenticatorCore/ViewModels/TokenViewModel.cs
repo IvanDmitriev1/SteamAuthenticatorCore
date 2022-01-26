@@ -15,7 +15,7 @@ using SteamDesktopAuthenticatorCore.Views.Pages;
 using WpfHelper.Commands;
 using WPFUI.Common;
 using WPFUI.Controls;
-using WPFUI.Controls.Navigation;
+using WPFUI.Navigation;
 using WPFUI.Taskbar;
 using BaseViewModel = WPFUI.Common.BaseViewModel;
 using MessageBox = WPFUI.Controls.MessageBox;
@@ -172,7 +172,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             if (_appSettings.ManifestLocation == AppSettings.ManifestLocationModel.GoogleDrive)
             {
-                _dialog.ShowDialog($"Your accounts are stored in the google drive {App.InternalName} folder");
+                _dialog.ShowDialog("", $"Your accounts are stored in the google drive {App.InternalName} folder");
                 return;
             }
 
@@ -290,7 +290,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                 }
                 catch
                 {
-                    await _dialog.ShowDialog("Your file is corrupted!");
+                    await _dialog.ShowDialog("", "Your file is corrupted!");
                 }
             }
         }

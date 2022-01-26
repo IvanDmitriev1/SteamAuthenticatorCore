@@ -5,7 +5,8 @@ using SteamAuthCore;
 using SteamDesktopAuthenticatorCore.Views.Pages;
 using WpfHelper.Commands;
 using WPFUI.Controls;
-using WPFUI.Controls.Navigation;
+using WPFUI.Navigation;
+using WPFUI.Navigation.Interfaces;
 using BaseViewModel = WPFUI.Common.BaseViewModel;
 using Icon = WPFUI.Common.Icon;
 
@@ -72,12 +73,12 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         #region Piblic methods
 
-        public void OnNavigationRequest(INavigation navigation, object[]? ars)
+        public void OnNavigationRequest(INavigation navigation, INavigationItem previousNavigationItem, ref object[]? ars)
         {
             if (ars is null)
                 return;
 
-            if (navigation.NavigationStack[^1].PageType == typeof(CaptchaPage))
+            if (previousNavigationItem.PageType == typeof(CaptchaPage))
             {
                 _userLogin!.CaptchaText = (string?) ars[0];
                 LoginCommand.Execute(null);

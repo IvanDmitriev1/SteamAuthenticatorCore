@@ -13,84 +13,83 @@
     MinWidth="700"
     Style="{StaticResource UiWindow}"
     mc:Ignorable="d">
-    <Grid>
-        <!--  The first division of the grid divides the application into the top bar (TitleBar) and the content itself  -->
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
 
-        <Grid Grid.Row="1" Margin="12,6,12,12">
-            <!--  Here we separate CardProfile, Navigation and Frame  -->
+
+    <controls:TitleBar
+        x:Name="RootTitleBar"
+        Title="Steam desktop authenticator core"
+        Grid.Row="0"
+        MinimizeToTray="True"
+        NotifyIcon="pack://application:,,,/icon.ico">
+
+
+        <Grid>
+            <!--  The first division of the grid divides the application into the top bar (TitleBar) and the content itself  -->
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
 
-            <!--  This element displays the navigation items  -->
-            <ContentControl
-                x:Name="RootNavigation"
-                Grid.Row="1"
-                Grid.Column="0"
-                Width="250" />
-
-            <!--  Pages are presented here  -->
-            <Grid
-                Grid.Row="0"
-                Grid.RowSpan="2"
-                Grid.Column="1">
+            <Grid Grid.Row="1" Margin="12,6,12,12">
+                <!--  Here we separate CardProfile, Navigation and Frame  -->
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <controls:Breadcrumb
-                    x:Name="Breadcrumb"
-                    Grid.Row="0"
-                    Margin="15,0,0,18" />
-                <Frame
-                    x:Name="RootFrame"
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!--  This element displays the navigation items  -->
+                <ContentControl
+                    x:Name="RootNavigation"
                     Grid.Row="1"
-                    Margin="15,0,0,0" />
+                    Grid.Column="0"
+                    Width="250" />
+
+                <!--  Pages are presented here  -->
+                <Grid
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <controls:Breadcrumb
+                        x:Name="Breadcrumb"
+                        Grid.Row="0"
+                        Margin="15,0,0,18" />
+                    <Frame
+                        x:Name="RootFrame"
+                        Grid.Row="1"
+                        Margin="15,0,0,0" />
+                </Grid>
+
+                <ContentControl
+                    x:Name="RootSnackbar"
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    Grid.Column="1" />
             </Grid>
 
+            <!--  Dialogue is above all controls except the navigation buttons. So it covers all the content, but allows you to close or move the application.  -->
             <ContentControl
-                x:Name="RootSnackbar"
+                x:Name="RootDialog"
                 Grid.Row="0"
-                Grid.RowSpan="2"
-                Grid.Column="1" />
+                Grid.RowSpan="2" />
         </Grid>
 
-        <!--  Dialogue is above all controls except the navigation buttons. So it covers all the content, but allows you to close or move the application.  -->
-        <ContentControl
-            x:Name="RootDialog"
-            Grid.Row="0"
-            Grid.RowSpan="2" />
 
-        <!--  Contains buttons responsible for maximizing, minimizing and closing the app. It also has a background colored strip that allows you to move the application around  -->
-        <controls:TitleBar
-            x:Name="RootTitleBar"
-            Title="Steam desktop authenticator core"
-            Grid.Row="0"
-            ApplicationNavigation="True"
-            BackButtonVisibility="Hidden"
-            MinimizeToTray="True"
-            NotifyIconImage="pack://application:,,,/icon.ico"
-            NotifyIconTooltip="Steam desktop authenticator core"
-            UseNotifyIcon="True"
-            UseSnapLayout="False">
-            <controls:TitleBar.NotifyIconMenu>
-                <ContextMenu>
-                    <MenuItem Click="TokenPage_OnClick" Header="Token page" />
-                    <MenuItem Click="ConfirmationsPage_OnClick" Header="Confirmations page" />
-                    <Separator />
-                    <MenuItem Click="SettingsPage_OnClick" Header="Settings" />
-                    <MenuItem Click="CloseMenuItem_OnClick" Header="Close" />
-                </ContextMenu>
-            </controls:TitleBar.NotifyIconMenu>
-        </controls:TitleBar>
-    </Grid>
+        <controls:TitleBar.NotifyIconMenu>
+            <ContextMenu>
+                <MenuItem Click="TokenPage_OnClick" Header="Token page" />
+                <MenuItem Click="ConfirmationsPage_OnClick" Header="Confirmations page" />
+                <Separator />
+                <MenuItem Click="SettingsPage_OnClick" Header="Settings" />
+                <MenuItem Click="CloseMenuItem_OnClick" Header="Close" />
+            </ContextMenu>
+        </controls:TitleBar.NotifyIconMenu>
+    </controls:TitleBar>
 </Window>

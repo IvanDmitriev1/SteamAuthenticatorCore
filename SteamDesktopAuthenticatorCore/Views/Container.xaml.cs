@@ -2,7 +2,8 @@
 using SteamDesktopAuthenticatorCore.Common;
 using SteamDesktopAuthenticatorCore.Views.Pages;
 using WPFUI.Controls;
-using WPFUI.Controls.Navigation;
+using WPFUI.Navigation;
+using WPFUI.Navigation.Interfaces;
 
 namespace SteamDesktopAuthenticatorCore.Views
 {
@@ -21,17 +22,12 @@ namespace SteamDesktopAuthenticatorCore.Views
             RootTitleBar.Navigation = navigation;
 
             navigation.AddFrame(RootFrame);
-            navigation.Navigated += NavigationOnNavigated;
             _navigation = navigation;
         }
 
         private readonly AppSettings _appSettings;
         private readonly INavigation _navigation;
 
-        private void NavigationOnNavigated(object sender, RoutedEventArgs e)
-        {
-            
-        }
 
         private void CloseMenuItem_OnClick(object sender, RoutedEventArgs e)
         {

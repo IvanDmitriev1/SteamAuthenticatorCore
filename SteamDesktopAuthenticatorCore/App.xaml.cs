@@ -15,7 +15,8 @@ using SteamDesktopAuthenticatorCore.Views;
 using SteamDesktopAuthenticatorCore.Views.Pages;
 using WpfHelper.Services;
 using WPFUI.Controls;
-using WPFUI.Controls.Navigation;
+using WPFUI.Navigation;
+using WPFUI.Navigation.Interfaces;
 using Icon = WPFUI.Common.Icon;
 using MessageBox = System.Windows.MessageBox;
 

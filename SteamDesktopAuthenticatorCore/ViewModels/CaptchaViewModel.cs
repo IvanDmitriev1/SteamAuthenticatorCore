@@ -2,7 +2,9 @@
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using WPFUI.Common;
-using WPFUI.Controls.Navigation;
+using WPFUI.Common.Commands;
+using WPFUI.Navigation;
+using WPFUI.Navigation.Interfaces;
 
 namespace SteamDesktopAuthenticatorCore.ViewModels
 {
@@ -42,7 +44,8 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         #region Public methods
 
-        public void OnNavigationRequest(INavigation navigation, object[]? ars)
+        
+        public void OnNavigationRequest(INavigation navigation, INavigationItem previousNavigationItem, ref object[]? ars)
         {
             if (ars is null)
                 return;
