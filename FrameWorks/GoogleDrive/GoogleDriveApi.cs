@@ -23,23 +23,6 @@ namespace GoogleDrive
             _appName = appName;
         }
 
-        #region Events
-
-        public delegate void DownloadArgs(string fileName, MemoryStream stream);
-        public event EventHandler? Connected;
-        public event DownloadArgs? Downloaded;
-
-        private void OnConnection()
-        {
-            Connected?.Invoke(this, EventArgs.Empty);
-        }
-        private void OnDownloaded(string fileName, in MemoryStream stream)
-        {
-            Downloaded?.Invoke(fileName, stream);
-        }
-
-        #endregion
-
         #region Variables
 
         private string? _folderId;
@@ -109,7 +92,6 @@ namespace GoogleDrive
                 FolderId = await CreateAppFolder(_appName);
 
             IsAuthenticated = true;
-            OnConnection();
         }
 
         public async Task<string> UploadFile(string fileName, Stream stream)

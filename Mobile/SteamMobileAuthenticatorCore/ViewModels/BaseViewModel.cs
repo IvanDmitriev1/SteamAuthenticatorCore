@@ -10,7 +10,7 @@ namespace SteamMobileAuthenticatorCore.ViewModels
     {
         protected bool SetProperty<T>(ref T backingStore, T value,
             [CallerMemberName] string propertyName = "",
-            Action onChanged = null)
+            Action? onChanged = null)
         {
             if (EqualityComparer<T>.Default.Equals(backingStore, value))
                 return false;
@@ -32,7 +32,8 @@ namespace SteamMobileAuthenticatorCore.ViewModels
         }
 
         #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {

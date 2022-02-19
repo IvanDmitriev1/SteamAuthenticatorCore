@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace SteamMobileAuthenticatorCore
 
         protected override void OnStart()
         {
-            
+
         }
 
         protected override void OnSleep()
@@ -51,8 +52,7 @@ namespace SteamMobileAuthenticatorCore
             {
                 try
                 {
-                    ConfirmationModel[] tmp = await account.FetchConfirmationsAsync();
-                    foreach (var confirmationModel in tmp)
+                    foreach (var confirmationModel in await account.FetchConfirmationsAsync())
                     {
                         if (confirmationModel.ConfType == ConfirmationModel.ConfirmationType.MarketSellTransaction || ManifestModelService.GetManifestModel().AutoConfirmMarketTransactions)
                         {

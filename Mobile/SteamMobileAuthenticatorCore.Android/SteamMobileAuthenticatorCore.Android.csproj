@@ -38,7 +38,6 @@
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <BundleAssemblies>false</BundleAssemblies>
     <AndroidSupportedAbis />
-    <AndroidLinkTool>r8</AndroidLinkTool>
     <AndroidLinkSkip>
     </AndroidLinkSkip>
     <MandroidI18n />
@@ -87,10 +86,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2244" />
-    <PackageReference Include="Xamarin.Essentials" Version="1.7.0" />
+    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2337" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.7.1" />
     <PackageReference Include="Xamarin.Forms.Visual.Material">
-      <Version>5.0.0.2244</Version>
+      <Version>5.0.0.2337</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

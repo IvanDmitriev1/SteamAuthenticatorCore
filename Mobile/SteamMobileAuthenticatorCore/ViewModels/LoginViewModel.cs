@@ -4,7 +4,6 @@ using System.Web;
 using System.Windows.Input;
 using SteamAuthCore;
 using Xamarin.CommunityToolkit.ObjectModel;
-using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace SteamMobileAuthenticatorCore.ViewModels

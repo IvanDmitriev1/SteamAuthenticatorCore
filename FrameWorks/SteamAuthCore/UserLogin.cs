@@ -67,7 +67,7 @@ namespace SteamAuthCore
             internal class OAuth
             {
                 [JsonPropertyName("steamid")]
-                public string SteamId { get; set; }
+                public string SteamId { get; set; } = string.Empty;
 
                 [JsonPropertyName("oauth_token")]
                 public string? OAuthToken { get; set; }
