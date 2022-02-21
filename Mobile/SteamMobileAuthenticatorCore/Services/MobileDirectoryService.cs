@@ -1,9 +1,8 @@
 ﻿using System.IO;
-using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using Xamarin.Essentials;
 
-namespace SteamMobileAuthenticatorCore.Services
+namespace SteamAuthenticatorCore.Mobile.Services
 {
     public class MobileDirectoryService : IManifestDirectoryService
     {

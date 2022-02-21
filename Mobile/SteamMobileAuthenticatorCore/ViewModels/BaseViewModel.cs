@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace SteamMobileAuthenticatorCore.ViewModels
+namespace SteamAuthenticatorCore.Mobile.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged
     {

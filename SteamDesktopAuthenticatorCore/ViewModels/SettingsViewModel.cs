@@ -3,14 +3,14 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
-using SteamDesktopAuthenticatorCore.Common;
+using SteamAuthenticatorCore.Desktop.Common;
 using WpfHelper.Commands;
 using WpfHelper.Services;
 using WPFUI.Common;
 using WPFUI.Controls;
 using BaseViewModel = WPFUI.Common.BaseViewModel;
 
-namespace SteamDesktopAuthenticatorCore.ViewModels
+namespace SteamAuthenticatorCore.Desktop.ViewModels
 {
     public class SettingsViewModel : BaseViewModel
     {

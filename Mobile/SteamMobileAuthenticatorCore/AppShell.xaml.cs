@@ -1,7 +1,7 @@
-﻿using SteamMobileAuthenticatorCore.Views;
+﻿using SteamAuthenticatorCore.Mobile.Views;
 using Xamarin.Forms;
 
-namespace SteamMobileAuthenticatorCore
+namespace SteamAuthenticatorCore.Mobile
 {
     public partial class AppShell : Xamarin.Forms.Shell
     {

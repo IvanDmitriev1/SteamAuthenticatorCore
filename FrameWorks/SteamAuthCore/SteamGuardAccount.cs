@@ -140,16 +140,14 @@ namespace SteamAuthCore
                 SteamApi.RequestMethod.Post, postData) is not { Response: { Success: true } };
         }
 
-        public string? GenerateSteamGuardCode()
+        public string? GenerateSteamGuardCode(Int64 time = 0)
         {
-            return GenerateSteamGuardCodeForTime(TimeAligner.GetSteamTime());
-        }
+            if (time == 0)
+                time = TimeAligner.GetSteamTime();
 
-        public string? GenerateSteamGuardCodeForTime(Int64 time)
-        {
             if (string.IsNullOrEmpty(SharedSecret)) return "";
 
-            string sharedSecretUnescaped = Regex.Unescape(SharedSecret);
+            string sharedSecretUnescaped = Regex.Unescape(SharedSecret!);
             byte[] sharedSecretArray = Convert.FromBase64String(sharedSecretUnescaped);
             byte[] timeArray = new byte[8];
 
@@ -183,6 +181,7 @@ namespace SteamAuthCore
             {
                 return null; //Change later, catch-alls are bad!
             }
+
             return Encoding.UTF8.GetString(codeArray);
         }
 

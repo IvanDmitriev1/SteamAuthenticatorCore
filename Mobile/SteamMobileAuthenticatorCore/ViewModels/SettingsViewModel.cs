@@ -1,9 +1,8 @@
-﻿using System;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using SteamAuthCore.Manifest;
 using Xamarin.Forms;
 
-namespace SteamMobileAuthenticatorCore.ViewModels
+namespace SteamAuthenticatorCore.Mobile.ViewModels
 {
     public class SettingsViewModel : BaseViewModel
     {

@@ -8,7 +8,7 @@ using SteamAuthCore.Manifest;
 using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Forms;
 
-namespace SteamMobileAuthenticatorCore.ViewModels
+namespace SteamAuthenticatorCore.Mobile.ViewModels
 {
     public class LoginViewModel : BaseViewModel, IQueryAttributable
     {
@@ -66,7 +66,7 @@ namespace SteamMobileAuthenticatorCore.ViewModels
                     break;
 
                 case LoginResult.Need2Fa:
-                    userLogin.TwoFactorCode = SelectedAccount.GenerateSteamGuardCodeForTime(steamTime);
+                    userLogin.TwoFactorCode = SelectedAccount.GenerateSteamGuardCode(steamTime);
                     response = userLogin.DoLogin();
                     break;
 

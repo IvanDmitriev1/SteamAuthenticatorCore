@@ -4,7 +4,7 @@ using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using Xamarin.Forms;
 
-namespace SteamMobileAuthenticatorCore
+namespace SteamAuthenticatorCore.Mobile
 {
     public partial class App : Application
     {

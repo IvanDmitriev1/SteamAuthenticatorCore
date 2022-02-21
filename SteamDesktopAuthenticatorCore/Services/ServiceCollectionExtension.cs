@@ -3,7 +3,7 @@ using System.IO;
 using GoogleDrive;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace SteamDesktopAuthenticatorCore.Services
+namespace SteamAuthenticatorCore.Desktop.Services
 {
     internal static class ServiceCollectionExtension
     {

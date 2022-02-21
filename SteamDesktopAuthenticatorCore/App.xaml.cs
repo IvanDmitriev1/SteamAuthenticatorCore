@@ -8,11 +8,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
-using SteamDesktopAuthenticatorCore.Common;
-using SteamDesktopAuthenticatorCore.Services;
-using SteamDesktopAuthenticatorCore.ViewModels;
-using SteamDesktopAuthenticatorCore.Views;
-using SteamDesktopAuthenticatorCore.Views.Pages;
+using SteamAuthenticatorCore.Desktop.Common;
+using SteamAuthenticatorCore.Desktop.Services;
+using SteamAuthenticatorCore.Desktop.ViewModels;
+using SteamAuthenticatorCore.Desktop.Views;
+using SteamAuthenticatorCore.Desktop.Views.Pages;
 using WpfHelper.Services;
 using WPFUI.Controls;
 using WPFUI.Navigation;
@@ -20,7 +20,7 @@ using WPFUI.Navigation.Interfaces;
 using Icon = WPFUI.Common.Icon;
 using MessageBox = System.Windows.MessageBox;
 
-namespace SteamDesktopAuthenticatorCore
+namespace SteamAuthenticatorCore.Desktop
 {
     public sealed partial class App : Application
     {

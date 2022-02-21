@@ -109,9 +109,9 @@
     <AndroidResource Include="Resources\mipmap-anydpi-v26\icon_round.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SteamMobileAuthenticatorCore\SteamMobileAuthenticatorCore.csproj">
-      <Project>{B416D875-6CE8-435D-B4CA-F7E58B7EB4A7}</Project>
-      <Name>SteamMobileAuthenticatorCore</Name>
+    <ProjectReference Include="..\SteamMobileAuthenticatorCore\SteamAuthenticatorCore.Mobile.csproj">
+      <Project>{901C30EB-3DD9-4D50-9BF2-1C0185058D9C}</Project>
+      <Name>SteamAuthenticatorCore.Mobile</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

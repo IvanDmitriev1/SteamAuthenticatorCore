@@ -10,7 +10,7 @@ using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using GoogleFile = Google.Apis.Drive.v3.Data.File;
 
-namespace SteamDesktopAuthenticatorCore.Services
+namespace SteamAuthenticatorCore.Desktop.Services
 {
     public class GoogleDriveManifestModelService : IManifestModelService
     {
@@ -27,8 +27,10 @@ namespace SteamDesktopAuthenticatorCore.Services
         {
             if (_isInitialized) return;
 
-            if (!await _api.Init(Assembly.GetExecutingAssembly().GetManifestResourceStream("SteamDesktopAuthenticatorCore.client_secret.json")!))
-                await _api.ConnectGoogleDrive(Assembly.GetExecutingAssembly().GetManifestResourceStream("SteamDesktopAuthenticatorCore.client_secret.json")!);
+            var appName = Assembly.GetEntryAssembly()!.GetName().Name;
+
+            if (!await _api.Init(Assembly.GetExecutingAssembly().GetManifestResourceStream($"{appName}.client_secret.json")!))
+                await _api.ConnectGoogleDrive(Assembly.GetExecutingAssembly().GetManifestResourceStream($"{appName}.client_secret.json")!);
 
             if (await _api.CheckForFile(ManifestModelServiceConstants.ManifestFileName) is not { } manifestFile)
             {

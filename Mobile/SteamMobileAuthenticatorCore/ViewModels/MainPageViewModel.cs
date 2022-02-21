@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
-using SteamMobileAuthenticatorCore.Helpers;
-using SteamMobileAuthenticatorCore.Services;
-using SteamMobileAuthenticatorCore.Views;
+using SteamAuthenticatorCore.Mobile.Helpers;
+using SteamAuthenticatorCore.Mobile.Services;
+using SteamAuthenticatorCore.Mobile.Views;
 using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
-namespace SteamMobileAuthenticatorCore.ViewModels
+namespace SteamAuthenticatorCore.Mobile.ViewModels
 {
     class MainPageViewModel : BaseViewModel
     {
@@ -146,7 +146,7 @@ namespace SteamMobileAuthenticatorCore.ViewModels
 
             Device.BeginInvokeOnMainThread(() =>
             {
-                LoginToken = SelectedSteamGuardAccount.GenerateSteamGuardCodeForTime(steamTime) ?? string.Empty;
+                LoginToken = SelectedSteamGuardAccount.GenerateSteamGuardCode(steamTime) ?? string.Empty;
                 ProgressBar = Convert.ToDouble(30 - secondsUntilChange) / 30;
             });
         }

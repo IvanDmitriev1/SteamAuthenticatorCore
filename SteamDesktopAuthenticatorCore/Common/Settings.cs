@@ -1,10 +1,10 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using SteamDesktopAuthenticatorCore.ViewModels;
+using SteamAuthenticatorCore.Desktop.ViewModels;
 using WpfHelper.Common;
 using WpfHelper.Services;
 
-namespace SteamDesktopAuthenticatorCore.Common
+namespace SteamAuthenticatorCore.Desktop.Common
 {
     public class AppSettings : BaseViewModel, ISettings
     {

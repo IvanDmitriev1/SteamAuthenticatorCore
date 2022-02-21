@@ -1,7 +1,7 @@
 ﻿using System.Windows.Controls;
-using SteamDesktopAuthenticatorCore.ViewModels;
+using SteamAuthenticatorCore.Desktop.ViewModels;
 
-namespace SteamDesktopAuthenticatorCore.Views.Pages
+namespace SteamAuthenticatorCore.Desktop.Views.Pages
 {
     public partial class LoginPage : Page
     {

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Shell xmlns="http://xamarin.com/schemas/2014/forms" 
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-       xmlns:local="clr-namespace:SteamMobileAuthenticatorCore.Views"
-       xmlns:steamMobileAuthenticatorCore="clr-namespace:SteamMobileAuthenticatorCore;assembly=SteamMobileAuthenticatorCore"
+       xmlns:steamMobileAuthenticatorCore1="clr-namespace:SteamAuthenticatorCore.Mobile.Helpers;assembly=SteamAuthenticatorCore.Mobile"
+       xmlns:views="clr-namespace:SteamAuthenticatorCore.Mobile.Views;assembly=SteamAuthenticatorCore.Mobile"
        Title="SteamMobileAuthenticatorCore"
-       x:Class="SteamMobileAuthenticatorCore.AppShell"
+       x:Class="SteamAuthenticatorCore.Mobile.AppShell"
        Visual="Material">
 
     <!--
@@ -32,16 +32,24 @@
     </Shell.Resources>
 
     <TabBar>
-        <ShellContent Title="Main"  Route="MainPage" ContentTemplate="{DataTemplate local:MainPage}" >
+        <ShellContent Title="Main" Route="MainPage" ContentTemplate="{DataTemplate views:MainPage}" >
             <ShellContent.Icon>
                 <x:FontImage FontFamily="Material"
-                             Glyph="{x:Static steamMobileAuthenticatorCore:MaterialDesignIcons.Home}"></x:FontImage>
+                             Glyph="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.Home}"></x:FontImage>
             </ShellContent.Icon>
         </ShellContent>
-        <ShellContent Title="Settings" ContentTemplate="{DataTemplate local:SettingsPage}" >
+
+        <ShellContent Title="Confirmations"  Route="ConfirmationsPage" ContentTemplate="{DataTemplate views:ConfirmationsPage}" >
             <ShellContent.Icon>
                 <x:FontImage FontFamily="Material"
-                             Glyph="{x:Static steamMobileAuthenticatorCore:MaterialDesignIcons.Settings}"></x:FontImage>
+                             Glyph="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.ConfirmationNumber}"></x:FontImage>
+            </ShellContent.Icon>
+        </ShellContent>
+
+        <ShellContent Title="Settings" ContentTemplate="{DataTemplate views:SettingsPage}" >
+            <ShellContent.Icon>
+                <x:FontImage FontFamily="Material"
+                             Glyph="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.Settings}"></x:FontImage>
             </ShellContent.Icon>
         </ShellContent>
     </TabBar>

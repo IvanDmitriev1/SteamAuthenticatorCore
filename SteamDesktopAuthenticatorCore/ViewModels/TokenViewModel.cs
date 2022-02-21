@@ -10,8 +10,8 @@ using System.Windows.Threading;
 using Microsoft.Win32;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
-using SteamDesktopAuthenticatorCore.Common;
-using SteamDesktopAuthenticatorCore.Views.Pages;
+using SteamAuthenticatorCore.Desktop.Common;
+using SteamAuthenticatorCore.Desktop.Views.Pages;
 using WpfHelper.Commands;
 using WPFUI.Common;
 using WPFUI.Controls;
@@ -21,7 +21,7 @@ using BaseViewModel = WPFUI.Common.BaseViewModel;
 using MessageBox = WPFUI.Controls.MessageBox;
 using RelayCommand = WpfHelper.Commands.RelayCommand;
 
-namespace SteamDesktopAuthenticatorCore.ViewModels
+namespace SteamAuthenticatorCore.Desktop.ViewModels
 {
     public class TokenViewModel : BaseViewModel
     {
@@ -242,7 +242,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         {
             if (SelectedAccount is null || _steamTime == 0) return;
 
-            if (SelectedAccount.GenerateSteamGuardCodeForTime(_steamTime) is not { } token)
+            if (SelectedAccount.GenerateSteamGuardCode(_steamTime) is not { } token)
                 return;
 
             Token = token;

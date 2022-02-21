@@ -1,11 +1,11 @@
 ﻿using System.Windows;
-using SteamDesktopAuthenticatorCore.Common;
-using SteamDesktopAuthenticatorCore.Views.Pages;
+using SteamAuthenticatorCore.Desktop.Common;
+using SteamAuthenticatorCore.Desktop.Views.Pages;
 using WPFUI.Controls;
 using WPFUI.Navigation;
 using WPFUI.Navigation.Interfaces;
 
-namespace SteamDesktopAuthenticatorCore.Views
+namespace SteamAuthenticatorCore.Desktop.Views
 {
     public partial class Container : Window
     {

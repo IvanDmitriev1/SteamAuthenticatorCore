@@ -6,7 +6,7 @@ using WPFUI.Common.Commands;
 using WPFUI.Navigation;
 using WPFUI.Navigation.Interfaces;
 
-namespace SteamDesktopAuthenticatorCore.ViewModels
+namespace SteamAuthenticatorCore.Desktop.ViewModels
 {
     public class CaptchaViewModel : BaseViewModel, INavigable
     {

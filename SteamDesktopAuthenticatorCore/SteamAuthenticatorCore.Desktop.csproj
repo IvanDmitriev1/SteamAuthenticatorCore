@@ -44,6 +44,7 @@
     <ProjectReference Include="..\FrameWorks\SteamAuthCore\SteamAuthCore.csproj" />
     <ProjectReference Include="..\FrameWorks\WpfHelper\WpfHelper.csproj" />
     <ProjectReference Include="..\FrameWorks\WpfUi\WPFUI\WPFUI.csproj" />
+    <ProjectReference Include="..\SteamAuthenticatorCore.Shared\SteamAuthenticatorCore.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

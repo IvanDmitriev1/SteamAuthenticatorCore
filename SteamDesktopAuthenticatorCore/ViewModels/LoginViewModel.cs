@@ -2,15 +2,14 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 using SteamAuthCore;
-using SteamDesktopAuthenticatorCore.Views.Pages;
+using SteamAuthenticatorCore.Desktop.Views.Pages;
 using WpfHelper.Commands;
 using WPFUI.Controls;
 using WPFUI.Navigation;
 using WPFUI.Navigation.Interfaces;
 using BaseViewModel = WPFUI.Common.BaseViewModel;
-using Icon = WPFUI.Common.Icon;
 
-namespace SteamDesktopAuthenticatorCore.ViewModels
+namespace SteamAuthenticatorCore.Desktop.ViewModels
 {
     public class LoginViewModel : BaseViewModel, INavigable
     {
@@ -105,7 +104,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                         _navigation.NavigateTo($"//{nameof(CaptchaPage)}", new object[] {_userLogin.CaptchaGid ?? string.Empty});
                         return;
                     case LoginResult.Need2Fa:
-                        _userLogin.TwoFactorCode = _account!.GenerateSteamGuardCodeForTime(steamTime);
+                        _userLogin.TwoFactorCode = _account!.GenerateSteamGuardCode(steamTime);
                         continue;
                     case LoginResult.BadRsa:
                         await _dialog.ShowDialog("Error logging in: Steam returned \"BadRSA\"", "Login Error");

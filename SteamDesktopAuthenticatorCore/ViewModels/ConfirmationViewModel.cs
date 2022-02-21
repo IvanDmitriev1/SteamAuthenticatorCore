@@ -12,7 +12,7 @@ using SteamAuthCore;
 using WpfHelper.Commands;
 using BaseViewModel = WPFUI.Common.BaseViewModel;
 
-namespace SteamDesktopAuthenticatorCore.ViewModels
+namespace SteamAuthenticatorCore.Desktop.ViewModels
 {
     public class ConfirmationAccountViewModel : BaseViewModel
     {
