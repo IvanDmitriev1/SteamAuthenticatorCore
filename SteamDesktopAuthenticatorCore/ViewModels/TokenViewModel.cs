@@ -32,7 +32,6 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             _dialog = dialog;
             Accounts = steamGuardAccounts;
             _manifestServiceResolver = manifestServiceResolver;
-            _isInitialized = false;
 
             _steamGuardTimer = new DispatcherTimer()
             {
@@ -58,7 +57,6 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
         private SteamGuardAccount? _selectedAccount;
         private string _token = "Login token";
         private int _tokenProgressBar;
-        private bool _isInitialized;
 
         #endregion
 
@@ -88,7 +86,6 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
 
         public ICommand WindowLoadedCommand => new RelayCommand( o =>
         {
-            _isInitialized = true;
             _steamGuardTimer.Start();
         });
 
@@ -223,8 +220,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             _manifestModelService = _manifestServiceResolver.Invoke();
             await _manifestModelService.Initialize();
 
-            if (_isInitialized)
-                await RefreshAccounts();
+            await RefreshAccounts();
         }
 
         #endregion

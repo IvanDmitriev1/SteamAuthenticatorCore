@@ -6,6 +6,7 @@ using System.Windows.Input;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using SteamMobileAuthenticatorCore.Helpers;
+using SteamMobileAuthenticatorCore.Services;
 using SteamMobileAuthenticatorCore.Views;
 using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Essentials;
@@ -17,8 +18,8 @@ namespace SteamMobileAuthenticatorCore.ViewModels
     {
         public MainPageViewModel()
         {
-            _manifestModelService = App.ManifestModelService;
-            Accounts = App.Accounts;
+            _manifestModelService = DependencyService.Get<IManifestModelService>();
+            Accounts = DependencyService.Get<ObservableCollection<SteamGuardAccount>>();
 
             var steamGuardTimer = new Timer(SteamGuardTimerOnTick);
             steamGuardTimer.Start(TimeSpan.FromSeconds(2));
@@ -28,8 +29,8 @@ namespace SteamMobileAuthenticatorCore.ViewModels
 
         #region Properties
 
-        private bool _loaded;
         private SteamGuardAccount? _selectedSteamGuardAccount;
+        private bool _loaded;
         private double _progressBar;
         private string _loginToken = string.Empty;
 
@@ -63,12 +64,16 @@ namespace SteamMobileAuthenticatorCore.ViewModels
             _loaded = true;
             Accounts.Clear();
 
+            await _manifestModelService.Initialize(new MobileDirectoryService());
+
             foreach (var accounts in await _manifestModelService.GetAccounts())
                 Accounts.Add(accounts);
 
             var manifest = _manifestModelService.GetManifestModel();
             if (manifest.AutoConfirmMarketTransactions)
-                App.AutoMarketSellTimer.Start(TimeSpan.FromSeconds(manifest.PeriodicCheckingInterval));
+            {
+                //App.AutoMarketSellTimer.Start(TimeSpan.FromSeconds(manifest.PeriodicCheckingInterval));
+            }
         });
 
         public ICommand ImportCommand => new AsyncCommand(async () =>

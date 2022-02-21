@@ -21,16 +21,19 @@ namespace SteamDesktopAuthenticatorCore.Services
 
         private readonly GoogleDriveApi _api;
         private ManifestModel _manifestModel = null!;
+        private bool _isInitialized;
 
-
-        public async Task Initialize()
+        public async Task Initialize(IManifestDirectoryService? directoryService = null)
         {
+            if (_isInitialized) return;
+
             if (!await _api.Init(Assembly.GetExecutingAssembly().GetManifestResourceStream("SteamDesktopAuthenticatorCore.client_secret.json")!))
                 await _api.ConnectGoogleDrive(Assembly.GetExecutingAssembly().GetManifestResourceStream("SteamDesktopAuthenticatorCore.client_secret.json")!);
 
             if (await _api.CheckForFile(ManifestModelServiceConstants.ManifestFileName) is not { } manifestFile)
             {
                 _manifestModel = new ManifestModel();
+                _isInitialized = true;
                 return;
             }
 
@@ -38,6 +41,7 @@ namespace SteamDesktopAuthenticatorCore.Services
                 throw new ArgumentException(nameof(manifest));
 
             _manifestModel = manifest;
+            _isInitialized = true;
         }
 
         public ManifestModel GetManifestModel()

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -25,33 +26,54 @@ namespace SteamAuthCore.Manifest
 
     public class LocalDriveManifestModelService : IManifestModelService
     {
+        public LocalDriveManifestModelService() { }
+
         public LocalDriveManifestModelService(IManifestDirectoryService directoryService)
         {
             _manifestDirectoryService = directoryService;
         }
 
-        private readonly IManifestDirectoryService _manifestDirectoryService;
+        private IManifestDirectoryService _manifestDirectoryService;
         private ManifestModel? _manifestModel;
+        private bool _isInitialized;
 
-        public async Task Initialize()
+        public async Task Initialize(IManifestDirectoryService? directoryService = null)
         {
+            if (_isInitialized) return;
+
+            if (directoryService is not null)
+                _manifestDirectoryService = directoryService;
+
             _manifestDirectoryService.CheckAndCreateDirectory();
 
             if (!File.Exists(_manifestDirectoryService.ManifestFilePath))
             {
                 _manifestModel = new ManifestModel();
-                return;
+                var streamWriter = File.Create(_manifestDirectoryService.ManifestFilePath);
+                streamWriter.Close();
             }
 
             using (var fileStream = new FileStream(_manifestDirectoryService.ManifestFilePath, FileMode.Open, FileAccess.Read))
             {
-                if (await JsonSerializer.DeserializeAsync<ManifestModel>(fileStream) is not { } manifest)
-                    manifest = new ManifestModel();
+                ManifestModel model;
 
-                _manifestModel = manifest;
+                try
+                {
+                    if (await JsonSerializer.DeserializeAsync<ManifestModel>(fileStream) is not { } manifest)
+                        manifest = new ManifestModel();
+
+                    model = manifest;
+                }
+                catch
+                {
+                    model = new ManifestModel();
+                }
+
+                _manifestModel = model;
             }
 
             await SaveManifest();
+            _isInitialized = true;
         }
 
         public ManifestModel GetManifestModel() => _manifestModel!;
@@ -67,9 +89,6 @@ namespace SteamAuthCore.Manifest
 
         public async Task<ICollection<SteamGuardAccount>> GetAccounts()
         {
-            if (_manifestModel is null)
-                await Initialize();
-
             if (_manifestModel!.Accounts is not null)
                 return _manifestModel.Accounts;
 

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Web;
 using System.Windows.Input;
 using SteamAuthCore;
+using SteamAuthCore.Manifest;
 using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Forms;
 
@@ -12,12 +14,16 @@ namespace SteamMobileAuthenticatorCore.ViewModels
     {
         public LoginViewModel()
         {
+            _accounts = DependencyService.Get<ObservableCollection<SteamGuardAccount>>();
+            _manifestModelService = DependencyService.Get<IManifestModelService>();
             _selectedAccount = new SteamGuardAccount();
             _password = string.Empty;
         }
 
         #region Properties
 
+        private readonly ObservableCollection<SteamGuardAccount> _accounts;
+        private readonly IManifestModelService _manifestModelService;
         private SteamGuardAccount _selectedAccount;
         private string _password;
 
@@ -39,7 +45,7 @@ namespace SteamMobileAuthenticatorCore.ViewModels
         {
             var id= HttpUtility.UrlDecode(query["id"]);
 
-            SelectedAccount = App.Accounts[Convert.ToInt32(id)];
+            SelectedAccount = _accounts[Convert.ToInt32(id)];
         }
 
         public ICommand OnLoginCommand => new AsyncCommand(async () =>
@@ -87,7 +93,7 @@ namespace SteamMobileAuthenticatorCore.ViewModels
             if (response == LoginResult.LoginOkay)
             {
                 SelectedAccount.Session = userLogin.Session;
-                await App.ManifestModelService.SaveSteamGuardAccount(SelectedAccount);
+                await _manifestModelService.SaveSteamGuardAccount(SelectedAccount);
                 await Application.Current.MainPage.DisplayAlert("Login", "The session has been refreshed", "Ok");
             }
 

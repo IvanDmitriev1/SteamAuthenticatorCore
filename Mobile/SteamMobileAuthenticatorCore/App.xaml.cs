@@ -1,41 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using SteamAuthCore;
-using SteamMobileAuthenticatorCore.Services;
 using SteamAuthCore.Manifest;
-using SteamMobileAuthenticatorCore.Helpers;
-using SteamMobileAuthenticatorCore.Views;
 using Xamarin.Forms;
 
 namespace SteamMobileAuthenticatorCore
 {
     public partial class App : Application
     {
-        public static IManifestModelService ManifestModelService { get; private set; } = null!;
-        public static ObservableCollection<SteamGuardAccount> Accounts { get; private set; } = null!;
-        public static Timer AutoMarketSellTimer { get; private set; } = null!;
-
         public App()
         {
             InitializeComponent();
 
             MainPage = new AppShell();
-            Accounts = new ObservableCollection<SteamGuardAccount>();
-            AutoMarketSellTimer = new Timer(AutoTradeConfirmationTimerOnTick);
-            ManifestModelService = new LocalDriveManifestModelService(new MobileDirectoryService());
+
+            DependencyService.Register<IManifestModelService, LocalDriveManifestModelService>();
+            DependencyService.Register<ObservableCollection<SteamGuardAccount>>();
         }
 
         protected override void OnStart()
         {
-
+            
         }
 
         protected override void OnSleep()
         {
-            ManifestModelService.SaveManifest();
+            DependencyService.Get<IManifestModelService>().SaveManifest();
         }
 
         protected override void OnResume()
@@ -45,7 +35,7 @@ namespace SteamMobileAuthenticatorCore
 
         private static async Task AutoTradeConfirmationTimerOnTick()
         {
-            Dictionary<SteamGuardAccount, List<ConfirmationModel>> autoAcceptConfirmations = new();
+            /*Dictionary<SteamGuardAccount, List<ConfirmationModel>> autoAcceptConfirmations = new();
             SteamGuardAccount[] accounts = Accounts.ToArray();
 
             foreach (var account in accounts)
@@ -84,7 +74,7 @@ namespace SteamMobileAuthenticatorCore
             foreach (var account in autoAcceptConfirmations.Keys)
             {
                 account.SendConfirmationAjax(autoAcceptConfirmations[account], SteamGuardAccount.Confirmation.Allow);
-            }
+            }*/
         }
     }
 }

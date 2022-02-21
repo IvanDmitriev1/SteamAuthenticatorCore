@@ -40,19 +40,19 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
                  model = await _updateService.CheckForUpdate("SteamDesktopAuthenticatorCore.exe");
                  if (!model.NeedUpdate)
                  {
-                     await _dialog.ShowDialog("You are using the latest version", App.Name);
+                     await _dialog.ShowDialog(App.Name, "You are using the latest version");
                      return;
                  }
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
-                await _dialog.ShowDialog("failed to check for updates", App.Name);
+                await _dialog.ShowDialog(App.Name, "failed to check for updates");
 
                 return;
             }
 
-            if (await _dialog.ShowDialog($"Would you like to download new version {model.NewVersion} ?", App.Name, "Yes", "No") != ButtonPressed.Left)
+            if (await _dialog.ShowDialog(App.Name, $"Would you like to download new version {model.NewVersion} ?", "Yes", "No") != ButtonPressed.Left)
                 return;
 
             try
@@ -67,7 +67,7 @@ namespace SteamDesktopAuthenticatorCore.ViewModels
             }
             catch
             {
-                await _dialog.ShowDialog( "Failed to download and install update", App.Name);
+                await _dialog.ShowDialog( App.Name, "Failed to download and install update");
             }
         });
     }

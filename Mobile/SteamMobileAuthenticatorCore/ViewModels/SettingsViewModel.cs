@@ -9,7 +9,7 @@ namespace SteamMobileAuthenticatorCore.ViewModels
     {
         public SettingsViewModel()
         {
-            _manifestModelService = App.ManifestModelService;
+            _manifestModelService = DependencyService.Get<IManifestModelService>();
 
             var manifest = _manifestModelService.GetManifestModel();
             _tradePeriodicCheckingInterval = manifest.PeriodicCheckingInterval;
@@ -36,7 +36,7 @@ namespace SteamMobileAuthenticatorCore.ViewModels
 
         public ICommand OnLoading => new Command(() =>
         {
-            App.AutoMarketSellTimer.Stop();
+            //App.AutoMarketSellTimer.Stop();
         });
 
         public ICommand OnClosingCommand => new Command(() =>
@@ -45,7 +45,7 @@ namespace SteamMobileAuthenticatorCore.ViewModels
             manifest.AutoConfirmMarketTransactions = AutoConfirmMarket;
             manifest.PeriodicCheckingInterval = TradePeriodicCheckingInterval;
 
-            App.AutoMarketSellTimer.Start(TimeSpan.FromSeconds(manifest.PeriodicCheckingInterval));
+            //App.AutoMarketSellTimer.Start(TimeSpan.FromSeconds(manifest.PeriodicCheckingInterval));
         });
     }
 }
