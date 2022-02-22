@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
-using SteamAuthenticatorCore.Mobile.Helpers;
-using SteamAuthenticatorCore.Mobile.Services;
 using SteamAuthenticatorCore.Mobile.Views;
+using SteamAuthenticatorCore.Shared;
 using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -20,9 +18,7 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels
         {
             _manifestModelService = DependencyService.Get<IManifestModelService>();
             Accounts = DependencyService.Get<ObservableCollection<SteamGuardAccount>>();
-
-            var steamGuardTimer = new Timer(SteamGuardTimerOnTick);
-            steamGuardTimer.Start(TimeSpan.FromSeconds(2));
+            TokenService = DependencyService.Get<TokenService>();
         }
 
         private readonly IManifestModelService _manifestModelService;
@@ -30,51 +26,22 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels
         #region Properties
 
         private SteamGuardAccount? _selectedSteamGuardAccount;
-        private bool _loaded;
-        private double _progressBar;
-        private string _loginToken = string.Empty;
 
         public ObservableCollection<SteamGuardAccount> Accounts { get; }
 
         public SteamGuardAccount? SelectedSteamGuardAccount
         {
             get => _selectedSteamGuardAccount;
-            set => SetProperty(ref _selectedSteamGuardAccount, value);
+            set
+            {
+                SetProperty(ref _selectedSteamGuardAccount, value);
+                TokenService.SelectedAccount = value;
+            }
         }
 
-        public double ProgressBar
-        {
-            get => _progressBar;
-            set => SetProperty(ref _progressBar, value);
-        }
-
-        public string LoginToken
-        {
-            get => _loginToken;
-            set => SetProperty(ref _loginToken, value);
-        }
+        public TokenService TokenService { get; }
 
         #endregion
-
-        public ICommand OnLoadCommand => new AsyncCommand(async () =>
-        {
-            if (_loaded)
-                return;
-
-            _loaded = true;
-            Accounts.Clear();
-
-            await _manifestModelService.Initialize(new MobileDirectoryService());
-
-            foreach (var accounts in await _manifestModelService.GetAccounts())
-                Accounts.Add(accounts);
-
-            var manifest = _manifestModelService.GetManifestModel();
-            if (manifest.AutoConfirmMarketTransactions)
-            {
-                //App.AutoMarketSellTimer.Start(TimeSpan.FromSeconds(manifest.PeriodicCheckingInterval));
-            }
-        });
 
         public ICommand ImportCommand => new AsyncCommand(async () =>
         {
@@ -109,7 +76,7 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels
 
         public ICommand CopyCommand => new AsyncCommand(async () =>
         {
-            await Clipboard.SetTextAsync(LoginToken);
+            await Clipboard.SetTextAsync(TokenService.Token);
         });
 
         public ICommand DeleteCommand => new AsyncCommand<SteamGuardAccount>(async o =>
@@ -131,24 +98,5 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels
             if (await o!.RefreshSessionAsync())
                 await Application.Current.MainPage.DisplayAlert("Refresh session", "the session has been refreshed", "Ok");
         });
-
-        private async Task SteamGuardTimerOnTick()
-        {
-            if (SelectedSteamGuardAccount is null)
-                return;
-
-            var steamTime = await TimeAligner.GetSteamTimeAsync();
-            if (steamTime == 0)
-                return;
-
-            var currentSteamTime = steamTime / 30L;
-            var secondsUntilChange = (int)(steamTime - currentSteamTime * 30L);
-
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                LoginToken = SelectedSteamGuardAccount.GenerateSteamGuardCode(steamTime) ?? string.Empty;
-                ProgressBar = Convert.ToDouble(30 - secondsUntilChange) / 30;
-            });
-        }
     }
 }

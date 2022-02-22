@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:behaviors="http://xamarin.com/schemas/2020/toolkit"
-             xmlns:system="clr-namespace:System;assembly=netstandard"
              xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
              x:Class="SteamAuthenticatorCore.Mobile.Views.MainPage"
              Title="Main page"
@@ -12,11 +10,6 @@
     <ContentPage.Resources>
         <viewModels:MainPageViewModel x:Key="ViewModel"/>
     </ContentPage.Resources>
-
-    <ContentPage.Behaviors>
-        <behaviors:EventToCommandBehavior EventName="Appearing"
-                                          Command="{Binding Source={StaticResource ViewModel}, Path=OnLoadCommand}" />
-    </ContentPage.Behaviors>
 
     <ContentPage.Content>
         <Grid BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor}, Light={StaticResource LightBackgroundColor}}"
@@ -45,7 +38,7 @@
                            HorizontalTextAlignment="Center"
                            HorizontalOptions="FillAndExpand"
                            IsReadOnly="True"
-                           Text="{Binding Path=LoginToken}"
+                           Text="{Binding Path=TokenService.Token}"
                            Placeholder="Login token"/>
 
                     <Button Grid.Column="1"
@@ -54,7 +47,7 @@
                             Command="{Binding Path=CopyCommand}" />
                 </Grid>
 
-                <ProgressBar Progress="{Binding Path=ProgressBar}"
+                <ProgressBar Progress="{Binding Path=TokenService.TokenProgressBar}"
                              ProgressColor="{StaticResource Primary}" />
 
                 

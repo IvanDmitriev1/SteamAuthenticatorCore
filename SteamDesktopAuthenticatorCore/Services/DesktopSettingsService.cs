@@ -61,7 +61,7 @@ internal sealed class DesktopSettingsService : ISettingsService
     public void SaveSettings(ISettings settings)
     {
         var type = settings.GetType();
-        var properties = type.GetProperties();
+        var properties = type.GetProperties().SkipWhile(info => info.GetCustomAttribute<IgnoreSettings>() is not null);
 
         using var softwareKey = Registry.CurrentUser.OpenSubKey("Software", true)!;
         using var key = softwareKey.OpenSubKey(_appName, true) ?? softwareKey.CreateSubKey(_appName);

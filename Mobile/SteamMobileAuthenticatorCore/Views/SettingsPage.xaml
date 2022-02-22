@@ -36,7 +36,7 @@
                        Keyboard="Numeric"
                        HorizontalTextAlignment="Center"
                        VerticalTextAlignment="Center"
-                       Text="{Binding Path=TradePeriodicCheckingInterval}"/>
+                       Text="{Binding Path=AppSettings.PeriodicCheckingInterval}"/>
 
                 <Label Grid.Column="1"
                        Text="Seconds between checking for trade confirmations"
@@ -50,7 +50,7 @@
                 </Grid.ColumnDefinitions>
 
 
-                <Switch Grid.Column="0" IsToggled="{Binding Path=AutoConfirmMarket}" ></Switch>
+                <Switch Grid.Column="0" IsToggled="{Binding Path=AppSettings.AutoConfirmMarketTransactions}" ></Switch>
                 <Label Grid.Column="1" Text="Auto-confirm market sett transactions"/>
             </Grid>
 

@@ -1,12 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="SteamAuthenticatorCore.Mobile.Views.ConfirmationsPage">
+             xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
+             xmlns:shared="clr-namespace:SteamAuthenticatorCore.Shared;assembly=SteamAuthenticatorCore.Shared"
+             x:Class="SteamAuthenticatorCore.Mobile.Views.ConfirmationsPage"
+             Title="Confirmations page"
+             Visual="Material"
+             Shell.NavBarHasShadow="True">
+
+    <ContentPage.Resources>
+        <viewModels:ConfirmationViewModel x:Key="ViewModel"/>
+    </ContentPage.Resources>
+
     <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-        </StackLayout>
+        <Grid BindingContext="{StaticResource ViewModel}">
+
+            <ListView IsRefreshing="{Binding Path=IsRefreshing}" IsPullToRefreshEnabled="True" RefreshCommand="{Binding Path=RefreshCommand}" ItemsSource="{Binding Path=ConfirmationService.Accounts}">
+
+            </ListView>
+
+        </Grid>
     </ContentPage.Content>
 </ContentPage>

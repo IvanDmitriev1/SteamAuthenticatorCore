@@ -34,8 +34,6 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels
             Accounts = steamGuardAccounts;
         }
 
-        public ObservableCollection<SteamGuardAccount> Accounts { get; }
-
         #region Variabls
 
         private readonly AppSettings _appSettings;
@@ -49,7 +47,7 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels
 
         #region Properties
 
-        public TokenService TokenService { get; }
+        public ObservableCollection<SteamGuardAccount> Accounts { get; }
 
         public SteamGuardAccount? SelectedAccount
         {
@@ -60,6 +58,8 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels
                 TokenService.SelectedAccount = value;
             }
         }
+
+        public TokenService TokenService { get; }
 
         #endregion
 

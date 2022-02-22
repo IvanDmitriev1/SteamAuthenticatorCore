@@ -4,7 +4,7 @@ using SteamAuthCore;
 
 namespace SteamAuthenticatorCore.Shared;
 
-public sealed class TokenService : BaseViewModel
+public sealed class TokenService : BaseViewModel, IDisposable
 {
     public TokenService(IPlatformTimer timer)
     {
@@ -18,8 +18,10 @@ public sealed class TokenService : BaseViewModel
     private Int64 _steamTime;
 
     private string _token = "Login token";
-    private int _tokenProgressBar;
-    private IPlatformTimer _timer;
+    private double _tokenProgressBar;
+    private readonly IPlatformTimer _timer;
+
+    public bool IsMobile { get; set; }
 
     public string Token
     {
@@ -27,13 +29,18 @@ public sealed class TokenService : BaseViewModel
         set => Set(ref _token, value);
     }
 
-    public int TokenProgressBar
+    public double TokenProgressBar
     {
         get => _tokenProgressBar;
         set => Set(ref _tokenProgressBar, value);
     }
 
     public SteamGuardAccount? SelectedAccount { get; set; }
+
+    public void Dispose()
+    {
+        _timer.Stop();
+    }
 
     private async Task SteamGuardTimerOnTick()
     {
@@ -49,5 +56,8 @@ public sealed class TokenService : BaseViewModel
 
         if (SelectedAccount is not null)
             TokenProgressBar = 30 - secondsUntilChange;
+
+        if (IsMobile)
+            TokenProgressBar /= 30;
     }
 }

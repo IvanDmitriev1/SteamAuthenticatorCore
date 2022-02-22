@@ -1,5 +1,5 @@
 ﻿using System.Windows.Input;
-using SteamAuthCore.Manifest;
+using SteamAuthenticatorCore.Shared;
 using Xamarin.Forms;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels
@@ -8,30 +8,11 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels
     {
         public SettingsViewModel()
         {
-            _manifestModelService = DependencyService.Get<IManifestModelService>();
-
-            var manifest = _manifestModelService.GetManifestModel();
-            _tradePeriodicCheckingInterval = manifest.PeriodicCheckingInterval;
-            _autoConfirmMarket = manifest.AutoConfirmMarketTransactions;
+            AppSettings = DependencyService.Get<AppSettings>();
         }
 
-        private readonly IManifestModelService _manifestModelService;
-
-        private int _tradePeriodicCheckingInterval;
-        private bool _autoConfirmMarket;
-
-        public int TradePeriodicCheckingInterval
-        {
-            get => _tradePeriodicCheckingInterval;
-            set => SetProperty(ref _tradePeriodicCheckingInterval, value);
-        }
-
-        public bool AutoConfirmMarket
-        {
-            get => _autoConfirmMarket;
-            set => SetProperty(ref _autoConfirmMarket, value);
-        }
-
+        
+        public AppSettings AppSettings { get; }
 
         public ICommand OnLoading => new Command(() =>
         {
@@ -40,9 +21,9 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels
 
         public ICommand OnClosingCommand => new Command(() =>
         {
-            var manifest = _manifestModelService.GetManifestModel();
+            /*var manifest = _manifestModelService.GetManifestModel();
             manifest.AutoConfirmMarketTransactions = AutoConfirmMarket;
-            manifest.PeriodicCheckingInterval = TradePeriodicCheckingInterval;
+            manifest.PeriodicCheckingInterval = TradePeriodicCheckingInterval;*/
 
             //App.AutoMarketSellTimer.Start(TimeSpan.FromSeconds(manifest.PeriodicCheckingInterval));
         });
