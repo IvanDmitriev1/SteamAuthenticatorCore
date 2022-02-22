@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
-using SteamAuthenticatorCore.Desktop.Common;
+using SteamAuthenticatorCore.Shared;
 using WpfHelper.Commands;
 using WpfHelper.Services;
 using WPFUI.Common;

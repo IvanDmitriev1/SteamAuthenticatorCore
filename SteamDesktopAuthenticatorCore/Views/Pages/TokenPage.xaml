@@ -6,7 +6,7 @@
     xmlns:controls="clr-namespace:WPFUI.Controls;assembly=WPFUI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:steamAuthCore="clr-namespace:SteamAuthCore;assembly=SteamAuthCore"
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Desktop.ViewModels"
     x:Name="Page"
     Title="TokenPage"
     d:DataContext="{d:DesignInstance viewModels:TokenViewModel}"
@@ -66,21 +66,21 @@
                         ContextMenu="{x:Null}"
                         FontSize="13"
                         IsEnabled="False"
-                        Text="{Binding Path=Token, Mode=OneWay}" />
+                        Text="{Binding Path=TokenService.Token, Mode=OneWay}" />
 
                     <controls:Button
                         Grid.Column="1"
                         HorizontalAlignment="Right"
                         VerticalContentAlignment="Center"
                         Command="{StaticResource CopyCommand}"
-                        CommandParameter="{Binding Path=Token}"
+                        CommandParameter="{Binding Path=TokenService.Token}"
                         Content="Copy" />
                 </Grid>
 
                 <ProgressBar
                     Margin="0,5,0,0"
                     Maximum="30"
-                    Value="{Binding Path=TokenProgressBar, Mode=OneWay}" />
+                    Value="{Binding Path=TokenService.TokenProgressBar, Mode=OneWay}" />
 
             </StackPanel>
         </controls:Card>

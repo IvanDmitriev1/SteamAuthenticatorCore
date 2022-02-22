@@ -6,12 +6,11 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Threading;
 using Microsoft.Win32;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
-using SteamAuthenticatorCore.Desktop.Common;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
+using SteamAuthenticatorCore.Shared;
 using WpfHelper.Commands;
 using WPFUI.Common;
 using WPFUI.Controls;
@@ -25,59 +24,41 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels
 {
     public class TokenViewModel : BaseViewModel
     {
-        public TokenViewModel(AppSettings appSettings, App.ManifestServiceResolver manifestServiceResolver, DefaultNavigation navigation, Dialog dialog, ObservableCollection<SteamGuardAccount> steamGuardAccounts)
+        public TokenViewModel(AppSettings appSettings, App.ManifestServiceResolver manifestServiceResolver, TokenService tokenService, DefaultNavigation navigation, Dialog dialog, ObservableCollection<SteamGuardAccount> steamGuardAccounts)
         {
             _appSettings = appSettings;
+            _manifestServiceResolver = manifestServiceResolver;
+            TokenService = tokenService;
             _navigation = navigation;
             _dialog = dialog;
             Accounts = steamGuardAccounts;
-            _manifestServiceResolver = manifestServiceResolver;
-
-            _steamGuardTimer = new DispatcherTimer()
-            {
-                Interval = TimeSpan.FromSeconds(2)
-            };
-            _steamGuardTimer.Tick += async (sender, args) => await SteamGuardTimerOnTick();
         }
 
         public ObservableCollection<SteamGuardAccount> Accounts { get; }
 
         #region Variabls
 
-        private readonly App.ManifestServiceResolver _manifestServiceResolver;
-        private IManifestModelService _manifestModelService = null!;
-        private readonly DispatcherTimer _steamGuardTimer;
         private readonly AppSettings _appSettings;
+        private readonly App.ManifestServiceResolver _manifestServiceResolver;
         private readonly DefaultNavigation _navigation;
         private readonly Dialog _dialog;
 
-        private Int64 _currentSteamChunk;
-        private Int64 _steamTime;
-
         private SteamGuardAccount? _selectedAccount;
-        private string _token = "Login token";
-        private int _tokenProgressBar;
 
         #endregion
 
         #region Properties
 
-        public string Token
-        {
-            get => _token;
-            set => Set(ref _token, value);
-        }
-
-        public int TokenProgressBar
-        {
-            get => _tokenProgressBar;
-            set => Set(ref _tokenProgressBar, value);
-        }
+        public TokenService TokenService { get; }
 
         public SteamGuardAccount? SelectedAccount
         {
             get => _selectedAccount;
-            set => Set(ref _selectedAccount, value);
+            set
+            {
+                Set(ref _selectedAccount, value);
+                TokenService.SelectedAccount = value;
+            }
         }
 
         #endregion
@@ -86,7 +67,7 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels
 
         public ICommand WindowLoadedCommand => new RelayCommand( o =>
         {
-            _steamGuardTimer.Start();
+            
         });
 
         public ICommand DeleteAccountCommand => new AsyncRelayCommand(async o =>
@@ -97,7 +78,7 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels
             if (await _dialog.ShowDialog($"Are you sure you want to delete {SelectedAccount.AccountName}?", App.Name, "Yes", "No") != ButtonPressed.Left)
                 return;
 
-            await _manifestModelService.DeleteSteamGuardAccount(SelectedAccount);
+            await _manifestServiceResolver.Invoke().DeleteSteamGuardAccount(SelectedAccount);
             Accounts.Remove(SelectedAccount);
         });
 
@@ -213,40 +194,7 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels
 
         #endregion
 
-        #region Public methods
-
-        public async void UpdateManifestService()
-        {
-            _manifestModelService = _manifestServiceResolver.Invoke();
-            await _manifestModelService.Initialize();
-
-            await RefreshAccounts();
-        }
-
-        #endregion
-
         #region PrivateMethods
-
-        private async Task SteamGuardTimerOnTick()
-        {
-            _steamTime = await TimeAligner.GetSteamTimeAsync();
-            _currentSteamChunk = _steamTime / 30L;
-            int secondsUntilChange = (int)(_steamTime - (_currentSteamChunk * 30L));
-
-            SetAccountToken();
-            if (SelectedAccount is not null)
-                TokenProgressBar = 30 - secondsUntilChange;
-        }
-
-        private void SetAccountToken()
-        {
-            if (SelectedAccount is null || _steamTime == 0) return;
-
-            if (SelectedAccount.GenerateSteamGuardCode(_steamTime) is not { } token)
-                return;
-
-            Token = token;
-        }
 
         private async Task RefreshAccounts()
         {
@@ -255,7 +203,7 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels
 
             try
             {
-                foreach (var account in await _manifestModelService.GetAccounts())
+                foreach (var account in await _manifestServiceResolver.Invoke().GetAccounts())
                     Accounts.Add(account);
             }
             catch (Exception)
@@ -281,7 +229,7 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels
 
                 try
                 {
-                    if (await _manifestModelService.AddSteamGuardAccount(stream, stream.Name) is { } account)
+                    if (await _manifestServiceResolver.Invoke().AddSteamGuardAccount(stream, stream.Name) is { } account)
                         Accounts.Add(account);
                 }
                 catch

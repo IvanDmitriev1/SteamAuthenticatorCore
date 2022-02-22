@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -8,15 +9,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
-using SteamAuthenticatorCore.Desktop.Common;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.ViewModels;
-using SteamAuthenticatorCore.Desktop.Views;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
+using SteamAuthenticatorCore.Shared;
 using WpfHelper.Services;
 using WPFUI.Controls;
 using WPFUI.Navigation;
 using WPFUI.Navigation.Interfaces;
+using WPFUI.Taskbar;
+using Container = SteamAuthenticatorCore.Desktop.Views.Container;
 using Icon = WPFUI.Common.Icon;
 using MessageBox = System.Windows.MessageBox;
 
@@ -50,9 +52,16 @@ namespace SteamAuthenticatorCore.Desktop
 
             await _host.StartAsync();
 
-            var settingsService = _host.Services.GetRequiredService<SettingService>();
-            settingsService.RestoreSettings();
-            settingsService.LoadSettings();
+            var services = _host.Services;
+
+            var confirmationService = services.GetRequiredService<BaseConfirmationService>();
+
+            var appSettings = services.GetRequiredService<AppSettings>();
+            appSettings.PropertyChanged += AppSettingsOnPropertyChanged;
+
+
+            var settings = services.GetRequiredService<AppSettings>();
+            settings.LoadSettings();
 
             await OnStartupTask(_host.Services);
 
@@ -62,7 +71,10 @@ namespace SteamAuthenticatorCore.Desktop
 
         protected override async void OnExit(ExitEventArgs e)
         {
-            _host.Services.GetRequiredService<SettingService>().SaveSettings();
+            _host.Services.GetRequiredService<AppSettings>().SaveSettings();
+
+            var appSettings = _host.Services.GetRequiredService<AppSettings>();
+            appSettings.PropertyChanged -= AppSettingsOnPropertyChanged;
 
             await _host.StopAsync();
             _host.Dispose();
@@ -121,14 +133,21 @@ namespace SteamAuthenticatorCore.Desktop
             service.AddTransient<ConfirmationsPage>();
             service.AddTransient<CaptchaPage>();
 
+            service.AddScoped<IPlatformImplementations, DesktopImplementations>();
+            service.AddScoped<BaseConfirmationService, DesktopConfirmationService>();
+            service.AddTransient<IPlatformTimer, DesktopTimer>();
+            
+            service.AddScoped<TokenService>();
+
             service.AddSingleton<SimpleHttpRequestService>();
             service.AddSingleton<UpdateService>();
             service.AddGoogleDriveApi(Name);
-            service.AddSettings(InternalName);
+            service.AddScoped<AppSettings>();
+            service.AddScoped<ISettingsService, DesktopSettingsService>();
 
-            service.AddSingleton<GoogleDriveManifestModelService>();
-            service.AddSingleton<IManifestDirectoryService, DesktopManifestDirectoryService>();
-            service.AddSingleton<LocalDriveManifestModelService>();
+            service.AddScoped<GoogleDriveManifestModelService>();
+            service.AddScoped<IManifestDirectoryService, DesktopManifestDirectoryService>();
+            service.AddScoped<LocalDriveManifestModelService>();
 
             service.AddSingleton<ObservableCollection<SteamGuardAccount>>();
 
@@ -166,6 +185,51 @@ namespace SteamAuthenticatorCore.Desktop
                 var updateService = services.GetRequiredService<UpdateService>();
                 await updateService.DeletePreviousFile(InternalName);
                 appSettings.Updated = false;
+            }
+        }
+
+        private async void AppSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            var settings = (AppSettings) sender!;
+            if (!settings.IsInitialized) return;
+
+            if (e.PropertyName == nameof(settings.ManifestLocation))
+                await OnManifestLocationChanged();
+        }
+
+        private async Task OnManifestLocationChanged()
+        {
+            var manifestServiceResolver = _host.Services.GetRequiredService<ManifestServiceResolver>();
+            IManifestModelService manifestService = manifestServiceResolver.Invoke();
+
+           await manifestService.Initialize();
+           await RefreshAccounts(manifestService);
+        }
+
+        private async Task RefreshAccounts(IManifestModelService manifestModelService)
+        {
+            var accounts = _host.Services.GetRequiredService<ObservableCollection<SteamGuardAccount>>();
+
+            Progress.SetState(ProgressState.Indeterminate);
+            accounts.Clear();
+
+            try
+            {
+                foreach (var account in await manifestModelService.GetAccounts())
+                    accounts.Add(account);
+            }
+            catch (Exception)
+            {
+                var box = new WPFUI.Controls.MessageBox()
+                {
+                    LeftButtonName = "Ok",
+                    RightButtonName = "Cancel"
+                };
+                box.Show(App.Name, "One of your files is corrupted");
+            }
+            finally
+            {
+                Progress.SetState(ProgressState.None);
             }
         }
 

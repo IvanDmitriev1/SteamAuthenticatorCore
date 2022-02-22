@@ -1,6 +1,6 @@
 ﻿using System.Windows;
-using SteamAuthenticatorCore.Desktop.Common;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
+using SteamAuthenticatorCore.Shared;
 using WPFUI.Controls;
 using WPFUI.Navigation;
 using WPFUI.Navigation.Interfaces;
