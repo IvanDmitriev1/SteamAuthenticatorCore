@@ -13,9 +13,9 @@ namespace SteamAuthenticatorCore.Desktop.Services
     {
         public ConfirmationAccountModel(SteamGuardAccount account, ConfirmationModel[] confirmations, IPlatformImplementations platformImplementations) : base(account, confirmations, platformImplementations) { }
 
-        public override ICommand ConfirmCommand => new RelayCommand( o =>
+        public override ICommand ConfirmCommand => new AsyncRelayCommand( async o =>
         {
-            Task.Run(() =>
+            await Task.Run(() =>
             {
                 var list = (IList)o!;
                 var confirmations = list.OfType<ConfirmationModel>();

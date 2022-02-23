@@ -8,7 +8,9 @@ namespace SteamAuthenticatorCore.Mobile
         public AppShell()
         {
             InitializeComponent();
+
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
+            Routing.RegisterRoute(nameof(ConfirmationsPage), typeof(ConfirmationsPage));
         }
     }
 }

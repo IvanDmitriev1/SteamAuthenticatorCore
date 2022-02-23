@@ -1,24 +1,80 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
-             xmlns:shared="clr-namespace:SteamAuthenticatorCore.Shared;assembly=SteamAuthenticatorCore.Shared"
-             x:Class="SteamAuthenticatorCore.Mobile.Views.ConfirmationsPage"
-             Title="Confirmations page"
-             Visual="Material"
-             Shell.NavBarHasShadow="True">
+<ContentPage
+    x:Class="SteamAuthenticatorCore.Mobile.Views.ConfirmationsPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
+    Title="Confirmations page"
+    Shell.NavBarHasShadow="True"
+    Visual="Material">
 
     <ContentPage.Resources>
-        <viewModels:ConfirmationViewModel x:Key="ViewModel"/>
+        <viewModels:ConfirmationViewModel x:Key="ViewModel" />
     </ContentPage.Resources>
 
+    <ContentPage.BindingContext>
+        <x:StaticResource Key="ViewModel" />
+    </ContentPage.BindingContext>
+
     <ContentPage.Content>
-        <Grid BindingContext="{StaticResource ViewModel}">
+        <Grid BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor}, Light={StaticResource LightBackgroundColor}}" BindingContext="{StaticResource ViewModel}">
+            <RefreshView Command="{Binding Path=RefreshCommand}" IsRefreshing="{Binding Path=IsRefreshing}">
+                <CollectionView ItemsSource="{Binding Path=Account.Confirmations}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame Padding="0" CornerRadius="0">
+                                <SwipeView>
+                                    <SwipeView.LeftItems>
+                                        <SwipeItems SwipeBehaviorOnInvoked="Auto">
+                                            <SwipeItem
+                                                BackgroundColor="{StaticResource Primary}"
+                                                Command="{Binding Source={StaticResource ViewModel}, Path=Account.ConfirmCommand}"
+                                                CommandParameter="{Binding}"
+                                                Text="Confirm" />
+                                            <SwipeItem
+                                                BackgroundColor="IndianRed"
+                                                Command="{Binding Source={StaticResource ViewModel}, Path=Account.CancelCommand}"
+                                                CommandParameter="{Binding}"
+                                                Text="Cancel" />
+                                        </SwipeItems>
+                                    </SwipeView.LeftItems>
 
-            <ListView IsRefreshing="{Binding Path=IsRefreshing}" IsPullToRefreshEnabled="True" RefreshCommand="{Binding Path=RefreshCommand}" ItemsSource="{Binding Path=ConfirmationService.Accounts}">
+                                    <Frame
+                                        Margin="5"
+                                        CornerRadius="5"
+                                        HasShadow="True">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
 
-            </ListView>
+                                            <Image
+                                                Grid.Column="0"
+                                                Margin="5,0,0,0"
+                                                Aspect="AspectFit"
+                                                Scale="3.3"
+                                                Source="{Binding Path=BitMapImage}" />
 
+                                            <StackLayout
+                                                Grid.Column="1"
+                                                Margin="25,0,0,0"
+                                                VerticalOptions="CenterAndExpand">
+
+                                                <Label Text="{Binding Path=ItemName}" />
+                                                <Label Text="{Binding Path=Description}" />
+                                                <Label Text="{Binding Path=Time}" />
+
+                                            </StackLayout>
+                                        </Grid>
+                                    </Frame>
+                                </SwipeView>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </RefreshView>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

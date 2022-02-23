@@ -5,9 +5,9 @@
     xmlns:controls="clr-namespace:WPFUI.Controls;assembly=WPFUI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:shared="clr-namespace:SteamAuthenticatorCore.Shared;assembly=SteamAuthenticatorCore.Shared"
     xmlns:steamAuthCore="clr-namespace:SteamAuthCore;assembly=SteamAuthCore"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Desktop.ViewModels"
-    xmlns:shared="clr-namespace:SteamAuthenticatorCore.Shared;assembly=SteamAuthenticatorCore.Shared"
     Title="ConfirmationsPage"
     d:DataContext="{d:DesignInstance viewModels:ConfirmationViewModel}"
     d:DesignHeight="450"
@@ -82,7 +82,7 @@
                                                     <ColumnDefinition Width="*" />
                                                 </Grid.ColumnDefinitions>
 
-                                                <Image Grid.Column="0" Source="{Binding Path=BitMapImage}" />
+                                                <Image Grid.Column="0" Source="{Binding Path=ImageSource}" />
 
                                                 <StackPanel
                                                     Grid.Column="1"

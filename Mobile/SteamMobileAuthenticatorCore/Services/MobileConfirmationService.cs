@@ -1,12 +1,10 @@
-﻿using System.Collections;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using SteamAuthCore;
 using SteamAuthenticatorCore.Shared;
 using Xamarin.CommunityToolkit.ObjectModel;
-using Xamarin.Forms;
 
 namespace SteamAuthenticatorCore.Mobile.Services;
 
@@ -15,14 +13,12 @@ internal class ConfirmationAccountModel : ConfirmationAccountBase
         public ConfirmationAccountModel(SteamGuardAccount account, ConfirmationModel[] confirmations,
             IPlatformImplementations platformImplementations) : base(account, confirmations, platformImplementations) { }
 
-        public override ICommand ConfirmCommand => new Command<object>( o =>
+        public override ICommand ConfirmCommand => new AsyncCommand<object>(async o =>
         {
-            Task.Run(() =>
+            await Task.Run(() =>
             {
-                var list = (IList)o!;
-                var confirmations = list.OfType<ConfirmationModel>();
-
-                SendConfirmations(ref confirmations, SteamGuardAccount.Confirmation.Allow);
+                var confirmation = (o as ConfirmationModel)!;
+                SendConfirmation(confirmation, SteamGuardAccount.Confirmation.Allow);
             });
         });
 
@@ -30,10 +26,8 @@ internal class ConfirmationAccountModel : ConfirmationAccountBase
         {
             await Task.Run(() =>
             {
-                var list = (IList)o!;
-                var confirmations = list.OfType<ConfirmationModel>();
-
-                SendConfirmations(ref confirmations, SteamGuardAccount.Confirmation.Deny);
+                var confirmation = (o as ConfirmationModel)!;
+                SendConfirmation(confirmation, SteamGuardAccount.Confirmation.Deny);
             });
         });
     }

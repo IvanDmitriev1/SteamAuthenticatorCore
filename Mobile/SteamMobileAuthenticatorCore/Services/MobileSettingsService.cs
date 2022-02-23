@@ -25,7 +25,7 @@ namespace SteamAuthenticatorCore.Mobile.Services
             var type = settings.GetType();
             var properties = type.GetProperties().SkipWhile(info => info.GetCustomAttribute<IgnoreSettings>() is not null).ToArray();
 
-            using var stream = new FileStream(path, FileMode.Open);
+            using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None);
             var obj = (await JsonSerializer.DeserializeAsync<Dictionary<string, JsonValue>>(stream))!;
 
             foreach (var property in properties)
@@ -56,7 +56,7 @@ namespace SteamAuthenticatorCore.Mobile.Services
 
             Dictionary<string, object> obj = properties.ToDictionary(property => property.Name, property => property.GetValue(settings) ?? property.PropertyType);
 
-            using var stream = new FileStream(path, FileMode.OpenOrCreate);
+            using var stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
             using var streamWriter = new StreamWriter(stream);
             await streamWriter.WriteAsync(JsonSerializer.Serialize(obj));
         }

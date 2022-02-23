@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using SteamAuthenticatorCore.Shared;
+using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace SteamAuthenticatorCore.Mobile.Views

@@ -1,15 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Shell xmlns="http://xamarin.com/schemas/2014/forms" 
-       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-       xmlns:steamMobileAuthenticatorCore1="clr-namespace:SteamAuthenticatorCore.Mobile.Helpers;assembly=SteamAuthenticatorCore.Mobile"
-       xmlns:views="clr-namespace:SteamAuthenticatorCore.Mobile.Views;assembly=SteamAuthenticatorCore.Mobile"
-       Title="SteamMobileAuthenticatorCore"
-       x:Class="SteamAuthenticatorCore.Mobile.AppShell"
-       Visual="Material">
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="SteamAuthenticatorCore.Mobile.AppShell"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:steamMobileAuthenticatorCore1="clr-namespace:SteamAuthenticatorCore.Mobile.Helpers;assembly=SteamAuthenticatorCore.Mobile"
+    xmlns:views="clr-namespace:SteamAuthenticatorCore.Mobile.Views;assembly=SteamAuthenticatorCore.Mobile"
+    Title="SteamMobileAuthenticatorCore"
+    Visual="Material">
 
     <!--
         The overall app visual hierarchy is defined here, along with navigation.
-    
+        
         https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/
     -->
 
@@ -22,34 +23,28 @@
                 <Setter Property="Shell.DisabledColor" Value="#B4FFFFFF" />
                 <Setter Property="Shell.UnselectedColor" Value="#95FFFFFF" />
                 <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource Primary}" />
-                <Setter Property="Shell.TabBarForegroundColor" Value="White"/>
-                <Setter Property="Shell.TabBarUnselectedColor" Value="#95FFFFFF"/>
-                <Setter Property="Shell.TabBarTitleColor" Value="White"/>
+                <Setter Property="Shell.TabBarForegroundColor" Value="White" />
+                <Setter Property="Shell.TabBarUnselectedColor" Value="#95FFFFFF" />
+                <Setter Property="Shell.TabBarTitleColor" Value="White" />
             </Style>
-            <Style TargetType="TabBar" BasedOn="{StaticResource BaseStyle}" />
-            <Style TargetType="FlyoutItem" BasedOn="{StaticResource BaseStyle}" />
+            <Style BasedOn="{StaticResource BaseStyle}" TargetType="TabBar" />
+            <Style BasedOn="{StaticResource BaseStyle}" TargetType="FlyoutItem" />
         </ResourceDictionary>
     </Shell.Resources>
 
     <TabBar>
-        <ShellContent Title="Main" Route="MainPage" ContentTemplate="{DataTemplate views:MainPage}" >
+        <ShellContent
+            Title="Main"
+            ContentTemplate="{DataTemplate views:MainPage}"
+            Route="MainPage">
             <ShellContent.Icon>
-                <x:FontImage FontFamily="Material"
-                             Glyph="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.Home}"></x:FontImage>
+                <x:FontImage FontFamily="Material" Glyph="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.Home}" />
             </ShellContent.Icon>
         </ShellContent>
 
-        <ShellContent Title="Confirmations"  Route="ConfirmationsPage" ContentTemplate="{DataTemplate views:ConfirmationsPage}" >
+        <ShellContent Title="Settings" ContentTemplate="{DataTemplate views:SettingsPage}">
             <ShellContent.Icon>
-                <x:FontImage FontFamily="Material"
-                             Glyph="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.ConfirmationNumber}"></x:FontImage>
-            </ShellContent.Icon>
-        </ShellContent>
-
-        <ShellContent Title="Settings" ContentTemplate="{DataTemplate views:SettingsPage}" >
-            <ShellContent.Icon>
-                <x:FontImage FontFamily="Material"
-                             Glyph="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.Settings}"></x:FontImage>
+                <x:FontImage FontFamily="Material" Glyph="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.Settings}" />
             </ShellContent.Icon>
         </ShellContent>
     </TabBar>

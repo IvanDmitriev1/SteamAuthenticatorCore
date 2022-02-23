@@ -31,6 +31,16 @@ public abstract class ConfirmationAccountBase
 
     public abstract ICommand CancelCommand { get; }
 
+    public void SendConfirmation(ConfirmationModel confirmation, SteamGuardAccount.Confirmation command)
+    {
+        Account.SendConfirmationAjax(confirmation, command);
+
+        _platformImplementations.InvokeMainThread(() =>
+        {
+            Confirmations.Remove(confirmation);
+        });
+    }
+
     public void SendConfirmations(ref IEnumerable<ConfirmationModel> confirmations, SteamGuardAccount.Confirmation command)
     {
         var confirmationModels = confirmations as ConfirmationModel[] ?? confirmations.ToArray();
@@ -83,31 +93,36 @@ public abstract class BaseConfirmationService : BaseViewModel, IDisposable
 
         foreach (var account in _steamGuardAccounts)
         {
+            if (await CreateConfirmationAccount(account) is not { } confirmationAccount) continue;
+
+            Accounts.Add(confirmationAccount);
+        }
+    }
+
+    public async Task<ConfirmationAccountBase?> CreateConfirmationAccount(SteamGuardAccount account)
+    {
+        try
+        {
+            return await CreateConfirmationAccountViewModel(account);
+        }
+        catch (SteamGuardAccount.WgTokenInvalidException)
+        {
+            await account.RefreshSessionAsync();
+
             try
             {
-                if (await CreateConfirmationAccountViewModel(account) is not { } confirmationAccountViewModel) continue;
-
-                Accounts.Add(confirmationAccountViewModel);
+                return await CreateConfirmationAccountViewModel(account);
             }
             catch (SteamGuardAccount.WgTokenInvalidException)
             {
-                await account.RefreshSessionAsync();
-
-                try
-                {
-                    if (await CreateConfirmationAccountViewModel(account) is not { } confirmationAccountViewModel) continue;
-
-                    Accounts.Add(confirmationAccountViewModel);
-                }
-                catch (SteamGuardAccount.WgTokenInvalidException)
-                {
-                }
-            }
-            catch (SteamGuardAccount.WgTokenExpiredException)
-            {
-
             }
         }
+        catch (SteamGuardAccount.WgTokenExpiredException)
+        {
+            
+        }
+
+        return default;
     }
 
     private void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs e)

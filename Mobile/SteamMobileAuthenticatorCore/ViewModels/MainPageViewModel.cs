@@ -88,6 +88,11 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels
             }
         });
 
+        public ICommand OnConfirmationsCommand => new AsyncCommand<SteamGuardAccount>(async (o) =>
+        {
+            await Shell.Current.GoToAsync($"{nameof(ConfirmationsPage)}?id={Accounts.IndexOf(o!)}");
+        });
+
         public ICommand OnLoginCommand => new AsyncCommand<SteamGuardAccount>(async (o) =>
         {
             await Shell.Current.GoToAsync($"{nameof(LoginPage)}?id={Accounts.IndexOf(o!)}");
