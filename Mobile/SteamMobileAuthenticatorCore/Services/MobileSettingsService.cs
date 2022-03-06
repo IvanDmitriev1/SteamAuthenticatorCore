@@ -7,26 +7,36 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using SteamAuthenticatorCore.Shared;
+using Xamarin.Essentials;
 
 namespace SteamAuthenticatorCore.Mobile.Services
 {
     internal class MobileSettingsService : ISettingsService
     {
         private const string FileName = "settings.json";
-        private static readonly string FileLocation = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        private static readonly string SettingsFile = Path.Combine(FileSystem.AppDataDirectory, FileName);
 
         public async void LoadSettings(ISettings settings)
         {
-            string path = Path.Combine(FileLocation, FileName);
-
-            if (!File.Exists(path))
+            if (!File.Exists(SettingsFile))
                 SaveSettings(settings);
 
             var type = settings.GetType();
             var properties = type.GetProperties().SkipWhile(info => info.GetCustomAttribute<IgnoreSettings>() is not null).ToArray();
 
-            using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None);
-            var obj = (await JsonSerializer.DeserializeAsync<Dictionary<string, JsonValue>>(stream))!;
+            Dictionary<string, JsonValue> obj;
+
+            using (var stream = File.OpenRead(SettingsFile))
+            {
+                try
+                {
+                    obj = (await JsonSerializer.DeserializeAsync<Dictionary<string, JsonValue>>(stream))!;
+                }
+                catch (Exception)
+                {
+                    obj = new Dictionary<string, JsonValue>();
+                }   
+            }
 
             foreach (var property in properties)
             {
@@ -49,14 +59,12 @@ namespace SteamAuthenticatorCore.Mobile.Services
 
         public async void SaveSettings(ISettings settings)
         {
-            string path = Path.Combine(FileLocation, FileName);
-
             var type = settings.GetType();
             var properties = type.GetProperties().SkipWhile(info => info.GetCustomAttribute<IgnoreSettings>() is not null);
 
             Dictionary<string, object> obj = properties.ToDictionary(property => property.Name, property => property.GetValue(settings) ?? property.PropertyType);
 
-            using var stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+            using var stream = new FileStream(SettingsFile, FileMode.OpenOrCreate, FileAccess.ReadWrite);
             using var streamWriter = new StreamWriter(stream);
             await streamWriter.WriteAsync(JsonSerializer.Serialize(obj));
         }

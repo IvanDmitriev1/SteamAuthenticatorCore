@@ -49,28 +49,29 @@ namespace SteamAuthCore.Manifest
             if (!File.Exists(_manifestDirectoryService.ManifestFilePath))
             {
                 _manifestModel = new ManifestModel();
-                var streamWriter = File.Create(_manifestDirectoryService.ManifestFilePath);
-                streamWriter.Close();
+                File.Create(_manifestDirectoryService.ManifestFilePath).Dispose();
             }
 
-            using (var fileStream = new FileStream(_manifestDirectoryService.ManifestFilePath, FileMode.Open, FileAccess.Read))
+            string data;
+            using (var streamReader = new StreamReader(_manifestDirectoryService.ManifestFilePath))
             {
-                ManifestModel model;
-
-                try
-                {
-                    if (await JsonSerializer.DeserializeAsync<ManifestModel>(fileStream) is not { } manifest)
-                        manifest = new ManifestModel();
-
-                    model = manifest;
-                }
-                catch
-                {
-                    model = new ManifestModel();
-                }
-
-                _manifestModel = model;
+                data = await streamReader.ReadToEndAsync();
             }
+
+            ManifestModel model;
+            try
+            {
+                if (JsonSerializer.Deserialize<ManifestModel>(data) is not { } manifest)
+                    manifest = new ManifestModel();
+
+                model = manifest;
+            }
+            catch
+            {
+                model = new ManifestModel();
+            }
+
+            _manifestModel = model;
 
             await SaveManifest();
             _isInitialized = true;

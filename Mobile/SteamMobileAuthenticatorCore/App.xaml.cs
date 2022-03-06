@@ -26,14 +26,14 @@ namespace SteamAuthenticatorCore.Mobile
             DependencyService.RegisterSingleton(new TokenService(DependencyService.Get<IPlatformTimer>(DependencyFetchTarget.NewInstance)));
             DependencyService.RegisterSingleton( (BaseConfirmationService) new MobileConfirmationService(DependencyService.Get<ObservableCollection<SteamGuardAccount>>(), DependencyService.Get<AppSettings>(), DependencyService.Get<IPlatformImplementations>(), DependencyService.Get<IPlatformTimer>()));
 
+            var settings = DependencyService.Get<AppSettings>();
+            settings.PropertyChanged += SettingsOnPropertyChanged;
+            settings.LoadSettings();
+
             var confirmationService = DependencyService.Get<BaseConfirmationService>();
 
             var tokenService = DependencyService.Get<TokenService>();
             tokenService.IsMobile = true;
-
-            var settings = DependencyService.Get<AppSettings>();
-            settings.PropertyChanged += SettingsOnPropertyChanged;
-            settings.LoadSettings();
         }
 
         protected override void OnStart()

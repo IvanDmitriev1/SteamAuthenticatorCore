@@ -90,6 +90,7 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels
 
         public ICommand OnConfirmationsCommand => new AsyncCommand<SteamGuardAccount>(async (o) =>
         {
+            SelectedSteamGuardAccount = Accounts[Accounts.IndexOf(o!)];
             await Shell.Current.GoToAsync($"{nameof(ConfirmationsPage)}?id={Accounts.IndexOf(o!)}");
         });
 
