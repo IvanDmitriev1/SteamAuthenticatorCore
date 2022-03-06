@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -121,7 +120,6 @@ namespace SteamAuthCore.Manifest
 
             using FileStream newFileStream = new FileStream(newFilePath, FileMode.Create, FileAccess.Write);
             await fileStream.CopyToAsync(newFileStream);
-            await newFileStream.FlushAsync();
 
             return account;
         }
