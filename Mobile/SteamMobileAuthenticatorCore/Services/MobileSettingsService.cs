@@ -26,16 +26,15 @@ namespace SteamAuthenticatorCore.Mobile.Services
 
             Dictionary<string, JsonValue> obj;
 
-            using (var stream = File.OpenRead(SettingsFile))
+            try
             {
-                try
-                {
-                    obj = (await JsonSerializer.DeserializeAsync<Dictionary<string, JsonValue>>(stream))!;
-                }
-                catch (Exception)
-                {
-                    obj = new Dictionary<string, JsonValue>();
-                }   
+                using var stream = File.OpenRead(SettingsFile);
+                obj = (await JsonSerializer.DeserializeAsync<Dictionary<string, JsonValue>>(stream))!;
+            }
+            catch (Exception)
+            {
+                obj = new Dictionary<string, JsonValue>();
+                SaveSettings(settings);
             }
 
             foreach (var property in properties)
@@ -57,16 +56,13 @@ namespace SteamAuthenticatorCore.Mobile.Services
             }
         }
 
-        public async void SaveSettings(ISettings settings)
+        public void SaveSettings(ISettings settings)
         {
             var type = settings.GetType();
             var properties = type.GetProperties().SkipWhile(info => info.GetCustomAttribute<IgnoreSettings>() is not null);
 
             Dictionary<string, object> obj = properties.ToDictionary(property => property.Name, property => property.GetValue(settings) ?? property.PropertyType);
-
-            using var stream = new FileStream(SettingsFile, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-            using var streamWriter = new StreamWriter(stream);
-            await streamWriter.WriteAsync(JsonSerializer.Serialize(obj));
+            File.WriteAllText(SettingsFile, JsonSerializer.Serialize(obj));
         }
     }
 }
