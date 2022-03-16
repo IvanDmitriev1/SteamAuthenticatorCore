@@ -1,6 +1,3 @@
 [submodule "FrameWorks/WpfHelper"]
 	path = FrameWorks/WpfHelper
 	url = https://github.com/bduj1/WpfHelper
-[submodule "FrameWorks/WpfUi"]
-	path = FrameWorks/WpfUi
-	url = https://github.com/IvanDmitriev1/wpfui
