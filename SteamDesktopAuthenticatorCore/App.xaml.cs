@@ -14,13 +14,11 @@ using SteamAuthenticatorCore.Desktop.ViewModels;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
 using WpfHelper.Services;
-using WPFUI.Controls;
-using WPFUI.Navigation;
-using WPFUI.Navigation.Interfaces;
+using WPFUI.Common;
+using WPFUI.DIControls;
+using WPFUI.DIControls.Interfaces;
 using WPFUI.Taskbar;
-using Container = SteamAuthenticatorCore.Desktop.Views.Container;
-using Icon = WPFUI.Common.Icon;
-using MessageBox = System.Windows.MessageBox;
+
 
 namespace SteamAuthenticatorCore.Desktop
 {
@@ -48,8 +46,6 @@ namespace SteamAuthenticatorCore.Desktop
 
         protected override async void OnStartup(StartupEventArgs e)
         {
-            WPFUI.Theme.Manager.SetSystemTheme(true, true);
-
             await _host.StartAsync();
 
             var services = _host.Services;
@@ -65,7 +61,7 @@ namespace SteamAuthenticatorCore.Desktop
 
             await OnStartupTask(_host.Services);
 
-            var mainWindow = _host.Services.GetRequiredService<Container>();
+            var mainWindow = _host.Services.GetRequiredService<Views.Container>();
             mainWindow.Show();
         }
 
@@ -116,10 +112,10 @@ namespace SteamAuthenticatorCore.Desktop
 
         private static void ConfigureServices(IServiceCollection service)
         {
-            service.AddSingleton<Container>();
-            service.AddSingleton<Dialog>();
-            service.AddSingleton<Snackbar>();
-            service.AddSingleton<DefaultNavigation>();
+            service.AddSingleton<Views.Container>();
+            service.AddScoped<Dialog>();
+            service.AddScoped<Snackbar>();
+            service.AddScoped<DefaultNavigation>();
 
             service.AddSingleton<TokenViewModel>();
             service.AddSingleton<ConfirmationViewModel>();
@@ -220,12 +216,12 @@ namespace SteamAuthenticatorCore.Desktop
             }
             catch (Exception)
             {
-                var box = new WPFUI.Controls.MessageBox()
+                /*var box = new WPFUI.Controls.MessageBox()
                 {
                     LeftButtonName = "Ok",
                     RightButtonName = "Cancel"
                 };
-                box.Show(App.Name, "One of your files is corrupted");
+                box.Show(App.Name, "One of your files is corrupted");*/
             }
             finally
             {

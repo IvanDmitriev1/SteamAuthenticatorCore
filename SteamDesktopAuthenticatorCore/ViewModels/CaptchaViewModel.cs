@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using SteamAuthenticatorCore.Shared;
 using WPFUI.Common;
-using WPFUI.Common.Commands;
-using WPFUI.Navigation;
-using WPFUI.Navigation.Interfaces;
+using WPFUI.DIControls;
+using WPFUI.DIControls.Interfaces;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels
 {

@@ -3,11 +3,10 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using SteamAuthCore;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
+using SteamAuthenticatorCore.Shared;
 using WpfHelper.Commands;
-using WPFUI.Controls;
-using WPFUI.Navigation;
-using WPFUI.Navigation.Interfaces;
-using BaseViewModel = WPFUI.Common.BaseViewModel;
+using WPFUI.DIControls;
+using WPFUI.DIControls.Interfaces;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels
 {

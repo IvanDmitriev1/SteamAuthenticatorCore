@@ -1,9 +1,8 @@
 ﻿using System.Windows;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
-using WPFUI.Controls;
-using WPFUI.Navigation;
-using WPFUI.Navigation.Interfaces;
+using WPFUI.DIControls;
+using WPFUI.DIControls.Interfaces;
 
 namespace SteamAuthenticatorCore.Desktop.Views
 {
@@ -23,6 +22,11 @@ namespace SteamAuthenticatorCore.Desktop.Views
 
             navigation.AddFrame(RootFrame);
             _navigation = navigation;
+
+            Loaded += (sender, args) =>
+            {
+                WPFUI.Appearance.Watcher.Watch(this);
+            };
         }
 
         private readonly AppSettings _appSettings;

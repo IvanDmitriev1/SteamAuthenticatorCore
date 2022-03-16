@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.Mobi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamAuthenticatorCore.Mobile.Android", "Mobile\SteamMobileAuthenticatorCore.Android\SteamAuthenticatorCore.Mobile.Android.csproj", "{C7A53E2B-F6C5-4177-A33F-149C293173B4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPFUI", "FrameWorks\WpfUi\WPFUI\WPFUI.csproj", "{1ADC87D1-8963-4100-845A-18477824718E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPFUI", "FrameWorks\wpfui\WPFUI\WPFUI.csproj", "{1ADC87D1-8963-4100-845A-18477824718E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamAuthenticatorCore.Shared", "SteamAuthenticatorCore.Shared\SteamAuthenticatorCore.Shared.csproj", "{38A40F90-D7CB-49D7-9750-8281ED00645D}"
 EndProject

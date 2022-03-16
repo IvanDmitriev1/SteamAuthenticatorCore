@@ -7,8 +7,7 @@ using SteamAuthenticatorCore.Shared;
 using WpfHelper.Commands;
 using WpfHelper.Services;
 using WPFUI.Common;
-using WPFUI.Controls;
-using BaseViewModel = WPFUI.Common.BaseViewModel;
+using WPFUI.DIControls;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels
 {

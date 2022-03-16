@@ -13,11 +13,8 @@ using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
 using WpfHelper.Commands;
 using WPFUI.Common;
-using WPFUI.Controls;
-using WPFUI.Navigation;
+using WPFUI.DIControls;
 using WPFUI.Taskbar;
-using BaseViewModel = WPFUI.Common.BaseViewModel;
-using MessageBox = WPFUI.Controls.MessageBox;
 using RelayCommand = WpfHelper.Commands.RelayCommand;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels
@@ -208,12 +205,12 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels
             }
             catch (Exception)
             {
-                MessageBox box = new MessageBox()
+                /*MessageBox box = new MessageBox()
                 {
                     LeftButtonName = "Ok",
                     RightButtonName = "Cancel"
                 };
-                box.Show(App.Name, "One of your files is corrupted");
+                box.Show(App.Name, "One of your files is corrupted");*/
             }
             finally
             {
