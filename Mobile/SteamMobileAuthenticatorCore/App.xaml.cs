@@ -2,79 +2,72 @@
 using System.Threading.Tasks;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
+using SteamAuthenticatorCore.Mobile.Services;
+using SteamAuthenticatorCore.Shared;
 using Xamarin.Forms;
 
-namespace SteamMobileAuthenticatorCore
+namespace SteamAuthenticatorCore.Mobile;
+
+public partial class App : Application
 {
-    public partial class App : Application
+    public App()
     {
-        public App()
-        {
-            InitializeComponent();
+        InitializeComponent();
 
-            MainPage = new AppShell();
+        MainPage = new AppShell();
 
-            DependencyService.Register<IManifestModelService, LocalDriveManifestModelService>();
-            DependencyService.Register<ObservableCollection<SteamGuardAccount>>();
-        }
+        DependencyService.Register<IPlatformTimer, MobileTimer>();
+        DependencyService.Register<IManifestModelService, LocalDriveManifestModelService>();
+        DependencyService.Register<ObservableCollection<SteamGuardAccount>>();
+        DependencyService.Register<IPlatformImplementations, MobileImplementations>();
 
-        protected override void OnStart()
-        {
-            
-        }
+        DependencyService.RegisterSingleton(new AppSettings(new MobileSettingsService()));
+        DependencyService.RegisterSingleton(new TokenService(DependencyService.Get<IPlatformTimer>(DependencyFetchTarget.NewInstance)));
+        DependencyService.RegisterSingleton( (BaseConfirmationService) new MobileConfirmationService(DependencyService.Get<ObservableCollection<SteamGuardAccount>>(), DependencyService.Get<AppSettings>(), DependencyService.Get<IPlatformImplementations>(), DependencyService.Get<IPlatformTimer>()));
 
-        protected override void OnSleep()
-        {
-            DependencyService.Get<IManifestModelService>().SaveManifest();
-        }
+        var confirmationService = DependencyService.Get<BaseConfirmationService>();
 
-        protected override void OnResume()
-        {
+        var tokenService = DependencyService.Get<TokenService>();
+        tokenService.IsMobile = true;
+    }
 
-        }
+    protected override async void OnStart()
+    {
+        await OnLoadingAsync();
+    }
 
-        private static async Task AutoTradeConfirmationTimerOnTick()
-        {
-            /*Dictionary<SteamGuardAccount, List<ConfirmationModel>> autoAcceptConfirmations = new();
-            SteamGuardAccount[] accounts = Accounts.ToArray();
+    protected override async void OnSleep()
+    {
+        await DependencyService.Get<AppSettings>().SaveSettingsAsync();
+    }
 
-            foreach (var account in accounts)
-            {
-                try
-                {
-                    foreach (var confirmationModel in await account.FetchConfirmationsAsync())
-                    {
-                        if (confirmationModel.ConfType == ConfirmationModel.ConfirmationType.MarketSellTransaction || ManifestModelService.GetManifestModel().AutoConfirmMarketTransactions)
-                        {
-                            if (!autoAcceptConfirmations.ContainsKey(account))
-                                autoAcceptConfirmations[account] = new List<ConfirmationModel>();
+    protected override void OnResume()
+    {
 
-                            autoAcceptConfirmations[account].Add(confirmationModel);
-                        }
-                    }
-                }
-                catch (SteamGuardAccount.WgTokenInvalidException)
-                {
-                    await account.RefreshSessionAsync();
-                }
-                catch (SteamGuardAccount.WgTokenExpiredException)
-                {
-                    //Prompt to relogin
-                    if (await Application.Current.MainPage.DisplayAlert("Auto-market confirmation", $"You must re-log in to {account.AccountName} account", "Re-log", "not now"))
-                        await Shell.Current.GoToAsync($"{nameof(LoginPage)}?id={Accounts.IndexOf(account)}");
-                    break;
+    }
 
-                }
-                catch
-                {
-                    //
-                }
-            }
+    private static async Task OnLoadingAsync()
+    {
+        var settings = DependencyService.Get<AppSettings>();
+        await settings.LoadSettingsAsync();
 
-            foreach (var account in autoAcceptConfirmations.Keys)
-            {
-                account.SendConfirmationAjax(autoAcceptConfirmations[account], SteamGuardAccount.Confirmation.Allow);
-            }*/
-        }
+        await OnManifestLocationChanged();
+    }
+
+    private static async Task OnManifestLocationChanged()
+    {
+        var manifestService = DependencyService.Get<IManifestModelService>();
+
+        await manifestService.Initialize(new MobileDirectoryService());
+        await RefreshAccounts(manifestService);
+    }
+
+    private static async Task RefreshAccounts(IManifestModelService manifestModelService)
+    {
+        var accounts = DependencyService.Get<ObservableCollection<SteamGuardAccount>>();
+        accounts.Clear();
+
+        foreach (var account in await manifestModelService.GetAccounts())
+            accounts.Add(account);
     }
 }

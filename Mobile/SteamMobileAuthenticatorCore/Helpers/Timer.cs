@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-namespace SteamMobileAuthenticatorCore.Helpers
+namespace SteamAuthenticatorCore.Mobile.Helpers
 {
     public class Timer
     {

@@ -1,14 +1,13 @@
 ﻿using System.Windows.Controls;
-using SteamDesktopAuthenticatorCore.ViewModels;
+using SteamAuthenticatorCore.Desktop.ViewModels;
 
-namespace SteamDesktopAuthenticatorCore.Views.Pages
+namespace SteamAuthenticatorCore.Desktop.Views.Pages;
+
+public partial class LoginPage : Page
 {
-    public partial class LoginPage : Page
+    public LoginPage(LoginViewModel viewModel)
     {
-        public LoginPage(LoginViewModel viewModel)
-        {
-            InitializeComponent();
-            DataContext = viewModel;
-        }
+        InitializeComponent();
+        DataContext = viewModel;
     }
 }

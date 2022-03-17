@@ -2,153 +2,117 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
-using SteamMobileAuthenticatorCore.Helpers;
-using SteamMobileAuthenticatorCore.Services;
-using SteamMobileAuthenticatorCore.Views;
+using SteamAuthenticatorCore.Mobile.Views;
+using SteamAuthenticatorCore.Shared;
 using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
-namespace SteamMobileAuthenticatorCore.ViewModels
+namespace SteamAuthenticatorCore.Mobile.ViewModels;
+
+internal partial class MainPageViewModel : ObservableObject
 {
-    class MainPageViewModel : BaseViewModel
+    public MainPageViewModel()
     {
-        public MainPageViewModel()
-        {
-            _manifestModelService = DependencyService.Get<IManifestModelService>();
-            Accounts = DependencyService.Get<ObservableCollection<SteamGuardAccount>>();
+        _manifestModelService = DependencyService.Get<IManifestModelService>();
+        Accounts = DependencyService.Get<ObservableCollection<SteamGuardAccount>>();
+        TokenService = DependencyService.Get<TokenService>();
+    }
 
-            var steamGuardTimer = new Timer(SteamGuardTimerOnTick);
-            steamGuardTimer.Start(TimeSpan.FromSeconds(2));
+    private readonly IManifestModelService _manifestModelService;
+
+    #region Properties
+
+    private SteamGuardAccount? _selectedSteamGuardAccount;
+
+    public ObservableCollection<SteamGuardAccount> Accounts { get; }
+
+    public SteamGuardAccount? SelectedSteamGuardAccount
+    {
+        get => _selectedSteamGuardAccount;
+        set
+        {
+            SetProperty(ref _selectedSteamGuardAccount, value);
+            TokenService.SelectedAccount = value;
         }
+    }
 
-        private readonly IManifestModelService _manifestModelService;
+    public TokenService TokenService { get; }
 
-        #region Properties
+    #endregion
 
-        private SteamGuardAccount? _selectedSteamGuardAccount;
-        private bool _loaded;
-        private double _progressBar;
-        private string _loginToken = string.Empty;
+    #region Commands
 
-        public ObservableCollection<SteamGuardAccount> Accounts { get; }
+    [ICommand]
+    private async Task Import()
+    {
+        IEnumerable<FileResult> files;
 
-        public SteamGuardAccount? SelectedSteamGuardAccount
+        try
         {
-            get => _selectedSteamGuardAccount;
-            set => SetProperty(ref _selectedSteamGuardAccount, value);
-        }
-
-        public double ProgressBar
-        {
-            get => _progressBar;
-            set => SetProperty(ref _progressBar, value);
-        }
-
-        public string LoginToken
-        {
-            get => _loginToken;
-            set => SetProperty(ref _loginToken, value);
-        }
-
-        #endregion
-
-        public ICommand OnLoadCommand => new AsyncCommand(async () =>
-        {
-            if (_loaded)
-                return;
-
-            _loaded = true;
-            Accounts.Clear();
-
-            await _manifestModelService.Initialize(new MobileDirectoryService());
-
-            foreach (var accounts in await _manifestModelService.GetAccounts())
-                Accounts.Add(accounts);
-
-            var manifest = _manifestModelService.GetManifestModel();
-            if (manifest.AutoConfirmMarketTransactions)
+            files = await FilePicker.PickMultipleAsync(new PickOptions()
             {
-                //App.AutoMarketSellTimer.Start(TimeSpan.FromSeconds(manifest.PeriodicCheckingInterval));
-            }
-        });
-
-        public ICommand ImportCommand => new AsyncCommand(async () =>
+                PickerTitle = "Select maFile"
+            }) ?? Array.Empty<FileResult>();
+        }
+        catch
         {
-            IEnumerable<FileResult> files;
+            files = Array.Empty<FileResult>();
+        }
 
+        foreach (var file in files)
+        {
             try
             {
-                files = await FilePicker.PickMultipleAsync(new PickOptions()
-                {
-                    PickerTitle = "Select maFile"
-                }) ?? Array.Empty<FileResult>();
+                await using var stream = await file.OpenReadAsync();
+                if (await _manifestModelService.AddSteamGuardAccount(stream, file.FileName) is { } account)
+                    Accounts.Add(account);
             }
             catch
             {
-                files = Array.Empty<FileResult>();
+                await Application.Current.MainPage.DisplayAlert("Import account", $"failed to import {file.FileName}, maybe your file is corrupted?", "Ok");
             }
-
-            foreach (var file in files)
-            {
-                try
-                {
-                    using var stream = await file.OpenReadAsync();
-                    if (await _manifestModelService.AddSteamGuardAccount(stream, file.FileName) is { } account)
-                        Accounts.Add(account);
-                }
-                catch
-                {
-                    await Application.Current.MainPage.DisplayAlert("Import account", $"failed to import {file.FileName}, maybe your file is corrupted?", "Ok");
-                }
-            }
-        });
-
-        public ICommand CopyCommand => new AsyncCommand(async () =>
-        {
-            await Clipboard.SetTextAsync(LoginToken);
-        });
-
-        public ICommand DeleteCommand => new AsyncCommand<SteamGuardAccount>(async o =>
-        {
-            if (await Application.Current.MainPage.DisplayAlert("Delete account", "are you sure?", "yes", "no"))
-            {
-                await _manifestModelService.DeleteSteamGuardAccount(o!);
-                Accounts.Remove(o!);
-            }
-        });
-
-        public ICommand OnLoginCommand => new AsyncCommand<SteamGuardAccount>(async (o) =>
-        {
-            await Shell.Current.GoToAsync($"{nameof(LoginPage)}?id={Accounts.IndexOf(o!)}");
-        });
-
-        public ICommand ForceRefreshSession => new AsyncCommand<SteamGuardAccount>(async (o) =>
-        {
-            if (await o!.RefreshSessionAsync())
-                await Application.Current.MainPage.DisplayAlert("Refresh session", "the session has been refreshed", "Ok");
-        });
-
-        private async Task SteamGuardTimerOnTick()
-        {
-            if (SelectedSteamGuardAccount is null)
-                return;
-
-            var steamTime = await TimeAligner.GetSteamTimeAsync();
-            if (steamTime == 0)
-                return;
-
-            var currentSteamTime = steamTime / 30L;
-            var secondsUntilChange = (int)(steamTime - currentSteamTime * 30L);
-
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                LoginToken = SelectedSteamGuardAccount.GenerateSteamGuardCodeForTime(steamTime) ?? string.Empty;
-                ProgressBar = Convert.ToDouble(30 - secondsUntilChange) / 30;
-            });
         }
     }
+
+    [ICommand]
+    private async Task Copy()
+    {
+        await Clipboard.SetTextAsync(TokenService.Token);
+    }
+
+    [ICommand]
+    private async Task Delete(SteamGuardAccount o)
+    {
+        if (await Application.Current.MainPage.DisplayAlert("Delete account", "are you sure?", "yes", "no"))
+        {
+            await _manifestModelService.DeleteSteamGuardAccount(o!);
+            Accounts.Remove(o!);
+        }
+    }
+
+    [ICommand]
+    private async Task OnConfirmations(SteamGuardAccount o)
+    {
+        SelectedSteamGuardAccount = Accounts[Accounts.IndexOf(o!)];
+        await Shell.Current.GoToAsync($"{nameof(ConfirmationsPage)}?id={Accounts.IndexOf(o!)}");
+    }
+
+    [ICommand]
+    private async Task OnLogin(SteamGuardAccount o)
+    {
+        await Shell.Current.GoToAsync($"{nameof(LoginPage)}?id={Accounts.IndexOf(o!)}");
+    }
+
+    [ICommand]
+    private async Task ForceRefreshSession(SteamGuardAccount o)
+    {
+        if (await o.RefreshSessionAsync())
+            await Application.Current.MainPage.DisplayAlert("Refresh session", "the session has been refreshed", "Ok");
+    }
+
+    #endregion
 }

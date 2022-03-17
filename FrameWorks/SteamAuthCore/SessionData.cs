@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 
 namespace SteamAuthCore
@@ -29,27 +30,35 @@ namespace SteamAuthCore
 
         public CookieContainer GetCookies()
         {
-            CookieContainer cookies = new();
-
-            cookies.Add(new Cookie("mobileClientVersion", "0 (2.1.3)", "/", ".steamcommunity.com"));
-            cookies.Add(new Cookie("mobileClient", "android", "/", ".steamcommunity.com"));
-
-            cookies.Add(new Cookie("steamid", SteamId.ToString(), "/", ".steamcommunity.com"));
-            cookies.Add(new Cookie("steamLogin", SteamLogin, "/", ".steamcommunity.com")
+            try
             {
-                HttpOnly = true
-            });
+                CookieContainer cookies = new();
 
-            cookies.Add(new Cookie("steamLoginSecure", SteamLoginSecure, "/", ".steamcommunity.com")
+                cookies.Add(new Cookie("mobileClientVersion", "0 (2.1.3)", "/", ".steamcommunity.com"));
+                cookies.Add(new Cookie("mobileClient", "android", "/", ".steamcommunity.com"));
+
+                cookies.Add(new Cookie("steamid", SteamId.ToString(), "/", ".steamcommunity.com"));
+                cookies.Add(new Cookie("steamLogin", SteamLogin, "/", ".steamcommunity.com")
+                {
+                    HttpOnly = true
+                });
+
+                cookies.Add(new Cookie("steamLoginSecure", SteamLoginSecure, "/", ".steamcommunity.com")
+                {
+                    HttpOnly = true,
+                    Secure = true
+                });
+                cookies.Add(new Cookie("Steam_Language", "english", "/", ".steamcommunity.com"));
+                cookies.Add(new Cookie("dob", "", "/", ".steamcommunity.com"));
+                cookies.Add(new Cookie("sessionid", SessionId, "/", ".steamcommunity.com"));
+
+                return cookies;
+            }
+            catch (CookieException)
             {
-                HttpOnly = true,
-                Secure = true
-            });
-            cookies.Add(new Cookie("Steam_Language", "english", "/", ".steamcommunity.com"));
-            cookies.Add(new Cookie("dob", "", "/", ".steamcommunity.com"));
-            cookies.Add(new Cookie("sessionid", SessionId, "/", ".steamcommunity.com"));
-
-            return cookies;
+                Debug.WriteLine("Cookie Exception");
+                throw new SteamGuardAccount.WgTokenExpiredException();
+            }
         }
     }
 }

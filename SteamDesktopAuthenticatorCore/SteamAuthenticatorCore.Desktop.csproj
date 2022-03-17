@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <Platform>AnyCPU</Platform>
+    <Version>0.9.1.0</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Prefer32Bit>true</Prefer32Bit>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Common\**" />
+    <Compile Remove="Custom\**" />
+    <Compile Remove="Models\**" />
+    <EmbeddedResource Remove="Common\**" />
+    <EmbeddedResource Remove="Custom\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <None Remove="Common\**" />
+    <None Remove="Custom\**" />
+    <None Remove="Models\**" />
+    <Page Remove="Common\**" />
+    <Page Remove="Custom\**" />
+    <Page Remove="Models\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="client_secret.json" />
+    <None Remove="icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="client_secret.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FrameWorks\GoogleDrive\GoogleDrive.csproj" />
+    <ProjectReference Include="..\FrameWorks\SteamAuthCore\SteamAuthCore.csproj" />
+    <ProjectReference Include="..\FrameWorks\WpfUi\WPFUI\WPFUI.csproj" />
+    <ProjectReference Include="..\SteamAuthenticatorCore.Shared\SteamAuthenticatorCore.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+  </ItemGroup>
+
+</Project>
