@@ -13,7 +13,6 @@ public partial class AppSettings : ObservableObject, ISettings
     
     public enum ManifestLocationModel
     {
-        None,
         LocalDrive,
         GoogleDrive
     }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -13,7 +12,6 @@ using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.ViewModels;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
-using WpfHelper.Services;
 using WPFUI.Common;
 using WPFUI.DIControls;
 using WPFUI.DIControls.Interfaces;
@@ -127,7 +125,6 @@ public sealed partial class App : Application
             
         service.AddScoped<TokenService>();
 
-        service.AddSingleton<SimpleHttpRequestService>();
         service.AddSingleton<UpdateService>();
         service.AddGoogleDriveApi(Name);
         service.AddScoped<AppSettings>();

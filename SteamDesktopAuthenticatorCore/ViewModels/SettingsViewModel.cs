@@ -4,8 +4,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.Input;
+using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Shared;
-using WpfHelper.Services;
 using WPFUI.Common;
 using WPFUI.DIControls;
 
