@@ -16,7 +16,7 @@ public class UpdateServiceOptions
     public string GitHubUrl { get; set; } = string.Empty;
 }
 
-internal sealed class UpdateService : IDisposable
+public sealed class UpdateService : IDisposable
 {
     public UpdateService(IOptions<UpdateServiceOptions> options)
     {
