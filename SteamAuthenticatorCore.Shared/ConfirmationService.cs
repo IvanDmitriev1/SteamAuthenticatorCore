@@ -139,6 +139,7 @@ public abstract class BaseConfirmationService : IDisposable
                 switch (settings.AutoConfirmMarketTransactions)
                 {
                     case true:
+                        _timer.ChangeInterval(TimeSpan.FromSeconds(settings.PeriodicCheckingInterval));
                         _timer.Start();
                         break;
                     case false:
