@@ -1,31 +1,33 @@
-﻿using System.Windows.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using SteamAuthenticatorCore.Shared;
 using Xamarin.Forms;
 
-namespace SteamAuthenticatorCore.Mobile.ViewModels
+namespace SteamAuthenticatorCore.Mobile.ViewModels;
+
+public partial class SettingsViewModel
 {
-    public class SettingsViewModel : BaseViewModel
+    public SettingsViewModel()
     {
-        public SettingsViewModel()
-        {
-            AppSettings = DependencyService.Get<AppSettings>();
-        }
+        AppSettings = DependencyService.Get<AppSettings>();
+    }
 
         
-        public AppSettings AppSettings { get; }
+    public AppSettings AppSettings { get; }
 
-        public ICommand OnLoading => new Command(() =>
-        {
-            //App.AutoMarketSellTimer.Stop();
-        });
 
-        public ICommand OnClosingCommand => new Command(() =>
-        {
-            /*var manifest = _manifestModelService.GetManifestModel();
-            manifest.AutoConfirmMarketTransactions = AutoConfirmMarket;
-            manifest.PeriodicCheckingInterval = TradePeriodicCheckingInterval;*/
+    [ICommand]
+    private void OnLoading()
+    {
+        //App.AutoMarketSellTimer.Stop();
+    }
 
-            //App.AutoMarketSellTimer.Start(TimeSpan.FromSeconds(manifest.PeriodicCheckingInterval));
-        });
+    [ICommand]
+    private void OnClosing()
+    {
+        /*var manifest = _manifestModelService.GetManifestModel();
+        manifest.AutoConfirmMarketTransactions = AutoConfirmMarket;
+        manifest.PeriodicCheckingInterval = TradePeriodicCheckingInterval;*/
+
+        //App.AutoMarketSellTimer.Start(TimeSpan.FromSeconds(manifest.PeriodicCheckingInterval));
     }
 }

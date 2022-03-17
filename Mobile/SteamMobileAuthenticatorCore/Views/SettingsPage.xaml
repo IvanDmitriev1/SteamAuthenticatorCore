@@ -1,57 +1,60 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:behaviors="http://xamarin.com/schemas/2020/toolkit"
-             xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
-             x:Class="SteamAuthenticatorCore.Mobile.Views.SettingsPage"
-             Visual="Material"
-             Title="Settings">
+<ContentPage
+    x:Class="SteamAuthenticatorCore.Mobile.Views.SettingsPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:behaviors="http://xamarin.com/schemas/2020/toolkit"
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
+    Title="Settings"
+    Visual="Material">
 
     <ContentPage.Behaviors>
-        <behaviors:EventToCommandBehavior EventName="Appearing"
-                                          Command="{Binding Path=OnLoading}" />
+        <behaviors:EventToCommandBehavior Command="{Binding Path=OnLoadingCommand}" EventName="Appearing" />
 
-        <behaviors:EventToCommandBehavior EventName="Disappearing"
-                                          Command="{Binding Path=OnClosingCommand}" />
+        <behaviors:EventToCommandBehavior Command="{Binding Path=OnClosingCommand}" EventName="Disappearing" />
     </ContentPage.Behaviors>
 
     <ContentPage.BindingContext>
-        <viewModels:SettingsViewModel/>
+        <viewModels:SettingsViewModel />
     </ContentPage.BindingContext>
 
     <ContentPage.Content>
-        <StackLayout BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor}, Light={StaticResource LightBackgroundColor}}"
-                     Padding="20, 20"
-                     Orientation="Vertical"
-                     Spacing="20" >
+        <StackLayout
+            Padding="20,20"
+            BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor},
+                                              Light={StaticResource LightBackgroundColor}}"
+            Orientation="Vertical"
+            Spacing="20">
 
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
 
-                <Entry Grid.Column="0"
-                       Keyboard="Numeric"
-                       HorizontalTextAlignment="Center"
-                       VerticalTextAlignment="Center"
-                       Text="{Binding Path=AppSettings.PeriodicCheckingInterval}"/>
+                <Entry
+                    Grid.Column="0"
+                    HorizontalTextAlignment="Center"
+                    Keyboard="Numeric"
+                    Text="{Binding Path=AppSettings.PeriodicCheckingInterval}"
+                    VerticalTextAlignment="Center" />
 
-                <Label Grid.Column="1"
-                       Text="Seconds between checking for trade confirmations"
-                       VerticalTextAlignment="Center" />
+                <Label
+                    Grid.Column="1"
+                    Text="Seconds between checking for trade confirmations"
+                    VerticalTextAlignment="Center" />
             </Grid>
 
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
 
-                <Switch Grid.Column="0" IsToggled="{Binding Path=AppSettings.AutoConfirmMarketTransactions}" ></Switch>
-                <Label Grid.Column="1" Text="Auto-confirm market sett transactions"/>
+                <Switch Grid.Column="0" IsToggled="{Binding Path=AppSettings.AutoConfirmMarketTransactions}" />
+                <Label Grid.Column="1" Text="Auto-confirm market sell transactions" />
             </Grid>
 
         </StackLayout>

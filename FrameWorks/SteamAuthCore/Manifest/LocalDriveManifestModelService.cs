@@ -48,26 +48,23 @@ namespace SteamAuthCore.Manifest
             if (!File.Exists(_manifestDirectoryService.ManifestFilePath))
             {
                 _manifestModel = new ManifestModel();
-                File.Create(_manifestDirectoryService.ManifestFilePath).Dispose();
-            }
-
-            string data;
-            using (var streamReader = new StreamReader(_manifestDirectoryService.ManifestFilePath))
-            {
-                data = await streamReader.ReadToEndAsync();
+                await File.Create(_manifestDirectoryService.ManifestFilePath).DisposeAsync();
             }
 
             ManifestModel model;
-            try
+            await using (var stream = File.OpenRead(_manifestDirectoryService.ManifestFilePath))
             {
-                if (JsonSerializer.Deserialize<ManifestModel>(data) is not { } manifest)
-                    manifest = new ManifestModel();
+                try
+                {
+                    if (JsonSerializer.Deserialize<ManifestModel>(stream) is not { } manifest)
+                        manifest = new ManifestModel();
 
-                model = manifest;
-            }
-            catch
-            {
-                model = new ManifestModel();
+                    model = manifest;
+                }
+                catch
+                {
+                    model = new ManifestModel();
+                }
             }
 
             _manifestModel = model;
@@ -82,8 +79,8 @@ namespace SteamAuthCore.Manifest
         {
             string serialized = JsonSerializer.Serialize(_manifestModel);
 
-            using var fileStream = new FileStream(_manifestDirectoryService.ManifestFilePath, FileMode.Create, FileAccess.Write);
-            using var streamWriter = new StreamWriter(fileStream);
+            await using var fileStream = File.OpenWrite(_manifestDirectoryService.ManifestFilePath);
+            await using var streamWriter = new StreamWriter(fileStream);
             await streamWriter.WriteAsync(serialized);
         }
 
@@ -98,7 +95,7 @@ namespace SteamAuthCore.Manifest
             {
                 if (!file.Contains(ManifestModelServiceConstants.FileExtension)) continue;
 
-                using var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+                await using var fileStream = File.OpenRead(file);
 
                 if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(fileStream) is not { } account)
                     continue;
@@ -118,7 +115,7 @@ namespace SteamAuthCore.Manifest
 
             fileStream.Seek(0, SeekOrigin.Begin);
 
-            using FileStream newFileStream = new FileStream(newFilePath, FileMode.Create, FileAccess.Write);
+            await using var newFileStream = File.OpenWrite(newFilePath);
             await fileStream.CopyToAsync(newFileStream);
 
             return account;
@@ -130,8 +127,8 @@ namespace SteamAuthCore.Manifest
                 return;
 
             string serialized = JsonSerializer.Serialize(account);
-            using var fileStream = new FileStream(file, FileMode.Create, FileAccess.Write);
-            using var streamWriter = new StreamWriter(fileStream);
+            await using var fileStream = File.OpenWrite(file);
+            await using var streamWriter = new StreamWriter(fileStream);
             await streamWriter.WriteAsync(serialized);
         }
 
@@ -148,7 +145,7 @@ namespace SteamAuthCore.Manifest
             {
                 if (!file.Contains(ManifestModelServiceConstants.FileExtension)) continue;
 
-                using var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+                await using var fileStream = File.OpenRead(file);
 
                 if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(fileStream) is not { } account2)
                     continue;

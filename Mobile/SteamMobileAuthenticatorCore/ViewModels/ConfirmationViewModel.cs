@@ -4,14 +4,16 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
 using SteamAuthCore;
 using SteamAuthenticatorCore.Shared;
 using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Forms;
+using ObservableObject = CommunityToolkit.Mvvm.ComponentModel.ObservableObject;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
-internal class ConfirmationViewModel : BaseViewModel, IQueryAttributable
+internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributable
 {
     public ConfirmationViewModel()
     {
@@ -21,22 +23,14 @@ internal class ConfirmationViewModel : BaseViewModel, IQueryAttributable
 
     private readonly ObservableCollection<SteamGuardAccount> _accounts;
     private SteamGuardAccount? _selectedAccount;
-    private bool _isRefreshing;
+
+    [ObservableProperty]
     private ConfirmationAccountBase? _account;
 
+    [ObservableProperty]
+    private bool _isRefreshing;
+
     public BaseConfirmationService ConfirmationService { get; }
-
-    public bool IsRefreshing
-    {
-        get => _isRefreshing;
-        set => SetProperty(ref _isRefreshing, value);
-    }
-
-    public ConfirmationAccountBase? Account
-    {
-        get => _account;
-        set => SetProperty(ref _account, value);
-    }
 
 
     public void ApplyQueryAttributes(IDictionary<string, string> query)

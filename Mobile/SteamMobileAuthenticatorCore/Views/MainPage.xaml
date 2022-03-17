@@ -108,7 +108,7 @@
 
                                         <SwipeItem
                                             BackgroundColor="{StaticResource Primary}"
-                                            Command="{Binding Source={StaticResource ViewModel}, Path=ForceRefreshSession}"
+                                            Command="{Binding Source={StaticResource ViewModel}, Path=ForceRefreshSessionCommand}"
                                             CommandParameter="{Binding}"
                                             Text="Refresh session" />
                                     </SwipeItems>

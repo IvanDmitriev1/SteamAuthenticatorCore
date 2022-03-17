@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using SteamAuthenticatorCore.Mobile.Views;
@@ -10,99 +11,108 @@ using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
-namespace SteamAuthenticatorCore.Mobile.ViewModels
+namespace SteamAuthenticatorCore.Mobile.ViewModels;
+
+internal partial class MainPageViewModel : ObservableObject
 {
-    class MainPageViewModel : BaseViewModel
+    public MainPageViewModel()
     {
-        public MainPageViewModel()
+        _manifestModelService = DependencyService.Get<IManifestModelService>();
+        Accounts = DependencyService.Get<ObservableCollection<SteamGuardAccount>>();
+        TokenService = DependencyService.Get<TokenService>();
+    }
+
+    private readonly IManifestModelService _manifestModelService;
+
+    #region Properties
+
+    private SteamGuardAccount? _selectedSteamGuardAccount;
+
+    public ObservableCollection<SteamGuardAccount> Accounts { get; }
+
+    public SteamGuardAccount? SelectedSteamGuardAccount
+    {
+        get => _selectedSteamGuardAccount;
+        set
         {
-            _manifestModelService = DependencyService.Get<IManifestModelService>();
-            Accounts = DependencyService.Get<ObservableCollection<SteamGuardAccount>>();
-            TokenService = DependencyService.Get<TokenService>();
+            SetProperty(ref _selectedSteamGuardAccount, value);
+            TokenService.SelectedAccount = value;
         }
+    }
 
-        private readonly IManifestModelService _manifestModelService;
+    public TokenService TokenService { get; }
 
-        #region Properties
+    #endregion
 
-        private SteamGuardAccount? _selectedSteamGuardAccount;
+    #region Commands
 
-        public ObservableCollection<SteamGuardAccount> Accounts { get; }
+    [ICommand]
+    private async Task Import()
+    {
+        IEnumerable<FileResult> files;
 
-        public SteamGuardAccount? SelectedSteamGuardAccount
+        try
         {
-            get => _selectedSteamGuardAccount;
-            set
+            files = await FilePicker.PickMultipleAsync(new PickOptions()
             {
-                SetProperty(ref _selectedSteamGuardAccount, value);
-                TokenService.SelectedAccount = value;
-            }
+                PickerTitle = "Select maFile"
+            }) ?? Array.Empty<FileResult>();
+        }
+        catch
+        {
+            files = Array.Empty<FileResult>();
         }
 
-        public TokenService TokenService { get; }
-
-        #endregion
-
-        public ICommand ImportCommand => new AsyncCommand(async () =>
+        foreach (var file in files)
         {
-            IEnumerable<FileResult> files;
-
             try
             {
-                files = await FilePicker.PickMultipleAsync(new PickOptions()
-                {
-                    PickerTitle = "Select maFile"
-                }) ?? Array.Empty<FileResult>();
+                await using var stream = await file.OpenReadAsync();
+                if (await _manifestModelService.AddSteamGuardAccount(stream, file.FileName) is { } account)
+                    Accounts.Add(account);
             }
             catch
             {
-                files = Array.Empty<FileResult>();
+                await Application.Current.MainPage.DisplayAlert("Import account", $"failed to import {file.FileName}, maybe your file is corrupted?", "Ok");
             }
-
-            foreach (var file in files)
-            {
-                try
-                {
-                    using var stream = await file.OpenReadAsync();
-                    if (await _manifestModelService.AddSteamGuardAccount(stream, file.FileName) is { } account)
-                        Accounts.Add(account);
-                }
-                catch
-                {
-                    await Application.Current.MainPage.DisplayAlert("Import account", $"failed to import {file.FileName}, maybe your file is corrupted?", "Ok");
-                }
-            }
-        });
-
-        public ICommand CopyCommand => new AsyncCommand(async () =>
-        {
-            await Clipboard.SetTextAsync(TokenService.Token);
-        });
-
-        public ICommand DeleteCommand => new AsyncCommand<SteamGuardAccount>(async o =>
-        {
-            if (await Application.Current.MainPage.DisplayAlert("Delete account", "are you sure?", "yes", "no"))
-            {
-                await _manifestModelService.DeleteSteamGuardAccount(o!);
-                Accounts.Remove(o!);
-            }
-        });
-
-        public ICommand OnConfirmationsCommand => new AsyncCommand<SteamGuardAccount>(async (o) =>
-        {
-            SelectedSteamGuardAccount = Accounts[Accounts.IndexOf(o!)];
-            await Shell.Current.GoToAsync($"{nameof(ConfirmationsPage)}?id={Accounts.IndexOf(o!)}");
-        });
-
-        public ICommand OnLoginCommand => new AsyncCommand<SteamGuardAccount>(async (o) =>
-        {
-            await Shell.Current.GoToAsync($"{nameof(LoginPage)}?id={Accounts.IndexOf(o!)}");
-        });
-
-        public ICommand ForceRefreshSession => new AsyncCommand<SteamGuardAccount>(async (o) =>
-        {
-            if (await o!.RefreshSessionAsync())
-                await Application.Current.MainPage.DisplayAlert("Refresh session", "the session has been refreshed", "Ok");
-        });
+        }
     }
+
+    [ICommand]
+    private async Task Copy()
+    {
+        await Clipboard.SetTextAsync(TokenService.Token);
+    }
+
+    [ICommand]
+    private async Task Delete(SteamGuardAccount o)
+    {
+        if (await Application.Current.MainPage.DisplayAlert("Delete account", "are you sure?", "yes", "no"))
+        {
+            await _manifestModelService.DeleteSteamGuardAccount(o!);
+            Accounts.Remove(o!);
+        }
+    }
+
+    [ICommand]
+    private async Task OnConfirmations(SteamGuardAccount o)
+    {
+        SelectedSteamGuardAccount = Accounts[Accounts.IndexOf(o!)];
+        await Shell.Current.GoToAsync($"{nameof(ConfirmationsPage)}?id={Accounts.IndexOf(o!)}");
+    }
+
+    [ICommand]
+    private async Task OnLogin(SteamGuardAccount o)
+    {
+        await Shell.Current.GoToAsync($"{nameof(LoginPage)}?id={Accounts.IndexOf(o!)}");
+    }
+
+    [ICommand]
+    private async Task ForceRefreshSession(SteamGuardAccount o)
+    {
+        if (await o.RefreshSessionAsync())
+            await Application.Current.MainPage.DisplayAlert("Refresh session", "the session has been refreshed", "Ok");
+    }
+
+    #endregion
 }

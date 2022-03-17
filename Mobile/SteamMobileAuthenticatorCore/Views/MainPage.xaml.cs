@@ -8,7 +8,7 @@ namespace SteamAuthenticatorCore.Mobile.Views
 	{
 		public MainPage ()
 		{
-			InitializeComponent ();
+            InitializeComponent ();
 		}
     }
 }

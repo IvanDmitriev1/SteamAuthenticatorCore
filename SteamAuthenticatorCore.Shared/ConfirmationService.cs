@@ -61,7 +61,7 @@ public abstract class ConfirmationAccountBase
     }
 }
 
-public abstract class BaseConfirmationService : BaseViewModel, IDisposable
+public abstract class BaseConfirmationService : IDisposable
 {
     protected BaseConfirmationService(ObservableCollection<SteamGuardAccount> steamGuardAccounts, AppSettings settings, IPlatformImplementations platformImplementations, IPlatformTimer timer)
     {

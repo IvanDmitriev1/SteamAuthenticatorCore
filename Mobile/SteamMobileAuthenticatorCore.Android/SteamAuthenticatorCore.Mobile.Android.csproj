@@ -41,6 +41,7 @@
     <AndroidLinkSkip>
     </AndroidLinkSkip>
     <MandroidI18n />
+    <Debugger>Xamarin</Debugger>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>false</DebugSymbols>

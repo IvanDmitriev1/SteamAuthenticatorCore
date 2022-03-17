@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.Win32;
 using SteamAuthenticatorCore.Shared;
 
@@ -73,4 +74,15 @@ internal sealed class DesktopSettingsService : ISettingsService
             typeKey.SetValue(property.Name, property.GetValue(settings) ?? property.PropertyType);
         }
     }
+
+    public Task LoadSettingsAsync(ISettings settings)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task SaveSettingsAsync(ISettings settings)
+    {
+        throw new NotImplementedException();
+    }
+
 }
