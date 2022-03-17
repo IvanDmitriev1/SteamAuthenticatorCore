@@ -17,7 +17,6 @@ using WpfHelper.Services;
 using WPFUI.Common;
 using WPFUI.DIControls;
 using WPFUI.DIControls.Interfaces;
-using WPFUI.Taskbar;
 
 
 namespace SteamAuthenticatorCore.Desktop
@@ -189,44 +188,10 @@ namespace SteamAuthenticatorCore.Desktop
             var settings = (AppSettings) sender!;
             if (!settings.IsInitialized) return;
 
-            if (e.PropertyName == nameof(settings.ManifestLocation))
-                await OnManifestLocationChanged();
-        }
+            if (e.PropertyName != nameof(settings.ManifestLocation)) return;
 
-        private async Task OnManifestLocationChanged()
-        {
-            var manifestServiceResolver = _host.Services.GetRequiredService<ManifestServiceResolver>();
-            IManifestModelService manifestService = manifestServiceResolver.Invoke();
-
-           await manifestService.Initialize();
-           await RefreshAccounts(manifestService);
-        }
-
-        private async Task RefreshAccounts(IManifestModelService manifestModelService)
-        {
-            var accounts = _host.Services.GetRequiredService<ObservableCollection<SteamGuardAccount>>();
-
-            Progress.SetState(ProgressState.Indeterminate);
-            accounts.Clear();
-
-            try
-            {
-                foreach (var account in await manifestModelService.GetAccounts())
-                    accounts.Add(account);
-            }
-            catch (Exception)
-            {
-                /*var box = new WPFUI.Controls.MessageBox()
-                {
-                    LeftButtonName = "Ok",
-                    RightButtonName = "Cancel"
-                };
-                box.Show(App.Name, "One of your files is corrupted");*/
-            }
-            finally
-            {
-                Progress.SetState(ProgressState.None);
-            }
+            var tokenViewModel = _host.Services.GetRequiredService<TokenViewModel>();
+            await tokenViewModel.OnManifestLocationChanged();
         }
 
         #endregion

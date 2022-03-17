@@ -17,7 +17,7 @@
 
     <b:Interaction.Triggers>
         <b:EventTrigger EventName="Loaded">
-            <b:InvokeCommandAction Command="{Binding Path=WindowLoadedCommand}" />
+            <b:InvokeCommandAction Command="{Binding Path=WindowLoadedCommand}" CommandParameter="{Binding ElementName=LoadingStackPanel}" />
         </b:EventTrigger>
     </b:Interaction.Triggers>
 
@@ -38,8 +38,8 @@
 
             <MenuItem Header="File">
                 <MenuItem Command="{Binding Path=ImportAccountsCommand}" Header="Import accounts" />
-                <MenuItem Command="{Binding Path=RefreshAccountsListCommand}" Header="Refresh account list" />
-                <MenuItem Command="{Binding Path=ShowAccountFilesFolder}" Header="Show accounts file folder" />
+                <MenuItem Command="{Binding Path=RefreshAccountsCommand}" Header="Refresh account list" />
+                <MenuItem Command="{Binding Path=ShowAccountFilesFolderCommand}" Header="Show accounts file folder" />
             </MenuItem>
 
             <MenuItem Header="Selected account">
@@ -85,49 +85,59 @@
             </StackPanel>
         </controls:Card>
 
-        <ListBox
-            Grid.Row="2"
-            Margin="0,5,0,0"
-            AllowDrop="True"
-            ItemsSource="{Binding Path=Accounts, Mode=OneTime}"
-            SelectedItem="{Binding Path=SelectedAccount}"
-            VirtualizingPanel.IsContainerVirtualizable="True"
-            VirtualizingPanel.IsVirtualizing="True"
-            VirtualizingPanel.VirtualizationMode="Recycling">
+        <Grid Grid.Row="2" Margin="0,5,0,0">
+            <StackPanel x:Name="LoadingStackPanel" VerticalAlignment="Center">
+                <controls:ProgressRing IsIndeterminate="True" />
+                <TextBlock
+                    Margin="0,12,0,0"
+                    FontSize="16"
+                    FontWeight="Medium"
+                    Text="Loading..."
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
+            </StackPanel>
 
-            <b:Interaction.Triggers>
-                <b:EventTrigger EventName="DragOver">
-                    <b:InvokeCommandAction Command="{Binding Path=ListBoxDragOverCommand}" PassEventArgsToCommand="True" />
-                </b:EventTrigger>
-                <b:EventTrigger EventName="Drop">
-                    <b:InvokeCommandAction Command="{Binding Path=ListBoxDragAndDropCommand}" PassEventArgsToCommand="True" />
-                </b:EventTrigger>
-            </b:Interaction.Triggers>
+            <ListBox
+                AllowDrop="True"
+                ItemsSource="{Binding Path=Accounts, Mode=OneTime}"
+                SelectedItem="{Binding Path=SelectedAccount}"
+                VirtualizingPanel.IsContainerVirtualizable="True"
+                VirtualizingPanel.IsVirtualizing="True"
+                VirtualizingPanel.VirtualizationMode="Recycling">
 
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <VirtualizingStackPanel />
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
+                <b:Interaction.Triggers>
+                    <b:EventTrigger EventName="DragOver">
+                        <b:InvokeCommandAction Command="{Binding Path=ListBoxDragOverCommand}" PassEventArgsToCommand="True" />
+                    </b:EventTrigger>
+                    <b:EventTrigger EventName="Drop">
+                        <b:InvokeCommandAction Command="{Binding Path=ListBoxDragAndDropCommand}" PassEventArgsToCommand="True" />
+                    </b:EventTrigger>
+                </b:Interaction.Triggers>
 
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel HorizontalAlignment="Stretch">
-                        <TextBlock Padding="2.5" Text="{Binding Path=AccountName}" />
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
 
-                        <StackPanel.ContextMenu>
-                            <ContextMenu DataContext="{Binding Source={x:Reference Page}, Path=DataContext}">
-                                <MenuItem Command="{Binding Path=LoginInSelectedAccountCommand}" Header="Login again" />
-                                <MenuItem Command="{Binding Path=ForceRefreshSessionCommand}" Header="Force refresh session" />
-                                <Separator />
-                                <MenuItem Command="{Binding Path=DeleteAccountCommand}" Header="Delete from list" />
-                            </ContextMenu>
-                        </StackPanel.ContextMenu>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel HorizontalAlignment="Stretch">
+                            <TextBlock Padding="2.5" Text="{Binding Path=AccountName}" />
 
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+                            <StackPanel.ContextMenu>
+                                <ContextMenu DataContext="{Binding Source={x:Reference Page}, Path=DataContext}">
+                                    <MenuItem Command="{Binding Path=LoginInSelectedAccountCommand}" Header="Login again" />
+                                    <MenuItem Command="{Binding Path=ForceRefreshSessionCommand}" Header="Force refresh session" />
+                                    <Separator />
+                                    <MenuItem Command="{Binding Path=DeleteAccountCommand}" Header="Delete from list" />
+                                </ContextMenu>
+                            </StackPanel.ContextMenu>
 
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
     </Grid>
 </Page>

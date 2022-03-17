@@ -60,7 +60,7 @@ namespace SteamAuthenticatorCore.Mobile
                 await OnManifestLocationChanged();
         }
 
-        public async Task OnManifestLocationChanged()
+        public static async Task OnManifestLocationChanged()
         {
             var manifestService = DependencyService.Get<IManifestModelService>();
 
