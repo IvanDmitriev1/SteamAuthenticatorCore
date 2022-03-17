@@ -51,10 +51,6 @@ public sealed partial class App : Application
 
         var confirmationService = services.GetRequiredService<BaseConfirmationService>();
 
-        var appSettings = services.GetRequiredService<AppSettings>();
-        appSettings.PropertyChanged += AppSettingsOnPropertyChanged;
-
-
         var settings = services.GetRequiredService<AppSettings>();
         settings.LoadSettings();
 
@@ -67,9 +63,6 @@ public sealed partial class App : Application
     protected override async void OnExit(ExitEventArgs e)
     {
         _host.Services.GetRequiredService<AppSettings>().SaveSettings();
-
-        var appSettings = _host.Services.GetRequiredService<AppSettings>();
-        appSettings.PropertyChanged -= AppSettingsOnPropertyChanged;
 
         await _host.StopAsync();
         _host.Dispose();
@@ -181,17 +174,6 @@ public sealed partial class App : Application
             await updateService.DeletePreviousFile(InternalName);
             appSettings.Updated = false;
         }
-    }
-
-    private async void AppSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        var settings = (AppSettings) sender!;
-        if (!settings.IsInitialized) return;
-
-        if (e.PropertyName != nameof(settings.ManifestLocation)) return;
-
-        var tokenViewModel = _host.Services.GetRequiredService<TokenViewModel>();
-        await tokenViewModel.OnManifestLocationChanged();
     }
 
     #endregion

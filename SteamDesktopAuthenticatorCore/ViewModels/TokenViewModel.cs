@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ using WPFUI.Taskbar;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
-public partial class TokenViewModel : ObservableObject
+public sealed partial class TokenViewModel : ObservableObject, IDisposable
 {
     public TokenViewModel(AppSettings appSettings, App.ManifestServiceResolver manifestServiceResolver, TokenService tokenService, DefaultNavigation navigation, Dialog dialog, ObservableCollection<SteamGuardAccount> steamGuardAccounts)
     {
@@ -28,6 +29,8 @@ public partial class TokenViewModel : ObservableObject
         _navigation = navigation;
         _dialog = dialog;
         Accounts = steamGuardAccounts;
+
+        _appSettings.PropertyChanged += AppSettingsOnPropertyChanged;
     }
 
     #region Variabls
@@ -65,12 +68,14 @@ public partial class TokenViewModel : ObservableObject
     #region Commands
 
     [ICommand]
-    private void WindowLoaded(UIElement loadingElement)
+    private async Task WindowLoaded(UIElement loadingElement)
     {
         if (_loaded) return;
 
         _loaded = true;
         _loadingElement = loadingElement;
+
+        await OnManifestLocationChanged();
     }
 
     [ICommand]
@@ -229,19 +234,25 @@ public partial class TokenViewModel : ObservableObject
 
     #endregion
 
-    #region PublicMethods
+    #region PrivateMethods
 
-    public async Task OnManifestLocationChanged()
+    private async void AppSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        var settings = (AppSettings) sender!;
+        if (!settings.IsInitialized) return;
+
+        if (e.PropertyName != nameof(settings.ManifestLocation)) return;
+        
+        await OnManifestLocationChanged();
+    }
+
+    private async Task OnManifestLocationChanged()
     {
         var manifestService = _manifestServiceResolver.Invoke();
         await manifestService.Initialize();
 
         await RefreshAccounts();
     }
-
-    #endregion
-
-    #region PrivateMethods
 
     private async Task ImportSteamGuardAccount(IEnumerable<string> files)
     {
@@ -276,4 +287,9 @@ public partial class TokenViewModel : ObservableObject
     }
 
     #endregion
+
+    public void Dispose()
+    {
+        _appSettings.PropertyChanged -= AppSettingsOnPropertyChanged;
+    }
 }
