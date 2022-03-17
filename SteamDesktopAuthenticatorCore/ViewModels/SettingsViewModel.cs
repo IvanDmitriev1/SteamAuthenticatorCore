@@ -36,7 +36,7 @@ public partial class SettingsViewModel
 
         try
         {
-            model = await _updateService.CheckForUpdate("SteamDesktopAuthenticatorCore.exe");
+            model = await _updateService.CheckForUpdate("SteamAuthenticatorCore.Desktop.exe");
             if (!model.NeedUpdate)
             {
                 await _dialog.ShowDialog("You are using the latest version", "Updater");
