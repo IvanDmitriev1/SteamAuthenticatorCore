@@ -3,25 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamDesktopAuthenticatorCore", "SteamDesktopAuthenticatorCore\SteamDesktopAuthenticatorCore.csproj", "{D83EB8F1-7716-4261-93F3-6D539E029059}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.Desktop", "SteamDesktopAuthenticatorCore\SteamAuthenticatorCore.Desktop.csproj", "{D83EB8F1-7716-4261-93F3-6D539E029059}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FrameWorks", "FrameWorks", "{FACD3AD6-1EC4-4F97-BE36-9E2FBF5FEDDC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mobile", "Mobile", "{E2DA7B9F-123E-481C-BCB6-59D7980FE294}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfHelper", "FrameWorks\WpfHelper\WpfHelper.csproj", "{770F92C9-668C-41DA-8889-9226B23658E8}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthCore", "FrameWorks\SteamAuthCore\SteamAuthCore.csproj", "{56B54DA9-5C7F-4236-AED1-07B7554FEB17}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleDrive", "FrameWorks\GoogleDrive\GoogleDrive.csproj", "{ED6A0FE5-6A44-4A8B-BADC-D20B08903F8E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamMobileAuthenticatorCore", "Mobile\SteamMobileAuthenticatorCore\SteamMobileAuthenticatorCore.csproj", "{901C30EB-3DD9-4D50-9BF2-1C0185058D9C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.Mobile", "Mobile\SteamMobileAuthenticatorCore\SteamAuthenticatorCore.Mobile.csproj", "{901C30EB-3DD9-4D50-9BF2-1C0185058D9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamMobileAuthenticatorCore.Android", "Mobile\SteamMobileAuthenticatorCore.Android\SteamMobileAuthenticatorCore.Android.csproj", "{C7A53E2B-F6C5-4177-A33F-149C293173B4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamAuthenticatorCore.Mobile.Android", "Mobile\SteamMobileAuthenticatorCore.Android\SteamAuthenticatorCore.Mobile.Android.csproj", "{C7A53E2B-F6C5-4177-A33F-149C293173B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamMobileAuthenticatorCore.iOS", "Mobile\SteamMobileAuthenticatorCore.iOS\SteamMobileAuthenticatorCore.iOS.csproj", "{34333FA7-57CC-4D97-AD17-ABC053089F01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPFUI", "FrameWorks\wpfui\WPFUI\WPFUI.csproj", "{1ADC87D1-8963-4100-845A-18477824718E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPFUI", "FrameWorks\WpfUi\WPFUI\WPFUI.csproj", "{1ADC87D1-8963-4100-845A-18477824718E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.Shared", "SteamAuthenticatorCore.Shared\SteamAuthenticatorCore.Shared.csproj", "{38A40F90-D7CB-49D7-9750-8281ED00645D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,26 +55,6 @@ Global
 		{D83EB8F1-7716-4261-93F3-6D539E029059}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{D83EB8F1-7716-4261-93F3-6D539E029059}.Release|x64.ActiveCfg = Release|x64
 		{D83EB8F1-7716-4261-93F3-6D539E029059}.Release|x64.Build.0 = Release|x64
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Debug|ARM.Build.0 = Debug|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Debug|iPhone.Build.0 = Debug|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Debug|x64.Build.0 = Debug|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Release|ARM.ActiveCfg = Release|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Release|ARM.Build.0 = Release|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Release|iPhone.Build.0 = Release|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Release|x64.ActiveCfg = Release|Any CPU
-		{770F92C9-668C-41DA-8889-9226B23658E8}.Release|x64.Build.0 = Release|Any CPU
 		{56B54DA9-5C7F-4236-AED1-07B7554FEB17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{56B54DA9-5C7F-4236-AED1-07B7554FEB17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56B54DA9-5C7F-4236-AED1-07B7554FEB17}.Debug|ARM.ActiveCfg = Debug|Any CPU
@@ -167,26 +145,6 @@ Global
 		{C7A53E2B-F6C5-4177-A33F-149C293173B4}.Release|x64.ActiveCfg = Release|Any CPU
 		{C7A53E2B-F6C5-4177-A33F-149C293173B4}.Release|x64.Build.0 = Release|Any CPU
 		{C7A53E2B-F6C5-4177-A33F-149C293173B4}.Release|x64.Deploy.0 = Release|Any CPU
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Debug|Any CPU.ActiveCfg = Debug|iPhoneSimulator
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Debug|Any CPU.Build.0 = Debug|iPhoneSimulator
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Debug|ARM.ActiveCfg = Debug|iPhoneSimulator
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Debug|ARM.Build.0 = Debug|iPhoneSimulator
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Debug|iPhone.ActiveCfg = Debug|iPhone
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Debug|iPhone.Build.0 = Debug|iPhone
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Debug|x64.ActiveCfg = Debug|iPhoneSimulator
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Debug|x64.Build.0 = Debug|iPhoneSimulator
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Release|Any CPU.ActiveCfg = Release|iPhoneSimulator
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Release|Any CPU.Build.0 = Release|iPhoneSimulator
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Release|ARM.ActiveCfg = Release|iPhoneSimulator
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Release|ARM.Build.0 = Release|iPhoneSimulator
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Release|iPhone.ActiveCfg = Release|iPhone
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Release|iPhone.Build.0 = Release|iPhone
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Release|x64.ActiveCfg = Release|iPhoneSimulator
-		{34333FA7-57CC-4D97-AD17-ABC053089F01}.Release|x64.Build.0 = Release|iPhoneSimulator
 		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|ARM.ActiveCfg = Debug|Any CPU
@@ -207,17 +165,35 @@ Global
 		{1ADC87D1-8963-4100-845A-18477824718E}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 		{1ADC87D1-8963-4100-845A-18477824718E}.Release|x64.ActiveCfg = Release|Any CPU
 		{1ADC87D1-8963-4100-845A-18477824718E}.Release|x64.Build.0 = Release|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Debug|ARM.Build.0 = Debug|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Debug|x64.Build.0 = Debug|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Release|ARM.ActiveCfg = Release|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Release|ARM.Build.0 = Release|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Release|iPhone.Build.0 = Release|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Release|x64.ActiveCfg = Release|Any CPU
+		{38A40F90-D7CB-49D7-9750-8281ED00645D}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{770F92C9-668C-41DA-8889-9226B23658E8} = {FACD3AD6-1EC4-4F97-BE36-9E2FBF5FEDDC}
 		{56B54DA9-5C7F-4236-AED1-07B7554FEB17} = {FACD3AD6-1EC4-4F97-BE36-9E2FBF5FEDDC}
 		{ED6A0FE5-6A44-4A8B-BADC-D20B08903F8E} = {FACD3AD6-1EC4-4F97-BE36-9E2FBF5FEDDC}
 		{901C30EB-3DD9-4D50-9BF2-1C0185058D9C} = {E2DA7B9F-123E-481C-BCB6-59D7980FE294}
 		{C7A53E2B-F6C5-4177-A33F-149C293173B4} = {E2DA7B9F-123E-481C-BCB6-59D7980FE294}
-		{34333FA7-57CC-4D97-AD17-ABC053089F01} = {E2DA7B9F-123E-481C-BCB6-59D7980FE294}
 		{1ADC87D1-8963-4100-845A-18477824718E} = {FACD3AD6-1EC4-4F97-BE36-9E2FBF5FEDDC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

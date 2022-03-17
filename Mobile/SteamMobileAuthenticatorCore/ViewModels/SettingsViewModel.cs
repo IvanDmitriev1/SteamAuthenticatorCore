@@ -1,51 +1,33 @@
-﻿using System;
-using System.Windows.Input;
-using SteamAuthCore.Manifest;
+﻿using CommunityToolkit.Mvvm.Input;
+using SteamAuthenticatorCore.Shared;
 using Xamarin.Forms;
 
-namespace SteamMobileAuthenticatorCore.ViewModels
+namespace SteamAuthenticatorCore.Mobile.ViewModels;
+
+public partial class SettingsViewModel
 {
-    public class SettingsViewModel : BaseViewModel
+    public SettingsViewModel()
     {
-        public SettingsViewModel()
-        {
-            _manifestModelService = DependencyService.Get<IManifestModelService>();
+        AppSettings = DependencyService.Get<AppSettings>();
+    }
 
-            var manifest = _manifestModelService.GetManifestModel();
-            _tradePeriodicCheckingInterval = manifest.PeriodicCheckingInterval;
-            _autoConfirmMarket = manifest.AutoConfirmMarketTransactions;
-        }
-
-        private readonly IManifestModelService _manifestModelService;
-
-        private int _tradePeriodicCheckingInterval;
-        private bool _autoConfirmMarket;
-
-        public int TradePeriodicCheckingInterval
-        {
-            get => _tradePeriodicCheckingInterval;
-            set => SetProperty(ref _tradePeriodicCheckingInterval, value);
-        }
-
-        public bool AutoConfirmMarket
-        {
-            get => _autoConfirmMarket;
-            set => SetProperty(ref _autoConfirmMarket, value);
-        }
+        
+    public AppSettings AppSettings { get; }
 
 
-        public ICommand OnLoading => new Command(() =>
-        {
-            //App.AutoMarketSellTimer.Stop();
-        });
+    [ICommand]
+    private void OnLoading()
+    {
+        //App.AutoMarketSellTimer.Stop();
+    }
 
-        public ICommand OnClosingCommand => new Command(() =>
-        {
-            var manifest = _manifestModelService.GetManifestModel();
-            manifest.AutoConfirmMarketTransactions = AutoConfirmMarket;
-            manifest.PeriodicCheckingInterval = TradePeriodicCheckingInterval;
+    [ICommand]
+    private void OnClosing()
+    {
+        /*var manifest = _manifestModelService.GetManifestModel();
+        manifest.AutoConfirmMarketTransactions = AutoConfirmMarket;
+        manifest.PeriodicCheckingInterval = TradePeriodicCheckingInterval;*/
 
-            //App.AutoMarketSellTimer.Start(TimeSpan.FromSeconds(manifest.PeriodicCheckingInterval));
-        });
+        //App.AutoMarketSellTimer.Start(TimeSpan.FromSeconds(manifest.PeriodicCheckingInterval));
     }
 }

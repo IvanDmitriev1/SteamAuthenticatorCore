@@ -1,13 +1,13 @@
 ﻿<Page
-    x:Class="SteamDesktopAuthenticatorCore.Views.Pages.ConfirmationsPage"
+    x:Class="SteamAuthenticatorCore.Desktop.Views.Pages.ConfirmationsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:WPFUI.Controls;assembly=WPFUI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:SteamDesktopAuthenticatorCore.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:shared="clr-namespace:SteamAuthenticatorCore.Shared;assembly=SteamAuthenticatorCore.Shared"
     xmlns:steamAuthCore="clr-namespace:SteamAuthCore;assembly=SteamAuthCore"
-    xmlns:viewModels="clr-namespace:SteamDesktopAuthenticatorCore.ViewModels"
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Desktop.ViewModels"
     Title="ConfirmationsPage"
     d:DataContext="{d:DesignInstance viewModels:ConfirmationViewModel}"
     d:DesignHeight="450"
@@ -38,7 +38,7 @@
                 x:Name="IconsItemsControl"
                 Grid.Row="1"
                 VerticalAlignment="Top"
-                ItemsSource="{Binding Path=Accounts}"
+                ItemsSource="{Binding Path=ConfirmationService.Accounts}"
                 ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                 ScrollViewer.VerticalScrollBarVisibility="Hidden"
                 VirtualizingStackPanel.IsVirtualizing="True"
@@ -51,7 +51,7 @@
                 </ItemsControl.ItemsPanel>
 
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type viewModels:ConfirmationAccountViewModel}">
+                    <DataTemplate DataType="{x:Type shared:ConfirmationAccountBase}">
                         <controls:Card>
                             <StackPanel>
                                 <TextBlock
@@ -82,7 +82,7 @@
                                                     <ColumnDefinition Width="*" />
                                                 </Grid.ColumnDefinitions>
 
-                                                <Image Grid.Column="0" Source="{Binding Path=BitMapImage}" />
+                                                <Image Grid.Column="0" Source="{Binding Path=ImageSource}" />
 
                                                 <StackPanel
                                                     Grid.Column="1"

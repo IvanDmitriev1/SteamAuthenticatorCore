@@ -1,14 +1,13 @@
 ﻿using System.Windows.Controls;
-using SteamDesktopAuthenticatorCore.ViewModels;
+using SteamAuthenticatorCore.Desktop.ViewModels;
 
-namespace SteamDesktopAuthenticatorCore.Views.Pages
+namespace SteamAuthenticatorCore.Desktop.Views.Pages;
+
+public partial class ConfirmationsPage : Page
 {
-    public partial class ConfirmationsPage : Page
+    public ConfirmationsPage(ConfirmationViewModel viewModel)
     {
-        public ConfirmationsPage(ConfirmationViewModel viewModel)
-        {
-            InitializeComponent();
-            DataContext = viewModel;
-        }
+        InitializeComponent();
+        DataContext = viewModel;
     }
 }

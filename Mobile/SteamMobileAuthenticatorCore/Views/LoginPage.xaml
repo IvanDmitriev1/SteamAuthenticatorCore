@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewModels="clr-namespace:SteamMobileAuthenticatorCore.ViewModels;assembly=SteamMobileAuthenticatorCore"
-             x:Class="SteamMobileAuthenticatorCore.Views.LoginPage"
+             xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
+             x:Class="SteamAuthenticatorCore.Mobile.Views.LoginPage"
              Shell.NavBarHasShadow="True"
              Shell.PresentationMode="ModalAnimated"
              Title="Login page" >

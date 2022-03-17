@@ -1,16 +1,15 @@
 ﻿using System.IO;
-using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using Xamarin.Essentials;
 
-namespace SteamMobileAuthenticatorCore.Services
+namespace SteamAuthenticatorCore.Mobile.Services
 {
     public class MobileDirectoryService : IManifestDirectoryService
     {
         public MobileDirectoryService()
         {
-            MaFilesDirectory = FileSystem.AppDataDirectory;
-            ManifestFilePath = Path.Combine(MaFilesDirectory, ManifestModelServiceConstants.ManifestFileName);
+            MaFilesDirectory = Path.Combine(FileSystem.AppDataDirectory, "MaFiles");
+            ManifestFilePath = Path.Combine(FileSystem.AppDataDirectory, ManifestModelServiceConstants.ManifestFileName);
         }
 
         public string MaFilesDirectory { get; }
@@ -18,7 +17,8 @@ namespace SteamMobileAuthenticatorCore.Services
 
         public void CheckAndCreateDirectory()
         {
-
+            if (!Directory.Exists(MaFilesDirectory))
+                Directory.CreateDirectory(MaFilesDirectory);
         }
     }
 }

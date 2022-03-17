@@ -1,122 +1,131 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewModels="clr-namespace:SteamMobileAuthenticatorCore.ViewModels;assembly=SteamMobileAuthenticatorCore"
-             xmlns:behaviors="http://xamarin.com/schemas/2020/toolkit"
-             xmlns:system="clr-namespace:System;assembly=netstandard"
-             x:Class="SteamMobileAuthenticatorCore.Views.MainPage"
-             Title="Main page"
-             Visual="Material"
-             Shell.NavBarHasShadow="True">
+<ContentPage
+    x:Class="SteamAuthenticatorCore.Mobile.Views.MainPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
+    Title="Main page"
+    Shell.NavBarHasShadow="True"
+    Visual="Material">
 
     <ContentPage.Resources>
-        <viewModels:MainPageViewModel x:Key="ViewModel"/>
+        <viewModels:MainPageViewModel x:Key="ViewModel" />
     </ContentPage.Resources>
 
-    <ContentPage.Behaviors>
-        <behaviors:EventToCommandBehavior EventName="Appearing"
-                                          Command="{Binding Source={StaticResource ViewModel}, Path=OnLoadCommand}" />
-    </ContentPage.Behaviors>
-
     <ContentPage.Content>
-        <Grid BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor}, Light={StaticResource LightBackgroundColor}}"
-              BindingContext="{StaticResource ViewModel}">
+        <Grid BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor}, Light={StaticResource LightBackgroundColor}}" BindingContext="{StaticResource ViewModel}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <StackLayout Grid.Row="0"
-                         Orientation="Vertical"
-                         Spacing="10"
-                         Padding="10, 10" >
+            <StackLayout
+                Grid.Row="0"
+                Padding="10,10"
+                Orientation="Vertical"
+                Spacing="10">
 
-                <Button Text="Import"
-                        Command="{Binding Path=ImportCommand}" />
+                <Button Command="{Binding Path=ImportCommand}" Text="Import" />
 
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <Entry Grid.Column="0"
-                           IsSpellCheckEnabled="False"
-                           HorizontalTextAlignment="Center"
-                           HorizontalOptions="FillAndExpand"
-                           IsReadOnly="True"
-                           Text="{Binding Path=LoginToken}"
-                           Placeholder="Login token"/>
+                    <Entry
+                        Grid.Column="0"
+                        HorizontalOptions="FillAndExpand"
+                        HorizontalTextAlignment="Center"
+                        IsReadOnly="True"
+                        IsSpellCheckEnabled="False"
+                        Placeholder="Login token"
+                        Text="{Binding Path=TokenService.Token}" />
 
-                    <Button Grid.Column="1"
-                            Text="Copy"
-                            Padding="10"
-                            Command="{Binding Path=CopyCommand}" />
+                    <Button
+                        Grid.Column="1"
+                        Padding="10"
+                        Command="{Binding Path=CopyCommand}"
+                        Text="Copy" />
                 </Grid>
 
-                <ProgressBar Progress="{Binding Path=ProgressBar}"
-                             ProgressColor="{StaticResource Primary}" />
+                <ProgressBar Progress="{Binding Path=TokenService.TokenProgressBar}" ProgressColor="{StaticResource Primary}" />
 
-                
-                <Grid Margin="0, 5, 0, 0">
+
+                <Grid Margin="0,5,0,0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <Label Grid.Column="0" Text="Selected Account:"/>
-                    <Label Grid.Column="1" Text="{Binding Path=SelectedSteamGuardAccount.AccountName}"/>
+                    <Label Grid.Column="0" Text="Selected Account:" />
+                    <Label Grid.Column="1" Text="{Binding Path=SelectedSteamGuardAccount.AccountName}" />
                 </Grid>
 
             </StackLayout>
 
-            <CollectionView Grid.Row="1"
-                            x:Name="CollectionView"
-                            Margin="10, 0"
-                            ItemsSource="{Binding Path=Accounts}"
-                            SelectedItem="{Binding Path=SelectedSteamGuardAccount}"
-                            SelectionMode="Single">
+            <CollectionView
+                x:Name="CollectionView"
+                Grid.Row="1"
+                Margin="10,0"
+                ItemsSource="{Binding Path=Accounts}"
+                SelectedItem="{Binding Path=SelectedSteamGuardAccount}"
+                SelectionMode="Single">
 
                 <CollectionView.ItemsLayout>
-                    <LinearItemsLayout ItemSpacing="5" Orientation="Vertical"/>
+                    <LinearItemsLayout ItemSpacing="5" Orientation="Vertical" />
                 </CollectionView.ItemsLayout>
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame CornerRadius="0"
-                               Padding="0">
+                        <Frame Padding="0" CornerRadius="0">
 
 
                             <SwipeView>
                                 <SwipeView.RightItems>
                                     <SwipeItems SwipeBehaviorOnInvoked="Auto">
-                                        <SwipeItem Text="Delete"
-                                                   BackgroundColor="IndianRed"
-                                                   Command="{Binding Source={StaticResource ViewModel}, Path=DeleteCommand}"
-                                                   CommandParameter="{Binding}" />
+                                        <SwipeItem
+                                            BackgroundColor="IndianRed"
+                                            Command="{Binding Source={StaticResource ViewModel}, Path=DeleteCommand}"
+                                            CommandParameter="{Binding}"
+                                            Text="Delete" />
                                     </SwipeItems>
                                 </SwipeView.RightItems>
 
                                 <SwipeView.LeftItems>
                                     <SwipeItems SwipeBehaviorOnInvoked="Auto">
-                                        <SwipeItem Text="Login"
-                                                   BackgroundColor="{StaticResource Primary}"
-                                                   Command="{Binding Source={StaticResource ViewModel}, Path=OnLoginCommand}"
-                                                   CommandParameter="{Binding}"/>
+                                        <SwipeItem
+                                            BackgroundColor="{StaticResource Primary}"
+                                            Command="{Binding Source={StaticResource ViewModel}, Path=OnConfirmationsCommand}"
+                                            CommandParameter="{Binding}"
+                                            Text="Confirms" />
 
-                                        <SwipeItem Text="Refresh session"
-                                                   BackgroundColor="{StaticResource Primary}"
-                                                   Command="{Binding Source={StaticResource ViewModel}, Path=ForceRefreshSession}"
-                                                   CommandParameter="{Binding}"/>
+                                        <SwipeItem
+                                            BackgroundColor="{StaticResource Primary}"
+                                            Command="{Binding Source={StaticResource ViewModel}, Path=OnLoginCommand}"
+                                            CommandParameter="{Binding}"
+                                            Text="Login" />
+
+                                        <SwipeItem
+                                            BackgroundColor="{StaticResource Primary}"
+                                            Command="{Binding Source={StaticResource ViewModel}, Path=ForceRefreshSessionCommand}"
+                                            CommandParameter="{Binding}"
+                                            Text="Refresh session" />
                                     </SwipeItems>
                                 </SwipeView.LeftItems>
 
+                                <Frame Margin="5" CornerRadius="5">
+
+                                    <StackLayout BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor}}">
+                                        <Label LineBreakMode="NoWrap" Text="{Binding Path=AccountName}" />
+                                    </StackLayout>
+                                </Frame>
+
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup Name="CommonStates">
-                                        <VisualState Name="Normal" >
+                                        <VisualState Name="Normal">
                                             <VisualState.Setters>
-                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Dark={StaticResource DarkBackgroundColor},
-                                                        Light={StaticResource LightBackgroundColor}}" />
+                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Dark={StaticResource DarkBackgroundColor}, Light={StaticResource LightBackgroundColor}}" />
                                             </VisualState.Setters>
                                         </VisualState>
                                         <VisualState Name="Selected">
@@ -126,15 +135,6 @@
                                         </VisualState>
                                     </VisualStateGroup>
                                 </VisualStateManager.VisualStateGroups>
-
-                                <Frame CornerRadius="5"
-                                       Margin="5">
-
-                                    <StackLayout BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor}}">
-                                        <Label Text="{Binding Path=AccountName}"
-                                               LineBreakMode="NoWrap" />
-                                    </StackLayout>
-                                </Frame>
                             </SwipeView>
                         </Frame>
                     </DataTemplate>

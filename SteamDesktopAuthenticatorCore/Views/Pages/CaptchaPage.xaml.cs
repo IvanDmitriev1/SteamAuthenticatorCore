@@ -1,14 +1,13 @@
 ﻿using System.Windows.Controls;
-using SteamDesktopAuthenticatorCore.ViewModels;
+using SteamAuthenticatorCore.Desktop.ViewModels;
 
-namespace SteamDesktopAuthenticatorCore.Views.Pages
+namespace SteamAuthenticatorCore.Desktop.Views.Pages;
+
+public partial class CaptchaPage : Page
 {
-    public partial class CaptchaPage : Page
+    public CaptchaPage(CaptchaViewModel viewModel)
     {
-        public CaptchaPage(CaptchaViewModel viewModel)
-        {
-            InitializeComponent();
-            DataContext = viewModel;
-        }
+        InitializeComponent();
+        DataContext = viewModel;
     }
 }

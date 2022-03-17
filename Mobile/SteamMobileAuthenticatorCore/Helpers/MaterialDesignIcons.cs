@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SteamMobileAuthenticatorCore
+﻿namespace SteamAuthenticatorCore.Mobile.Helpers
 {
     /// <summary>
     /// The unicode values for all Material Design icons.

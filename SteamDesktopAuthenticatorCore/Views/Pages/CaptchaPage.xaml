@@ -1,11 +1,10 @@
 ﻿<Page
-    x:Class="SteamDesktopAuthenticatorCore.Views.Pages.CaptchaPage"
+    x:Class="SteamAuthenticatorCore.Desktop.Views.Pages.CaptchaPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:SteamDesktopAuthenticatorCore.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewModels="clr-namespace:SteamDesktopAuthenticatorCore.ViewModels"
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Desktop.ViewModels"
     Title="CaptchaPage"
     d:DataContext="{d:DesignInstance viewModels:CaptchaViewModel}"
     d:DesignHeight="450"
