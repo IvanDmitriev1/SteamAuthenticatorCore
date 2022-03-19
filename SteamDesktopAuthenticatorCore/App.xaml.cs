@@ -98,6 +98,16 @@ public sealed partial class App : Application
                 {nameof(CaptchaPage), new DefaultNavigationItem(typeof(CaptchaPage), "Captcha")},
             };
         });
+
+        service.Configure<DialogConfiguration>(configuration =>
+        {
+            configuration.Title = App.Name;
+        });
+
+        service.Configure<SnackbarConfiguration>(configuration =>
+        {
+            configuration.Title = App.Name;
+        });
     }
 
     private static void ConfigureServices(IServiceCollection service)
@@ -136,7 +146,7 @@ public sealed partial class App : Application
 
         service.AddSingleton<ObservableCollection<SteamGuardAccount>>();
 
-        service.AddTransient<ManifestServiceResolver>(provider => () =>
+        service.AddScoped<ManifestServiceResolver>(provider => () =>
         {
             var appSettings = provider.GetRequiredService<AppSettings>();
             return appSettings.ManifestLocation switch

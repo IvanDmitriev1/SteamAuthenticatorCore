@@ -110,23 +110,23 @@ public partial class LoginViewModel : ObservableObject, INavigable
                     _userLogin.TwoFactorCode = _account!.GenerateSteamGuardCode(steamTime);
                     continue;
                 case LoginResult.BadRsa:
-                    await _dialog.ShowDialog("Error logging in: Steam returned \"BadRSA\"", "Login Error");
+                    await _dialog.ShowDialog("Error logging in: Steam returned \"BadRSA\"");
                     return;
                 case LoginResult.BadCredentials:
-                    await _dialog.ShowDialog("Error logging in: Username or password was incorrect", "Login Error");
+                    await _dialog.ShowDialog("Error logging in: Username or password was incorrect");
                     return;
                 case LoginResult.TooManyFailedLogins:
-                    await _dialog.ShowDialog("Error logging in: Too many failed logins, try again later", "Login Error");
+                    await _dialog.ShowDialog("Error logging in: Too many failed logins, try again later");
                     return;
                 case LoginResult.GeneralFailure:
-                    await _dialog.ShowDialog("Error logging in: Steam returned \"GeneralFailure\".", "Login Error");
+                    await _dialog.ShowDialog("Error logging in: Steam returned \"GeneralFailure\".");
                     return;
                 case LoginResult.LoginOkay:
                     _account!.Session = _userLogin.Session;
 
                     var manifestService = _manifestServiceResolver.Invoke();
                     await manifestService.SaveSteamGuardAccount(_account);
-                    _snackbar.Expand("Login success", "Your login session was refreshed");
+                    _snackbar.Expand("Login success");
                     return;
                 default:
                     throw new ArgumentOutOfRangeException();

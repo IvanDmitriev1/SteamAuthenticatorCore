@@ -15,6 +15,7 @@ using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
 using WPFUI.Common;
 using WPFUI.DIControls;
+using WPFUI.DIControls.Interfaces;
 using WPFUI.Taskbar;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
@@ -84,7 +85,12 @@ public sealed partial class TokenViewModel : ObservableObject, IDisposable
         if (SelectedAccount is null)
             return;
 
-        if (await _dialog.ShowDialog($"Are you sure you want to delete {SelectedAccount.AccountName}?", App.Name, "Yes", "No") != ButtonPressed.Left)
+        if (await _dialog.ShowDialog($"Are you sure you want to delete {SelectedAccount.AccountName}?", new DialogConfiguration()
+            {
+                Title = App.Name,
+                LeftButtonText = "Yes",
+                RightButtonText = "No",
+            }) != ButtonPressed.Left)
             return;
 
         await _manifestServiceResolver.Invoke().DeleteSteamGuardAccount(SelectedAccount);
@@ -188,7 +194,7 @@ public sealed partial class TokenViewModel : ObservableObject, IDisposable
     {
         if (_appSettings.ManifestLocation == AppSettings.ManifestLocationModel.GoogleDrive)
         {
-            await _dialog.ShowDialog("", $"Your accounts are stored in the google drive {App.InternalName} folder");
+            await _dialog.ShowDialog($"Your accounts are stored in the google drive {App.InternalName} folder");
             return;
         }
 
@@ -225,11 +231,11 @@ public sealed partial class TokenViewModel : ObservableObject, IDisposable
 
         if (await RefreshAccountSession(SelectedAccount))
         {
-            await _dialog.ShowDialog("Your session has been refreshed.", "Session refresh");
+            await _dialog.ShowDialog("Your session has been refreshed.");
             return;
         }
 
-        await _dialog.ShowDialog("Failed to refresh your session.\nTry using the \"Login again\" option.", "Session refresh");
+        await _dialog.ShowDialog("Failed to refresh your session.\nTry using the \"Login again\" option.");
     }
 
     #endregion
@@ -267,7 +273,7 @@ public sealed partial class TokenViewModel : ObservableObject, IDisposable
             }
             catch
             {
-                await _dialog.ShowDialog("", "Your file is corrupted!");
+                await _dialog.ShowDialog("Your file is corrupted");
             }
         }
     }
