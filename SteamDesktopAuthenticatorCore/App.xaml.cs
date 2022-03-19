@@ -113,9 +113,9 @@ public sealed partial class App : Application
     private static void ConfigureServices(IServiceCollection service)
     {
         service.AddSingleton<Views.Container>();
-        service.AddScoped<Dialog>();
-        service.AddScoped<Snackbar>();
-        service.AddScoped<DefaultNavigation>();
+        service.AddScoped<IDialog, Dialog>();
+        service.AddScoped<ISnackbar, Snackbar>();
+        service.AddScoped<INavigation, DefaultNavigation>();
 
         service.AddSingleton<TokenViewModel>();
         service.AddSingleton<ConfirmationViewModel>();

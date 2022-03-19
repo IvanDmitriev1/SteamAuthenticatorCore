@@ -14,7 +14,7 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public partial class SettingsViewModel
 {
-    public SettingsViewModel(AppSettings appSettings, UpdateService updateService, Dialog dialog)
+    public SettingsViewModel(AppSettings appSettings, UpdateService updateService, IDialog dialog)
     {
         _updateService = updateService;
         _dialog = dialog;
@@ -24,7 +24,7 @@ public partial class SettingsViewModel
     }
 
     private readonly UpdateService _updateService;
-    private readonly Dialog _dialog;
+    private readonly IDialog _dialog;
 
     public AppSettings AppSettings { get; }
 

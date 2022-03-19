@@ -9,7 +9,7 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public partial class CaptchaViewModel : ObservableObject, INavigable
 {
-    public CaptchaViewModel(DefaultNavigation navigation)
+    public CaptchaViewModel(INavigation navigation)
     {
         _navigation = navigation;
         _image = new BitmapImage(new Uri("https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Blank.jpg/220px-Blank.jpg", UriKind.Absolute));
@@ -17,7 +17,7 @@ public partial class CaptchaViewModel : ObservableObject, INavigable
 
     #region Variables
 
-    private readonly DefaultNavigation _navigation;
+    private readonly INavigation _navigation;
     private const string? SteamUrl = "https://steamcommunity.com/public/captcha.php?gid=";
 
     [ObservableProperty]

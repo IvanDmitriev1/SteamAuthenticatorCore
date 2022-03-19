@@ -4,14 +4,13 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SteamAuthCore;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
-using WPFUI.DIControls;
 using WPFUI.DIControls.Interfaces;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public partial class LoginViewModel : ObservableObject, INavigable
 {
-    public LoginViewModel(App.ManifestServiceResolver manifestServiceResolver, DefaultNavigation navigation, Dialog dialog, Snackbar snackbar)
+    public LoginViewModel(App.ManifestServiceResolver manifestServiceResolver, INavigation navigation, IDialog dialog, ISnackbar snackbar)
     {
         _manifestServiceResolver = manifestServiceResolver;
         _navigation = navigation;
@@ -22,9 +21,9 @@ public partial class LoginViewModel : ObservableObject, INavigable
     #region Variables
 
     private readonly App.ManifestServiceResolver _manifestServiceResolver;
-    private readonly DefaultNavigation _navigation;
-    private readonly Dialog _dialog;
-    private readonly Snackbar _snackbar;
+    private readonly INavigation _navigation;
+    private readonly IDialog _dialog;
+    private readonly ISnackbar _snackbar;
 
     private SteamGuardAccount? _account;
     private UserLogin? _userLogin;

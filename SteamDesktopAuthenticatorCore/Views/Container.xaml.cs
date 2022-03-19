@@ -1,14 +1,13 @@
 ﻿using System.Windows;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
-using WPFUI.DIControls;
 using WPFUI.DIControls.Interfaces;
 
 namespace SteamAuthenticatorCore.Desktop.Views;
 
 public partial class Container : Window
 {
-    public Container(AppSettings appSettings, DefaultNavigation navigation, Dialog dialog, Snackbar snackbar)
+    public Container(AppSettings appSettings, INavigation navigation, IDialog dialog, ISnackbar snackbar)
     {
         _appSettings = appSettings;
         InitializeComponent();

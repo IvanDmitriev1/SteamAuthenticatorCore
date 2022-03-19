@@ -22,7 +22,7 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public sealed partial class TokenViewModel : ObservableObject, IDisposable
 {
-    public TokenViewModel(AppSettings appSettings, App.ManifestServiceResolver manifestServiceResolver, TokenService tokenService, DefaultNavigation navigation, Dialog dialog, ObservableCollection<SteamGuardAccount> steamGuardAccounts)
+    public TokenViewModel(AppSettings appSettings, App.ManifestServiceResolver manifestServiceResolver, TokenService tokenService, INavigation navigation, IDialog dialog, ObservableCollection<SteamGuardAccount> steamGuardAccounts)
     {
         _appSettings = appSettings;
         _manifestServiceResolver = manifestServiceResolver;
@@ -38,8 +38,8 @@ public sealed partial class TokenViewModel : ObservableObject, IDisposable
 
     private readonly AppSettings _appSettings;
     private readonly App.ManifestServiceResolver _manifestServiceResolver;
-    private readonly DefaultNavigation _navigation;
-    private readonly Dialog _dialog;
+    private readonly INavigation _navigation;
+    private readonly IDialog _dialog;
 
     private SteamGuardAccount? _selectedAccount;
 
