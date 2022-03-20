@@ -20,10 +20,11 @@ public partial class App : Application
         DependencyService.Register<IManifestModelService, LocalDriveManifestModelService>();
         DependencyService.Register<ObservableCollection<SteamGuardAccount>>();
         DependencyService.Register<IPlatformImplementations, MobileImplementations>();
+        DependencyService.Register<LoginService>();
 
         DependencyService.RegisterSingleton(new AppSettings(new MobileSettingsService()));
         DependencyService.RegisterSingleton(new TokenService(DependencyService.Get<IPlatformTimer>(DependencyFetchTarget.NewInstance)));
-        DependencyService.RegisterSingleton( (BaseConfirmationService) new MobileConfirmationService(DependencyService.Get<ObservableCollection<SteamGuardAccount>>(), DependencyService.Get<AppSettings>(), DependencyService.Get<IPlatformImplementations>(), DependencyService.Get<IPlatformTimer>()));
+        DependencyService.RegisterSingleton( (BaseConfirmationService) new MobileConfirmationService(DependencyService.Get<ObservableCollection<SteamGuardAccount>>(), DependencyService.Get<AppSettings>(), DependencyService.Get<IPlatformImplementations>(), DependencyService.Get<IPlatformTimer>(DependencyFetchTarget.NewInstance)));
 
         var confirmationService = DependencyService.Get<BaseConfirmationService>();
 

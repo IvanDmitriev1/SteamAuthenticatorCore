@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
-using SteamAuthenticatorCore.Desktop.Helpers;
 using SteamAuthenticatorCore.Shared;
+using SteamAuthenticatorCore.Shared.Helpers;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 

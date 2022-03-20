@@ -4,6 +4,7 @@ using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SteamAuthCore
 {
@@ -113,7 +114,7 @@ namespace SteamAuthCore
 
         #endregion
 
-        public LinkResult AddAuthenticator()
+        public async Task<LinkResult> AddAuthenticator()
         {
             switch (_hasPhoneAttached())
             {
@@ -147,7 +148,7 @@ namespace SteamAuthCore
                 {"sms_phone_id", "1"}
             };
 
-            string? response = SteamApi.MobileLoginRequest(ApiEndpoints.SteamApiBase + "/ITwoFactorService/AddAuthenticator/v0001", SteamApi.RequestMethod.Post, postData);
+            string? response = await SteamApi.MobileLoginRequest(ApiEndpoints.SteamApiBase + "/ITwoFactorService/AddAuthenticator/v0001", SteamApi.RequestMethod.Post, postData);
             if (response is null) return LinkResult.GeneralFailure;
 
             AddAuthenticatorResponse? addAuthenticatorResponse = JsonSerializer.Deserialize<AddAuthenticatorResponse>(response);
@@ -167,7 +168,7 @@ namespace SteamAuthCore
             return LinkResult.AwaitingFinalization;
         }
 
-        public FinalizeResult FinalizeAddAuthenticator(string smsCode)
+        public async Task<FinalizeResult> FinalizeAddAuthenticator(string smsCode)
         {
             //The act of checking the SMS code is necessary for Steam to finalize adding the phone number to the account.
             //Of course, we only want to check it if we're adding a phone number in the first place...
@@ -190,7 +191,7 @@ namespace SteamAuthCore
                 postData.Set("authenticator_code", LinkedAccount.GenerateSteamGuardCode());
                 postData.Set("authenticator_time", TimeAligner.GetSteamTime().ToString());
 
-                if (SteamApi.MobileLoginRequest(ApiEndpoints.SteamApiBase + "/ITwoFactorService/FinalizeAddAuthenticator/v0001", SteamApi.RequestMethod.Post, postData) is not { } response)
+                if (await SteamApi.MobileLoginRequest(ApiEndpoints.SteamApiBase + "/ITwoFactorService/FinalizeAddAuthenticator/v0001", SteamApi.RequestMethod.Post, postData) is not { } response)
                     return FinalizeResult.GeneralFailure;
 
                 if (JsonSerializer.Deserialize<FinalizeAuthenticatorResponse>(response) is not { } finalizeResponse)

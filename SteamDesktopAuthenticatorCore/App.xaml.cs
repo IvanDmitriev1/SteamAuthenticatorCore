@@ -107,6 +107,7 @@ public sealed partial class App : Application
         service.Configure<SnackbarConfiguration>(configuration =>
         {
             configuration.Title = App.Name;
+            configuration.Timeout = 5000;
         });
     }
 
@@ -134,6 +135,7 @@ public sealed partial class App : Application
         service.AddTransient<IPlatformTimer, DesktopTimer>();
             
         service.AddScoped<TokenService>();
+        service.AddScoped<LoginService>();
 
         service.AddSingleton<UpdateService>();
         service.AddGoogleDriveApi(Name);

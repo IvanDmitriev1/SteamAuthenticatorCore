@@ -1,31 +1,35 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
-             x:Class="SteamAuthenticatorCore.Mobile.Views.LoginPage"
-             Shell.NavBarHasShadow="True"
-             Shell.PresentationMode="ModalAnimated"
-             Title="Login page" >
+<ContentPage
+    x:Class="SteamAuthenticatorCore.Mobile.Views.LoginPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
+    Title="Login page"
+    Shell.NavBarHasShadow="True"
+    Shell.PresentationMode="ModalAnimated">
 
     <ContentPage.BindingContext>
-        <viewModels:LoginViewModel/>
+        <viewModels:LoginViewModel />
     </ContentPage.BindingContext>
 
     <ContentPage.Content>
-        <StackLayout HorizontalOptions="FillAndExpand"
-                     Spacing="10"
-                     Margin="10" >
+        <StackLayout
+            Margin="10"
+            HorizontalOptions="FillAndExpand"
+            Spacing="10">
 
-            <Entry Placeholder="Login"
-                   IsReadOnly="True"
-                   Text="{Binding Path=SelectedAccount.AccountName}" />
+            <Entry
+                IsEnabled="{Binding Path=LoginService.IsEnabledUserNameTextBox}"
+                IsReadOnly="True"
+                Placeholder="Login"
+                Text="{Binding Path=LoginService.Username}" />
 
-            <Entry IsPassword="True"
-                   Placeholder="Password" 
-                   Text="{Binding Path=Password}" />
+            <Entry
+                IsPassword="True"
+                Placeholder="Password"
+                Text="{Binding Path=LoginService.Password}" />
 
-            <Button Text="Login"
-                    Command="{Binding Path=OnLoginCommand}" />
+            <Button Command="{Binding Path=LoginCommand}" Text="Login" />
 
         </StackLayout>
     </ContentPage.Content>

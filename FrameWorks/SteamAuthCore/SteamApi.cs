@@ -16,14 +16,14 @@ namespace SteamAuthCore
         }
 
 
-        public static string? MobileLoginRequest(string url, RequestMethod method, NameValueCollection? data = null, CookieContainer? cookies = null, NameValueCollection? headers = null)
+        public static Task<string?> MobileLoginRequest(string url, RequestMethod method, NameValueCollection? data = null, CookieContainer? cookies = null, NameValueCollection? headers = null)
         {
-            return Request(url, method, data, cookies, headers, ApiEndpoints.CommunityBase + "/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client");
+            return RequestAsync(url, method, data, cookies, headers, ApiEndpoints.CommunityBase + "/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client");
         }
 
-        public static T? MobileLoginRequest<T>(string url, RequestMethod method, NameValueCollection? data = null, CookieContainer? cookies = null, NameValueCollection? headers = null)
+        public static Task<T?> MobileLoginRequest<T>(string url, RequestMethod method, NameValueCollection? data = null, CookieContainer? cookies = null, NameValueCollection? headers = null)
         {
-            return Request<T>(url, method, data, cookies, headers, ApiEndpoints.CommunityBase + "/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client");
+            return RequestAsync<T>(url, method, data, cookies, headers, ApiEndpoints.CommunityBase + "/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client");
         }
 
 

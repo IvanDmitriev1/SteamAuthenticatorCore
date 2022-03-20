@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SteamAuthCore
 {
@@ -132,7 +133,7 @@ namespace SteamAuthCore
 
         #endregion
 
-        public LoginResult DoLogin()
+        public async Task<LoginResult> DoLogin()
         {
             NameValueCollection postData = new();
             CookieContainer cookies = _cookies;
@@ -153,8 +154,7 @@ namespace SteamAuthCore
             postData.Add("donotcache", (TimeAligner.GetSteamTime() * 1000).ToString());
             postData.Add("username", Username);
 
-
-            if (SteamApi.MobileLoginRequest<RsaResponse>(ApiEndpoints.CommunityBase + "/login/getrsakey", SteamApi.RequestMethod.Post, postData, cookies) is not {  } rsaResponse)
+            if (await SteamApi.MobileLoginRequest<RsaResponse>(ApiEndpoints.CommunityBase + "/login/getrsakey", SteamApi.RequestMethod.Post, postData, cookies) is not {  } rsaResponse)
                 return LoginResult.GeneralFailure;
 
             if (!rsaResponse.Success)
@@ -194,7 +194,7 @@ namespace SteamAuthCore
             postData.Add("oauth_client_id", "DE45CD61");
             postData.Add("oauth_scope", "read_profile write_profile read_client write_client");
 
-            if (SteamApi.MobileLoginRequest<LoginResponse>(ApiEndpoints.CommunityBase + "/login/dologin", SteamApi.RequestMethod.Post, postData, cookies) is not { } loginResponse)
+            if (await SteamApi.MobileLoginRequest<LoginResponse>(ApiEndpoints.CommunityBase + "/login/dologin", SteamApi.RequestMethod.Post, postData, cookies) is not { } loginResponse)
                 return LoginResult.GeneralFailure;
 
             if (loginResponse.LoginComplete)

@@ -5,6 +5,7 @@
     xmlns:controls="clr-namespace:WPFUI.Controls;assembly=WPFUI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Desktop.ViewModels"
     Title="LoginPage"
     d:DataContext="{d:DesignInstance viewModels:LoginViewModel}"
     d:DesignHeight="450"
@@ -28,12 +29,12 @@
                 <Grid>
                     <Label Content="UserName:" />
 
-                    <TextBox IsEnabled="{Binding Path=IsEnabledUserNameTextBox}" Text="{Binding Path=UserName}" />
+                    <TextBox IsEnabled="{Binding Path=LoginService.IsEnabledUserNameTextBox}" Text="{Binding Path=LoginService.Username}" />
                 </Grid>
 
                 <Grid Margin="0,5,0,0">
                     <Label Content="Password:" />
-                    <TextBox Text="{Binding Path=Password}" />
+                    <TextBox Text="{Binding Path=LoginService.Password}" />
                 </Grid>
             </StackPanel>
         </controls:Card>

@@ -3,9 +3,9 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace SteamAuthenticatorCore.Desktop.Helpers;
+namespace SteamAuthenticatorCore.Shared.Helpers;
 
-internal class AsyncRelayCommand : ICommand
+public class AsyncRelayCommand : ICommand
 {
     private readonly Func<Task> _callback;
 
