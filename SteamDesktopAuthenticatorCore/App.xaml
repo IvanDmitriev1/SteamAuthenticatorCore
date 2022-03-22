@@ -14,6 +14,7 @@
 
             <helpers:CopyCommand x:Key="CopyCommand" />
             <helpers:DoubleToIntConverter x:Key="DoubleToIntConverter" />
+            <BooleanToVisibilityConverter x:Key="BoolToVis" />
 
         </ResourceDictionary>
     </Application.Resources>

@@ -95,7 +95,6 @@ public sealed partial class App : Application
             configuration.HiddenItemsItems = new Dictionary<string, INavigationItem>()
             {
                 {nameof(LoginPage), new DefaultNavigationItem(typeof(LoginPage), "Login")},
-                {nameof(CaptchaPage), new DefaultNavigationItem(typeof(CaptchaPage), "Captcha")},
             };
         });
 
@@ -122,13 +121,11 @@ public sealed partial class App : Application
         service.AddSingleton<ConfirmationViewModel>();
         service.AddTransient<SettingsViewModel>();
         service.AddTransient<LoginViewModel>();
-        service.AddTransient<CaptchaViewModel>();
 
         service.AddTransient<TokenPage>();
         service.AddTransient<SettingsPage>();
         service.AddTransient<LoginPage>();
         service.AddTransient<ConfirmationsPage>();
-        service.AddTransient<CaptchaPage>();
 
         service.AddScoped<IPlatformImplementations, DesktopImplementations>();
         service.AddScoped<BaseConfirmationService, DesktopConfirmationService>();

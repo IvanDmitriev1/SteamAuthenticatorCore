@@ -32,7 +32,6 @@
             <Menu.Resources>
                 <Style BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="{x:Type MenuItem}">
                     <Setter Property="FontSize" Value="13" />
-                    <Setter Property="Cursor" Value="Hand" />
                 </Style>
             </Menu.Resources>
 
@@ -48,6 +47,8 @@
                 <Separator />
                 <MenuItem Command="{Binding Path=DeleteAccountCommand}" Header="Delete from list" />
             </MenuItem>
+
+            <MenuItem Command="{Binding Path=OnSetUpNewAccountCommand}" Header="Set up new account" />
         </Menu>
 
         <controls:Card Grid.Row="1">

@@ -12,8 +12,8 @@ namespace SteamAuthCore
 {
     public enum LoginResult
     {
-        LoginOkay,
         GeneralFailure,
+        LoginOkay,
         BadRsa,
         BadCredentials,
         NeedCaptcha,

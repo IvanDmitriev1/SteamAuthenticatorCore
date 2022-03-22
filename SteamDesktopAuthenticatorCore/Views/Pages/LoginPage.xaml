@@ -15,33 +15,65 @@
 
     <StackPanel>
         <controls:Card>
-            <StackPanel>
+            <StackPanel DataContext="{Binding Path=LoginService}">
                 <StackPanel.Resources>
                     <Style BasedOn="{StaticResource {x:Type Label}}" TargetType="{x:Type Label}">
                         <Setter Property="VerticalAlignment" Value="Center" />
                     </Style>
 
-                    <Style BasedOn="{StaticResource {x:Type TextBox}}" TargetType="{x:Type TextBox}">
+                    <Style BasedOn="{StaticResource {x:Type controls:TextBox}}" TargetType="{x:Type controls:TextBox}">
                         <Setter Property="Margin" Value="70,0,0,0" />
                     </Style>
                 </StackPanel.Resources>
 
                 <Grid>
                     <Label Content="UserName:" />
-
-                    <TextBox IsEnabled="{Binding Path=LoginService.IsEnabledUserNameTextBox}" Text="{Binding Path=LoginService.Username}" />
+                    <TextBox IsEnabled="{Binding Path=IsEnabledUserNameTextBox}" Text="{Binding Path=Username}" />
                 </Grid>
 
                 <Grid Margin="0,5,0,0">
                     <Label Content="Password:" />
-                    <TextBox Text="{Binding Path=LoginService.Password}" />
+                    <controls:TextBox Text="{Binding Path=Password}" />
+                </Grid>
+
+                <Grid Margin="0,5,0,0" Visibility="{Binding Path=IsCaptchaVisible, Converter={StaticResource BoolToVis}}">
+                    <Label Content="Catpcha:" />
+
+                    <StackPanel Margin="70,0,0,0">
+                        <Image
+                            MaxHeight="400"
+                            RenderOptions.BitmapScalingMode="Fant"
+                            RenderOptions.EdgeMode="Unspecified"
+                            Source="{Binding Path=Image}" />
+
+                        <controls:TextBox
+                            Margin="0,5,0,0"
+                            Placeholder="Enter the following captcha code:"
+                            Text="{Binding Path=AdditionalText}" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid Margin="0,5,0,0" Visibility="{Binding Path=IsEmailTextBlockVisible, Converter={StaticResource BoolToVis}}">
+                    <Label Content="Email code:" />
+                    <controls:TextBox Placeholder="Enter the code sent to your email:" Text="{Binding Path=AdditionalText}" />
+                </Grid>
+                <Grid Margin="0,5,0,0" Visibility="{Binding Path=IsPhoneTextBlockVisible, Converter={StaticResource BoolToVis}}">
+                    <Label Content="Phone:" />
+                    <controls:TextBox
+                        x:Name="Phone"
+                        Placeholder="Enter your phone number in the following format: +{cC} phoneNumber. EG, +1 123-456-7890"
+                        Text="{Binding Path=AdditionalText}" />
                 </Grid>
             </StackPanel>
         </controls:Card>
 
-        <Button
-            Margin="0,5,0,0"
-            Command="{Binding Path=LoginCommand}"
-            Content="Login" />
+        <StackPanel Margin="0,5,0,0">
+            <Button
+                Command="{Binding Path=LoginService.OnContinueCommand}"
+                Content="Continue"
+                Visibility="{Binding Path=LoginService.IsContinueButtonVisible, Converter={StaticResource BoolToVis}}" />
+            <Button Command="{Binding Path=LoginCommand}" Content="{Binding Path=LoginService.ButtonText}" />
+        </StackPanel>
+
     </StackPanel>
 </Page>

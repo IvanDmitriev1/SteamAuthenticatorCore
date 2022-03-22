@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using SteamAuthenticatorCore.Shared;
 using Xamarin.Forms;
 
@@ -14,5 +15,10 @@ internal class MobileImplementations : IPlatformImplementations
     public void InvokeMainThread(Action method)
     {
         Device.BeginInvokeOnMainThread(method);
+    }
+
+    public Task DisplayAlert(string message)
+    {
+        return Application.Current.MainPage.DisplayAlert("", message, "Ok");
     }
 }

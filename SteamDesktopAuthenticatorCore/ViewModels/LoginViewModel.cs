@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows.Input;
 using SteamAuthCore;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
@@ -11,13 +10,11 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public class LoginViewModel : INavigable
 {
-    public LoginViewModel(LoginService loginService, App.ManifestServiceResolver manifestServiceResolver, INavigation navigation, IDialog dialog, ISnackbar snackbar)
+    public LoginViewModel(LoginService loginService, App.ManifestServiceResolver manifestServiceResolver, INavigation navigation)
     {
         LoginService = loginService;
         _manifestServiceResolver = manifestServiceResolver;
         _navigation = navigation;
-        _dialog = dialog;
-        _snackbar = snackbar;
 
         LoginCommand = new AsyncRelayCommand(Login);
     }
@@ -26,8 +23,6 @@ public class LoginViewModel : INavigable
 
     private readonly App.ManifestServiceResolver _manifestServiceResolver;
     private readonly INavigation _navigation;
-    private readonly IDialog _dialog;
-    private readonly ISnackbar _snackbar;
 
     #endregion
 
@@ -40,11 +35,8 @@ public class LoginViewModel : INavigable
     public void OnNavigationRequest(INavigation navigation, INavigationItem previousNavigationItem, ref object[]? ars)
     {
         if (ars is null)
-            return;
-
-        if (previousNavigationItem.PageType == typeof(CaptchaPage))
         {
-            RefreshLoginAsync((string) ars[0]);
+            LoginService.Account = null;
             return;
         }
 
@@ -59,43 +51,15 @@ public class LoginViewModel : INavigable
     {
         if (LoginService.Account is null)
         {
-            //await InitLogin();
-            _navigation.NavigateTo($"{nameof(TokenPage)}");
-            return;
+            await LoginService.InitLogin(_manifestServiceResolver.Invoke());
         }
-
-        await RefreshLogin();
+        else
+        {
+            await LoginService.RefreshLogin(_manifestServiceResolver.Invoke());
+        }
 
         _navigation.NavigateTo($"{nameof(TokenPage)}");
     }
-
-
-    private async Task RefreshLogin(string? captchaCode = null)
-    {
-        switch (await LoginService.RefreshLogin(captchaCode))
-        {
-            case LoginResult.LoginOkay:
-                await _manifestServiceResolver.Invoke().SaveSteamGuardAccount(LoginService.Account!);
-                _snackbar.Expand("Login success");
-                break;
-            case LoginResult.GeneralFailure:
-                await _dialog.ShowDialog("Error logging in: Steam returned \"GeneralFailure\"");
-                break;
-            case LoginResult.BadRsa:
-                await _dialog.ShowDialog("Error logging in: Steam returned \"BadRSA\"");
-                break;
-            case LoginResult.BadCredentials:
-                await _dialog.ShowDialog("Error logging in: Username or password was incorrect");
-                break;
-            case LoginResult.TooManyFailedLogins:
-                await _dialog.ShowDialog("Error logging in: Too many failed logins, try again later");
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
-
-    private async void RefreshLoginAsync(string captchaCode) => await RefreshLogin(captchaCode);
 
     #endregion
 }

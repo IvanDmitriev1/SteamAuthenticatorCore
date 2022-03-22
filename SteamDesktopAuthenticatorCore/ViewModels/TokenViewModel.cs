@@ -80,6 +80,12 @@ public sealed partial class TokenViewModel : ObservableObject, IDisposable
     }
 
     [ICommand]
+    private void OnSetUpNewAccount()
+    {
+        _navigation.NavigateTo($"//{nameof(LoginPage)}");
+    }
+
+    [ICommand]
     private async Task DeleteAccount(object o)
     {
         if (SelectedAccount is null)

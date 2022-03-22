@@ -18,4 +18,5 @@ public interface IPlatformImplementations
 {
     public object CreateImage(string imageSource);
     public void InvokeMainThread(Action method);
+    public Task DisplayAlert(string message); 
 }
