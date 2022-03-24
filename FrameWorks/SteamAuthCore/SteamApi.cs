@@ -15,7 +15,6 @@ namespace SteamAuthCore
             Post,
         }
 
-
         public static Task<string?> MobileLoginRequest(string url, RequestMethod method, NameValueCollection? data = null, CookieContainer? cookies = null, NameValueCollection? headers = null)
         {
             return RequestAsync(url, method, data, cookies, headers, ApiEndpoints.CommunityBase + "/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client");
@@ -24,64 +23,6 @@ namespace SteamAuthCore
         public static Task<T?> MobileLoginRequest<T>(string url, RequestMethod method, NameValueCollection? data = null, CookieContainer? cookies = null, NameValueCollection? headers = null)
         {
             return RequestAsync<T>(url, method, data, cookies, headers, ApiEndpoints.CommunityBase + "/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client");
-        }
-
-
-        public static string? Request(string url, RequestMethod method, NameValueCollection? data = null, CookieContainer? cookies = null, NameValueCollection? headers = null, string referer = ApiEndpoints.CommunityBase)
-        {
-            string query = CreateQuery(data);
-            if (method == RequestMethod.Get)
-            {
-                url += (url.Contains("?") ? "&" : "?") + query;
-            }
-
-            return Request(url, method, query, cookies, headers, referer);
-        }
-
-        public static string? Request(string url, RequestMethod method, string dataString, CookieContainer? cookies = null, NameValueCollection? headers = null, string referer = ApiEndpoints.CommunityBase)
-        {
-            var request = CreateHttpWebRequest(url, method, cookies, headers, referer);
-
-            if (method == RequestMethod.Post)
-            {
-                request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
-                request.ContentLength = dataString.Length;
-
-                StreamWriter requestStream = new(request.GetRequestStream());
-                requestStream.Write(dataString);
-                requestStream.Close();
-            }
-
-            try
-            {
-                using var response = (HttpWebResponse) request.GetResponse();
-                if (response.StatusCode != HttpStatusCode.OK)
-                {
-                    HandleFailedWebRequestResponse(response, url);
-                    return null;
-                }
-
-                using StreamReader responseStream = new(response.GetResponseStream() ?? throw new InvalidOperationException());
-                string responseData = responseStream.ReadToEnd();
-                return responseData;
-            }
-            catch (WebException e)
-            {
-                HandleFailedWebRequestResponse(e.Response as HttpWebResponse ?? throw new InvalidOperationException(), url);
-                return null;
-            }
-        }
-
-
-        public static T? Request<T>(string url, RequestMethod method, NameValueCollection? data = null, CookieContainer? cookies = null, NameValueCollection? headers = null, string referer = ApiEndpoints.CommunityBase)
-        {
-            string query = CreateQuery(data);
-            if (method == RequestMethod.Get)
-            {
-                url += (url.Contains("?") ? "&" : "?") + query;
-            }
-
-            return Request<T>(url, method, query, cookies, headers, referer);
         }
 
         public static T? Request<T>(string url, RequestMethod method, string dataString, CookieContainer? cookies = null, NameValueCollection? headers = null, string referer = ApiEndpoints.CommunityBase)
@@ -203,7 +144,6 @@ namespace SteamAuthCore
                 return null;
             }
         }
-
 
 
         private static HttpWebRequest CreateHttpWebRequest(string url, RequestMethod method, CookieContainer? cookies = null, NameValueCollection? headers = null, string referer = ApiEndpoints.CommunityBase)

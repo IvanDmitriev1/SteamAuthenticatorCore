@@ -48,7 +48,7 @@
                 <MenuItem Command="{Binding Path=DeleteAccountCommand}" Header="Delete from list" />
             </MenuItem>
 
-            <MenuItem Command="{Binding Path=OnSetUpNewAccountCommand}" Header="Set up new account" />
+            <!--<MenuItem Command="{Binding Path=OnSetUpNewAccountCommand}" Header="Set up new account" />-->
         </Menu>
 
         <controls:Card Grid.Row="1">

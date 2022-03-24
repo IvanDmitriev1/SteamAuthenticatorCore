@@ -34,11 +34,15 @@ public partial class LoginService : ObservableObject
 
             OnPropertyChanged(nameof(IsEnabledUserNameTextBox));
             OnPropertyChanged(nameof(ButtonText));
+
+            IsContinueButtonVisible = false;
+            AdditionalText = string.Empty;
             Password = string.Empty;
             Username = value is not null ? value.AccountName : string.Empty;
             IsEmailTextBlockVisible = false;
             IsPhoneTextBlockVisible = false;
             IsCaptchaVisible = false;
+            IsSmsTextBoxVisible = false;
         }
     }
     
@@ -49,6 +53,7 @@ public partial class LoginService : ObservableObject
     private string _username;
 
     [ObservableProperty]
+    [AlsoNotifyChangeFor(nameof(IsSetUpNewVisible))]
     private bool _isContinueButtonVisible;
 
     [ObservableProperty]
@@ -64,12 +69,18 @@ public partial class LoginService : ObservableObject
     private bool _isCaptchaVisible;
 
     [ObservableProperty]
+    [AlsoNotifyChangeFor(nameof(IsContinueButtonVisible))]
+    private bool _isSmsTextBoxVisible;
+
+    [ObservableProperty]
     private string _additionalText;
 
     [ObservableProperty]
     private object _image;
 
     public bool IsEnabledUserNameTextBox => _account is null;
+
+    public bool IsSetUpNewVisible => !IsContinueButtonVisible;
 
     public string ButtonText => _account is null ? "Set up new account" : "Login";
 
@@ -81,6 +92,9 @@ public partial class LoginService : ObservableObject
     private void OnContinue()
     {
         if (string.IsNullOrEmpty(AdditionalText) || string.IsNullOrWhiteSpace(AdditionalText))
+            return;
+
+        if (_tcs.Task.IsCompleted)
             return;
 
         _tcs.SetResult(AdditionalText);
@@ -103,12 +117,13 @@ public partial class LoginService : ObservableObject
         if (await Login(false) is not { } session)
             return;
 
+        IsContinueButtonVisible = true;
         await LinkingAuthenticator(session, manifestService);
     }
 
     private async Task<SessionData?> Login(bool refreshLogin)
     {
-        UserLogin userLogin = new(Account!.AccountName, Password);
+        UserLogin userLogin = new(Username, Password);
         LoginResult result;
 
         while ((result = await userLogin.DoLogin()) != LoginResult.LoginOkay)
@@ -131,7 +146,7 @@ public partial class LoginService : ObservableObject
                         return null;
                     }
 
-                    userLogin.TwoFactorCode = Account.GenerateSteamGuardCode(await TimeAligner.GetSteamTimeAsync());
+                    userLogin.TwoFactorCode = Account!.GenerateSteamGuardCode(await TimeAligner.GetSteamTimeAsync());
                     continue;
                 case LoginResult.BadRsa:
                     await _platformImplementations.DisplayAlert("Error logging in: Steam returned \"BadRSA\".");
@@ -171,7 +186,7 @@ public partial class LoginService : ObservableObject
                     continue;
                 case AuthenticatorLinker.LinkResult.MustConfirmEmail:
                     await _platformImplementations.DisplayAlert("Please check your email, and click the link Steam sent you before continuing.");
-                    return;
+                    continue;
                 case AuthenticatorLinker.LinkResult.GeneralFailure:
                     await _platformImplementations.DisplayAlert("Error adding your phone number. Steam returned \"GeneralFailure\".");
                     return;
@@ -185,7 +200,30 @@ public partial class LoginService : ObservableObject
 
     private async Task OnLinkerAwaitingFinalization(AuthenticatorLinker linker, IManifestModelService manifestService)
     {
+        await _platformImplementations.DisplayAlert($"The Mobile Authenticator has not yet been linked. Before finalizing the authenticator, please write down your revocation code: {linker.LinkedAccount.RevocationCode}");
 
+        while (true)
+        {
+            IsSmsTextBoxVisible = true;
+            AdditionalText = string.Empty;
+            var result = await linker.FinalizeAddAuthenticator(await GetAdditionalText("Please input the SMS code sent to your phone."));
+            switch (result)
+            {
+                case AuthenticatorLinker.FinalizeResult.BadSmsCode:
+                    continue;
+                case AuthenticatorLinker.FinalizeResult.UnableToGenerateCorrectCodes:
+                    await _platformImplementations.DisplayAlert($"Unable to generate the proper codes to finalize this authenticator. The authenticator should not have been linked. In the off-chance it was, please write down your revocation code, as this is the last chance to see it: {linker.LinkedAccount.RevocationCode}");
+                    return;
+                case AuthenticatorLinker.FinalizeResult.GeneralFailure:
+                    await _platformImplementations.DisplayAlert($"Unable to finalize this authenticator. The authenticator should not have been linked. In the off-chance it was, please write down your revocation code, as this is the last chance to see it: {linker.LinkedAccount.RevocationCode}");
+                    return;
+                case AuthenticatorLinker.FinalizeResult.Success:
+                    await manifestService.SaveSteamGuardAccount(linker.LinkedAccount);
+                    return;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 
     private async Task<string> GetAdditionalText(string message)

@@ -116,7 +116,7 @@ namespace SteamAuthCore
 
         public async Task<LinkResult> AddAuthenticator()
         {
-            switch (_hasPhoneAttached())
+            switch (await _hasPhoneAttached())
             {
                 case true when PhoneNumber != null:
                     return LinkResult.MustRemovePhoneNumber;
@@ -126,12 +126,12 @@ namespace SteamAuthCore
 
                 case false when _confirmationEmailSent:
                 {
-                    if (!_checkEmailConfirmation())
+                    if ( !(await _checkEmailConfirmation()))
                         return LinkResult.GeneralFailure;
 
                     break;
                 }
-                case false when !AddPhoneNumber():
+                case false when !(await AddPhoneNumber()):
                     return LinkResult.GeneralFailure;
 
                 case false:
@@ -149,7 +149,8 @@ namespace SteamAuthCore
             };
 
             string? response = await SteamApi.MobileLoginRequest(ApiEndpoints.SteamApiBase + "/ITwoFactorService/AddAuthenticator/v0001", SteamApi.RequestMethod.Post, postData);
-            if (response is null) return LinkResult.GeneralFailure;
+            if (response is null)
+                return LinkResult.GeneralFailure;
 
             AddAuthenticatorResponse? addAuthenticatorResponse = JsonSerializer.Deserialize<AddAuthenticatorResponse>(response);
             if (addAuthenticatorResponse?.Response is null)
@@ -173,7 +174,7 @@ namespace SteamAuthCore
             //The act of checking the SMS code is necessary for Steam to finalize adding the phone number to the account.
             //Of course, we only want to check it if we're adding a phone number in the first place...
 
-            if (!string.IsNullOrEmpty(PhoneNumber) && !CheckSmsCode(smsCode))
+            if (!string.IsNullOrEmpty(PhoneNumber) && !await CheckSmsCode(smsCode))
             {
                 return FinalizeResult.BadSmsCode;
             }
@@ -224,7 +225,7 @@ namespace SteamAuthCore
             return FinalizeResult.GeneralFailure;
         }
 
-        private bool CheckSmsCode(string smsCode)
+        private async Task<bool> CheckSmsCode(string smsCode)
         {
             NameValueCollection postData = new()
             {
@@ -235,19 +236,17 @@ namespace SteamAuthCore
                 {"sessionid", _session.SessionId}
             };
 
-            if (SteamApi.Request(ApiEndpoints.CommunityBase + "/steamguard/phoneajax", SteamApi.RequestMethod.Post, postData, _cookies) is not { } response)
-                return false;
-
-            if (JsonSerializer.Deserialize<AddPhoneResponse>(response) is not { } addPhoneNumberResponse)
+            if (await SteamApi.RequestAsync<AddPhoneResponse>(ApiEndpoints.CommunityBase + "/steamguard/phoneajax", SteamApi.RequestMethod.Post, postData, _cookies) is not { } addPhoneNumberResponse)
                 throw new ArgumentNullException(nameof(addPhoneNumberResponse));
 
-            if (addPhoneNumberResponse.Success) return true;
+            if (addPhoneNumberResponse.Success) 
+                return true;
 
             Thread.Sleep(3500); //It seems that Steam needs a few seconds to finalize the phone number on the account.
-            return _hasPhoneAttached();
+            return await _hasPhoneAttached();
         }
 
-        private bool AddPhoneNumber()
+        private async Task<bool> AddPhoneNumber()
         {
             NameValueCollection postData = new()
             {
@@ -256,16 +255,13 @@ namespace SteamAuthCore
                 {"sessionid", _session.SessionId}
             };
 
-            if (SteamApi.Request(ApiEndpoints.CommunityBase + "/steamguard/phoneajax", SteamApi.RequestMethod.Post, postData, _cookies) is not { } response)
-                return false;
-
-            if (JsonSerializer.Deserialize<AddPhoneResponse>(response) is not { } addPhoneNumberResponse)
+            if (await SteamApi.RequestAsync<AddPhoneResponse>(ApiEndpoints.CommunityBase + "/steamguard/phoneajax", SteamApi.RequestMethod.Post, postData, _cookies) is not { } addPhoneNumberResponse)
                 throw new ArgumentNullException(nameof(addPhoneNumberResponse));
 
             return addPhoneNumberResponse.Success;
         }
 
-        private bool _checkEmailConfirmation()
+        private async Task<bool> _checkEmailConfirmation()
         {
             NameValueCollection postData = new()
             {
@@ -274,16 +270,13 @@ namespace SteamAuthCore
                 {"sessionid", _session.SessionId}
             };
 
-            if (SteamApi.Request(ApiEndpoints.CommunityBase + "/steamguard/phoneajax", SteamApi.RequestMethod.Post, postData, _cookies) is not { } response)
-                return false;
-
-            if (JsonSerializer.Deserialize<AddPhoneResponse>(response) is not { } emailConfirmationResponse)
+            if (await SteamApi.RequestAsync<AddPhoneResponse>(ApiEndpoints.CommunityBase + "/steamguard/phoneajax", SteamApi.RequestMethod.Post, postData, _cookies) is not { } emailConfirmationResponse)
                 throw new ArgumentNullException(nameof(emailConfirmationResponse));
 
             return emailConfirmationResponse.Success;
         }
 
-        private bool _hasPhoneAttached()
+        private async Task<bool> _hasPhoneAttached()
         {
             var postData = new NameValueCollection
             {
@@ -292,11 +285,8 @@ namespace SteamAuthCore
                 {"sessionid", _session.SessionId}
             };
 
-            if (SteamApi.Request(ApiEndpoints.CommunityBase + "/steamguard/phoneajax", SteamApi.RequestMethod.Post, postData, _cookies) is not { } response)
-                return false;
-
-            if (JsonSerializer.Deserialize<HasPhoneResponse>(response) is not { } hasPhoneResponse)
-                throw new ArgumentException(nameof(hasPhoneResponse));
+            if (await SteamApi.RequestAsync<HasPhoneResponse>(ApiEndpoints.CommunityBase + "/steamguard/phoneajax", SteamApi.RequestMethod.Post, postData, _cookies) is not { } hasPhoneResponse)
+                throw new ArgumentNullException(nameof(hasPhoneResponse));
 
             return hasPhoneResponse.HasPhone;
         }
