@@ -2,8 +2,10 @@
 using System.Threading.Tasks;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
+using SteamAuthenticatorCore.Mobile.Helpers;
 using SteamAuthenticatorCore.Mobile.Services;
 using SteamAuthenticatorCore.Shared;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace SteamAuthenticatorCore.Mobile;
@@ -14,6 +16,7 @@ public partial class App : Application
     {
         InitializeComponent();
 
+        Theme.SetTheme();
         MainPage = new AppShell();
 
         DependencyService.Register<IPlatformTimer, MobileTimer>();
@@ -35,22 +38,34 @@ public partial class App : Application
     protected override async void OnStart()
     {
         await OnLoadingAsync();
+
+        OnResume();
     }
 
     protected override async void OnSleep()
     {
+        Theme.SetTheme();
+        RequestedThemeChanged -= OnRequestedThemeChanged;
+
         await DependencyService.Get<AppSettings>().SaveSettingsAsync();
     }
 
     protected override void OnResume()
     {
+        Theme.SetTheme();
+        RequestedThemeChanged += OnRequestedThemeChanged;
+    }
 
+    private static void OnRequestedThemeChanged(object sender, AppThemeChangedEventArgs e)
+    {
+        MainThread.BeginInvokeOnMainThread(Theme.SetTheme);
     }
 
     private static async Task OnLoadingAsync()
     {
         var settings = DependencyService.Get<AppSettings>();
         await settings.LoadSettingsAsync();
+        
 
         await OnManifestLocationChanged();
     }

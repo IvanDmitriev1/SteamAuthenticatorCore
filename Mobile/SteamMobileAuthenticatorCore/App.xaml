@@ -8,6 +8,29 @@
     -->
     <Application.Resources>
         <ResourceDictionary>
+            <Color x:Key="Primary">#2196F3</Color>
+            <Color x:Key="ActionColor">#4db2ff</Color>
+            <Color x:Key="SecondActionColor">#0078d3</Color>
+
+            <Color x:Key="DarkBackgroundColor">#222222</Color>
+            <Color x:Key="SecondDarkBackground">#2d2d2d</Color>
+
+            <Color x:Key="LightBackgroundColor">#ededf1</Color>
+            <Color x:Key="SecondLightBackgroundColor">#ffffff</Color>
+
+            <Color x:Key="DarkTextColor">#ffff</Color>
+            <Color x:Key="LightTextColor">#222222</Color>
+
+            <Style TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Dark={StaticResource SecondDarkBackground}, Light={StaticResource SecondLightBackgroundColor}}" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}" />
+                <Setter Property="PlaceholderColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}" />
+            </Style>
+
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}" />
+            </Style>
+
             <Style TargetType="Button">
                 <Setter Property="TextColor" Value="White" />
                 <Setter Property="VisualStateManager.VisualStateGroups">
@@ -28,26 +51,25 @@
                 </Setter>
             </Style>
 
-            <Color x:Key="Primary">#2196F3</Color>
-            <Color x:Key="ActionColor">#4db2ff</Color>
-            <Color x:Key="SecondActionColor">#0078d3</Color>
-
-            <Color x:Key="DarkBackgroundColor">#222222</Color>
-            <Color x:Key="SecondDarkBackground">#2d2d2d</Color>
-
-            <Color x:Key="LightBackgroundColor">#ededf1</Color>
-            <Color x:Key="SecondLightBackgroundColor">#ffffff</Color>
-
-            <Color x:Key="DarkTextColor">#ffff</Color>
-            <Color x:Key="LightTextColor">#222222</Color>
-
-            <Style TargetType="Entry">
-                <Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}" />
-                <Setter Property="PlaceholderColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}" />
-            </Style>
-
-            <Style TargetType="Label">
-                <Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}" />
+            <Style TargetType="Switch">
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList x:Name="CommonStates">
+                        <VisualStateGroup>
+                            <VisualState x:Name="On">
+                                <VisualState.Setters>
+                                    <Setter Property="OnColor" Value="{AppThemeBinding Dark=#2a4964, Light=#bfd6f4}" />
+                                    <Setter Property="ThumbColor" Value="{AppThemeBinding Dark=#3da3fa, Light=#065dd0}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Off">
+                                <VisualState.Setters>
+                                    <Setter Property="OnColor" Value="{AppThemeBinding Dark=#646464, Light=#bdbdbd}" />
+                                    <Setter Property="ThumbColor" Value="{AppThemeBinding Dark=#b9b9b9, Light=#ececec}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
             </Style>
 
         </ResourceDictionary>

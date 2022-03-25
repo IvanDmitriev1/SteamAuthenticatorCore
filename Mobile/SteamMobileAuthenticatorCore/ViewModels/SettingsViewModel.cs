@@ -1,4 +1,7 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using System;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
+using SteamAuthenticatorCore.Mobile.Helpers;
 using SteamAuthenticatorCore.Shared;
 using Xamarin.Forms;
 
@@ -29,5 +32,24 @@ public partial class SettingsViewModel
         manifest.PeriodicCheckingInterval = TradePeriodicCheckingInterval;*/
 
         //App.AutoMarketSellTimer.Start(TimeSpan.FromSeconds(manifest.PeriodicCheckingInterval));
+    }
+
+    [ICommand]
+    private async Task OnAppearance()
+    {
+        switch (await Application.Current.MainPage.DisplayActionSheet("Select theme", "Cancel", "", "System", "Light", "Dark"))
+        {
+            case "System":
+                Theme.TheTheme = 0;
+                break;
+            case "Light":
+                Theme.TheTheme = 1;
+                break;
+            case "Dark":
+                Theme.TheTheme = 2;
+                break;
+        }
+
+        Theme.SetTheme();
     }
 }

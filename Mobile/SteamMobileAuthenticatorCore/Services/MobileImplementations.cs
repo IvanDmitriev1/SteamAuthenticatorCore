@@ -19,6 +19,6 @@ internal class MobileImplementations : IPlatformImplementations
 
     public Task DisplayAlert(string message)
     {
-        return Application.Current.MainPage.DisplayAlert("", message, "Ok");
+        return Application.Current.MainPage.DisplayAlert("Alert", message, "Ok");
     }
 }

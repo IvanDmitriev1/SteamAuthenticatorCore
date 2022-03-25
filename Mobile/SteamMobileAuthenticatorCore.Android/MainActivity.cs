@@ -7,9 +7,8 @@ using AndroidX.Core.View;
 using SteamAuthenticatorCore.Mobile;
 using SteamAuthenticatorCore.Mobile.Helpers;
 using Xamarin.Essentials;
+using Xamarin.Forms;
 using Color = System.Drawing.Color;
-
-[assembly: Xamarin.Forms.Dependency(typeof(AndroidEnvironment))]
 
 namespace SteamMobileAuthenticatorCore.Droid
 {
@@ -18,6 +17,8 @@ namespace SteamMobileAuthenticatorCore.Droid
     {
         protected override void OnCreate(Bundle savedInstanceState)
         {
+            DependencyService.Register<IEnvironment, AndroidEnvironment>();
+
             base.OnCreate(savedInstanceState);
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
@@ -43,12 +44,9 @@ namespace SteamMobileAuthenticatorCore.Droid
             var activity = Platform.CurrentActivity;
             var window = activity.Window!;
 
-            if (Build.VERSION.SdkInt < Android.OS.BuildVersionCodes.M)
-            {
-                //this may not be necessary(but may be fore older than M)
-                window.AddFlags(Android.Views.WindowManagerFlags.DrawsSystemBarBackgrounds);
-                window.ClearFlags(Android.Views.WindowManagerFlags.TranslucentStatus);
-            }
+            //this may not be necessary(but may be fore older than M)
+            window.AddFlags(Android.Views.WindowManagerFlags.DrawsSystemBarBackgrounds);
+            window.ClearFlags(Android.Views.WindowManagerFlags.TranslucentStatus);
 
             if (Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.M)
             {   

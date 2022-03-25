@@ -16,7 +16,7 @@ public partial class AppSettings : ObservableObject, ISettings
         LocalDrive,
         GoogleDrive
     }
-    
+
     private readonly ISettingsService _settingsService;
     
     [ObservableProperty]
@@ -33,7 +33,7 @@ public partial class AppSettings : ObservableObject, ISettings
     
     [ObservableProperty]
     private bool _autoConfirmMarketTransactions;
-    
+
     [IgnoreSettings]
     public bool IsInitialized { get; private set; }
     
@@ -44,7 +44,7 @@ public partial class AppSettings : ObservableObject, ISettings
         Updated = false;
         PeriodicCheckingInterval = 10;
         AutoConfirmMarketTransactions = false;
-    
+
         IsInitialized = true;
     }
     
