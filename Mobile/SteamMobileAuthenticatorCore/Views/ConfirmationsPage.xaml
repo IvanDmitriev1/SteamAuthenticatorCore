@@ -5,7 +5,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
     Title="Confirmations page"
+    BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor},
+                                      Light={StaticResource LightBackgroundColor}}"
     Shell.NavBarHasShadow="True"
+    Shell.TabBarIsVisible="False"
     Visual="Material">
 
     <ContentPage.Resources>
@@ -32,7 +35,7 @@
     </ContentPage.BindingContext>
 
     <ContentPage.Content>
-        <StackLayout BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor}, Light={StaticResource LightBackgroundColor}}" BindingContext="{StaticResource ViewModel}">
+        <StackLayout BindingContext="{StaticResource ViewModel}">
 
             <RefreshView Command="{Binding Path=RefreshConfirmationsCommand}" IsRefreshing="{Binding Path=IsRefreshing}">
                 <CollectionView
@@ -44,6 +47,7 @@
                         <StackLayout>
                             <Label
                                 Margin="0,10,0,0"
+                                FontSize="Large"
                                 HorizontalOptions="Center"
                                 Text="Nothing to confirm" />
                         </StackLayout>
@@ -81,22 +85,28 @@
                 </CollectionView>
             </RefreshView>
 
-            <StackLayout
-                Margin="0,10,0,15"
-                HorizontalOptions="CenterAndExpand"
-                Orientation="Horizontal">
+
+            <Grid Margin="18,10,18,30" HeightRequest="50.0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
                 <Button
+                    Grid.Column="0"
                     Command="{Binding Path=ConfirmSelectedCommand}"
-                    FontSize="Medium"
+                    CornerRadius="5"
+                    FontSize="Large"
                     HorizontalOptions="FillAndExpand"
                     Text="Confirm" />
                 <Button
+                    Grid.Column="1"
                     Command="{Binding Path=CancelSelectedCommand}"
-                    FontSize="Medium"
+                    CornerRadius="5"
+                    FontSize="Large"
                     HorizontalOptions="FillAndExpand"
                     Text="Cancel" />
-            </StackLayout>
+            </Grid>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

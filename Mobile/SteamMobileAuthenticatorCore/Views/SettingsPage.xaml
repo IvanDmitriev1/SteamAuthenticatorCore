@@ -9,6 +9,7 @@
     Title="Settings"
     BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor},
                                       Light={StaticResource LightBackgroundColor}}"
+    Shell.NavBarHasShadow="True"
     Visual="Material">
 
     <ContentPage.Behaviors>

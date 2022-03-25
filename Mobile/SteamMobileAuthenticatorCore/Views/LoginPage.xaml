@@ -5,8 +5,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
     Title="Login page"
+    BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor},
+                                      Light={StaticResource LightBackgroundColor}}"
     Shell.NavBarHasShadow="True"
-    Shell.PresentationMode="ModalAnimated">
+    Shell.TabBarIsVisible="False"
+    Visual="Material">
 
     <ContentPage.BindingContext>
         <viewModels:LoginViewModel />
@@ -16,7 +19,8 @@
         <StackLayout
             Margin="10"
             HorizontalOptions="FillAndExpand"
-            Spacing="10">
+            Spacing="10"
+            VerticalOptions="CenterAndExpand">
 
             <StackLayout BindingContext="{Binding Path=LoginService}">
                 <Entry
