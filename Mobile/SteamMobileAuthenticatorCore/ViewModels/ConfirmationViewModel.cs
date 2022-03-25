@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using SteamAuthCore;
 using SteamAuthenticatorCore.Shared;
-using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Forms;
 using ObservableObject = CommunityToolkit.Mvvm.ComponentModel.ObservableObject;
 
@@ -19,6 +19,7 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
     {
         _accounts = DependencyService.Get<ObservableCollection<SteamGuardAccount>>();
         ConfirmationService = DependencyService.Get<BaseConfirmationService>();
+        SelectedCollection = new ObservableCollection<object>();
     }
 
     private readonly ObservableCollection<SteamGuardAccount> _accounts;
@@ -29,6 +30,8 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
 
     [ObservableProperty]
     private bool _isRefreshing;
+
+    public ObservableCollection<object> SelectedCollection { get; }
 
     public BaseConfirmationService ConfirmationService { get; }
 
@@ -41,16 +44,42 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
         IsRefreshing = true;
     }
 
-    public ICommand RefreshCommand => new AsyncCommand( async () =>
-    {
-        await RefreshConfirmations();
-    });
-
+    [ICommand]
     private async Task RefreshConfirmations()
     {
         if (_selectedAccount != null)
             Account = await ConfirmationService.CreateConfirmationAccount(_selectedAccount);
 
         IsRefreshing = false;
+    }
+
+    [ICommand]
+    private void ConfirmSelected()
+    {
+        if (SelectedCollection.Count == 1)
+            SendConfirmation(SteamGuardAccount.Confirmation.Allow);
+
+        SendConfirmations(SteamGuardAccount.Confirmation.Allow);
+    }
+
+    [ICommand]
+    private void CancelSelected()
+    {
+        if (SelectedCollection.Count == 1)
+            SendConfirmation(SteamGuardAccount.Confirmation.Deny);
+
+        SendConfirmations(SteamGuardAccount.Confirmation.Deny);
+    }
+
+    private void SendConfirmation(SteamGuardAccount.Confirmation confirmation)
+    {
+        var model = (ConfirmationModel) SelectedCollection[0];
+        Account!.SendConfirmation(model, confirmation);
+    }
+
+    private void SendConfirmations(SteamGuardAccount.Confirmation confirmation)
+    {
+        var model = SelectedCollection.Cast<ConfirmationModel>();
+        Account?.SendConfirmations(ref model, confirmation);
     }
 }

@@ -1,21 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Application xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="SteamAuthenticatorCore.Mobile.App">
+<Application
+    x:Class="SteamAuthenticatorCore.Mobile.App"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
     <!--
         Define global resources and styles here, that apply to all pages in your app.
     -->
     <Application.Resources>
         <ResourceDictionary>
-            <Color x:Key="Primary">#2196F3</Color>
             <Style TargetType="Button">
-                <Setter Property="TextColor" Value="White"></Setter>
+                <Setter Property="TextColor" Value="White" />
                 <Setter Property="VisualStateManager.VisualStateGroups">
                     <VisualStateGroupList>
                         <VisualStateGroup x:Name="CommonStates">
                             <VisualState x:Name="Normal">
                                 <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                    <Setter Property="BackgroundColor" Value="{StaticResource ActionColor}" />
                                 </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Disabled">
@@ -28,21 +28,28 @@
                 </Setter>
             </Style>
 
+            <Color x:Key="Primary">#2196F3</Color>
+            <Color x:Key="ActionColor">#4db2ff</Color>
+            <Color x:Key="SecondActionColor">#0078d3</Color>
+
             <Color x:Key="DarkBackgroundColor">#222222</Color>
-            <Color x:Key="LightBackgroundColor">#ffffff</Color>
+            <Color x:Key="SecondDarkBackground">#2d2d2d</Color>
+
+            <Color x:Key="LightBackgroundColor">#ededf1</Color>
+            <Color x:Key="SecondLightBackgroundColor">#ffffff</Color>
 
             <Color x:Key="DarkTextColor">#ffff</Color>
             <Color x:Key="LightTextColor">#222222</Color>
 
             <Style TargetType="Entry">
-                <Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}"/>
-                <Setter Property="PlaceholderColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}"/>
+                <Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}" />
+                <Setter Property="PlaceholderColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}" />
             </Style>
 
             <Style TargetType="Label">
-                <Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}"/>
+                <Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}" />
             </Style>
 
-        </ResourceDictionary>        
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
