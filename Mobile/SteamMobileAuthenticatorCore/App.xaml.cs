@@ -20,7 +20,7 @@ public partial class App : Application
         MainPage = new AppShell();
 
         DependencyService.Register<IPlatformTimer, MobileTimer>();
-        DependencyService.Register<IManifestModelService, LocalDriveManifestModelService>();
+        DependencyService.Register<IManifestModelService, SecureStorageService>();
         DependencyService.Register<ObservableCollection<SteamGuardAccount>>();
         DependencyService.Register<IPlatformImplementations, MobileImplementations>();
 

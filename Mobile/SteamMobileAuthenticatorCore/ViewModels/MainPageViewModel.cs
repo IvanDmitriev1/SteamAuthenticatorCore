@@ -100,6 +100,8 @@ public partial class MainPageViewModel : ObservableObject
         {
             await _manifestModelService.DeleteSteamGuardAccount(o!);
             Accounts.Remove(o!);
+
+            TokenService.SelectedAccount = null;
         }
     }
 
