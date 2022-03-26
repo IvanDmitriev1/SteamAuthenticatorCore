@@ -12,8 +12,8 @@ namespace SteamAuthenticatorCore.Mobile.Views
 	{
 		public MainPage ()
 		{
-            InitializeComponent ();
-		}
+            InitializeComponent();
+        }
 
         private void ListView_OnItemTapped(object sender, ItemTappedEventArgs e)
         {

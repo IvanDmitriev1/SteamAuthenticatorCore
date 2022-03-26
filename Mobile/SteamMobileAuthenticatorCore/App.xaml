@@ -20,6 +20,7 @@
 
             <Color x:Key="DarkTextColor">#ffff</Color>
             <Color x:Key="LightTextColor">#222222</Color>
+            <Color x:Key="DisabledTextColor">#898989</Color>
 
             <Style TargetType="Entry">
                 <Setter Property="BackgroundColor" Value="{AppThemeBinding Dark={StaticResource SecondDarkBackground}, Light={StaticResource SecondLightBackgroundColor}}" />

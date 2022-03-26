@@ -3,9 +3,9 @@
     x:Class="SteamAuthenticatorCore.Mobile.Views.MainPage"
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:androidSpecific="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
     xmlns:steamAuthCore="clr-namespace:SteamAuthCore;assembly=SteamAuthCore"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
+    xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
     Title="Main page"
     BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor},
                                       Light={StaticResource LightBackgroundColor}}"
@@ -41,7 +41,7 @@
                         Grid.Column="0"
                         HorizontalOptions="FillAndExpand"
                         HorizontalTextAlignment="Center"
-                        IsReadOnly="True"
+                        IsEnabled="False"
                         IsSpellCheckEnabled="False"
                         Placeholder="Login token"
                         Text="{Binding Path=TokenService.Token}" />

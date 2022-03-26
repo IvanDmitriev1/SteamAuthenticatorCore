@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using SteamAuthenticatorCore.Mobile.Views;
 using SteamAuthenticatorCore.Shared;
-using Xamarin.CommunityToolkit.ObjectModel;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
-internal partial class MainPageViewModel : ObservableObject
+public partial class MainPageViewModel : ObservableObject
 {
     public MainPageViewModel()
     {
