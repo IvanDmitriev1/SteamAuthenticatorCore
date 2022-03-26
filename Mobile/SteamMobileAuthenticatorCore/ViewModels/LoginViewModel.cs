@@ -7,6 +7,7 @@ using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using SteamAuthenticatorCore.Shared;
 using Xamarin.CommunityToolkit.ObjectModel;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 
@@ -36,6 +37,15 @@ public class LoginViewModel : ObservableObject, IQueryAttributable
 
     public ICommand LoginCommand => new SteamAuthenticatorCore.Shared.Helpers.AsyncRelayCommand(async () =>
     {
+        try
+        {
+            HapticFeedback.Perform(HapticFeedbackType.LongPress);
+        }
+        catch
+        {
+            //
+        }
+
         if (LoginService.Account is null)
         {
             await Shell.Current.GoToAsync("..");

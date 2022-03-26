@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SteamAuthCore;
 using SteamAuthenticatorCore.Shared;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using ObservableObject = CommunityToolkit.Mvvm.ComponentModel.ObservableObject;
 
@@ -73,12 +74,31 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
 
     private void SendConfirmation(SteamGuardAccount.Confirmation confirmation)
     {
+        try
+        {
+            HapticFeedback.Perform(HapticFeedbackType.Click);
+        }
+        catch
+        {
+            //
+        }
+
         var model = (ConfirmationModel) SelectedCollection[0];
         Account!.SendConfirmation(model, confirmation);
     }
 
     private void SendConfirmations(SteamGuardAccount.Confirmation confirmation)
     {
+        try
+        {
+            HapticFeedback.Perform(HapticFeedbackType.LongPress);
+        }
+        catch
+        {
+            //
+        }
+
+
         var model = SelectedCollection.Cast<ConfirmationModel>();
         Account?.SendConfirmations(ref model, confirmation);
     }

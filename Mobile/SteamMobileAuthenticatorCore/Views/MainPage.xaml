@@ -67,7 +67,6 @@
             </StackLayout>
 
             <CollectionView
-                x:Name="CollectionView"
                 Grid.Row="1"
                 Margin="10,0"
                 ItemsSource="{Binding Path=Accounts}"

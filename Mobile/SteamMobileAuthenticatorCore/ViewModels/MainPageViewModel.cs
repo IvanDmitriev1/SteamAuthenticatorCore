@@ -81,6 +81,15 @@ internal partial class MainPageViewModel : ObservableObject
     [ICommand]
     private async Task Copy()
     {
+        try
+        {
+            HapticFeedback.Perform(HapticFeedbackType.Click);
+        }
+        catch
+        {
+            //
+        }
+
         await Clipboard.SetTextAsync(TokenService.Token);
     }
 

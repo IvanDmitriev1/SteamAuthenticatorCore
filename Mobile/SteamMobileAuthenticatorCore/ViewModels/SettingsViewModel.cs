@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using SteamAuthenticatorCore.Mobile.Helpers;
 using SteamAuthenticatorCore.Shared;
