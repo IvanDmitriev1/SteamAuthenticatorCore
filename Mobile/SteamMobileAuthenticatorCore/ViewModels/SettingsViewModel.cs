@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
-using SteamAuthenticatorCore.Mobile.Helpers;
 using SteamAuthenticatorCore.Shared;
 using Xamarin.Forms;
 
@@ -36,19 +36,8 @@ public partial class SettingsViewModel
     [ICommand]
     private async Task OnAppearance()
     {
-        switch (await Application.Current.MainPage.DisplayActionSheet("Select theme", "Cancel", "", "System", "Light", "Dark"))
-        {
-            case "System":
-                Theme.TheTheme = 0;
-                break;
-            case "Light":
-                Theme.TheTheme = 1;
-                break;
-            case "Dark":
-                Theme.TheTheme = 2;
-                break;
-        }
-
-        Theme.SetTheme();
+        AppSettings.AppTheme =
+            Enum.Parse<Theme>(await Application.Current.MainPage.DisplayActionSheet("Select theme", "Cancel", "",
+                "System", "Light", "Dark"));
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace SteamAuthenticatorCore.Shared;
 
@@ -7,7 +6,7 @@ public partial class AppSettings : ObservableObject, ISettings
 {
     public AppSettings(ISettingsService settingsService)
     {
-        _settingsService = settingsService;
+        SettingsService = settingsService;
         IsInitialized = false;
     }
     
@@ -17,8 +16,6 @@ public partial class AppSettings : ObservableObject, ISettings
         GoogleDrive
     }
 
-    private readonly ISettingsService _settingsService;
-    
     [ObservableProperty]
     private ManifestLocationModel _manifestLocation;
     
@@ -34,9 +31,14 @@ public partial class AppSettings : ObservableObject, ISettings
     [ObservableProperty]
     private bool _autoConfirmMarketTransactions;
 
+    [ObservableProperty] private Theme _appTheme;
+
     [IgnoreSettings]
     public bool IsInitialized { get; private set; }
     
+    [IgnoreSettings]
+    public ISettingsService SettingsService { get; }
+
     public void DefaultSettings()
     {
         ManifestLocation = ManifestLocationModel.LocalDrive;
@@ -44,6 +46,7 @@ public partial class AppSettings : ObservableObject, ISettings
         Updated = false;
         PeriodicCheckingInterval = 10;
         AutoConfirmMarketTransactions = false;
+        AppTheme = Theme.System;
 
         IsInitialized = true;
     }
@@ -51,22 +54,11 @@ public partial class AppSettings : ObservableObject, ISettings
     public void LoadSettings()
     {
         DefaultSettings();
-        _settingsService.LoadSettings(this);
+        SettingsService.LoadSettings(this);
     }
 
-    public async Task LoadSettingsAsync()
-    {
-        DefaultSettings();
-        await _settingsService.LoadSettingsAsync(this);
-    }
-    
     public void SaveSettings()
     {
-        _settingsService.SaveSettings(this);
-    }
-
-    public async Task SaveSettingsAsync()
-    {
-        await _settingsService.SaveSettingsAsync(this);
+        SettingsService.SaveSettings(this);
     }
 }
