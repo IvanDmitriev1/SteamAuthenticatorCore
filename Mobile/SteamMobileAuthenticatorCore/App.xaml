@@ -72,6 +72,10 @@
                 </Setter>
             </Style>
 
+            <Style TargetType="Frame">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Dark={StaticResource SecondDarkBackground}, Light={StaticResource SecondLightBackgroundColor}}" />
+            </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -3,6 +3,8 @@
     x:Class="SteamAuthenticatorCore.Mobile.Views.MainPage"
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:androidSpecific="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
+    xmlns:steamAuthCore="clr-namespace:SteamAuthCore;assembly=SteamAuthCore"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
     Title="Main page"
     BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor},
@@ -66,82 +68,47 @@
 
             </StackLayout>
 
-            <CollectionView
+
+            <ListView
                 Grid.Row="1"
                 Margin="10,0"
+                BackgroundColor="Transparent"
+                CachingStrategy="RecycleElement"
+                HasUnevenRows="True"
+                ItemSelected="ListView_OnItemSelected"
+                ItemTapped="ListView_OnItemTapped"
                 ItemsSource="{Binding Path=Accounts}"
-                SelectedItem="{Binding Path=SelectedSteamGuardAccount}"
-                SelectionMode="Single">
+                SeparatorVisibility="None">
 
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout ItemSpacing="5" Orientation="Vertical" />
-                </CollectionView.ItemsLayout>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="steamAuthCore:SteamGuardAccount">
+                        <ViewCell>
+                            <ViewCell.ContextActions>
+                                <MenuItem
+                                    Command="{Binding Source={StaticResource ViewModel}, Path=OnConfirmationsCommand}"
+                                    CommandParameter="{Binding}"
+                                    Text="Confirmations" />
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Frame Padding="0" CornerRadius="0">
+                                <MenuItem
+                                    Command="{Binding Source={StaticResource ViewModel}, Path=OnLoginCommand}"
+                                    CommandParameter="{Binding}"
+                                    Text="Login" />
 
+                                <MenuItem
+                                    Command="{Binding Source={StaticResource ViewModel}, Path=ForceRefreshSessionCommand}"
+                                    CommandParameter="{Binding}"
+                                    Text="Delete" />
+                            </ViewCell.ContextActions>
 
-                            <SwipeView>
-                                <SwipeView.RightItems>
-                                    <SwipeItems SwipeBehaviorOnInvoked="Auto">
-                                        <SwipeItem
-                                            BackgroundColor="IndianRed"
-                                            Command="{Binding Source={StaticResource ViewModel}, Path=DeleteCommand}"
-                                            CommandParameter="{Binding}"
-                                            IsDestructive="True"
-                                            Text="Delete" />
-                                    </SwipeItems>
-                                </SwipeView.RightItems>
-
-                                <SwipeView.LeftItems>
-                                    <SwipeItems SwipeBehaviorOnInvoked="Auto">
-                                        <SwipeItem
-                                            BackgroundColor="{StaticResource ActionColor}"
-                                            Command="{Binding Source={StaticResource ViewModel}, Path=OnConfirmationsCommand}"
-                                            CommandParameter="{Binding}"
-                                            Text="Confirms" />
-
-                                        <SwipeItem
-                                            BackgroundColor="{StaticResource ActionColor}"
-                                            Command="{Binding Source={StaticResource ViewModel}, Path=OnLoginCommand}"
-                                            CommandParameter="{Binding}"
-                                            Text="Login" />
-
-                                        <SwipeItem
-                                            BackgroundColor="{StaticResource ActionColor}"
-                                            Command="{Binding Source={StaticResource ViewModel}, Path=ForceRefreshSessionCommand}"
-                                            CommandParameter="{Binding}"
-                                            Text="Refresh session" />
-                                    </SwipeItems>
-                                </SwipeView.LeftItems>
-
-                                <Frame Margin="5" CornerRadius="5">
-
-                                    <StackLayout BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor}}">
-                                        <Label LineBreakMode="NoWrap" Text="{Binding Path=AccountName}" />
-                                    </StackLayout>
+                            <ContentView Padding="10">
+                                <Frame CornerRadius="10" HasShadow="True">
+                                    <Label FontSize="Medium" Text="{Binding Path=AccountName}" />
                                 </Frame>
-
-                                <VisualStateManager.VisualStateGroups>
-                                    <VisualStateGroup Name="CommonStates">
-                                        <VisualState Name="Normal">
-                                            <VisualState.Setters>
-                                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Dark={StaticResource DarkBackgroundColor}, Light={StaticResource LightBackgroundColor}}" />
-                                            </VisualState.Setters>
-                                        </VisualState>
-                                        <VisualState Name="Selected">
-                                            <VisualState.Setters>
-                                                <Setter Property="BackgroundColor" Value="Red" />
-                                            </VisualState.Setters>
-                                        </VisualState>
-                                    </VisualStateGroup>
-                                </VisualStateManager.VisualStateGroups>
-                            </SwipeView>
-                        </Frame>
+                            </ContentView>
+                        </ViewCell>
                     </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                </ListView.ItemTemplate>
+            </ListView>
         </Grid>
     </ContentPage.Content>
 </ContentPage>
