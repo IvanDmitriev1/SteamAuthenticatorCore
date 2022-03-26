@@ -97,6 +97,11 @@
                                 <MenuItem
                                     Command="{Binding Source={StaticResource ViewModel}, Path=ForceRefreshSessionCommand}"
                                     CommandParameter="{Binding}"
+                                    Text="Refresh session" />
+
+                                <MenuItem
+                                    Command="{Binding Source={StaticResource ViewModel}, Path=DeleteCommand}"
+                                    CommandParameter="{Binding}"
                                     Text="Delete" />
                             </ViewCell.ContextActions>
 

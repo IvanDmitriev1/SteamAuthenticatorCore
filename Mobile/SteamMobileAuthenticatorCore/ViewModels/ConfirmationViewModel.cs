@@ -10,7 +10,6 @@ using SteamAuthCore;
 using SteamAuthenticatorCore.Shared;
 using Xamarin.Essentials;
 using Xamarin.Forms;
-using ObservableObject = CommunityToolkit.Mvvm.ComponentModel.ObservableObject;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
@@ -48,6 +47,15 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
     [ICommand]
     private async Task RefreshConfirmations()
     {
+        try
+        {
+            HapticFeedback.Perform(HapticFeedbackType.LongPress);
+        }
+        catch
+        {
+            //
+        }
+
         if (_selectedAccount != null)
             Account = await ConfirmationService.CreateConfirmationAccount(_selectedAccount);
 
@@ -91,7 +99,7 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
     {
         try
         {
-            HapticFeedback.Perform(HapticFeedbackType.LongPress);
+            HapticFeedback.Perform(HapticFeedbackType.Click);
         }
         catch
         {
