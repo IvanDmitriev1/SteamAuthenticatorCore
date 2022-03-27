@@ -21,11 +21,6 @@ public partial class Container : Window
 
         navigation.AddFrame(RootFrame);
         _navigation = navigation;
-
-        Loaded += (sender, args) =>
-        {
-            WPFUI.Appearance.Watcher.Watch(this);
-        };
     }
 
     private readonly AppSettings _appSettings;

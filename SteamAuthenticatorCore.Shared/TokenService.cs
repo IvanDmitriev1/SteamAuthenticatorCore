@@ -35,20 +35,21 @@ public sealed partial class TokenService : ObservableObject, IDisposable
         _timer.Stop();
     }
 
-    private async Task SteamGuardTimerOnTick()
+    private void SteamGuardTimerOnTick()
     {
-        _steamTime = await TimeAligner.GetSteamTimeAsync();
+        if (SelectedAccount is null) return;
+
+        _steamTime = TimeAligner.GetSteamTime();
         _currentSteamChunk = _steamTime / 30L;
         int secondsUntilChange = (int)(_steamTime - (_currentSteamChunk * 30L));
 
-        if (SelectedAccount is not null && _steamTime != 0)
+        if (_steamTime != 0)
         {
             if (SelectedAccount.GenerateSteamGuardCode(_steamTime) is { } token)
                 Token = token;
         }
 
-        if (SelectedAccount is not null)
-            TokenProgressBar = 30 - secondsUntilChange;
+        TokenProgressBar = 30 - secondsUntilChange;
 
         if (IsMobile)
             TokenProgressBar /= 30;

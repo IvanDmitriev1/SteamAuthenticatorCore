@@ -1,10 +1,14 @@
-﻿using System;
-
+﻿using System.Threading.Tasks;
 using Android.App;
 using Android.Content.PM;
 using Android.Runtime;
 using Android.OS;
+using AndroidX.Core.View;
 using SteamAuthenticatorCore.Mobile;
+using SteamAuthenticatorCore.Mobile.Helpers;
+using Xamarin.Essentials;
+using Xamarin.Forms;
+using Color = System.Drawing.Color;
 
 namespace SteamMobileAuthenticatorCore.Droid
 {
@@ -13,6 +17,8 @@ namespace SteamMobileAuthenticatorCore.Droid
     {
         protected override void OnCreate(Bundle savedInstanceState)
         {
+            DependencyService.Register<IEnvironment, AndroidEnvironment>();
+
             base.OnCreate(savedInstanceState);
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
@@ -25,6 +31,30 @@ namespace SteamMobileAuthenticatorCore.Droid
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    public class AndroidEnvironment : IEnvironment
+    {
+        public async void SetStatusBarColor(Color color, bool darkStatusBarTint)
+        {
+            if (Build.VERSION.SdkInt < Android.OS.BuildVersionCodes.Lollipop)
+                return;
+
+            var activity = Platform.CurrentActivity;
+            var window = activity.Window!;
+
+            //this may not be necessary(but may be fore older than M)
+            window.AddFlags(Android.Views.WindowManagerFlags.DrawsSystemBarBackgrounds);
+            window.ClearFlags(Android.Views.WindowManagerFlags.TranslucentStatus);
+
+            if (Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.M)
+            {   
+                await Task.Delay(50);
+                WindowCompat.GetInsetsController(window, window.DecorView).AppearanceLightStatusBars = darkStatusBarTint;
+            }
+
+            window.SetStatusBarColor(color.ToPlatformColor());
         }
     }
 }

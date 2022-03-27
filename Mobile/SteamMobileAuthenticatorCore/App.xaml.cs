@@ -1,9 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using SteamAuthenticatorCore.Mobile.Services;
 using SteamAuthenticatorCore.Shared;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace SteamAuthenticatorCore.Mobile;
@@ -17,7 +20,7 @@ public partial class App : Application
         MainPage = new AppShell();
 
         DependencyService.Register<IPlatformTimer, MobileTimer>();
-        DependencyService.Register<IManifestModelService, LocalDriveManifestModelService>();
+        DependencyService.Register<IManifestModelService, SecureStorageService>();
         DependencyService.Register<ObservableCollection<SteamGuardAccount>>();
         DependencyService.Register<IPlatformImplementations, MobileImplementations>();
 
@@ -26,33 +29,49 @@ public partial class App : Application
         DependencyService.RegisterSingleton( (BaseConfirmationService) new MobileConfirmationService(DependencyService.Get<ObservableCollection<SteamGuardAccount>>(), DependencyService.Get<AppSettings>(), DependencyService.Get<IPlatformImplementations>(), DependencyService.Get<IPlatformTimer>(DependencyFetchTarget.NewInstance)));
         DependencyService.RegisterSingleton(new LoginService(DependencyService.Get<IPlatformImplementations>()));
 
+
+        _platformImplementations = DependencyService.Get<IPlatformImplementations>();
+
+        _settings = DependencyService.Get<AppSettings>();
+        _settings.LoadSettings();
+        _settings.PropertyChanged += SettingsOnPropertyChanged;
+        _platformImplementations.SetTheme(_settings.AppTheme);
+
         var confirmationService = DependencyService.Get<BaseConfirmationService>();
 
         var tokenService = DependencyService.Get<TokenService>();
         tokenService.IsMobile = true;
     }
 
+    private readonly IPlatformImplementations _platformImplementations;
+    private readonly AppSettings _settings;
+
     protected override async void OnStart()
     {
-        await OnLoadingAsync();
+        await OnManifestLocationChanged();
+
+        OnResume();
     }
 
-    protected override async void OnSleep()
+    protected override void OnSleep()
     {
-        await DependencyService.Get<AppSettings>().SaveSettingsAsync();
+        RequestedThemeChanged -= OnRequestedThemeChanged;
     }
 
     protected override void OnResume()
     {
-
+        RequestedThemeChanged += OnRequestedThemeChanged;
     }
 
-    private static async Task OnLoadingAsync()
+    private void OnRequestedThemeChanged(object sender, AppThemeChangedEventArgs e)
     {
-        var settings = DependencyService.Get<AppSettings>();
-        await settings.LoadSettingsAsync();
-
-        await OnManifestLocationChanged();
+        _settings.AppTheme = e.RequestedTheme switch
+        {
+            OSAppTheme.Unspecified => Theme.System,
+            OSAppTheme.Light => Theme.Light,
+            OSAppTheme.Dark => Theme.Dark,
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 
     private static async Task OnManifestLocationChanged()
@@ -70,5 +89,19 @@ public partial class App : Application
 
         foreach (var account in await manifestModelService.GetAccounts())
             accounts.Add(account);
+    }
+
+    private void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        var settings = (sender as AppSettings)!;
+
+        settings.SettingsService.SaveSetting(e.PropertyName, settings);
+
+        if (e.PropertyName != nameof(settings.AppTheme)) return;
+
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            _platformImplementations.SetTheme(settings.AppTheme);
+        });
     }
 }
