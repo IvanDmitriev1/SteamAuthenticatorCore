@@ -31,7 +31,8 @@ public partial class AppSettings : ObservableObject, ISettings
     [ObservableProperty]
     private bool _autoConfirmMarketTransactions;
 
-    [ObservableProperty] private Theme _appTheme;
+    [ObservableProperty]
+    private Theme _appTheme;
 
     [IgnoreSettings]
     public bool IsInitialized { get; private set; }

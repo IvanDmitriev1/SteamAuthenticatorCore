@@ -29,9 +29,16 @@
             </StackPanel.Resources>
 
             <controls:CardControl
-                Title=".maFiles location"
+                Title="Appearance"
                 Margin="0,0,0,0"
-                Subtitle=".maFiles location">
+                Subtitle="Select a theme to apply">
+                <ComboBox
+                    MinWidth="105"
+                    ItemsSource="{helpers:EnumBindingSource {x:Type common:Theme}}"
+                    SelectedValue="{Binding Path=AppSettings.AppTheme}" />
+            </controls:CardControl>
+
+            <controls:CardControl Title=".maFiles location" Subtitle=".maFiles location">
                 <ComboBox
                     MinWidth="105"
                     ItemsSource="{helpers:EnumBindingSource {x:Type common:AppSettings+ManifestLocationModel}}"

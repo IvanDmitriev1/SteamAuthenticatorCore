@@ -16,18 +16,17 @@ internal sealed class DesktopSettingsService : ISettingsService
     }
 
     private readonly string _appName;
+    private static readonly Type SettingsType = typeof(AppSettings);
+    private static readonly PropertyInfo[] PropertyInfos = typeof(AppSettings).GetProperties().SkipWhile(info => info.GetCustomAttribute<IgnoreSettings>() is not null).ToArray();
 
     public void LoadSettings(ISettings settings)
     {
-        var type = settings.GetType();
-        var properties = type.GetProperties().SkipWhile(info => info.GetCustomAttribute<IgnoreSettings>() is not null);
-
         using var softwareKey = Registry.CurrentUser.OpenSubKey("Software", true)!;
         using var key = softwareKey.OpenSubKey(_appName, true) ?? softwareKey.CreateSubKey(_appName);
 
-        using var typeKey = key.OpenSubKey(type.Name, true) ?? key.CreateSubKey(type.Name);
+        using var typeKey = key.OpenSubKey(SettingsType.Name, true) ?? key.CreateSubKey(SettingsType.Name);
 
-        foreach (var property in properties)
+        foreach (var property in PropertyInfos)
         {
             var typeValue = typeKey.GetValue(property.Name);
 
@@ -61,28 +60,30 @@ internal sealed class DesktopSettingsService : ISettingsService
 
     public void SaveSettings(ISettings settings)
     {
-        var type = settings.GetType();
-        var properties = type.GetProperties().SkipWhile(info => info.GetCustomAttribute<IgnoreSettings>() is not null);
-
         using var softwareKey = Registry.CurrentUser.OpenSubKey("Software", true)!;
         using var key = softwareKey.OpenSubKey(_appName, true) ?? softwareKey.CreateSubKey(_appName);
 
-        using var typeKey = key.OpenSubKey(type.Name, true) ?? key.CreateSubKey(type.Name);
+        using var typeKey = key.OpenSubKey(SettingsType.Name, true) ?? key.CreateSubKey(SettingsType.Name);
 
-        foreach (var property in properties)
+        foreach (var property in PropertyInfos)
         {
             typeKey.SetValue(property.Name, property.GetValue(settings) ?? property.PropertyType);
         }
     }
 
-    public Task LoadSettingsAsync(ISettings settings)
+    public void SaveSetting(string fieldName, ISettings settings)
     {
-        throw new NotImplementedException();
-    }
+        using var softwareKey = Registry.CurrentUser.OpenSubKey("Software", true)!;
+        using var key = softwareKey.OpenSubKey(_appName, true) ?? softwareKey.CreateSubKey(_appName);
 
-    public Task SaveSettingsAsync(ISettings settings)
-    {
-        throw new NotImplementedException();
-    }
+        using var typeKey = key.OpenSubKey(SettingsType.Name, true) ?? key.CreateSubKey(SettingsType.Name);
 
+        foreach (var property in PropertyInfos)
+        {
+            if (property.Name != fieldName) continue;
+
+            typeKey.SetValue(property.Name, property.GetValue(settings) ?? property.PropertyType);
+            return;
+        }
+    }
 }

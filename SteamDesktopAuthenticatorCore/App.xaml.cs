@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,10 +14,10 @@ using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.ViewModels;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
+using WPFUI.Appearance;
 using WPFUI.Common;
 using WPFUI.DIControls;
 using WPFUI.DIControls.Interfaces;
-
 
 namespace SteamAuthenticatorCore.Desktop;
 
@@ -51,6 +53,10 @@ public sealed partial class App : Application
 
         var settings = services.GetRequiredService<AppSettings>();
         settings.LoadSettings();
+        settings.PropertyChanged += SettingsOnPropertyChanged;
+
+        var platformImplementations = services.GetRequiredService<IPlatformImplementations>();
+        platformImplementations.SetTheme(settings.AppTheme);
 
         await OnStartupTask(_host.Services);
 
@@ -60,7 +66,8 @@ public sealed partial class App : Application
 
     protected override async void OnExit(ExitEventArgs e)
     {
-        _host.Services.GetRequiredService<AppSettings>().SaveSettings();
+        var settings = _host.Services.GetRequiredService<AppSettings>();
+        settings.PropertyChanged += SettingsOnPropertyChanged;
 
         await _host.StopAsync();
         _host.Dispose();
@@ -181,6 +188,23 @@ public sealed partial class App : Application
             appSettings.Updated = false;
         }
     }
+
+    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        var settings = (sender as AppSettings)!;
+
+        settings.SettingsService.SaveSetting(e.PropertyName!, settings);
+
+        if (e.PropertyName != nameof(settings.AppTheme))
+            return;
+
+        var platformImplementations = _host.Services.GetRequiredService<IPlatformImplementations>();
+        Application.Current.Dispatcher.Invoke(() =>
+        {
+            platformImplementations.SetTheme(settings.AppTheme);
+        });
+    }
+
 
     #endregion
 }
