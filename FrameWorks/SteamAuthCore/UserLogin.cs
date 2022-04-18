@@ -144,11 +144,6 @@ namespace SteamAuthCore
                 cookies.Add(new Cookie("mobileClientVersion", "0 (2.1.3)", "/", ".steamcommunity.com"));
                 cookies.Add(new Cookie("mobileClient", "android", "/", ".steamcommunity.com"));
                 cookies.Add(new Cookie("Steam_Language", "english", "/", ".steamcommunity.com"));
-
-                NameValueCollection headers = new NameValueCollection();
-                headers.Add("X-Requested-With", "com.valvesoftware.android.steam.community");
-
-                SteamApi.MobileLoginRequest("https://steamcommunity.com/login?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client", SteamApi.RequestMethod.Get, null, cookies, headers);
             }
 
             postData.Add("donotcache", (TimeAligner.GetSteamTime() * 1000).ToString());

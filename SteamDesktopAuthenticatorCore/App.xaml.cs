@@ -88,20 +88,20 @@ public sealed partial class App : Application
         {
             configuration.StartupPageTag = nameof(TokenPage);
 
-            configuration.VisableItems = new Dictionary<string, INavigationItem>()
+            configuration.VisibleItems = new INavigationItem[]
             {
-                {nameof(TokenPage), new DefaultNavigationItem(typeof(TokenPage), "Token")},
-                {nameof(ConfirmationsPage), new DefaultNavigationItem(typeof(ConfirmationsPage), "Confirmations")},
+                new DefaultNavigationItem(typeof(TokenPage), nameof(TokenPage), "Token"),
+                new DefaultNavigationItem(typeof(ConfirmationsPage), nameof(ConfirmationsPage), "Confirmations")
             };
 
-            configuration.VisableFooterItems = new Dictionary<string, INavigationItem>()
+            configuration.VisibleFooterItems = new INavigationItem[]
             {
-                {nameof(SettingsPage), new DefaultNavigationItem(typeof(SettingsPage), "Settings", Icon.Settings24)}
+                new DefaultNavigationItem(typeof(SettingsPage),nameof(SettingsPage), "Settings", SymbolRegular.Settings24)
             };
 
-            configuration.HiddenItemsItems = new Dictionary<string, INavigationItem>()
+            configuration.HiddenItemsItems = new INavigationItem[]
             {
-                {nameof(LoginPage), new DefaultNavigationItem(typeof(LoginPage), "Login")},
+                new DefaultNavigationItem(typeof(LoginPage), nameof(LoginPage), "login")
             };
         });
 

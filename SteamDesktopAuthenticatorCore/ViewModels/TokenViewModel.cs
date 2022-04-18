@@ -292,7 +292,7 @@ public sealed partial class TokenViewModel : ObservableObject, IDisposable
         }
         catch (SteamGuardAccount.WgTokenExpiredException)
         {
-            _navigation.NavigateTo($"//{nameof(LoginPage)}");
+             await _navigation.NavigateTo($"//{nameof(LoginPage)}");
 
             return await RefreshAccountSession(account);
         }

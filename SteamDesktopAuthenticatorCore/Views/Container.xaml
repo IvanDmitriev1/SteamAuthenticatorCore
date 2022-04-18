@@ -74,7 +74,6 @@
             x:Name="RootTitleBar"
             Title="Steam desktop authenticator core"
             Grid.Row="0"
-            ApplicationNavigation="True"
             MinimizeToTray="True"
             NotifyIconImage="pack://application:,,,/icon.ico"
             NotifyIconTooltip="Steam desktop authenticator core"

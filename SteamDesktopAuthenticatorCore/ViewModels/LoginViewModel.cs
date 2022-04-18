@@ -32,15 +32,17 @@ public class LoginViewModel : INavigable
 
     #region Public methods
 
-    public void OnNavigationRequest(INavigation navigation, INavigationItem previousNavigationItem, ref object[]? ars)
+    public Task OnNavigationRequest(INavigation navigation, string previousPageTag, object[]? ars)
     {
         if (ars is null)
         {
             LoginService.Account = null;
-            return;
+            return Task.CompletedTask;
         }
 
         LoginService.Account = (SteamGuardAccount?) ars[0];
+
+        return Task.CompletedTask;
     }
 
     #endregion
@@ -58,7 +60,7 @@ public class LoginViewModel : INavigable
             await LoginService.RefreshLogin(_manifestServiceResolver.Invoke());
         }
 
-        _navigation.NavigateTo($"{nameof(TokenPage)}");
+        await _navigation.NavigateTo($"{nameof(TokenPage)}");
     }
 
     #endregion
