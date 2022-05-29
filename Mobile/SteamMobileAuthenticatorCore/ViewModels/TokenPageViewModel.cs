@@ -89,6 +89,8 @@ public partial class TokenPageViewModel : ObservableObject
     [ICommand]
     private async Task Copy(Frame frame)
     {
+        if (string.IsNullOrEmpty(TokenService.Token) || string.IsNullOrWhiteSpace(TokenService.Token)) return;
+
         try
         {
             HapticFeedback.Perform(HapticFeedbackType.LongPress);

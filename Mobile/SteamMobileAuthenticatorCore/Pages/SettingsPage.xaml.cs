@@ -15,12 +15,12 @@ namespace SteamAuthenticatorCore.Mobile.Pages
             OnBackActionAsync = OnBackActionAsyncFunc;
         }
 
+        public Func<Task<bool>>? OnBackActionAsync { get; set; }
+
         private async Task<bool> OnBackActionAsyncFunc()
         {
             await Shell.Current.GoToAsync($"//{nameof(TokenPage)}");
             return true;
         }
-
-        public Func<Task<bool>>? OnBackActionAsync { get; set; }
     }
 }

@@ -8,12 +8,6 @@
     xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
     Title="SteamMobileAuthenticatorCore">
 
-    <!--
-        The overall app visual hierarchy is defined here, along with navigation.
-        
-        https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/
-    -->
-
     <Shell.Resources>
         <ResourceDictionary>
             <Style x:Key="BaseStyle" TargetType="Element">

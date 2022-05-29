@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Android.App;
+﻿using Android.App;
 using Android.Content.PM;
 using Android.Runtime;
 using Android.OS;
@@ -51,7 +50,7 @@ namespace SteamMobileAuthenticatorCore.Droid
 
     public class AndroidEnvironment : IEnvironment
     {
-        public async void SetStatusBarColor(Color color, bool darkStatusBarTint)
+        public void SetStatusBarColor(Color color, bool darkStatusBarTint)
         {
             if (Build.VERSION.SdkInt < Android.OS.BuildVersionCodes.Lollipop)
                 return;
@@ -64,8 +63,7 @@ namespace SteamMobileAuthenticatorCore.Droid
             window.ClearFlags(Android.Views.WindowManagerFlags.TranslucentStatus);
 
             if (Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.M)
-            {   
-                await Task.Delay(50);
+            {
                 WindowCompat.GetInsetsController(window, window.DecorView).AppearanceLightStatusBars = darkStatusBarTint;
             }
 

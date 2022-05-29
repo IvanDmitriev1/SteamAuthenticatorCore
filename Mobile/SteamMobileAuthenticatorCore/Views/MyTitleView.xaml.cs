@@ -12,7 +12,8 @@ namespace SteamAuthenticatorCore.Mobile.Views
 		}
 
         public static readonly BindableProperty TitleNameProperty =
-            BindableProperty.Create (nameof(TitleName), typeof(string), typeof(MyTitleView), string.Empty, BindingMode.OneTime);
+            BindableProperty.Create(nameof(TitleName), typeof(string), typeof(MyTitleView), string.Empty,
+                BindingMode.OneTime, propertyChanged: TitleNamePropertyChanged);
 
         public string TitleName
         {
@@ -20,11 +21,10 @@ namespace SteamAuthenticatorCore.Mobile.Views
             set => SetValue (TitleNameProperty, value);
         }
 
-        protected override void OnBindingContextChanged()
+        private static void TitleNamePropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
         {
-            base.OnBindingContextChanged();
-
-            label.SetBinding(TitleNameProperty, nameof(TitleName), BindingMode.OneTime);
+            var control = (MyTitleView)bindable;
+            control.label.Text = (string) newvalue;
         }
     }
 }

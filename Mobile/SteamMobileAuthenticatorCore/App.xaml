@@ -9,8 +9,7 @@
     -->
     <Application.Resources>
         <ResourceDictionary>
-            <Color x:Key="Primary">#2196F3</Color>
-            <Color x:Key="ActionColor">#4db2ff</Color>
+            <Color x:Key="ActionColor">#3ca0f5</Color>
             <Color x:Key="SecondActionColor">#0078d3</Color>
 
             <Color x:Key="DarkBackgroundColor">#222222</Color>
@@ -75,6 +74,11 @@
                         </VisualStateGroup>
                     </VisualStateGroupList>
                 </Setter>
+            </Style>
+
+            <Style x:Key="SwitchWithoutOffColors" TargetType="Switch">
+                <Setter Property="OnColor" Value="{AppThemeBinding Dark=#2a4964, Light=#bfd6f4}" />
+                <Setter Property="ThumbColor" Value="{AppThemeBinding Dark=#3da3fa, Light=#065dd0}" />
             </Style>
 
             <Style TargetType="Frame">
