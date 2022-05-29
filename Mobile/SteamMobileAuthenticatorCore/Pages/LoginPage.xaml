@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="SteamAuthenticatorCore.Mobile.Pages.LoginPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
+    Title="Login page"
+    BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor},
+                                      Light={StaticResource LightBackgroundColor}}"
+    Shell.NavBarHasShadow="True"
+    Shell.TabBarIsVisible="False"
+    Visual="Material">
+
+    <ContentPage.BindingContext>
+        <viewModels:LoginViewModel />
+    </ContentPage.BindingContext>
+
+    <ContentPage.Content>
+        <StackLayout
+            Margin="10"
+            HorizontalOptions="FillAndExpand"
+            Spacing="10"
+            VerticalOptions="CenterAndExpand">
+
+            <StackLayout BindingContext="{Binding Path=LoginService}">
+                <Entry
+                    IsEnabled="{Binding Path=IsEnabledUserNameTextBox}"
+                    IsReadOnly="True"
+                    Placeholder="Login"
+                    Text="{Binding Path=Username}" />
+
+                <Entry
+                    IsPassword="True"
+                    Placeholder="Password"
+                    Text="{Binding Path=Password}" />
+
+                <StackLayout Margin="0,10,0,10" IsVisible="{Binding Path=IsCaptchaVisible}">
+                    <Image Aspect="AspectFit" Source="{Binding Path=Image}" />
+                    <Entry Placeholder="Enter the following captcha code:" Text="{Binding Path=AdditionalText}" />
+                </StackLayout>
+
+                <Entry
+                    IsVisible="{Binding Path=IsEmailTextBlockVisible}"
+                    Placeholder="Email code:"
+                    Text="{Binding Path=AdditionalText}" />
+
+                <Entry
+                    IsVisible="{Binding Path=IsPhoneTextBlockVisible}"
+                    Placeholder="Phone:"
+                    Text="{Binding Path=AdditionalText}" />
+
+                <Entry
+                    IsVisible="{Binding Path=IsSmsTextBoxVisible}"
+                    Placeholder="SMS code:"
+                    Text="{Binding Path=AdditionalText}" />
+            </StackLayout>
+
+            <StackLayout Margin="0,5,0,0">
+                <Button
+                    Command="{Binding Path=LoginService.OnContinueCommand}"
+                    IsVisible="{Binding Path=LoginService.IsContinueButtonVisible}"
+                    Text="Continue" />
+                <Button
+                    Command="{Binding Path=LoginCommand}"
+                    IsVisible="{Binding Path=LoginService.IsSetUpNewVisible}"
+                    Text="{Binding Path=LoginService.ButtonText}" />
+            </StackLayout>
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

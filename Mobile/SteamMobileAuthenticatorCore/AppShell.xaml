@@ -3,10 +3,10 @@
     x:Class="SteamAuthenticatorCore.Mobile.AppShell"
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:pages="clr-namespace:SteamAuthenticatorCore.Mobile.Pages;assembly=SteamAuthenticatorCore.Mobile"
     xmlns:steamMobileAuthenticatorCore1="clr-namespace:SteamAuthenticatorCore.Mobile.Helpers;assembly=SteamAuthenticatorCore.Mobile"
-    xmlns:views="clr-namespace:SteamAuthenticatorCore.Mobile.Views;assembly=SteamAuthenticatorCore.Mobile"
-    Title="SteamMobileAuthenticatorCore"
-    Visual="Material">
+    xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+    Title="SteamMobileAuthenticatorCore">
 
     <!--
         The overall app visual hierarchy is defined here, along with navigation.
@@ -34,15 +34,19 @@
 
     <TabBar>
         <ShellContent
-            Title="Main"
-            ContentTemplate="{DataTemplate views:MainPage}"
-            Route="MainPage">
+            Title="Token"
+            xct:TouchEffect.NativeAnimation="True"
+            ContentTemplate="{DataTemplate pages:TokenPage}"
+            Route="TokenPage">
             <ShellContent.Icon>
-                <x:FontImage FontFamily="Material" Glyph="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.Home}" />
+                <x:FontImage FontFamily="Material" Glyph="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.GeneratingTokens}" />
             </ShellContent.Icon>
         </ShellContent>
 
-        <ShellContent Title="Settings" ContentTemplate="{DataTemplate views:SettingsPage}">
+        <ShellContent
+            Title="Settings"
+            xct:TouchEffect.NativeAnimation="True"
+            ContentTemplate="{DataTemplate pages:SettingsPage}">
             <ShellContent.Icon>
                 <x:FontImage FontFamily="Material" Glyph="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.Settings}" />
             </ShellContent.Icon>

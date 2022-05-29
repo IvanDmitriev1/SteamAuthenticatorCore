@@ -1,4 +1,4 @@
-﻿using SteamAuthenticatorCore.Mobile.Views;
+﻿using SteamAuthenticatorCore.Mobile.Pages;
 using Xamarin.Forms;
 
 namespace SteamAuthenticatorCore.Mobile

@@ -9,7 +9,9 @@ using SteamAuthenticatorCore.Mobile.Helpers;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Color = System.Drawing.Color;
+using SteamAuthenticatorCore.Mobile.Services.Interfaces;
 
+[assembly: Dependency(typeof(SteamMobileAuthenticatorCore.Droid.AndroidEnvironment))]
 namespace SteamMobileAuthenticatorCore.Droid
 {
     [Activity(Label = "SteamMobileAuthenticatorCore", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
@@ -17,8 +19,6 @@ namespace SteamMobileAuthenticatorCore.Droid
     {
         protected override void OnCreate(Bundle savedInstanceState)
         {
-            DependencyService.Register<IEnvironment, AndroidEnvironment>();
-
             base.OnCreate(savedInstanceState);
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
@@ -31,6 +31,21 @@ namespace SteamMobileAuthenticatorCore.Droid
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        public override async void OnBackPressed()
+        {
+            if (Shell.Current.CurrentPage is not IBackButtonAction backButtonAction)
+            {
+                base.OnBackPressed();
+                return;
+            }
+
+            if (backButtonAction.OnBackActionAsync is null)
+                return;
+
+            if (!await backButtonAction.OnBackActionAsync.Invoke()) 
+                base.OnBackPressed();
         }
     }
 

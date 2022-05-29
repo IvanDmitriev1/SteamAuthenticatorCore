@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentView
+    x:Class="SteamAuthenticatorCore.Mobile.Views.MyTitleView"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <ContentView.Content>
+        <Label
+            x:Name="label"
+            Grid.Row="0"
+            FontAttributes="Bold"
+            FontSize="20"
+            Opacity="1"
+            Text="Token page"
+            VerticalTextAlignment="Center" />
+    </ContentView.Content>
+</ContentView>

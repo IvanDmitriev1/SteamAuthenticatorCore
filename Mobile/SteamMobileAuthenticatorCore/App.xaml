@@ -2,7 +2,8 @@
 <Application
     x:Class="SteamAuthenticatorCore.Mobile.App"
     xmlns="http://xamarin.com/schemas/2014/forms"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:converters="http://xamarin.com/schemas/2020/toolkit">
     <!--
         Define global resources and styles here, that apply to all pages in your app.
     -->
@@ -14,9 +15,11 @@
 
             <Color x:Key="DarkBackgroundColor">#222222</Color>
             <Color x:Key="SecondDarkBackground">#2d2d2d</Color>
+            <Color x:Key="SecondDarkBackgroundSelectionColor">#4d4d4d</Color>
 
             <Color x:Key="LightBackgroundColor">#ededf1</Color>
             <Color x:Key="SecondLightBackgroundColor">#ffffff</Color>
+            <Color x:Key="SecondLightBackgroundSelectionColor">#c7c7c7</Color>
 
             <Color x:Key="DarkTextColor">#ffff</Color>
             <Color x:Key="LightTextColor">#222222</Color>
@@ -33,6 +36,7 @@
             </Style>
 
             <Style TargetType="Button">
+                <Setter Property="CornerRadius" Value="20" />
                 <Setter Property="TextColor" Value="White" />
                 <Setter Property="VisualStateManager.VisualStateGroups">
                     <VisualStateGroupList>
@@ -75,8 +79,10 @@
 
             <Style TargetType="Frame">
                 <Setter Property="BackgroundColor" Value="{AppThemeBinding Dark={StaticResource SecondDarkBackground}, Light={StaticResource SecondLightBackgroundColor}}" />
+                <Setter Property="BorderColor" Value="Transparent" />
             </Style>
 
+            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
