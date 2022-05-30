@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using SteamAuthCore;
@@ -11,15 +12,11 @@ namespace SteamAuthenticatorCore.Shared;
 
 public abstract class ConfirmationAccountBase
 {
-    protected ConfirmationAccountBase(SteamGuardAccount account, ConfirmationModel[] confirmations, IPlatformImplementations platformImplementations)
+    protected ConfirmationAccountBase(in SteamGuardAccount account,in IPlatformImplementations platformImplementations)
     {
         Account = account;
         _platformImplementations = platformImplementations;
-
-        foreach (var confirmation in confirmations)
-            confirmation.BitMapImage = platformImplementations.CreateImage(confirmation.ImageSource);
-
-        Confirmations = new ObservableCollection<ConfirmationModel>(confirmations);
+        Confirmations = new ObservableCollection<ConfirmationModel>();
     }
 
     private readonly IPlatformImplementations _platformImplementations;
@@ -30,6 +27,41 @@ public abstract class ConfirmationAccountBase
     public abstract ICommand ConfirmCommand { get; }
 
     public abstract ICommand CancelCommand { get; }
+
+    public async Task CheckConfirmations()
+    {
+        ConfirmationModel[] confirmations;
+
+        try
+        {
+            confirmations = (await Account.FetchConfirmationsAsync()).ToArray();
+        }
+        catch (SteamGuardAccount.WgTokenInvalidException)
+        {
+            await Account.RefreshSessionAsync();
+
+            try
+            {
+                confirmations = (await Account.FetchConfirmationsAsync()).ToArray();
+            }
+            catch (SteamGuardAccount.WgTokenInvalidException)
+            {
+                return;
+            }
+        }
+        catch (SteamGuardAccount.WgTokenExpiredException)
+        {
+            return;
+        }
+
+        Confirmations.Clear();
+
+        foreach (var confirmation in confirmations)
+        {
+            confirmation.BitMapImage = _platformImplementations.CreateImage(confirmation.ImageSource);
+            Confirmations.Add(confirmation);
+        }
+    }
 
     public void SendConfirmation(ConfirmationModel confirmation, SteamGuardAccount.Confirmation command)
     {
@@ -89,40 +121,29 @@ public abstract class BaseConfirmationService : IDisposable
 
     public async Task CheckConfirmations()
     {
-        Accounts.Clear();
-
-        foreach (var account in _steamGuardAccounts)
+        var tmpAccounts = new List<ConfirmationAccountBase>();
+        foreach (var account in _steamGuardAccounts.Where(account => Accounts.All(confirmationAccount => !confirmationAccount.Account.Equals(account))))
         {
-            if (await CreateConfirmationAccount(account) is not { } confirmationAccount) continue;
-
-            Accounts.Add(confirmationAccount);
+            var confirmationAccount = CreateConfirmationAccount(account);
+            tmpAccounts.Add(confirmationAccount);
         }
-    }
+        await Task.WhenAll(CreateFuncArray(Accounts));
 
-    public async Task<ConfirmationAccountBase?> CreateConfirmationAccount(SteamGuardAccount account)
-    {
-        try
+        for (var i = Accounts.Count - 1; i >= 0; i--)
         {
-            return await CreateConfirmationAccountViewModel(account);
-        }
-        catch (SteamGuardAccount.WgTokenInvalidException)
-        {
-            await account.RefreshSessionAsync();
+            var account = Accounts[i];
 
-            try
-            {
-                return await CreateConfirmationAccountViewModel(account);
-            }
-            catch (SteamGuardAccount.WgTokenInvalidException)
-            {
-            }
-        }
-        catch (SteamGuardAccount.WgTokenExpiredException)
-        {
-            
+            if (account.Confirmations.Count <= 0)
+                Accounts.Remove(account);
         }
 
-        return default;
+        await Task.WhenAll(CreateFuncArray(tmpAccounts));
+
+        foreach (var account in tmpAccounts)
+        {
+            if (account.Confirmations.Count > 0)
+                Accounts.Add(account);
+        }
     }
 
     private void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -166,6 +187,18 @@ public abstract class BaseConfirmationService : IDisposable
         }
     }
 
+    private static Task[] CreateFuncArray(in IReadOnlyCollection<ConfirmationAccountBase> confirmationAccountBases)
+    {
+        var funcs = new Task[confirmationAccountBases.Count];
 
-    protected abstract Task<ConfirmationAccountBase?> CreateConfirmationAccountViewModel(SteamGuardAccount account);
+        for (var i = 0; i < confirmationAccountBases.Count; i++)
+        {
+            var account = confirmationAccountBases.ElementAt(i);
+            funcs[i] = account.CheckConfirmations();
+        }
+
+        return funcs;
+    }
+
+    public abstract ConfirmationAccountBase CreateConfirmationAccount(in SteamGuardAccount account);
 }

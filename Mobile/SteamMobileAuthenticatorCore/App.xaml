@@ -31,6 +31,7 @@
             </Style>
 
             <Style TargetType="Label">
+                <Setter Property="VerticalTextAlignment" Value="Center" />
                 <Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}" />
             </Style>
 
@@ -84,6 +85,11 @@
             <Style TargetType="Frame">
                 <Setter Property="BackgroundColor" Value="{AppThemeBinding Dark={StaticResource SecondDarkBackground}, Light={StaticResource SecondLightBackgroundColor}}" />
                 <Setter Property="BorderColor" Value="Transparent" />
+            </Style>
+
+            <Style TargetType="RefreshView">
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Dark={StaticResource SecondDarkBackground}, Light={StaticResource SecondLightBackgroundColor}}" />
+                <Setter Property="RefreshColor" Value="{StaticResource ActionColor}" />
             </Style>
 
             <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />

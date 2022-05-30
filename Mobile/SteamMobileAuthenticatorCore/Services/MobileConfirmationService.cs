@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using SteamAuthCore;
@@ -10,8 +9,7 @@ namespace SteamAuthenticatorCore.Mobile.Services;
 
 internal class ConfirmationAccountModel : ConfirmationAccountBase
     {
-        public ConfirmationAccountModel(SteamGuardAccount account, ConfirmationModel[] confirmations,
-            IPlatformImplementations platformImplementations) : base(account, confirmations, platformImplementations) { }
+        public ConfirmationAccountModel(SteamGuardAccount account, IPlatformImplementations platformImplementations) : base(account, platformImplementations) { }
 
         public override ICommand ConfirmCommand => new AsyncCommand<object>(async o =>
         {
@@ -38,9 +36,8 @@ internal class MobileConfirmationService : BaseConfirmationService
     {
     }
 
-    protected override async Task<ConfirmationAccountBase?> CreateConfirmationAccountViewModel(SteamGuardAccount account)
+    public override ConfirmationAccountBase CreateConfirmationAccount(in SteamGuardAccount account)
     {
-        var confirmations = (await account.FetchConfirmationsAsync()).ToArray();
-        return confirmations.Length > 0 ? new ConfirmationAccountModel(account, confirmations, PlatformImplementations) : null;
+        return new ConfirmationAccountModel(account, PlatformImplementations);
     }
 }

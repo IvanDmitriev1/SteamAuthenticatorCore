@@ -1,4 +1,6 @@
-﻿using Xamarin.Forms;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SteamAuthenticatorCore.Mobile.ViewModels;
+using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace SteamAuthenticatorCore.Mobile.Pages
@@ -8,6 +10,7 @@ namespace SteamAuthenticatorCore.Mobile.Pages
     {
         public ConfirmationsPage()
         {
+            BindingContext = Startup.ServiceProvider.GetRequiredService<ConfirmationViewModel>();
             InitializeComponent();
         }
     }

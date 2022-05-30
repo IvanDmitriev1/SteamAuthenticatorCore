@@ -113,12 +113,14 @@ public partial class TokenPageViewModel : ObservableObject
     }
 
     [ICommand]
-    private async Task OnConfirmations()
+    private Task OnConfirmations()
     {
-        var account = (SteamGuardAccount) _longPressFrame!.BindingContext;
+        return Task.CompletedTask;
+
+        /*var account = (SteamGuardAccount) _longPressFrame!.BindingContext;
 
         SelectedSteamGuardAccount = Accounts[Accounts.IndexOf(account)];
-        await Shell.Current.GoToAsync($"{nameof(ConfirmationsPage)}?id={Accounts.IndexOf(account)}");
+        await Shell.Current.GoToAsync($"{nameof(ConfirmationsPage)}?id={Accounts.IndexOf(account)}");*/
     }
 
     [ICommand]
@@ -130,6 +132,9 @@ public partial class TokenPageViewModel : ObservableObject
         {
             await _manifestModelService.DeleteSteamGuardAccount(account);
             Accounts.Remove(account);
+
+            IsLongPressTitleViewVisible = false;
+            await UnselectLongPressFrame();
 
             TokenService.SelectedAccount = null;
         }

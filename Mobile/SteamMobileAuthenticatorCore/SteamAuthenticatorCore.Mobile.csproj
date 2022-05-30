@@ -36,10 +36,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Pages\ConfirmationsPage.xaml">
+    <EmbeddedResource Update="Pages\ConfirmationsOverviewPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Pages\LoginPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Pages\ConfirmationsPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Pages\TokenPage.xaml">
@@ -58,6 +61,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Pages\ConfirmationsOverviewPage.xaml.cs">
+      <DependentUpon>ConfirmationsOverviewPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\ConfirmationsPage.xaml.cs">
+      <DependentUpon>ConfirmationsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Pages\TokenPage.xaml.cs">
       <DependentUpon>TokenPage.xaml</DependentUpon>
     </Compile>

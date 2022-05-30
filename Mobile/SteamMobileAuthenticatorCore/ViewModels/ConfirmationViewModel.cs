@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SteamAuthCore;
+using SteamAuthenticatorCore.Mobile.Extensions;
 using SteamAuthenticatorCore.Shared;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -15,23 +14,19 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributable
 {
-    public ConfirmationViewModel()
+    public ConfirmationViewModel(BaseConfirmationService confirmationService)
     {
-        _accounts = DependencyService.Get<ObservableCollection<SteamGuardAccount>>();
-        ConfirmationService = DependencyService.Get<BaseConfirmationService>();
-        SelectedCollection = new ObservableCollection<object>();
+        ConfirmationService = confirmationService;
+        _selectedItems = new List<ConfirmationModel>();
     }
 
-    private readonly ObservableCollection<SteamGuardAccount> _accounts;
-    private SteamGuardAccount? _selectedAccount;
+    private readonly List<ConfirmationModel> _selectedItems;
 
     [ObservableProperty]
-    private ConfirmationAccountBase? _account;
+    private ConfirmationAccountBase _account = null!;
 
     [ObservableProperty]
     private bool _isRefreshing;
-
-    public ObservableCollection<object> SelectedCollection { get; }
 
     public BaseConfirmationService ConfirmationService { get; }
 
@@ -39,9 +34,7 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
     public void ApplyQueryAttributes(IDictionary<string, string> query)
     {
         var id= HttpUtility.UrlDecode(query["id"]);
-        _selectedAccount = _accounts[Convert.ToInt32(id)];
-
-        IsRefreshing = true;
+        Account = ConfirmationService.Accounts[Convert.ToInt32(id)];
     }
 
     [ICommand]
@@ -56,28 +49,63 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
             //
         }
 
-        if (_selectedAccount != null)
-            Account = await ConfirmationService.CreateConfirmationAccount(_selectedAccount);
-
+        await _account.CheckConfirmations();
         IsRefreshing = false;
     }
 
     [ICommand]
     private void ConfirmSelected()
     {
-        if (SelectedCollection.Count == 1)
-            SendConfirmation(SteamGuardAccount.Confirmation.Allow);
-
-        SendConfirmations(SteamGuardAccount.Confirmation.Allow);
+        switch (_selectedItems.Count)
+        {
+            case 0:
+                return;
+            case 1:
+                SendConfirmation(SteamGuardAccount.Confirmation.Allow);
+                return;
+            default:
+                SendConfirmations(SteamGuardAccount.Confirmation.Allow);
+                break;
+        }
     }
 
     [ICommand]
     private void CancelSelected()
     {
-        if (SelectedCollection.Count == 1)
-            SendConfirmation(SteamGuardAccount.Confirmation.Deny);
+        switch (_selectedItems.Count)
+        {
+            case 0:
+                return;
+            case 1:
+                SendConfirmation(SteamGuardAccount.Confirmation.Deny);
+                return;
+            default:
+                SendConfirmations(SteamGuardAccount.Confirmation.Deny);
+                break;
+        }
+    }
 
-        SendConfirmations(SteamGuardAccount.Confirmation.Deny);
+    [ICommand]
+    private Task OnElementTouch(Frame frame)
+    {
+        var confirmationModel = (ConfirmationModel) frame.BindingContext;
+
+        if (_selectedItems.Contains(confirmationModel))
+        {
+            _selectedItems.Remove(confirmationModel);
+
+            return frame.BackgroundColorTo((Color) Application.Current.Resources[
+                Application.Current.RequestedTheme == OSAppTheme.Light
+                    ? "SecondLightBackgroundColor"
+                    : "SecondDarkBackground"], 500);
+        }
+
+        _selectedItems.Add(confirmationModel);
+
+        return frame.BackgroundColorTo((Color) Application.Current.Resources[
+            Application.Current.RequestedTheme == OSAppTheme.Light
+                ? "SecondLightBackgroundSelectionColor"
+                : "SecondDarkBackgroundSelectionColor"], 500);
     }
 
     private void SendConfirmation(SteamGuardAccount.Confirmation confirmation)
@@ -91,7 +119,7 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
             //
         }
 
-        var model = (ConfirmationModel) SelectedCollection[0];
+        var model = _selectedItems[0];
         Account!.SendConfirmation(model, confirmation);
     }
 
@@ -106,8 +134,6 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
             //
         }
 
-
-        var model = SelectedCollection.Cast<ConfirmationModel>();
-        Account?.SendConfirmations(ref model, confirmation);
+        Account?.SendConfirmations(_selectedItems, confirmation);
     }
 }

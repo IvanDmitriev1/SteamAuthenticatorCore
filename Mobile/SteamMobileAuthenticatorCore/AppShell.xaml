@@ -38,6 +38,16 @@
         </ShellContent>
 
         <ShellContent
+            Title="Confirmations"
+            xct:TouchEffect.NativeAnimation="True"
+            ContentTemplate="{DataTemplate pages:ConfirmationsOverviewPage}"
+            Route="ConfirmationsOverview">
+            <ShellContent.Icon>
+                <x:FontImage FontFamily="Material" Glyph="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.ConfirmationNum}" />
+            </ShellContent.Icon>
+        </ShellContent>
+
+        <ShellContent
             Title="Settings"
             xct:TouchEffect.NativeAnimation="True"
             ContentTemplate="{DataTemplate pages:SettingsPage}">

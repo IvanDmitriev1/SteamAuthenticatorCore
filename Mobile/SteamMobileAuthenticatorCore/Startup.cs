@@ -28,6 +28,8 @@ public static class Startup
         services.AddTransient<TokenPageViewModel>();
         services.AddTransient<SettingsViewModel>();
         services.AddTransient<LoginViewModel>();
+        services.AddTransient<ConfirmationsOverviewViewModel>();
+        services.AddTransient<ConfirmationViewModel>();
 
         return services;
     }
