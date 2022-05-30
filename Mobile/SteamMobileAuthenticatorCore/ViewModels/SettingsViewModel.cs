@@ -8,9 +8,9 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public partial class SettingsViewModel : ObservableObject
 {
-    public SettingsViewModel()
+    public SettingsViewModel(AppSettings appSettings)
     {
-        AppSettings = DependencyService.Get<AppSettings>();
+        AppSettings = appSettings;
 
         _themeSelection = AppSettings.AppTheme switch
         {

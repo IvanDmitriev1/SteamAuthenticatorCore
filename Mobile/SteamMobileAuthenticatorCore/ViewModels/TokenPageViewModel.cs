@@ -18,11 +18,11 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public partial class TokenPageViewModel : ObservableObject
 {
-    public TokenPageViewModel()
+    public TokenPageViewModel(IManifestModelService manifestModelService, ObservableCollection<SteamGuardAccount> accounts, TokenService tokenService)
     {
-        _manifestModelService = DependencyService.Get<IManifestModelService>();
-        Accounts = DependencyService.Get<ObservableCollection<SteamGuardAccount>>();
-        TokenService = DependencyService.Get<TokenService>();
+        _manifestModelService = manifestModelService;
+        Accounts = accounts;
+        TokenService = tokenService;
     }
 
     private readonly IManifestModelService _manifestModelService;
@@ -187,6 +187,7 @@ public partial class TokenPageViewModel : ObservableObject
     [ICommand]
     private Task HideLongPressTitleView()
     {
+        IsLongPressTitleViewVisible = false;
         return UnselectLongPressFrame();
     }
 
@@ -194,8 +195,6 @@ public partial class TokenPageViewModel : ObservableObject
 
    public async Task UnselectLongPressFrame()
    {
-       IsLongPressTitleViewVisible = false;
-
        if (_longPressFrame is null) return;
 
        await _longPressFrame.BackgroundColorTo((Color) Application.Current.Resources[

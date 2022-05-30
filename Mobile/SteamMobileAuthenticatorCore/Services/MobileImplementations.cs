@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using SteamAuthenticatorCore.Mobile.Services.Interfaces;
 using SteamAuthenticatorCore.Shared;
 using Xamarin.Forms;
@@ -33,7 +34,7 @@ internal class MobileImplementations : IPlatformImplementations
             _ => throw new ArgumentOutOfRangeException(nameof(theme), theme, null)
         };
 
-        var environment = DependencyService.Get<IEnvironment>();
+        var environment = Startup.ServiceProvider.GetRequiredService<IEnvironment>();
 
         if (Application.Current.RequestedTheme == OSAppTheme.Dark)
             environment.SetStatusBarColor((Color) Application.Current.Resources["SecondDarkBackground"], false);

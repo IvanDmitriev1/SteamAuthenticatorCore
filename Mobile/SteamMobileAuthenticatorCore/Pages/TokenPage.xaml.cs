@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using SteamAuthenticatorCore.Mobile.Helpers;
 using SteamAuthenticatorCore.Mobile.ViewModels;
 using Xamarin.Forms;
@@ -13,6 +14,7 @@ namespace SteamAuthenticatorCore.Mobile.Pages
 		public TokenPage ()
 		{
             InitializeComponent();
+            BindingContext = Startup.ServiceProvider.GetRequiredService<TokenPageViewModel>();
             OnBackActionAsync = OnBackActionAsyncFunc;
         }
 

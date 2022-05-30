@@ -3,6 +3,8 @@
     x:Class="SteamAuthenticatorCore.Mobile.Pages.TokenPage"
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:steamAuthCore="clr-namespace:SteamAuthCore;assembly=SteamAuthCore"
     xmlns:steamMobileAuthenticatorCore1="clr-namespace:SteamAuthenticatorCore.Mobile.Helpers;assembly=SteamAuthenticatorCore.Mobile"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
@@ -10,15 +12,14 @@
     xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
     Title="Token Page"
     Padding="10,10,10,0"
+    d:DataContext="{d:DesignInstance viewModels:TokenPageViewModel,
+                                     IsDesignTimeCreatable=False}"
     BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor},
                                       Light={StaticResource LightBackgroundColor}}"
-    Shell.NavBarHasShadow="True">
+    Shell.NavBarHasShadow="True"
+    mc:Ignorable="d">
 
     <ContentPage.Resources />
-
-    <ContentPage.BindingContext>
-        <viewModels:TokenPageViewModel />
-    </ContentPage.BindingContext>
 
     <Shell.TitleView>
         <Grid>

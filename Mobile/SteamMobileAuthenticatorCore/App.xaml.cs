@@ -2,9 +2,9 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
-using SteamAuthenticatorCore.Mobile.Services;
 using SteamAuthenticatorCore.Shared;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -19,31 +19,19 @@ public partial class App : Application
 
         MainPage = new AppShell();
 
-        DependencyService.Register<IPlatformTimer, MobileTimer>();
-        DependencyService.Register<IManifestModelService, SecureStorageService>();
-        DependencyService.Register<ObservableCollection<SteamGuardAccount>>();
-        DependencyService.Register<IPlatformImplementations, MobileImplementations>();
+        var platformImplementations = Startup.ServiceProvider.GetRequiredService<IPlatformImplementations>();
 
-        DependencyService.RegisterSingleton(new AppSettings(new MobileSettingsService()));
-        DependencyService.RegisterSingleton(new TokenService(DependencyService.Get<IPlatformTimer>(DependencyFetchTarget.NewInstance)));
-        DependencyService.RegisterSingleton( (BaseConfirmationService) new MobileConfirmationService(DependencyService.Get<ObservableCollection<SteamGuardAccount>>(), DependencyService.Get<AppSettings>(), DependencyService.Get<IPlatformImplementations>(), DependencyService.Get<IPlatformTimer>(DependencyFetchTarget.NewInstance)));
-        DependencyService.RegisterSingleton(new LoginService(DependencyService.Get<IPlatformImplementations>()));
-
-
-        _platformImplementations = DependencyService.Get<IPlatformImplementations>();
-
-        _settings = DependencyService.Get<AppSettings>();
+        _settings = Startup.ServiceProvider.GetRequiredService<AppSettings>();
         _settings.LoadSettings();
         _settings.PropertyChanged += SettingsOnPropertyChanged;
-        _platformImplementations.SetTheme(_settings.AppTheme);
+        platformImplementations.SetTheme(_settings.AppTheme);
 
-        var confirmationService = DependencyService.Get<BaseConfirmationService>();
+        var confirmationService = Startup.ServiceProvider.GetRequiredService<BaseConfirmationService>();
 
-        var tokenService = DependencyService.Get<TokenService>();
+        var tokenService = Startup.ServiceProvider.GetRequiredService<TokenService>();
         tokenService.IsMobile = true;
     }
 
-    private readonly IPlatformImplementations _platformImplementations;
     private readonly AppSettings _settings;
 
     protected override async void OnStart()
@@ -76,22 +64,22 @@ public partial class App : Application
 
     private static async Task OnManifestLocationChanged()
     {
-        var manifestService = DependencyService.Get<IManifestModelService>();
+        var manifestService = Startup.ServiceProvider.GetRequiredService<IManifestModelService>();
 
-        await manifestService.Initialize(new MobileDirectoryService());
+        await manifestService.Initialize();
         await RefreshAccounts(manifestService);
     }
 
     private static async Task RefreshAccounts(IManifestModelService manifestModelService)
     {
-        var accounts = DependencyService.Get<ObservableCollection<SteamGuardAccount>>();
+        var accounts = Startup.ServiceProvider.GetRequiredService<ObservableCollection<SteamGuardAccount>>();
         accounts.Clear();
 
         foreach (var account in await manifestModelService.GetAccounts())
             accounts.Add(account);
     }
 
-    private void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+    private static void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
         var settings = (sender as AppSettings)!;
 
@@ -101,7 +89,8 @@ public partial class App : Application
 
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            _platformImplementations.SetTheme(settings.AppTheme);
+            var platformImplementations = Startup.ServiceProvider.GetRequiredService<IPlatformImplementations>();
+            platformImplementations.SetTheme(settings.AppTheme);
         });
     }
 }
