@@ -19,7 +19,7 @@ namespace SteamAuthenticatorCore.Mobile.Services
 
         private readonly HashSet<string> _accountNames;
 
-        public Task Initialize(IManifestDirectoryService? directoryService = null)
+        public Task Initialize()
         {
             var json = Preferences.Get("AccountsNames", string.Empty);
             if (string.IsNullOrEmpty(json))

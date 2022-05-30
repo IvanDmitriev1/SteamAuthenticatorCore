@@ -12,7 +12,7 @@ namespace SteamAuthCore.Manifest
 
     public interface IManifestModelService
     {
-        public Task Initialize(IManifestDirectoryService? directoryService = null);
+        public Task Initialize();
 
         public ManifestModel GetManifestModel();
         public Task SaveManifest();

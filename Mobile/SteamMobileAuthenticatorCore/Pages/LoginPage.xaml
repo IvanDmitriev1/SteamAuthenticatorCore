@@ -3,17 +3,18 @@
     x:Class="SteamAuthenticatorCore.Mobile.Pages.LoginPage"
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
     Title="Login page"
+    d:DataContext="{d:DesignInstance viewModels:LoginViewModel,
+                                     IsDesignTimeCreatable=False}"
     BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor},
                                       Light={StaticResource LightBackgroundColor}}"
     Shell.NavBarHasShadow="True"
     Shell.TabBarIsVisible="False"
-    Visual="Material">
-
-    <ContentPage.BindingContext>
-        <viewModels:LoginViewModel />
-    </ContentPage.BindingContext>
+    Visual="Material"
+    mc:Ignorable="d">
 
     <ContentPage.Content>
         <StackLayout

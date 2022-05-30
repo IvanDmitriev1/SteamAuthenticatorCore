@@ -25,8 +25,6 @@ namespace SteamAuthCore.Manifest
 
     public class LocalDriveManifestModelService : IManifestModelService
     {
-        public LocalDriveManifestModelService() { }
-
         public LocalDriveManifestModelService(IManifestDirectoryService directoryService)
         {
             _manifestDirectoryService = directoryService;
@@ -36,12 +34,9 @@ namespace SteamAuthCore.Manifest
         private ManifestModel? _manifestModel;
         private bool _isInitialized;
 
-        public async Task Initialize(IManifestDirectoryService? directoryService = null)
+        public async Task Initialize()
         {
             if (_isInitialized) return;
-
-            if (directoryService is not null)
-                _manifestDirectoryService = directoryService;
 
             _manifestDirectoryService.CheckAndCreateDirectory();
 

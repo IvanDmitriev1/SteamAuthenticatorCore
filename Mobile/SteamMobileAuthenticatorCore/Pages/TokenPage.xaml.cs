@@ -24,6 +24,7 @@ namespace SteamAuthenticatorCore.Mobile.Pages
 
             if (!viewModel.IsLongPressTitleViewVisible) return false;
 
+            viewModel.IsLongPressTitleViewVisible = false;
             await viewModel.UnselectLongPressFrame();
             return true;
         }

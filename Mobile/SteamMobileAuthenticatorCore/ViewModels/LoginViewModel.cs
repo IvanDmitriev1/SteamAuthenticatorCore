@@ -15,12 +15,11 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public class LoginViewModel : ObservableObject, IQueryAttributable
 {
-    public LoginViewModel()
+    public LoginViewModel(ObservableCollection<SteamGuardAccount> accounts, IManifestModelService manifestModelService, LoginService loginService)
     {
-        _accounts = DependencyService.Get<ObservableCollection<SteamGuardAccount>>();
-        _manifestModelService = DependencyService.Get<IManifestModelService>();
-
-        LoginService = DependencyService.Get<LoginService>();
+        _accounts = accounts;
+        _manifestModelService = manifestModelService;
+        LoginService = loginService;
     }
 
     private readonly ObservableCollection<SteamGuardAccount> _accounts;
@@ -31,7 +30,6 @@ public class LoginViewModel : ObservableObject, IQueryAttributable
     public void ApplyQueryAttributes(IDictionary<string, string> query)
     {
         var id= HttpUtility.UrlDecode(query["id"]);
-
         LoginService.Account = _accounts[Convert.ToInt32(id)];
     }
 

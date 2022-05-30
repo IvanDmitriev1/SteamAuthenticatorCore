@@ -27,6 +27,7 @@ public static class Startup
     {
         services.AddTransient<TokenPageViewModel>();
         services.AddTransient<SettingsViewModel>();
+        services.AddTransient<LoginViewModel>();
 
         return services;
     }
