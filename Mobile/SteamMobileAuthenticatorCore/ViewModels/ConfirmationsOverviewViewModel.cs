@@ -34,19 +34,24 @@ public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
         if (ConfirmationService.Accounts.Count > 0)
             return;
 
+        _needRefresh = true;
         IsRefreshing = true;
+        _needRefresh = false;
     }
 
     [ICommand]
     private async Task Refresh()
     {
-        try
+        if (!_needRefresh)
         {
-            HapticFeedback.Perform(HapticFeedbackType.LongPress);
-        }
-        catch
-        {
-            //
+            try
+            {
+                HapticFeedback.Perform(HapticFeedbackType.LongPress);
+            }
+            catch
+            {
+                //
+            }
         }
 
         await ConfirmationService.CheckConfirmations();

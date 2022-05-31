@@ -2,15 +2,55 @@
 <ContentView
     x:Class="SteamAuthenticatorCore.Mobile.Views.MyTitleView"
     xmlns="http://xamarin.com/schemas/2014/forms"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
-    <ContentView.Content>
-        <Label
-            x:Name="label"
-            Grid.Row="0"
-            FontAttributes="Bold"
-            FontSize="20"
-            Opacity="1"
-            Text="Token page"
-            VerticalTextAlignment="Center" />
-    </ContentView.Content>
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:effects="http://xamarin.com/schemas/2020/toolkit"
+    xmlns:steamMobileAuthenticatorCore1="clr-namespace:SteamAuthenticatorCore.Mobile.Helpers;assembly=SteamAuthenticatorCore.Mobile"
+    xmlns:views="clr-namespace:SteamAuthenticatorCore.Mobile.Views;assembly=SteamAuthenticatorCore.Mobile">
+
+    <ContentView.ControlTemplate>
+        <ControlTemplate x:DataType="views:MyTitleView">
+            <Grid>
+                <Label
+                    Grid.Row="0"
+                    FontAttributes="Bold"
+                    FontSize="22"
+                    IsVisible="{TemplateBinding Path=IsContentVisible,
+                                                Converter={StaticResource InvertedBoolConverter}}"
+                    Opacity="1"
+                    Text="{TemplateBinding Path=TitleName}"
+                    VerticalTextAlignment="Center" />
+
+                <Grid
+                    Padding="0,10,10,10"
+                    ColumnDefinitions="Auto, *"
+                    IsVisible="{TemplateBinding Path=IsContentVisible}">
+                    <Button
+                        Margin="0,0,6,0"
+                        Padding="0"
+                        effects:TouchEffect.NativeAnimation="True"
+                        BackgroundColor="Transparent"
+                        Clicked="Button_OnClicked"
+                        FontFamily="Material"
+                        FontSize="35"
+                        HeightRequest="45"
+                        HorizontalOptions="Start"
+                        IsVisible="{TemplateBinding Path=IsCloseButtonVisible}"
+                        Text="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.Close}"
+                        TextColor="{AppThemeBinding Dark={StaticResource DarkTextColor},
+                                                    Light={StaticResource LightTextColor}}"
+                        VerticalOptions="Center"
+                        WidthRequest="45" />
+
+                    <ScrollView
+                        Grid.Column="1"
+                        Margin="{TemplateBinding Margin}"
+                        HorizontalOptions="{TemplateBinding HorizontalOptions}"
+                        HorizontalScrollBarVisibility="Never"
+                        Orientation="Horizontal">
+                        <ContentPresenter Content="{TemplateBinding Content, Mode=OneTime}" />
+                    </ScrollView>
+                </Grid>
+            </Grid>
+        </ControlTemplate>
+    </ContentView.ControlTemplate>
 </ContentView>

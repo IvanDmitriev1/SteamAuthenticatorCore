@@ -50,7 +50,7 @@
                                     <Label
                                         FontSize="Medium"
                                         HorizontalOptions="Start"
-                                        Text="{Binding Account.AccountName}" />
+                                        Text="{Binding Account.AccountName, Mode=OneTime}" />
 
                                     <StackLayout
                                         Margin="0,0,5,0"

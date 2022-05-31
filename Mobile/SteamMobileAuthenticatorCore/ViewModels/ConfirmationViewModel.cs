@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -17,10 +19,8 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
     public ConfirmationViewModel(BaseConfirmationService confirmationService)
     {
         ConfirmationService = confirmationService;
-        _selectedItems = new List<ConfirmationModel>();
+        SelectedItems = new ObservableCollection<(Frame, ConfirmationModel)>();
     }
-
-    private readonly List<ConfirmationModel> _selectedItems;
 
     [ObservableProperty]
     private ConfirmationAccountBase _account = null!;
@@ -28,13 +28,64 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
     [ObservableProperty]
     private bool _isRefreshing;
 
+    [ObservableProperty]
+    private bool _isCountTitleViewVisible;
+
     public BaseConfirmationService ConfirmationService { get; }
+
+    public ObservableCollection<(Frame, ConfirmationModel)> SelectedItems { get; }
 
 
     public void ApplyQueryAttributes(IDictionary<string, string> query)
     {
         var id= HttpUtility.UrlDecode(query["id"]);
         Account = ConfirmationService.Accounts[Convert.ToInt32(id)];
+    }
+
+    [ICommand]
+    private async Task HideCountTitleView()
+    {
+        var tasks = new Task[SelectedItems.Count];
+
+        for (var i = 0; i < SelectedItems.Count; i++)
+        {
+            var frame = SelectedItems[i].Item1;
+            tasks[i] = frame.BackgroundColorTo((Color) Application.Current.Resources[
+                Application.Current.RequestedTheme == OSAppTheme.Light
+                    ? "SecondLightBackgroundColor"
+                    : "SecondDarkBackground"], 500);
+        }
+
+        IsCountTitleViewVisible = false;
+        await Task.WhenAll(tasks);
+        SelectedItems.Clear();
+    }
+
+    [ICommand]
+    private Task OnElementTouch(Frame frame)
+    {
+        var item = (frame, (ConfirmationModel) frame.BindingContext);
+
+        if (SelectedItems.Contains(item))
+        {
+            SelectedItems.Remove(item);
+
+            if (SelectedItems.Count == 0)
+                IsCountTitleViewVisible = false;
+
+            return frame.BackgroundColorTo((Color) Application.Current.Resources[
+                Application.Current.RequestedTheme == OSAppTheme.Light
+                    ? "SecondLightBackgroundColor"
+                    : "SecondDarkBackground"], 500);
+        }
+
+        SelectedItems.Add(item);
+        IsCountTitleViewVisible = true;
+
+        return frame.BackgroundColorTo((Color) Application.Current.Resources[
+            Application.Current.RequestedTheme == OSAppTheme.Light
+                ? "SecondLightBackgroundSelectionColor"
+                : "SecondDarkBackgroundSelectionColor"], 500);
     }
 
     [ICommand]
@@ -54,58 +105,39 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
     }
 
     [ICommand]
-    private void ConfirmSelected()
+    private Task ConfirmSelected()
     {
-        switch (_selectedItems.Count)
+        switch (SelectedItems.Count)
         {
             case 0:
-                return;
+                return Task.CompletedTask;
             case 1:
                 SendConfirmation(SteamGuardAccount.Confirmation.Allow);
-                return;
+                break;
             default:
                 SendConfirmations(SteamGuardAccount.Confirmation.Allow);
                 break;
         }
+
+        return HideCountTitleView();
     }
 
     [ICommand]
-    private void CancelSelected()
+    private Task CancelSelected()
     {
-        switch (_selectedItems.Count)
+        switch (SelectedItems.Count)
         {
             case 0:
-                return;
+                return Task.CompletedTask;
             case 1:
                 SendConfirmation(SteamGuardAccount.Confirmation.Deny);
-                return;
+                break;
             default:
                 SendConfirmations(SteamGuardAccount.Confirmation.Deny);
                 break;
         }
-    }
 
-    [ICommand]
-    private Task OnElementTouch(Frame frame)
-    {
-        var confirmationModel = (ConfirmationModel) frame.BindingContext;
-
-        if (_selectedItems.Contains(confirmationModel))
-        {
-            _selectedItems.Remove(confirmationModel);
-
-            return frame.BackgroundColorTo((Color) Application.Current.Resources[
-                Application.Current.RequestedTheme == OSAppTheme.Light
-                    ? "SecondLightBackgroundColor"
-                    : "SecondDarkBackground"], 500);
-        }
-
-        _selectedItems.Add(confirmationModel);
-
-        return frame.BackgroundColorTo((Color) Application.Current.Resources[
-            Application.Current.RequestedTheme == OSAppTheme.Light
-                ? "SecondLightBackgroundSelectionColor"
-                : "SecondDarkBackgroundSelectionColor"], 500);
+        return HideCountTitleView();
     }
 
     private void SendConfirmation(SteamGuardAccount.Confirmation confirmation)
@@ -119,8 +151,8 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
             //
         }
 
-        var model = _selectedItems[0];
-        Account!.SendConfirmation(model, confirmation);
+        var model = SelectedItems[0];
+        Account!.SendConfirmation(model.Item2, confirmation);
     }
 
     private void SendConfirmations(SteamGuardAccount.Confirmation confirmation)
@@ -134,6 +166,10 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
             //
         }
 
-        Account?.SendConfirmations(_selectedItems, confirmation);
+        var items = new ConfirmationModel[SelectedItems.Count];
+        for (var i = 0; i < SelectedItems.Count; i++)
+            items[i] = SelectedItems[i].Item2;
+
+        Account?.SendConfirmations(items, confirmation);
     }
 }

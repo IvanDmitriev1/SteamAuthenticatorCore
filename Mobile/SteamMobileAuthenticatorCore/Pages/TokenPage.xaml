@@ -6,7 +6,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:steamAuthCore="clr-namespace:SteamAuthCore;assembly=SteamAuthCore"
-    xmlns:steamMobileAuthenticatorCore1="clr-namespace:SteamAuthenticatorCore.Mobile.Helpers;assembly=SteamAuthenticatorCore.Mobile"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
     xmlns:views="clr-namespace:SteamAuthenticatorCore.Mobile.Views;assembly=SteamAuthenticatorCore.Mobile"
     xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
@@ -22,52 +21,28 @@
     <ContentPage.Resources />
 
     <Shell.TitleView>
-        <Grid>
-            <views:MyTitleView IsVisible="{Binding Path=IsLongPressTitleViewVisible, Converter={StaticResource InvertedBoolConverter}}" TitleName="Token page" />
-
-            <Grid
-                Padding="0,10,10,10"
-                ColumnDefinitions="Auto, *"
-                IsVisible="{Binding Path=IsLongPressTitleViewVisible}">
-                <Button
-                    Margin="0"
-                    Padding="0"
-                    xct:TouchEffect.NativeAnimation="True"
-                    BackgroundColor="Transparent"
-                    Command="{Binding Path=HideLongPressTitleViewCommand}"
-                    FontFamily="Material"
-                    FontSize="35"
-                    HeightRequest="45"
-                    HorizontalOptions="Start"
-                    Text="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.Close}"
-                    TextColor="{AppThemeBinding Dark={StaticResource DarkTextColor},
-                                                Light={StaticResource LightTextColor}}"
-                    VerticalOptions="Center"
-                    WidthRequest="45" />
-
-                <ScrollView
-                    Grid.Column="1"
-                    Margin="10,0,0,0"
-                    HorizontalOptions="EndAndExpand"
-                    HorizontalScrollBarVisibility="Never"
-                    Orientation="Horizontal">
-                    <StackLayout Orientation="Horizontal" Spacing="10">
-                        <Button
-                            xct:TouchEffect.NativeAnimation="True"
-                            Command="{Binding Path=LoginCommand}"
-                            Text="Login" />
-                        <Button
-                            xct:TouchEffect.NativeAnimation="True"
-                            Command="{Binding Path=ForceRefreshSessionCommand}"
-                            Text="Refresh session" />
-                        <Button
-                            xct:TouchEffect.NativeAnimation="True"
-                            Command="{Binding Path=DeleteCommand}"
-                            Text="Delete" />
-                    </StackLayout>
-                </ScrollView>
-            </Grid>
-        </Grid>
+        <views:MyTitleView
+            CloseCommand="{Binding Path=HideLongPressTitleViewCommand}"
+            HorizontalOptions="EndAndExpand"
+            IsContentVisible="{Binding Path=IsLongPressTitleViewVisible}"
+            TitleName="Token Page">
+            <views:MyTitleView.Content>
+                <StackLayout Orientation="Horizontal" Spacing="10">
+                    <Button
+                        xct:TouchEffect.NativeAnimation="True"
+                        Command="{Binding Path=LoginCommand}"
+                        Text="Login again" />
+                    <Button
+                        xct:TouchEffect.NativeAnimation="True"
+                        Command="{Binding Path=ForceRefreshSessionCommand}"
+                        Text="Refresh session" />
+                    <Button
+                        xct:TouchEffect.NativeAnimation="True"
+                        Command="{Binding Path=DeleteCommand}"
+                        Text="Delete" />
+                </StackLayout>
+            </views:MyTitleView.Content>
+        </views:MyTitleView>
     </Shell.TitleView>
 
     <ContentPage.Content>
@@ -150,7 +125,7 @@
                                 xct:TouchEffect.NativeAnimation="True"
                                 BorderColor="Transparent"
                                 CornerRadius="20">
-                                <Label FontSize="Medium" Text="{Binding AccountName}" />
+                                <Label FontSize="Medium" Text="{Binding AccountName, Mode=OneTime}" />
                             </Frame>
                         </StackLayout>
                     </DataTemplate>

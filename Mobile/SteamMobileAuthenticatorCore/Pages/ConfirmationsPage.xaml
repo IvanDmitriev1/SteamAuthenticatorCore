@@ -20,7 +20,15 @@
     mc:Ignorable="d">
 
     <Shell.TitleView>
-        <views:MyTitleView TitleName="Confirmations page" />
+        <views:MyTitleView
+            CloseCommand="{Binding Path=HideCountTitleViewCommand}"
+            IsCloseButtonVisible="False"
+            IsContentVisible="{Binding Path=IsCountTitleViewVisible}"
+            TitleName="Confirmations page">
+            <views:MyTitleView.Content>
+                <Label FontSize="Large" Text="{Binding Path=SelectedItems.Count}" />
+            </views:MyTitleView.Content>
+        </views:MyTitleView>
     </Shell.TitleView>
 
     <ContentPage.Content>
@@ -29,6 +37,7 @@
                 Grid.Row="0"
                 Command="{Binding Path=RefreshConfirmationsCommand}"
                 IsRefreshing="{Binding Path=IsRefreshing}">
+
                 <CollectionView x:Name="CollectionView" ItemsSource="{Binding Path=Account.Confirmations}">
                     <CollectionView.EmptyView>
                         <StackLayout>

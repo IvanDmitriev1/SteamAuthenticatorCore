@@ -10,8 +10,8 @@ namespace SteamAuthenticatorCore.Mobile.Pages
     {
         public ConfirmationsPage()
         {
-            BindingContext = Startup.ServiceProvider.GetRequiredService<ConfirmationViewModel>();
             InitializeComponent();
+            BindingContext = Startup.ServiceProvider.GetRequiredService<ConfirmationViewModel>();
         }
     }
 }
