@@ -63,9 +63,9 @@ public partial class App : Application
     private void ApplyStatusBarColor()
     {
         if (Application.Current.RequestedTheme == OSAppTheme.Dark)
-            _environment.SetStatusBarColor((Color) Application.Current.Resources["SecondDarkBackground"], true);
+            _environment.SetStatusBarColor((Color) Application.Current.Resources["SecondDarkBackground"], false);
         else
-            _environment.SetStatusBarColor((Color) Application.Current.Resources["SecondLightBackgroundColor"], false);
+            _environment.SetStatusBarColor((Color) Application.Current.Resources["SecondLightBackgroundColor"], true);
     }
 
     private static async Task OnManifestLocationChanged()
