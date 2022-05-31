@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
+using SteamAuthenticatorCore.Mobile.Services.Interfaces;
 using SteamAuthenticatorCore.Shared;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -19,12 +20,15 @@ public partial class App : Application
 
         MainPage = new AppShell();
 
+        _environment = Startup.ServiceProvider.GetRequiredService<IEnvironment>();
+
         var platformImplementations = Startup.ServiceProvider.GetRequiredService<IPlatformImplementations>();
 
-        _settings = Startup.ServiceProvider.GetRequiredService<AppSettings>();
-        _settings.LoadSettings();
-        _settings.PropertyChanged += SettingsOnPropertyChanged;
-        platformImplementations.SetTheme(_settings.AppTheme);
+        var settings = Startup.ServiceProvider.GetRequiredService<AppSettings>();
+        settings.LoadSettings();
+        settings.PropertyChanged += SettingsOnPropertyChanged;
+        platformImplementations.SetTheme(settings.AppTheme);
+        ApplyStatusBarColor();
 
         var confirmationService = Startup.ServiceProvider.GetRequiredService<BaseConfirmationService>();
 
@@ -32,7 +36,7 @@ public partial class App : Application
         tokenService.IsMobile = true;
     }
 
-    private readonly AppSettings _settings;
+    private readonly IEnvironment _environment;
 
     protected override async void OnStart()
     {
@@ -53,13 +57,15 @@ public partial class App : Application
 
     private void OnRequestedThemeChanged(object sender, AppThemeChangedEventArgs e)
     {
-        _settings.AppTheme = e.RequestedTheme switch
-        {
-            OSAppTheme.Unspecified => Theme.System,
-            OSAppTheme.Light => Theme.Light,
-            OSAppTheme.Dark => Theme.Dark,
-            _ => throw new ArgumentOutOfRangeException()
-        };
+        ApplyStatusBarColor();
+    }
+
+    private void ApplyStatusBarColor()
+    {
+        if (Application.Current.RequestedTheme == OSAppTheme.Dark)
+            _environment.SetStatusBarColor((Color) Application.Current.Resources["SecondDarkBackground"], true);
+        else
+            _environment.SetStatusBarColor((Color) Application.Current.Resources["SecondLightBackgroundColor"], false);
     }
 
     private static async Task OnManifestLocationChanged()

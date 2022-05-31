@@ -33,12 +33,5 @@ internal class MobileImplementations : IPlatformImplementations
             Theme.Dark => OSAppTheme.Dark,
             _ => throw new ArgumentOutOfRangeException(nameof(theme), theme, null)
         };
-
-        var environment = Startup.ServiceProvider.GetRequiredService<IEnvironment>();
-
-        if (Application.Current.RequestedTheme == OSAppTheme.Dark)
-            environment.SetStatusBarColor((Color) Application.Current.Resources["SecondDarkBackground"], false);
-        else
-            environment.SetStatusBarColor((Color) Application.Current.Resources["SecondLightBackgroundColor"], true);
     }
 }
