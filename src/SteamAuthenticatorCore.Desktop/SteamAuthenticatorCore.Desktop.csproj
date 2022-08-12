@@ -18,30 +18,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Common\**" />
-    <Compile Remove="Custom\**" />
-    <Compile Remove="Models\**" />
-    <EmbeddedResource Remove="Common\**" />
-    <EmbeddedResource Remove="Custom\**" />
-    <EmbeddedResource Remove="Models\**" />
-    <None Remove="Common\**" />
-    <None Remove="Custom\**" />
-    <None Remove="Models\**" />
-    <Page Remove="Common\**" />
-    <Page Remove="Custom\**" />
-    <Page Remove="Models\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="client_secret.json" />
-    <None Remove="icon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="client_secret.json" />
-  </ItemGroup>
 	
 	<ItemGroup>
     <Resource Include="icon.ico" />
