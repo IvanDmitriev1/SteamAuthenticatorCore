@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SteamAuthenticatorCore.Desktop.Views;
+using SteamAuthenticatorCore.Shared;
 
 namespace SteamAuthenticatorCore.Desktop.Services;
 

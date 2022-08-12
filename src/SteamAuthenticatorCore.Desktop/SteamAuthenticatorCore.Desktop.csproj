@@ -18,6 +18,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="client_secret.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="client_secret.json" />
+  </ItemGroup>
 	
 	<ItemGroup>
     <Resource Include="icon.ico" />

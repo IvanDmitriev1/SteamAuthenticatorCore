@@ -1,15 +1,11 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SteamAuthenticatorCore.Shared.Abstraction;
 
-public interface IPlatformTimer
+public interface IPlatformTimer : IDisposable
 {
-    public void ChangeInterval(TimeSpan time);
-
-    public void SetFuncOnTick(Func<Task> callback);
-    public void SetFuncOnTick(Action callback);
-
-    public void Start();
+    public void Start(TimeSpan timeSpan, Func<CancellationToken, ValueTask> func);
     public void Stop();
 }

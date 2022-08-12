@@ -1,11 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using SteamAuthenticatorCore.Shared.Abstraction;
 
-namespace SteamAuthenticatorCore.Shared.ViewModel;
+namespace SteamAuthenticatorCore.Shared;
 
-public partial class AppSettingsViewModel : ObservableObject, ISettings
+public partial class AppSettings : ObservableObject, ISettings
 {
-    public AppSettingsViewModel(ISettingsService settingsService)
+    public AppSettings(ISettingsService settingsService)
     {
         SettingsService = settingsService;
         IsInitialized = false;

@@ -1,0 +1,91 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
+using System.Threading.Tasks;
+using SteamAuthCore;
+using SteamAuthenticatorCore.Shared.Abstraction;
+
+namespace SteamAuthenticatorCore.Shared.Services;
+
+public class ManifestAccountsWatcherService : IDisposable
+{
+    public ManifestAccountsWatcherService(AppSettings settings, ManifestServiceResolver manifestServiceResolver, IPlatformImplementations platformImplementations, ObservableCollection<SteamGuardAccount> accounts)
+    {
+        _settings = settings;
+        _manifestServiceResolver = manifestServiceResolver;
+        _platformImplementations = platformImplementations;
+        _accounts = accounts;
+
+        _settings.PropertyChanged += SettingsOnPropertyChanged;
+    }
+
+    private bool _isFirstTime;
+    private readonly AppSettings _settings;
+    private readonly ManifestServiceResolver _manifestServiceResolver;
+    private readonly IPlatformImplementations _platformImplementations;
+    private readonly ObservableCollection<SteamGuardAccount> _accounts;
+
+    public void Dispose()
+    {
+        _settings.PropertyChanged -= SettingsOnPropertyChanged;
+    }
+
+    public async ValueTask RefreshAccounts()
+    {
+        _accounts.Clear();
+
+        foreach (var account in await _manifestServiceResolver.Invoke().GetAccounts().ConfigureAwait(false))
+        {
+            _platformImplementations.InvokeMainThread(() =>
+            {
+                _accounts.Add(account);
+            });
+        }
+    }
+
+    public async ValueTask Initialize()
+    {
+        var manifestService = _manifestServiceResolver.Invoke();
+        await manifestService.Initialize();
+
+        await RefreshAccounts();
+    }
+
+    public async Task ImportSteamGuardAccount(IEnumerable<string> files)
+    {
+        foreach (var file in files)
+        {
+            try
+            {
+                await using var stream = new FileStream(file, FileMode.Open, FileAccess.Read);
+
+                if (await _manifestServiceResolver.Invoke().AddSteamGuardAccount(stream, stream.Name) is { } account)
+                    _accounts.Add(account);
+            }
+            catch
+            {
+                await _platformImplementations.DisplayAlert("Your file is corrupted");
+            }
+        }
+    }
+
+    private async void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        var settings = (AppSettings) sender!;
+        if (!settings.IsInitialized)
+            return;
+
+        if (e.PropertyName != nameof(settings.ManifestLocation)) 
+            return;
+
+        if (!_isFirstTime)
+        {
+            _isFirstTime = true;
+            return;
+        }
+
+        await Initialize();
+    }
+}

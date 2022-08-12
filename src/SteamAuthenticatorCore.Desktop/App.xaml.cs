@@ -1,11 +1,19 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SteamAuthCore;
+using SteamAuthCore.Manifest;
 using SteamAuthenticatorCore.Desktop.Services;
+using SteamAuthenticatorCore.Desktop.ViewModels;
 using SteamAuthenticatorCore.Desktop.Views;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
+using SteamAuthenticatorCore.Shared;
+using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Services;
 using Wpf.Ui.Mvvm.Contracts;
 using Wpf.Ui.Mvvm.Services;
 
@@ -13,6 +21,9 @@ namespace SteamAuthenticatorCore.Desktop;
 
 public sealed partial class App : Application
 {
+    public const string InternalName = "SteamDesktopAuthenticatorCore";
+    public const string Name = "Steam desktop authenticator core";
+
     public App()
     {
         _host = Host
@@ -30,11 +41,40 @@ public sealed partial class App : Application
                 services.AddSingleton<IDialogService, DialogService>();
                 services.AddSingleton<IPageService, PageService>();
                 services.AddSingleton<INavigationService, NavigationService>();
+                services.AddSingleton<IDialogService, DialogService>();
 
                 services.AddSingleton<Container>();
                 services.AddTransient<TokenPage>();
                 services.AddTransient<ConfirmationsPage>();
                 services.AddTransient<SettingsPage>();
+
+                services.AddScoped<TokenViewModel>();
+
+                services.AddSingleton<ObservableCollection<SteamGuardAccount>>();
+
+                services.AddSingleton<AppSettings>();
+                services.AddGoogleDriveApi(Name);
+                services.AddTransient<ISettingsService, DesktopSettingsService>();
+                services.AddSingleton<IPlatformImplementations, DesktopImplementations>();
+
+                services.AddScoped<GoogleDriveManifestModelService>();
+                services.AddScoped<IManifestDirectoryService, DesktopManifestDirectoryService>();
+                services.AddScoped<LocalDriveManifestModelService>();
+                services.AddScoped<ManifestAccountsWatcherService>();
+                services.AddTransient<IPlatformTimer, PeriodicTimerService>();
+
+                services.AddScoped<ManifestServiceResolver>(provider => () =>
+                {
+                    var appSettings = provider.GetRequiredService<AppSettings>();
+                    return appSettings.ManifestLocation switch
+                    {
+                        AppSettings.ManifestLocationModel.LocalDrive => provider
+                            .GetRequiredService<LocalDriveManifestModelService>(),
+                        AppSettings.ManifestLocationModel.GoogleDrive => provider
+                            .GetRequiredService<GoogleDriveManifestModelService>(),
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
+                });
             })
             .Build();
     }

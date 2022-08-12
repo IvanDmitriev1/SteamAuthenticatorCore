@@ -16,10 +16,25 @@
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <Grid>
+        <Grid x:Name="RootWelcomeGrid">
+            <StackPanel VerticalAlignment="Center">
+                <ui:ProgressRing IsIndeterminate="True" />
+                <TextBlock
+                    Margin="0,12,0,0"
+                    FontSize="16"
+                    FontWeight="Medium"
+                    Text="Preparing app for you."
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
+            </StackPanel>
+        </Grid>
+
         <ui:NavigationView
+            x:Name="MainContent"
             FramePadding="10 0"
             IsBackButtonVisible="True"
-            IsBreadcrumbVisible="True">
+            IsBreadcrumbVisible="True"
+            Visibility="Hidden">
             <ui:NavigationView.Navigation>
                 <ui:NavigationFluent x:Name="NavigationFluent" SelectedPageIndex="0">
                     <ui:NavigationFluent.Items>
