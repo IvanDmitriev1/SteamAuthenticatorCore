@@ -1,10 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using SteamAuthenticatorCore.Shared.Abstraction;
 
-namespace SteamAuthenticatorCore.Shared;
+namespace SteamAuthenticatorCore.Shared.ViewModel;
 
-public partial class AppSettings : ObservableObject, ISettings
+public partial class AppSettingsViewModel : ObservableObject, ISettings
 {
-    public AppSettings(ISettingsService settingsService)
+    public AppSettingsViewModel(ISettingsService settingsService)
     {
         SettingsService = settingsService;
         IsInitialized = false;
@@ -31,9 +32,6 @@ public partial class AppSettings : ObservableObject, ISettings
     [ObservableProperty]
     private bool _autoConfirmMarketTransactions;
 
-    [ObservableProperty]
-    private Theme _appTheme;
-
     [IgnoreSettings]
     public bool IsInitialized { get; private set; }
     
@@ -47,7 +45,6 @@ public partial class AppSettings : ObservableObject, ISettings
         Updated = false;
         PeriodicCheckingInterval = 10;
         AutoConfirmMarketTransactions = false;
-        AppTheme = Theme.System;
 
         IsInitialized = true;
     }
