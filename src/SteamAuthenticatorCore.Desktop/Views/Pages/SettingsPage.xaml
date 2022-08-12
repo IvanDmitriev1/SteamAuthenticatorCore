@@ -11,5 +11,39 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
 
-    <Grid />
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0">
+                <StackPanel.Resources>
+                    <Style BasedOn="{StaticResource {x:Type ui:CardControl}}" TargetType="{x:Type ui:CardControl}">
+                        <Setter Property="Margin" Value="0,5,0,0" />
+                    </Style>
+                </StackPanel.Resources>
+
+                <ui:CardControl Margin="0,0,0,0" Header="Appearance">
+                    <ComboBox MinWidth="105" />
+                </ui:CardControl>
+
+                <ui:CardControl Header=".maFiles location">
+                    <ComboBox MinWidth="105" />
+                </ui:CardControl>
+
+                <ui:CardControl Header="Auto-confirm market transactions">
+                    <ui:ToggleSwitch />
+                </ui:CardControl>
+
+                <ui:CardControl Header="Seconds between checking for confirmations">
+                    <ui:NumberBox
+                        IntegersOnly="True"
+                        Max="100"
+                        Min="10" />
+                </ui:CardControl>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </ui:UiPage>
