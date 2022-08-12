@@ -53,23 +53,23 @@ public partial class LoginService : ObservableObject
     private string _username;
 
     [ObservableProperty]
-    [AlsoNotifyChangeFor(nameof(IsSetUpNewVisible))]
+    [NotifyPropertyChangedFor(nameof(IsSetUpNewVisible))]
     private bool _isContinueButtonVisible;
 
     [ObservableProperty]
-    [AlsoNotifyChangeFor(nameof(IsContinueButtonVisible))]
+    [NotifyPropertyChangedFor(nameof(IsContinueButtonVisible))]
     private bool _isEmailTextBlockVisible;
 
     [ObservableProperty]
-    [AlsoNotifyChangeFor(nameof(IsContinueButtonVisible))]
+    [NotifyPropertyChangedFor(nameof(IsContinueButtonVisible))]
     private bool _isPhoneTextBlockVisible;
 
     [ObservableProperty]
-    [AlsoNotifyChangeFor(nameof(IsContinueButtonVisible))]
+    [NotifyPropertyChangedFor(nameof(IsContinueButtonVisible))]
     private bool _isCaptchaVisible;
 
     [ObservableProperty]
-    [AlsoNotifyChangeFor(nameof(IsContinueButtonVisible))]
+    [NotifyPropertyChangedFor(nameof(IsContinueButtonVisible))]
     private bool _isSmsTextBoxVisible;
 
     [ObservableProperty]
@@ -88,7 +88,7 @@ public partial class LoginService : ObservableObject
 
     #region Commands
 
-    [ICommand]
+    [RelayCommand]
     private void OnContinue()
     {
         if (string.IsNullOrEmpty(AdditionalText) || string.IsNullOrWhiteSpace(AdditionalText))

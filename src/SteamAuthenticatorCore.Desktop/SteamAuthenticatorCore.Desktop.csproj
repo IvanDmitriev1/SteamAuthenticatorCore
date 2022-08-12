@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Dependencies\GoogleDrive\GoogleDrive.csproj" />
+    <ProjectReference Include="..\Dependencies\wpfui\src\Wpf.Ui\Wpf.Ui.csproj" />
     <ProjectReference Include="..\SteamAuthenticatorCore.Shared\SteamAuthenticatorCore.Shared.csproj" />
   </ItemGroup>
 
