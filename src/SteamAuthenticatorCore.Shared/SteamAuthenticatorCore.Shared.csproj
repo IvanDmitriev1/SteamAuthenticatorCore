@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Dependencies\SteamAuthCore\SteamAuthCore.csproj" />
+    <ProjectReference Include="..\Dependencies\wpfui\src\Wpf.Ui\Wpf.Ui.csproj" />
   </ItemGroup>
 
 </Project>
