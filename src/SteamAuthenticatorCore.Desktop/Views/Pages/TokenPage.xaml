@@ -119,14 +119,14 @@
                             <StackPanel HorizontalAlignment="Stretch">
                                 <TextBlock Padding="2.5" Text="{Binding Path=AccountName}" />
 
-                                <!--<StackPanel.ContextMenu>
-                                    <ContextMenu DataContext="{Binding Source={x:Reference ScrollViewer}, Path=DataContext}">
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu DataContext="{Binding Source={x:Reference Page}, Path=DataContext}">
                                         <MenuItem Header="Login again" />
                                         <MenuItem Header="Force refresh session" />
                                         <Separator />
                                         <MenuItem Header="Delete from list" />
                                     </ContextMenu>
-                                </StackPanel.ContextMenu>-->
+                                </StackPanel.ContextMenu>
 
                             </StackPanel>
                         </DataTemplate>

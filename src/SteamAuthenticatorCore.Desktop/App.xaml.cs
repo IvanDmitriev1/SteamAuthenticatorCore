@@ -49,6 +49,7 @@ public sealed partial class App : Application
                 services.AddTransient<SettingsPage>();
 
                 services.AddScoped<TokenViewModel>();
+                services.AddScoped<SettingsViewModel>();
 
                 services.AddSingleton<ObservableCollection<SteamGuardAccount>>();
 
