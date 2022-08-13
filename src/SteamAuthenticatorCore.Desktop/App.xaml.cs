@@ -42,11 +42,15 @@ public sealed partial class App : Application
                 services.AddSingleton<IPageService, PageService>();
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddSingleton<IDialogService, DialogService>();
+                services.AddSingleton<ITaskBarService, TaskBarService>();
+                services.AddSingleton<IThemeService, ThemeService>();
+                services.AddSingleton<TaskBarServiceWrapper>();
 
                 services.AddSingleton<Container>();
                 services.AddTransient<TokenPage>();
                 services.AddTransient<ConfirmationsPage>();
                 services.AddTransient<SettingsPage>();
+                services.AddTransient<LoginPage>();
 
                 services.AddScoped<TokenViewModel>();
                 services.AddScoped<SettingsViewModel>();

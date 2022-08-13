@@ -38,16 +38,19 @@
                 </Menu.Resources>
 
                 <MenuItem Header="File">
-                    <MenuItem Header="Import accounts" />
-                    <MenuItem Header="Refresh account list" />
-                    <MenuItem Header="Show accounts file folder" />
+                    <MenuItem Command="{Binding Path=ImportAccountsCommand}" Header="Import accounts" />
+                    <MenuItem
+                        Command="{Binding Path=RefreshCommand}"
+                        CommandParameter="{Binding ElementName=LoadingStackPanel}"
+                        Header="Refresh account list" />
+                    <MenuItem Command="{Binding Path=ShowAccountFilesFolderCommand}" Header="Show accounts file folder" />
                 </MenuItem>
 
                 <MenuItem Header="Selected account">
-                    <MenuItem Header="Login again" />
-                    <MenuItem Header="Force refresh session" />
+                    <MenuItem Command="{Binding LoginAgainCommand}" Header="Login again" />
+                    <MenuItem Command="{Binding Path=LoginInSelectedAccountCommand}" Header="Force refresh session" />
                     <Separator />
-                    <MenuItem Header="Delete from list" />
+                    <MenuItem Command="{Binding Path=DeleteAccountCommand}" Header="Delete from list" />
                 </MenuItem>
 
                 <!--<MenuItem Command="{Binding Path=OnSetUpNewAccountCommand}" Header="Set up new account" />-->
@@ -108,6 +111,15 @@
                     VirtualizingPanel.IsVirtualizing="True"
                     VirtualizingPanel.VirtualizationMode="Recycling">
 
+                    <b:Interaction.Triggers>
+                        <b:EventTrigger EventName="DragOver">
+                            <b:InvokeCommandAction Command="{Binding Path=ListBoxDragOverCommand}" PassEventArgsToCommand="True" />
+                        </b:EventTrigger>
+                        <b:EventTrigger EventName="Drop">
+                            <b:InvokeCommandAction Command="{Binding Path=ListBoxDragAndDropCommand}" PassEventArgsToCommand="True" />
+                        </b:EventTrigger>
+                    </b:Interaction.Triggers>
+
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel />
@@ -121,13 +133,12 @@
 
                                 <StackPanel.ContextMenu>
                                     <ContextMenu DataContext="{Binding Source={x:Reference Page}, Path=DataContext}">
-                                        <MenuItem Header="Login again" />
-                                        <MenuItem Header="Force refresh session" />
+                                        <MenuItem Command="{Binding LoginAgainCommand}" Header="Login again" />
+                                        <MenuItem Command="{Binding Path=LoginInSelectedAccountCommand}" Header="Force refresh session" />
                                         <Separator />
-                                        <MenuItem Header="Delete from list" />
+                                        <MenuItem Command="{Binding Path=DeleteAccountCommand}" Header="Delete from list" />
                                     </ContextMenu>
                                 </StackPanel.ContextMenu>
-
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>

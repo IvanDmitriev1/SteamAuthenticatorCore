@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using SteamAuthCore;
 using SteamAuthenticatorCore.Shared.Abstraction;
 
@@ -10,17 +11,21 @@ namespace SteamAuthenticatorCore.Shared.ViewModel;
 
 public abstract partial class TokenViewModelBase : ObservableObject
 {
-    protected TokenViewModelBase(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer)
+    protected TokenViewModelBase(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations)
     {
         _platformTimer = platformTimer;
+        _platformImplementations = platformImplementations;
         Accounts = accounts;
         _token = string.Empty;
         _platformTimer.Start(TimeSpan.FromSeconds(2), OnTimer);
     }
 
     private readonly IPlatformTimer _platformTimer;
+    private readonly IPlatformImplementations _platformImplementations;
     private Int64 _currentSteamChunk;
     private Int64 _steamTime;
+
+    #region Propertis
 
     [ObservableProperty]
     private string _token;
@@ -33,6 +38,39 @@ public abstract partial class TokenViewModelBase : ObservableObject
 
     public ObservableCollection<SteamGuardAccount> Accounts { get; }
     public bool IsMobile { get; set; }
+
+    #endregion
+
+    #region Commands
+
+    [RelayCommand]
+    private async Task LoginInSelectedAccount()
+    {
+        if (SelectedAccount is null)
+            return;
+
+        if (await SelectedAccount.RefreshSessionAsync())
+        {
+            await _platformImplementations.DisplayAlert("Your session has been refreshed.");
+            return;
+        }
+
+        await _platformImplementations.DisplayAlert("Failed to refresh your session.\nTry using the \"Login again\" option.");
+    }
+
+    #endregion
+
+    protected async ValueTask<bool> RefreshAccountSession(SteamGuardAccount account)
+    {
+        try
+        {
+            return await account.RefreshSessionAsync();
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
 
     private ValueTask OnTimer(CancellationToken arg)
     {

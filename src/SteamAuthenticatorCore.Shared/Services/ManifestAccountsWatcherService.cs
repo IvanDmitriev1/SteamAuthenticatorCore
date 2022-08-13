@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using SteamAuthCore;
 using SteamAuthenticatorCore.Shared.Abstraction;
@@ -26,6 +27,7 @@ public class ManifestAccountsWatcherService : IDisposable
     private readonly ManifestServiceResolver _manifestServiceResolver;
     private readonly IPlatformImplementations _platformImplementations;
     private readonly ObservableCollection<SteamGuardAccount> _accounts;
+    private CancellationTokenSource _cts = new();
 
     public void Dispose()
     {
@@ -50,7 +52,21 @@ public class ManifestAccountsWatcherService : IDisposable
         var manifestService = _manifestServiceResolver.Invoke();
         await manifestService.Initialize();
 
-        await RefreshAccounts();
+        try
+        {
+            _cts.Token.ThrowIfCancellationRequested();
+
+            await RefreshAccounts();
+        }
+        catch (OperationCanceledException)
+        {
+
+        }
+        finally
+        {
+            _cts.Dispose();
+            _cts = new CancellationTokenSource();
+        }
     }
 
     public async Task ImportSteamGuardAccount(IEnumerable<string> files)
@@ -69,6 +85,12 @@ public class ManifestAccountsWatcherService : IDisposable
                 await _platformImplementations.DisplayAlert("Your file is corrupted");
             }
         }
+    }
+
+    public async ValueTask DeleteAccount(SteamGuardAccount account)
+    {
+        await _manifestServiceResolver.Invoke().DeleteSteamGuardAccount(account);
+        _accounts.Remove(account);
     }
 
     private async void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs e)

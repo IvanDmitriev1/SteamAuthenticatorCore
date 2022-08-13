@@ -47,9 +47,29 @@
                             Icon="Settings24"
                             PageType="{x:Type pages:SettingsPage}" />
                     </ui:NavigationFluent.Footer>
+                    <ui:NavigationFluent.HiddenItems>
+                        <ui:NavigationItem Content="Login" PageType="{x:Type pages:LoginPage}" />
+                    </ui:NavigationFluent.HiddenItems>
                 </ui:NavigationFluent>
             </ui:NavigationView.Navigation>
+            <ui:NavigationView.Content>
+                <ui:Snackbar
+                    x:Name="RootSnackbar"
+                    Title="Info"
+                    MaxWidth="600"
+                    Appearance="Secondary"
+                    CloseButtonEnabled="True"
+                    Icon="Info24"
+                    Timeout="5000" />
+            </ui:NavigationView.Content>
         </ui:NavigationView>
+
+        <ui:Dialog
+            x:Name="RootDialog"
+            Title="Alert"
+            Grid.Row="0"
+            ButtonLeftName="Ok"
+            ButtonRightName="Cancel" />
 
         <ui:TitleBar Title="SteamAuthenticatorCore.Desktop" Margin="42,0,0,0" />
     </Grid>

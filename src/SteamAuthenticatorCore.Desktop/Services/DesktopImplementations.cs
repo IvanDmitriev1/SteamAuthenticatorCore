@@ -26,8 +26,10 @@ internal class DesktopImplementations : IPlatformImplementations
         Application.Current.Dispatcher.Invoke(method);
     }
 
-    public Task DisplayAlert(string message)
+    public async Task DisplayAlert(string message)
     {
-        return _dialog.GetDialogControl().ShowAndWaitAsync();
+        var control = _dialog.GetDialogControl();
+        await control.ShowAndWaitAsync("Alert!" ,message);
+        control.Hide();
     }
 }
