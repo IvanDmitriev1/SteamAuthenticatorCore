@@ -54,6 +54,7 @@ public sealed partial class App : Application
 
                 services.AddScoped<TokenViewModel>();
                 services.AddScoped<SettingsViewModel>();
+                services.AddScoped<ConfirmationsViewModel>();
 
                 services.AddSingleton<ObservableCollection<SteamGuardAccount>>();
 
@@ -67,7 +68,8 @@ public sealed partial class App : Application
                 services.AddScoped<LocalDriveManifestModelService>();
                 services.AddScoped<ManifestAccountsWatcherService>();
                 services.AddTransient<IPlatformTimer, PeriodicTimerService>();
-
+                services.AddScoped<ConfirmationServiceBase, DesktopConfirmationService>();
+                
                 services.AddScoped<ManifestServiceResolver>(provider => () =>
                 {
                     var appSettings = provider.GetRequiredService<AppSettings>();

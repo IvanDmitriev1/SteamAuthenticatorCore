@@ -17,7 +17,9 @@ public abstract partial class TokenViewModelBase : ObservableObject
         _platformImplementations = platformImplementations;
         Accounts = accounts;
         _token = string.Empty;
-        _platformTimer.Start(TimeSpan.FromSeconds(2), OnTimer);
+        
+        _platformTimer.Initialize(TimeSpan.FromSeconds(2), OnTimer);
+        _platformTimer.Start();
     }
 
     private readonly IPlatformTimer _platformTimer;

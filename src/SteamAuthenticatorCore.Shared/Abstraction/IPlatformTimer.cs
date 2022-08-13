@@ -6,6 +6,7 @@ namespace SteamAuthenticatorCore.Shared.Abstraction;
 
 public interface IPlatformTimer : IDisposable
 {
-    public void Start(TimeSpan timeSpan, Func<CancellationToken, ValueTask> func);
-    public void Stop();
+    void Initialize(TimeSpan timeSpan, Func<CancellationToken, ValueTask> func);
+    void Start();
+    void Stop();
 }
