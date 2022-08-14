@@ -15,6 +15,17 @@
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
+
+    <ui:UiWindow.Resources>
+        <Style BasedOn="{StaticResource {x:Type ui:NavigationView}}" TargetType="{x:Type ui:NavigationView}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=NavigationFluent, Path=IsExpanded}" Value="False">
+                    <Setter Property="BreadcrumbMargin" Value="0, 40, 0, 18" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </ui:UiWindow.Resources>
+
     <Grid>
         <Grid x:Name="RootWelcomeGrid">
             <StackPanel VerticalAlignment="Center">
@@ -35,8 +46,12 @@
             IsBackButtonVisible="True"
             IsBreadcrumbVisible="True"
             Visibility="Hidden">
+
             <ui:NavigationView.Navigation>
-                <ui:NavigationFluent x:Name="NavigationFluent" SelectedPageIndex="0">
+                <ui:NavigationFluent
+                    x:Name="NavigationFluent"
+                    IsExpandButtonVisible="True"
+                    SelectedPageIndex="0">
                     <ui:NavigationFluent.Items>
                         <ui:NavigationItem Content="Token" PageType="{x:Type pages:TokenPage}" />
                         <ui:NavigationItem Content="Confirmations" PageType="{x:Type pages:ConfirmationsPage}" />
