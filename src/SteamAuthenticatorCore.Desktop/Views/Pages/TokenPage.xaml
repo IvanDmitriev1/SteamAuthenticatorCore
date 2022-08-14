@@ -71,13 +71,19 @@
                         ContextMenu="{x:Null}"
                         FontSize="13"
                         IsEnabled="False"
-                        Text="{Binding Token, Mode=OneWay}" />
+                        Text="{Binding Token, Mode=OneWay}">
+                        <TextBox.Foreground>
+                            <SolidColorBrush Color="{DynamicResource TextFillColorPrimary}" />
+                        </TextBox.Foreground>
+                    </TextBox>
 
                     <ui:Button
                         Grid.Column="1"
                         HorizontalAlignment="Right"
                         VerticalContentAlignment="Center"
                         Appearance="Primary"
+                        Command="{StaticResource CopyCommand}"
+                        CommandParameter="{Binding Token, Mode=OneWay}"
                         Content="Copy" />
                 </Grid>
 
