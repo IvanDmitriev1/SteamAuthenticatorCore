@@ -1,210 +1,152 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Threading;
+using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Sentry;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.ViewModels;
+using SteamAuthenticatorCore.Desktop.Views;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
-using WPFUI.Appearance;
-using WPFUI.Common;
-using WPFUI.DIControls;
-using WPFUI.DIControls.Interfaces;
+using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Services;
+using Wpf.Ui.Mvvm.Contracts;
+using Wpf.Ui.Mvvm.Services;
 
 namespace SteamAuthenticatorCore.Desktop;
 
 public sealed partial class App : Application
 {
-    public App()
-    {
-        this.Dispatcher.UnhandledException += DispatcherOnUnhandledException;
-
-        _host = Host.CreateDefaultBuilder().ConfigureServices((context, collection) =>
-        {
-            ConfigureOptions(collection);
-            ConfigureServices(collection);
-        }).Build();
-    }
-
-    public delegate IManifestModelService ManifestServiceResolver();
-
     public const string InternalName = "SteamDesktopAuthenticatorCore";
     public const string Name = "Steam desktop authenticator core";
+    public static IServiceProvider ServiceProvider { get; private set; } = null!;
+
+    private IServiceScope? _serviceScope;
+
+    public App()
+    {
+        _host = Host
+            .CreateDefaultBuilder()
+            .ConfigureHostConfiguration(builder =>
+            {
+                var appName = Assembly.GetEntryAssembly()!.GetName().Name;
+
+                var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{appName}.appsettings.json");
+                builder.AddJsonStream(stream);
+            })
+            .ConfigureLogging((context, builder) =>
+            {
+                builder.AddConfiguration(context.Configuration);
+                builder.AddDebug();
+
+                builder.AddSentry(options =>
+                {
+                    if (context.HostingEnvironment.IsDevelopment())
+                        options.InitializeSdk = false;
+                });
+            })
+            .ConfigureServices(services =>
+            {
+                services.AddHostedService<ApplicationHostService>();
+
+                services.AddSingleton<ISnackbarService, SnackbarService>();
+                services.AddSingleton<IDialogService, DialogService>();
+                services.AddSingleton<IPageService, PageService>();
+                services.AddSingleton<INavigationService, NavigationService>();
+                services.AddSingleton<IDialogService, DialogService>();
+                services.AddSingleton<ITaskBarService, TaskBarService>();
+                services.AddSingleton<IThemeService, ThemeService>();
+                services.AddSingleton<TaskBarServiceWrapper>();
+
+                services.AddSingleton<Container>();
+                services.AddTransient<TokenPage>();
+                services.AddTransient<ConfirmationsPage>();
+                services.AddTransient<SettingsPage>();
+                services.AddTransient<LoginPage>();
+
+                services.AddScoped<TokenViewModel>();
+                services.AddScoped<SettingsViewModel>();
+                services.AddScoped<ConfirmationsViewModel>();
+                services.AddScoped<LoginViewModel>();
+
+                services.AddSingleton<ObservableCollection<SteamGuardAccount>>();
+
+                services.AddSingleton<AppSettings>();
+                services.AddGoogleDriveApi(Name);
+                services.AddTransient<ISettingsService, DesktopSettingsService>();
+                services.AddSingleton<IPlatformImplementations, DesktopImplementations>();
+
+                services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
+                services.AddScoped<GoogleDriveManifestModelService>();
+                services.AddScoped<IManifestDirectoryService, DesktopManifestDirectoryService>();
+                services.AddScoped<LocalDriveManifestModelService>();
+                services.AddScoped<ManifestAccountsWatcherService>();
+                services.AddTransient<IPlatformTimer, PeriodicTimerService>();
+                services.AddScoped<ConfirmationServiceBase, DesktopConfirmationService>();
+                services.AddScoped<LoginService>();
+                
+                services.AddScoped<ManifestServiceResolver>(provider => () =>
+                {
+                    var appSettings = provider.GetRequiredService<AppSettings>();
+                    return appSettings.ManifestLocation switch
+                    {
+                        AppSettings.ManifestLocationModel.LocalDrive => provider
+                            .GetRequiredService<LocalDriveManifestModelService>(),
+                        AppSettings.ManifestLocationModel.GoogleDrive => provider
+                            .GetRequiredService<GoogleDriveManifestModelService>(),
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
+                });
+            })
+            .Build();
+    }
 
     private readonly IHost _host;
 
-    #region Overrides
-
-    protected override async void OnStartup(StartupEventArgs e)
+    private async void OnStartup(object sender, StartupEventArgs e)
     {
+        var environment = _host.Services.GetRequiredService<IHostEnvironment>();
+        if (environment.IsDevelopment())
+        {
+            _serviceScope = _host.Services.CreateScope();
+            ServiceProvider = _serviceScope.ServiceProvider;
+        }
+        else
+            ServiceProvider = _host.Services;
+
         await _host.StartAsync();
-
-        var services = _host.Services;
-
-        var confirmationService = services.GetRequiredService<BaseConfirmationService>();
-
-        var settings = services.GetRequiredService<AppSettings>();
-        settings.LoadSettings();
-        settings.PropertyChanged += SettingsOnPropertyChanged;
-
-        var platformImplementations = services.GetRequiredService<IPlatformImplementations>();
-        platformImplementations.SetTheme(settings.AppTheme);
-
-        await OnStartupTask(_host.Services);
-
-        var mainWindow = _host.Services.GetRequiredService<Views.Container>();
-        mainWindow.Show();
     }
 
-    protected override async void OnExit(ExitEventArgs e)
+    private void OnExit(object sender, ExitEventArgs e)
     {
-        var settings = _host.Services.GetRequiredService<AppSettings>();
-        settings.PropertyChanged += SettingsOnPropertyChanged;
+        _host.StopAsync();
 
-        await _host.StopAsync();
+        _serviceScope?.Dispose();
         _host.Dispose();
     }
 
-    #endregion
-
-    #region PrivateMethods
-
-    private static void ConfigureOptions(IServiceCollection service)
+    private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
-        service.Configure<UpdateServiceOptions>(options =>
-        {
-            options.GitHubUrl = "https://api.github.com/repos/bduj1/StreamDesktopAuthenticatorCore/releases/latest";
-        });
-
-        service.Configure<DefaultNavigationConfiguration>(configuration =>
-        {
-            configuration.StartupPageTag = nameof(TokenPage);
-
-            configuration.VisibleItems = new INavigationItem[]
-            {
-                new DefaultNavigationItem(typeof(TokenPage), nameof(TokenPage), "Token"),
-                new DefaultNavigationItem(typeof(ConfirmationsPage), nameof(ConfirmationsPage), "Confirmations")
-            };
-
-            configuration.VisibleFooterItems = new INavigationItem[]
-            {
-                new DefaultNavigationItem(typeof(SettingsPage),nameof(SettingsPage), "Settings", SymbolRegular.Settings24)
-            };
-
-            configuration.HiddenItemsItems = new INavigationItem[]
-            {
-                new DefaultNavigationItem(typeof(LoginPage), nameof(LoginPage), "login")
-            };
-        });
-
-        service.Configure<DialogConfiguration>(configuration =>
-        {
-            configuration.Title = App.Name;
-        });
-
-        service.Configure<SnackbarConfiguration>(configuration =>
-        {
-            configuration.Title = App.Name;
-            configuration.Timeout = 5000;
-        });
-    }
-
-    private static void ConfigureServices(IServiceCollection service)
-    {
-        service.AddSingleton<Views.Container>();
-        service.AddScoped<IDialog, Dialog>();
-        service.AddScoped<ISnackbar, Snackbar>();
-        service.AddScoped<INavigation, DefaultNavigation>();
-
-        service.AddSingleton<TokenViewModel>();
-        service.AddSingleton<ConfirmationViewModel>();
-        service.AddTransient<SettingsViewModel>();
-        service.AddTransient<LoginViewModel>();
-
-        service.AddTransient<TokenPage>();
-        service.AddTransient<SettingsPage>();
-        service.AddTransient<LoginPage>();
-        service.AddTransient<ConfirmationsPage>();
-
-        service.AddScoped<IPlatformImplementations, DesktopImplementations>();
-        service.AddScoped<BaseConfirmationService, DesktopConfirmationService>();
-        service.AddTransient<IPlatformTimer, DesktopTimer>();
-            
-        service.AddScoped<TokenService>();
-        service.AddScoped<LoginService>();
-
-        service.AddSingleton<UpdateService>();
-        service.AddGoogleDriveApi(Name);
-        service.AddScoped<AppSettings>();
-        service.AddScoped<ISettingsService, DesktopSettingsService>();
-
-        service.AddScoped<GoogleDriveManifestModelService>();
-        service.AddScoped<IManifestDirectoryService, DesktopManifestDirectoryService>();
-        service.AddScoped<LocalDriveManifestModelService>();
-
-        service.AddSingleton<ObservableCollection<SteamGuardAccount>>();
-
-        service.AddScoped<ManifestServiceResolver>(provider => () =>
-        {
-            var appSettings = provider.GetRequiredService<AppSettings>();
-            return appSettings.ManifestLocation switch
-            {
-                AppSettings.ManifestLocationModel.LocalDrive => provider
-                    .GetRequiredService<LocalDriveManifestModelService>(),
-                AppSettings.ManifestLocationModel.GoogleDrive => provider
-                    .GetRequiredService<GoogleDriveManifestModelService>(),
-                _ => throw new ArgumentOutOfRangeException()
-            };
-        });
-    }
-
-    private static void DispatcherOnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-    {
-        // Process unhandled exception
-
-        MessageBox.Show( $"{e.Exception.Message}\n\n{e.Exception.StackTrace}", "Exception occurred", MessageBoxButton.OK, MessageBoxImage.Error);
-
-        // Prevent default unhandled exception processing
         e.Handled = true;
+
+        var hub = _host.Services.GetRequiredService<IHub>();
+        OnException(e.Exception, hub);
+    }
+
+    public static void OnException(Exception exception, IHub hub)
+    {
+        hub.CaptureException(exception);
+
+        MessageBox.Show( $"{exception.Message}\n\n{exception.StackTrace}", "Exception occurred", MessageBoxButton.OK, MessageBoxImage.Error);
 
         Application.Current.Shutdown();
     }
-
-    private static async Task OnStartupTask(IServiceProvider services)
-    {
-        var appSettings = services.GetRequiredService<AppSettings>();
-        if (appSettings.Updated)
-        {
-            var updateService = services.GetRequiredService<UpdateService>();
-            await updateService.DeletePreviousFile(InternalName);
-            appSettings.Updated = false;
-        }
-    }
-
-    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        var settings = (sender as AppSettings)!;
-
-        settings.SettingsService.SaveSetting(e.PropertyName!, settings);
-
-        if (e.PropertyName != nameof(settings.AppTheme))
-            return;
-
-        var platformImplementations = _host.Services.GetRequiredService<IPlatformImplementations>();
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            platformImplementations.SetTheme(settings.AppTheme);
-        });
-    }
-
-
-    #endregion
 }

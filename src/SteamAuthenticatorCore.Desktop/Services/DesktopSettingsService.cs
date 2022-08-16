@@ -1,10 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
+using SteamAuthenticatorCore.Shared.Abstraction;
 using SteamAuthenticatorCore.Shared;
+using System.Diagnostics;
+using System.Reflection;
+using System;
+using System.Linq;
 
 namespace SteamAuthenticatorCore.Desktop.Services;
 

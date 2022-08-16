@@ -1,113 +1,167 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
-using CommunityToolkit.Mvvm.ComponentModel;
+using System.Windows.Controls;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Win32;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
-using SteamAuthenticatorCore.Desktop.Views.Pages;
+using SteamAuthenticatorCore.Desktop.Messages;
+using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Shared;
-using WPFUI.Common;
-using WPFUI.DIControls;
-using WPFUI.DIControls.Interfaces;
-using WPFUI.Taskbar;
+using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Services;
+using SteamAuthenticatorCore.Shared.ViewModel;
+using Wpf.Ui.Controls.Interfaces;
+using Wpf.Ui.Mvvm.Contracts;
+using Wpf.Ui.TaskBar;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
-public sealed partial class TokenViewModel : ObservableObject, IDisposable
+public partial class TokenViewModel : TokenViewModelBase
 {
-    public TokenViewModel(AppSettings appSettings, App.ManifestServiceResolver manifestServiceResolver, TokenService tokenService, INavigation navigation, IDialog dialog, ObservableCollection<SteamGuardAccount> steamGuardAccounts)
+    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, ManifestAccountsWatcherService accountsWatcherService, TaskBarServiceWrapper taskBarServiceWrapper, IDialogService dialogService, INavigationService navigationService, AppSettings appSettings, IMessenger messenger) : base(accounts, platformTimer, platformImplementations)
     {
+        _accountsWatcherService = accountsWatcherService;
+        _taskBarServiceWrapper = taskBarServiceWrapper;
+        _dialogService = dialogService;
+        _navigationService = navigationService;
         _appSettings = appSettings;
-        _manifestServiceResolver = manifestServiceResolver;
-        TokenService = tokenService;
-        _navigation = navigation;
-        _dialog = dialog;
-        Accounts = steamGuardAccounts;
-
-        _appSettings.PropertyChanged += AppSettingsOnPropertyChanged;
+        _messenger = messenger;
     }
 
-    #region Variabls
-
+    private bool _isInitialized;
+    private readonly ManifestAccountsWatcherService _accountsWatcherService;
+    private readonly TaskBarServiceWrapper _taskBarServiceWrapper;
+    private readonly IDialogService _dialogService;
+    private readonly INavigationService _navigationService;
     private readonly AppSettings _appSettings;
-    private readonly App.ManifestServiceResolver _manifestServiceResolver;
-    private readonly INavigation _navigation;
-    private readonly IDialog _dialog;
+    private readonly IMessenger _messenger;
 
-    private SteamGuardAccount? _selectedAccount;
-
-    private bool _loaded;
-    private UIElement _loadingElement = null!;
-
-    #endregion
-
-    #region Properties
-
-    public ObservableCollection<SteamGuardAccount> Accounts { get; }
-
-    public SteamGuardAccount? SelectedAccount
+    [RelayCommand]
+    private async Task PageLoaded(StackPanel stackPanel)
     {
-        get => _selectedAccount;
-        set
+        if (_isInitialized)
         {
-            SetProperty(ref _selectedAccount, value);
-            TokenService.SelectedAccount = value;
+            stackPanel!.Visibility = Visibility.Hidden;
+            return;
+        }
+
+        if (!_isInitialized)
+            _isInitialized = true;
+
+        _taskBarServiceWrapper.SetState(TaskBarProgressState.Indeterminate);
+
+        try
+        {
+            await _accountsWatcherService.Initialize();
+        }
+        finally
+        {
+            stackPanel!.Visibility = Visibility.Hidden;
+            _taskBarServiceWrapper.SetState(TaskBarProgressState.None);
         }
     }
 
-    public TokenService TokenService { get; }
-
-    #endregion
-
-    #region Commands
-
-    [ICommand]
-    private async Task WindowLoaded(UIElement loadingElement)
+    [RelayCommand]
+    private Task ImportAccounts()
     {
-        if (_loaded) return;
+        OpenFileDialog fileDialog = new()
+        {
+            Multiselect = true,
+            CheckFileExists = true,
+            Filter = $"mafile| *{ManifestModelServiceConstants.FileExtension}"
+        };
 
-        _loaded = true;
-        _loadingElement = loadingElement;
+        if (fileDialog.ShowDialog() == false)
+            return Task.CompletedTask;
 
-        await OnManifestLocationChanged();
+        return _accountsWatcherService.ImportSteamGuardAccount(fileDialog.FileNames);
     }
 
-    [ICommand]
-    private void OnSetUpNewAccount()
+    [RelayCommand]
+    private async Task RefreshAccounts(StackPanel stackPanel)
     {
-        _navigation.NavigateTo($"//{nameof(LoginPage)}");
+        Token = string.Empty;
+        TokenProgressBar = 0;
+        stackPanel!.Visibility = Visibility.Visible;
+        _taskBarServiceWrapper.SetState(TaskBarProgressState.Indeterminate);
+
+        try
+        {
+            await _accountsWatcherService.RefreshAccounts();
+        }
+        finally
+        {
+            stackPanel!.Visibility = Visibility.Hidden;
+            _taskBarServiceWrapper.SetState(TaskBarProgressState.None);
+        }
     }
 
-    [ICommand]
-    private async Task DeleteAccount(object o)
+    [RelayCommand]
+    private async Task ShowAccountFilesFolder()
+    {
+        if (_appSettings.ManifestLocation == AppSettings.ManifestLocationModel.GoogleDrive)
+        {
+
+            var control = _dialogService.GetDialogControl();
+
+            await control.ShowAndWaitAsync("Alert!",
+                $"Your accounts are stored in the google drive {App.InternalName} folder");
+
+            control.Hide();
+            return;
+        }
+
+        try
+        {
+            var startInfo = new ProcessStartInfo
+            {
+                Arguments = Path.Combine(Directory.GetCurrentDirectory(), "maFiles"),
+                FileName = "explorer.exe"
+            };
+
+            Process.Start(startInfo);
+        }
+        catch (Exception)
+        {
+            //
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteAccount()
     {
         if (SelectedAccount is null)
             return;
 
-        if (await _dialog.ShowDialog($"Are you sure you want to delete {SelectedAccount.AccountName}?", new DialogConfiguration()
-            {
-                Title = App.Name,
-                LeftButtonText = "Yes",
-                RightButtonText = "No",
-            }) != ButtonPressed.Left)
+        var control = _dialogService.GetDialogControl();
+        var res = await control.ShowAndWaitAsync("Alser", $"Are you sure you want to delete {SelectedAccount.AccountName}?");
+        if (res != IDialogControl.ButtonPressed.Left)
+        {
+            control.Hide();
             return;
+        }
 
-        await _manifestServiceResolver.Invoke().DeleteSteamGuardAccount(SelectedAccount);
-        Accounts.Remove(SelectedAccount);
+        control.Hide();
+        await _accountsWatcherService.DeleteAccount(SelectedAccount);
     }
 
-    [ICommand]
-    private void ListBoxDragOver(object o)
+    [RelayCommand]
+    private void LoginAgain(SteamGuardAccount account)
     {
-        DragEventArgs eventArgs = (o as DragEventArgs)!;
+        _navigationService.NavigateTo("/login");
+        _messenger.Send(new UpdateAccountInLoginPageMessage(account));
+    }
 
+    [RelayCommand]
+    private static void ListBoxDragOver(DragEventArgs eventArgs)
+    {
         if (!eventArgs.Data.GetDataPresent(DataFormats.FileDrop))
             return;
 
@@ -116,7 +170,7 @@ public sealed partial class TokenViewModel : ObservableObject, IDisposable
 
         foreach (var file in files)
         {
-            string extension = Path.GetExtension(file);
+            var extension = Path.GetExtension(file);
 
             if (Directory.Exists(file))
             {
@@ -136,172 +190,15 @@ public sealed partial class TokenViewModel : ObservableObject, IDisposable
         eventArgs.Handled = true;
     }
 
-    [ICommand]
-    private async Task ListBoxDragAndDrop(object o)
+    [RelayCommand]
+    private Task ListBoxDragAndDrop(DragEventArgs eventArgs)
     {
-        DragEventArgs eventArgs = (o as DragEventArgs)!;
-
         if (!eventArgs.Data.GetDataPresent(DataFormats.FileDrop))
-            return;
+            return Task.CompletedTask;
 
         if (eventArgs.Data.GetData(DataFormats.FileDrop) is not string[] files)
-            return;
+            return Task.CompletedTask;
 
-        await ImportSteamGuardAccount(files);
-    }
-
-    [ICommand]
-    private async Task ImportAccounts()
-    {
-        OpenFileDialog fileDialog = new()
-        {
-            Multiselect = true,
-            CheckFileExists = true,
-            Filter = $"mafile| *{ManifestModelServiceConstants.FileExtension}"
-        };
-
-        if (fileDialog.ShowDialog() == false) return;
-
-        await ImportSteamGuardAccount(fileDialog.FileNames);
-    }
-
-    [ICommand]
-    private async Task RefreshAccounts()
-    {
-        TokenService.Token = string.Empty;
-        TokenService.TokenProgressBar = 0;
-        _loadingElement.Visibility = Visibility.Visible;
-        Progress.SetState(ProgressState.Indeterminate);
-        Accounts.Clear();
-
-        try
-        {
-            foreach (var account in await _manifestServiceResolver.Invoke().GetAccounts())
-                Accounts.Add(account);
-        }
-        catch (Exception)
-        {
-            /*MessageBox box = new MessageBox()
-            {
-                LeftButtonName = "Ok",
-                RightButtonName = "Cancel"
-            };
-            box.Show(App.Name, "One of your files is corrupted");*/
-        }
-        finally
-        {
-            _loadingElement.Visibility = Visibility.Hidden;
-            Progress.SetState(ProgressState.None);
-        }
-    }
-
-    [ICommand]
-    private async Task ShowAccountFilesFolder()
-    {
-        if (_appSettings.ManifestLocation == AppSettings.ManifestLocationModel.GoogleDrive)
-        {
-            await _dialog.ShowDialog($"Your accounts are stored in the google drive {App.InternalName} folder");
-            return;
-        }
-
-        try
-        {
-            var startInfo = new ProcessStartInfo
-            {
-                Arguments = Path.Combine(Directory.GetCurrentDirectory(), "maFiles"),
-                FileName = "explorer.exe"
-            };
-
-            Process.Start(startInfo);
-        }
-        catch (Exception e)
-        {
-            Debug.WriteLine(e);
-        }
-    }
-
-    [ICommand]
-    private void LoginInSelectedAccount()
-    {
-        if (SelectedAccount == null)
-            return;
-
-        _navigation.NavigateTo($"//{nameof(LoginPage)}", new object[] {SelectedAccount});
-    }
-
-    [ICommand]
-    private async Task ForceRefreshSession()
-    {
-        if (SelectedAccount is null)
-            return;
-
-        if (await RefreshAccountSession(SelectedAccount))
-        {
-            await _dialog.ShowDialog("Your session has been refreshed.");
-            return;
-        }
-
-        await _dialog.ShowDialog("Failed to refresh your session.\nTry using the \"Login again\" option.");
-    }
-
-    #endregion
-
-    #region PrivateMethods
-
-    private async void AppSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        var settings = (AppSettings) sender!;
-        if (!settings.IsInitialized) return;
-
-        if (e.PropertyName != nameof(settings.ManifestLocation)) return;
-        
-        await OnManifestLocationChanged();
-    }
-
-    private async Task OnManifestLocationChanged()
-    {
-        var manifestService = _manifestServiceResolver.Invoke();
-        await manifestService.Initialize();
-
-        await RefreshAccounts();
-    }
-
-    private async Task ImportSteamGuardAccount(IEnumerable<string> files)
-    {
-        foreach (var file in files)
-        {
-            await using FileStream stream = new FileStream(file, FileMode.Open, FileAccess.Read);
-
-            try
-            {
-                if (await _manifestServiceResolver.Invoke().AddSteamGuardAccount(stream, stream.Name) is { } account)
-                    Accounts.Add(account);
-            }
-            catch
-            {
-                await _dialog.ShowDialog("Your file is corrupted");
-            }
-        }
-    }
-
-    private async Task<bool> RefreshAccountSession(SteamGuardAccount account)
-    {
-        try
-        {
-            return await account.RefreshSessionAsync();
-        }
-        catch (SteamGuardAccount.WgTokenExpiredException)
-        {
-             await _navigation.NavigateTo($"//{nameof(LoginPage)}");
-
-            return await RefreshAccountSession(account);
-        }
-    }
-
-    #endregion
-
-    public void Dispose()
-    {
-        _appSettings.PropertyChanged -= AppSettingsOnPropertyChanged;
+        return _accountsWatcherService.ImportSteamGuardAccount(files);
     }
 }

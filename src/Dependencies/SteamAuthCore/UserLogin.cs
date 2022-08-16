@@ -144,6 +144,10 @@ namespace SteamAuthCore
                 cookies.Add(new Cookie("mobileClientVersion", "0 (2.1.3)", "/", ".steamcommunity.com"));
                 cookies.Add(new Cookie("mobileClient", "android", "/", ".steamcommunity.com"));
                 cookies.Add(new Cookie("Steam_Language", "english", "/", ".steamcommunity.com"));
+
+                var headers = new NameValueCollection {{"X-Requested-With", "com.valvesoftware.android.steam.community"}};
+
+                await SteamApi.MobileLoginRequest("https://steamcommunity.com/login?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client", SteamApi.RequestMethod.Get, null, cookies, headers);
             }
 
             postData.Add("donotcache", (TimeAligner.GetSteamTime() * 1000).ToString());
@@ -155,7 +159,7 @@ namespace SteamAuthCore
             if (!rsaResponse.Success)
                 return LoginResult.BadRsa;
 
-            Thread.Sleep(350); //Sleep for a bit to give Steam a chance to catch up??
+            await Task.Delay(350); //Sleep for a bit to give Steam a chance to catch up??
 
             byte[] encryptedPasswordBytes;
             using (var rsaEncryptor = new RSACryptoServiceProvider())

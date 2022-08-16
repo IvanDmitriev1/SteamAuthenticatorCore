@@ -6,8 +6,8 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using GoogleDrive;
-using SteamAuthCore;
 using SteamAuthCore.Manifest;
+using SteamAuthCore;
 using GoogleFile = Google.Apis.Drive.v3.Data.File;
 
 namespace SteamAuthenticatorCore.Desktop.Services;
@@ -23,7 +23,7 @@ internal class GoogleDriveManifestModelService : IManifestModelService
     private ManifestModel _manifestModel = null!;
     private bool _isInitialized;
 
-    public async Task Initialize(IManifestDirectoryService? directoryService = null)
+    public async Task Initialize()
     {
         if (_isInitialized) return;
 
@@ -53,7 +53,7 @@ internal class GoogleDriveManifestModelService : IManifestModelService
 
     public async Task SaveManifest()
     {
-        string serialized = JsonSerializer.Serialize(_manifestModel);
+        var serialized = JsonSerializer.Serialize(_manifestModel);
         await using MemoryStream stream = new(Encoding.UTF8.GetBytes(serialized));
         await _api.UploadFile(ManifestModelServiceConstants.ManifestFileName, stream);
     }
@@ -65,7 +65,7 @@ internal class GoogleDriveManifestModelService : IManifestModelService
             files = Array.Empty<GoogleFile>();
         }
 
-        List<SteamGuardAccount> accounts = new List<SteamGuardAccount>();
+        var accounts = new List<SteamGuardAccount>();
 
         foreach (var file in files)
         {
@@ -88,7 +88,7 @@ internal class GoogleDriveManifestModelService : IManifestModelService
 
     public async Task SaveSteamGuardAccount(SteamGuardAccount account)
     {
-        string serialized = JsonSerializer.Serialize(account);
+        var serialized = JsonSerializer.Serialize(account);
 
         if (await FindMaFileInGoogleDrive(account) is { } file)
         {

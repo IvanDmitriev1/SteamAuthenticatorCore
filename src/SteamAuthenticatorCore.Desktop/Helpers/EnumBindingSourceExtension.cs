@@ -22,7 +22,7 @@ internal class EnumBindingSourceExtension : System.Windows.Markup.MarkupExtensio
         if (Offset <= 0) return arr;
 
         Array.Reverse(arr);
-        object[] newArr = new object[arr.Length - Offset];
+        var newArr = new object[arr.Length - Offset];
         Array.Copy(arr, newArr, arr.Length - Offset);
 
         return newArr;

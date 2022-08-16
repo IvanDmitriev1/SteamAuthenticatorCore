@@ -1,67 +1,48 @@
 ﻿using System.Threading.Tasks;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthCore;
-using SteamAuthenticatorCore.Desktop.Views.Pages;
-using SteamAuthenticatorCore.Shared;
-using WPFUI.DIControls.Interfaces;
-using AsyncRelayCommand = SteamAuthenticatorCore.Shared.Helpers.AsyncRelayCommand;
+using SteamAuthenticatorCore.Desktop.Messages;
+using SteamAuthenticatorCore.Shared.Services;
+using Wpf.Ui.Mvvm.Contracts;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
-public class LoginViewModel : INavigable
+public partial class LoginViewModel : ObservableObject, IRecipient<UpdateAccountInLoginPageMessage>
 {
-    public LoginViewModel(LoginService loginService, App.ManifestServiceResolver manifestServiceResolver, INavigation navigation)
+    public LoginViewModel(INavigationService navigation, IMessenger messenger, LoginService loginService)
     {
-        LoginService = loginService;
-        _manifestServiceResolver = manifestServiceResolver;
         _navigation = navigation;
-
-        LoginCommand = new AsyncRelayCommand(Login);
+        _loginService = loginService;
+        messenger.Register(this);
     }
 
-    #region Variables
+    private readonly INavigationService _navigation;
+    private readonly LoginService _loginService;
 
-    private readonly App.ManifestServiceResolver _manifestServiceResolver;
-    private readonly INavigation _navigation;
+    [ObservableProperty]
+    private SteamGuardAccount _account = null!;
 
-    #endregion
+    [ObservableProperty]
+    private string _password = string.Empty;
 
-    public LoginService LoginService { get; }
+    [ObservableProperty]
+    private bool _isPasswordBoxEnabled = true;
 
-    public ICommand LoginCommand { get; }
-
-    #region Public methods
-
-    public Task OnNavigationRequest(INavigation navigation, string previousPageTag, object[]? ars)
+    public void Receive(UpdateAccountInLoginPageMessage message)
     {
-        if (ars is null)
-        {
-            LoginService.Account = null;
-            return Task.CompletedTask;
-        }
-
-        LoginService.Account = (SteamGuardAccount?) ars[0];
-
-        return Task.CompletedTask;
+        Account = message.Value;
     }
 
-    #endregion
-
-    #region PrivateMethods
-
-    private async Task Login()
+    [RelayCommand]
+    public async Task OnLogin()
     {
-        if (LoginService.Account is null)
-        {
-            await LoginService.InitLogin(_manifestServiceResolver.Invoke());
-        }
-        else
-        {
-            await LoginService.RefreshLogin(_manifestServiceResolver.Invoke());
-        }
+        IsPasswordBoxEnabled = false;
 
-        await _navigation.NavigateTo($"{nameof(TokenPage)}");
+        await _loginService.RefreshLogin(Account, Password);
+        _navigation.NavigateTo("..");
+
+        IsPasswordBoxEnabled = true;
     }
-
-    #endregion
 }

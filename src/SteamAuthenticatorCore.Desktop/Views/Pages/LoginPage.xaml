@@ -1,88 +1,38 @@
-﻿<Page
+﻿<ui:UiPage
     x:Class="SteamAuthenticatorCore.Desktop.Views.Pages.LoginPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:WPFUI.Controls;assembly=WPFUI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Desktop.ViewModels"
     Title="LoginPage"
-    d:DataContext="{d:DesignInstance viewModels:LoginViewModel}"
+    d:DataContext="{d:DesignInstance viewModels:LoginViewModel,
+                                     IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    Style="{StaticResource UiPage}"
     mc:Ignorable="d">
 
     <StackPanel>
-        <controls:Card>
-            <StackPanel DataContext="{Binding Path=LoginService}">
-                <StackPanel.Resources>
-                    <Style BasedOn="{StaticResource {x:Type Label}}" TargetType="{x:Type Label}">
-                        <Setter Property="VerticalAlignment" Value="Center" />
-                    </Style>
+        <ui:Card VerticalAlignment="Top">
+            <StackPanel>
+                <StackPanel>
+                    <Label Content="Account name:" />
+                    <TextBox IsEnabled="False" Text="{Binding Account.AccountName}" />
+                </StackPanel>
 
-                    <Style BasedOn="{StaticResource {x:Type controls:TextBox}}" TargetType="{x:Type controls:TextBox}">
-                        <Setter Property="Margin" Value="70,0,0,0" />
-                    </Style>
-                </StackPanel.Resources>
-
-                <Grid>
-                    <Label Content="UserName:" />
-                    <controls:TextBox IsEnabled="{Binding Path=IsEnabledUserNameTextBox}" Text="{Binding Path=Username, UpdateSourceTrigger=PropertyChanged}" />
-                </Grid>
-
-                <Grid Margin="0,5,0,0">
+                <StackPanel Margin="0,10,0,0">
                     <Label Content="Password:" />
-                    <controls:TextBox Text="{Binding Path=Password, UpdateSourceTrigger=PropertyChanged}" />
-                </Grid>
-
-                <Grid Margin="0,5,0,0" Visibility="{Binding Path=IsCaptchaVisible, Converter={StaticResource BoolToVis}}">
-                    <Label Content="Catpcha:" />
-
-                    <StackPanel Margin="70,0,0,0">
-                        <Image
-                            MaxHeight="400"
-                            RenderOptions.BitmapScalingMode="Fant"
-                            RenderOptions.EdgeMode="Unspecified"
-                            Source="{Binding Path=Image}" />
-
-                        <controls:TextBox
-                            Margin="0,5,0,0"
-                            Placeholder="Enter the following captcha code:"
-                            Text="{Binding Path=AdditionalText, Mode=OneWayToSource}" />
-                    </StackPanel>
-                </Grid>
-
-                <Grid Margin="0,5,0,0" Visibility="{Binding Path=IsEmailTextBlockVisible, Converter={StaticResource BoolToVis}}">
-                    <Label Content="Email code:" />
-                    <controls:TextBox Placeholder="Enter the code sent to your email:" Text="{Binding Path=AdditionalText, Mode=OneWayToSource}" />
-                </Grid>
-
-                <Grid Margin="0,5,0,0" Visibility="{Binding Path=IsPhoneTextBlockVisible, Converter={StaticResource BoolToVis}}">
-                    <Label Content="Phone:" />
-                    <controls:TextBox
-                        x:Name="Phone"
-                        Placeholder="Enter your phone number in the following format: +{cC} phoneNumber. EG, +1 123-456-7890"
-                        Text="{Binding Path=AdditionalText, Mode=OneWayToSource}" />
-                </Grid>
-
-                <Grid Margin="0,5,0,0" Visibility="{Binding Path=IsSmsTextBoxVisible, Converter={StaticResource BoolToVis}}">
-                    <Label Content="SMS code:" />
-                    <controls:TextBox Placeholder="Input the SMS code sent to your phone:" Text="{Binding Path=AdditionalText, Mode=OneWayToSource}" />
-                </Grid>
+                    <TextBox IsEnabled="{Binding Path=IsPasswordBoxEnabled}" Text="{Binding Password}" />
+                </StackPanel>
             </StackPanel>
-        </controls:Card>
+        </ui:Card>
 
-        <StackPanel Margin="0,5,0,0">
-            <Button
-                Command="{Binding Path=LoginService.OnContinueCommand}"
-                Content="Continue"
-                Visibility="{Binding Path=LoginService.IsContinueButtonVisible, Converter={StaticResource BoolToVis}}" />
-            <Button
-                Command="{Binding Path=LoginCommand}"
-                Content="{Binding Path=LoginService.ButtonText}"
-                Visibility="{Binding Path=LoginService.IsSetUpNewVisible, Converter={StaticResource BoolToVis}}" />
-        </StackPanel>
-
+        <ui:Button
+            Margin="0,10,0,0"
+            HorizontalAlignment="Stretch"
+            Appearance="Primary"
+            Command="{Binding Path=LoginCommand}"
+            Content="Login" />
     </StackPanel>
-</Page>
+</ui:UiPage>

@@ -1,63 +1,38 @@
-﻿using System.Windows;
-using SteamAuthenticatorCore.Desktop.Views.Pages;
+﻿using System.Threading.Tasks;
+using System.Windows;
+using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Shared;
-using WPFUI.DIControls.Interfaces;
+using Wpf.Ui.Mvvm.Contracts;
 
 namespace SteamAuthenticatorCore.Desktop.Views;
 
-public partial class Container : Window
+public partial class Container
 {
-    public Container(AppSettings appSettings, INavigation navigation, IDialog dialog, ISnackbar snackbar)
+    public Container(INavigationService navigationService, IPageService pageService, AppSettings appSettings, ISnackbarService snackbarService, IDialogService dialogService, TaskBarServiceWrapper taskBarServiceWrapper)
     {
-        _appSettings = appSettings;
         InitializeComponent();
 
-        RootDialog.Content = dialog;
-        RootSnackbar.Content = snackbar;
+        _appSettings = appSettings;
+        _taskBarServiceWrapper = taskBarServiceWrapper;
 
-        Breadcrumb.Navigation = navigation;
-        RootNavigation.Content = navigation;
-        RootTitleBar.Navigation = navigation;
+        navigationService.SetNavigationControl(NavigationFluent);
+        navigationService.SetPageService(pageService);
 
-        navigation.AddFrame(RootFrame);
-        _navigation = navigation;
+        snackbarService.SetSnackbarControl(RootSnackbar);
+        dialogService.SetDialogControl(RootDialog);
+
+        NavigationFluent.Loaded += NavigationFluentOnLoaded;
     }
 
     private readonly AppSettings _appSettings;
-    private readonly INavigation _navigation;
+    private readonly TaskBarServiceWrapper _taskBarServiceWrapper;
 
-
-    private void CloseMenuItem_OnClick(object sender, RoutedEventArgs e)
+    private async void NavigationFluentOnLoaded(object sender, RoutedEventArgs e)
     {
-        Application.Current.Shutdown();
-    }
+        await Task.Run(_appSettings.LoadSettings);
 
-    private void TokenPage_OnClick(object sender, RoutedEventArgs e)
-    {
-        ShowWindow();
-        _navigation.NavigateTo($"{nameof(TokenPage)}");
-    }
-
-    private void ConfirmationsPage_OnClick(object sender, RoutedEventArgs e)
-    {
-        ShowWindow();
-        _navigation.NavigateTo($"{nameof(ConfirmationsPage)}");
-    }
-
-    private void SettingsPage_OnClick(object sender, RoutedEventArgs e)
-    {
-        ShowWindow();
-        _navigation.NavigateTo($"{nameof(SettingsPage)}");
-    }
-
-    private void ShowWindow()
-    {
-        Show();
-
-        WindowState = WindowState.Normal;
-        Topmost = true;
-        Topmost = false;
-
-        Focus();
+        RootWelcomeGrid.Visibility = Visibility.Hidden;
+        MainContent.Visibility = Visibility.Visible;
+        _taskBarServiceWrapper.SetActiveWindow(this);
     }
 }
