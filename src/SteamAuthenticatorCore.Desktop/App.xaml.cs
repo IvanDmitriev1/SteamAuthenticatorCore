@@ -72,6 +72,7 @@ public sealed partial class App : Application
                 services.AddScoped<ManifestAccountsWatcherService>();
                 services.AddTransient<IPlatformTimer, PeriodicTimerService>();
                 services.AddScoped<ConfirmationServiceBase, DesktopConfirmationService>();
+                services.AddScoped<LoginService>();
                 
                 services.AddScoped<ManifestServiceResolver>(provider => () =>
                 {
