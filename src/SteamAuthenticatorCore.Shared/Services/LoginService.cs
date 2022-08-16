@@ -24,6 +24,8 @@ public sealed class LoginService
         account.Session = session;
         var manifestService = _manifestServiceResolver.Invoke();
         await manifestService.SaveSteamGuardAccount(account);
+
+        await _platformImplementations.DisplayAlert("Session successfully refreshed");
     }
 
     private async ValueTask<SessionData?> RefreshSession(UserLogin userLogin, SteamGuardAccount account)

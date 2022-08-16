@@ -27,14 +27,22 @@ public partial class LoginViewModel : ObservableObject, IRecipient<UpdateAccount
     [ObservableProperty]
     private string _password = string.Empty;
 
+    [ObservableProperty]
+    private bool _isPasswordBoxEnabled = true;
+
     public void Receive(UpdateAccountInLoginPageMessage message)
     {
         Account = message.Value;
     }
 
     [RelayCommand]
-    public Task OnLogin()
+    public async Task OnLogin()
     {
-        return _loginService.RefreshLogin(Account, Password);
+        IsPasswordBoxEnabled = false;
+
+        await _loginService.RefreshLogin(Account, Password);
+        _navigation.NavigateTo("..");
+
+        IsPasswordBoxEnabled = true;
     }
 }
