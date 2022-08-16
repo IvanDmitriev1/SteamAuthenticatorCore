@@ -18,7 +18,7 @@
 
     <b:Interaction.Triggers>
         <b:EventTrigger EventName="Loaded">
-            <b:InvokeCommandAction Command="{Binding Path=OnLoadedCommand}" CommandParameter="{Binding ElementName=LoadingStackPanel}" />
+            <b:InvokeCommandAction Command="{Binding Path=PageLoadedCommand}" CommandParameter="{Binding ElementName=LoadingStackPanel}" />
         </b:EventTrigger>
     </b:Interaction.Triggers>
 
@@ -39,17 +39,26 @@
             <MenuItem Header="File">
                 <MenuItem Command="{Binding Path=ImportAccountsCommand}" Header="Import accounts" />
                 <MenuItem
-                    Command="{Binding Path=RefreshCommand}"
+                    Command="{Binding Path=RefreshAccountsCommand}"
                     CommandParameter="{Binding ElementName=LoadingStackPanel}"
                     Header="Refresh account list" />
                 <MenuItem Command="{Binding Path=ShowAccountFilesFolderCommand}" Header="Show accounts file folder" />
             </MenuItem>
 
             <MenuItem Header="Selected account">
-                <MenuItem Command="{Binding LoginAgainCommand}" Header="Login again" />
-                <MenuItem Command="{Binding Path=LoginInSelectedAccountCommand}" Header="Force refresh session" />
+                <MenuItem
+                    Command="{Binding LoginAgainCommand}"
+                    CommandParameter="{Binding SelectedAccount}"
+                    Header="Login again" />
+                <MenuItem
+                    Command="{Binding Path=LoginInSelectedAccountCommand}"
+                    CommandParameter="{Binding SelectedAccount}"
+                    Header="Force refresh session" />
                 <Separator />
-                <MenuItem Command="{Binding Path=DeleteAccountCommand}" Header="Delete from list" />
+                <MenuItem
+                    Command="{Binding Path=DeleteAccountCommand}"
+                    CommandParameter="{Binding SelectedAccount}"
+                    Header="Delete from list" />
             </MenuItem>
 
             <!--<MenuItem Command="{Binding Path=OnSetUpNewAccountCommand}" Header="Set up new account" />-->
@@ -137,11 +146,20 @@
                             <TextBlock Padding="2.5" Text="{Binding Path=AccountName}" />
 
                             <StackPanel.ContextMenu>
-                                <ContextMenu DataContext="{Binding Source={x:Reference Page}, Path=DataContext}">
-                                    <MenuItem Command="{Binding LoginAgainCommand}" Header="Login again" />
-                                    <MenuItem Command="{Binding Path=LoginInSelectedAccountCommand}" Header="Force refresh session" />
+                                <ContextMenu>
+                                    <MenuItem
+                                        Command="{Binding Source={x:Reference Page}, Path=DataContext.LoginAgainCommand}"
+                                        CommandParameter="{Binding}"
+                                        Header="Login again" />
+                                    <MenuItem
+                                        Command="{Binding Source={x:Reference Page}, Path=DataContext.LoginInSelectedAccountCommand}"
+                                        CommandParameter="{Binding}"
+                                        Header="Force refresh session" />
                                     <Separator />
-                                    <MenuItem Command="{Binding Path=DeleteAccountCommand}" Header="Delete from list" />
+                                    <MenuItem
+                                        Command="{Binding Source={x:Reference Page}, Path=DataContext.DeleteAccountCommand}"
+                                        CommandParameter="{Binding}"
+                                        Header="Delete from list" />
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
                         </StackPanel>

@@ -22,6 +22,9 @@
                 <DataTrigger Binding="{Binding ElementName=NavigationFluent, Path=IsExpanded}" Value="False">
                     <Setter Property="BreadcrumbMargin" Value="0, 40, 0, 18" />
                 </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=NavigationFluent, Path=IsExpanded}" Value="True">
+                    <Setter Property="BreadcrumbMargin" Value="0, 18, 0, 18" />
+                </DataTrigger>
             </Style.Triggers>
         </Style>
     </ui:UiWindow.Resources>

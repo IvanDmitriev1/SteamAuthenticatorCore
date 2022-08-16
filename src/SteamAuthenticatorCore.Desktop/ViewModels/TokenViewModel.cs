@@ -7,9 +7,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Win32;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
+using SteamAuthenticatorCore.Desktop.Messages;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstraction;
@@ -23,23 +25,14 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public partial class TokenViewModel : TokenViewModelBase
 {
-    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, ManifestAccountsWatcherService accountsWatcherService, TaskBarServiceWrapper taskBarServiceWrapper, IDialogService dialogService, INavigationService navigationService, AppSettings appSettings) : base(accounts, platformTimer, platformImplementations)
+    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, ManifestAccountsWatcherService accountsWatcherService, TaskBarServiceWrapper taskBarServiceWrapper, IDialogService dialogService, INavigationService navigationService, AppSettings appSettings, IMessenger messenger) : base(accounts, platformTimer, platformImplementations)
     {
         _accountsWatcherService = accountsWatcherService;
         _taskBarServiceWrapper = taskBarServiceWrapper;
         _dialogService = dialogService;
         _navigationService = navigationService;
         _appSettings = appSettings;
-
-        OnLoadedCommand = new AsyncRelayCommand<StackPanel>(OnPageLoaded!);
-        ImportAccountsCommand = new AsyncRelayCommand(ImportAccounts);
-        RefreshCommand = new AsyncRelayCommand<StackPanel>(RefreshAccounts!);
-        ShowAccountFilesFolderCommand = new AsyncRelayCommand(ShowAccountFilesFolder);
-
-        DeleteAccountCommand = new AsyncRelayCommand(DeleteAccount);
-        LoginAgainCommand = new RelayCommand(LoginAgain);
-        ListBoxDragOverCommand = new RelayCommand<DragEventArgs>(ListBoxDragOver!);
-        ListBoxDragAndDropCommand = new AsyncRelayCommand<DragEventArgs>(ListBoxDragAndDrop!);
+        _messenger = messenger;
     }
 
     private bool _isInitialized;
@@ -48,18 +41,10 @@ public partial class TokenViewModel : TokenViewModelBase
     private readonly IDialogService _dialogService;
     private readonly INavigationService _navigationService;
     private readonly AppSettings _appSettings;
+    private readonly IMessenger _messenger;
 
-    public ICommand OnLoadedCommand { get; }
-    public ICommand ImportAccountsCommand { get; }
-    public ICommand RefreshCommand { get; }
-    public ICommand ShowAccountFilesFolderCommand { get; }
-
-    public ICommand DeleteAccountCommand { get; }
-    public ICommand LoginAgainCommand { get; }
-    public ICommand ListBoxDragOverCommand { get; }
-    public ICommand ListBoxDragAndDropCommand { get; }
-
-    private async Task OnPageLoaded(StackPanel stackPanel)
+    [RelayCommand]
+    private async Task PageLoaded(StackPanel stackPanel)
     {
         if (_isInitialized)
         {
@@ -83,6 +68,7 @@ public partial class TokenViewModel : TokenViewModelBase
         }
     }
 
+    [RelayCommand]
     private Task ImportAccounts()
     {
         OpenFileDialog fileDialog = new()
@@ -98,6 +84,7 @@ public partial class TokenViewModel : TokenViewModelBase
         return _accountsWatcherService.ImportSteamGuardAccount(fileDialog.FileNames);
     }
 
+    [RelayCommand]
     private async Task RefreshAccounts(StackPanel stackPanel)
     {
         Token = string.Empty;
@@ -116,6 +103,7 @@ public partial class TokenViewModel : TokenViewModelBase
         }
     }
 
+    [RelayCommand]
     private async Task ShowAccountFilesFolder()
     {
         if (_appSettings.ManifestLocation == AppSettings.ManifestLocationModel.GoogleDrive)
@@ -146,6 +134,7 @@ public partial class TokenViewModel : TokenViewModelBase
         }
     }
 
+    [RelayCommand]
     private async Task DeleteAccount()
     {
         if (SelectedAccount is null)
@@ -163,11 +152,14 @@ public partial class TokenViewModel : TokenViewModelBase
         await _accountsWatcherService.DeleteAccount(SelectedAccount);
     }
 
-    private void LoginAgain()
+    [RelayCommand]
+    private void LoginAgain(SteamGuardAccount account)
     {
         _navigationService.NavigateTo("/login");
+        _messenger.Send(new UpdateAccountInLoginPageMessage(account));
     }
 
+    [RelayCommand]
     private static void ListBoxDragOver(DragEventArgs eventArgs)
     {
         if (!eventArgs.Data.GetDataPresent(DataFormats.FileDrop))
@@ -198,6 +190,7 @@ public partial class TokenViewModel : TokenViewModelBase
         eventArgs.Handled = true;
     }
 
+    [RelayCommand]
     private Task ListBoxDragAndDrop(DragEventArgs eventArgs)
     {
         if (!eventArgs.Data.GetDataPresent(DataFormats.FileDrop))

@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Threading;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -55,6 +56,7 @@ public sealed partial class App : Application
                 services.AddScoped<TokenViewModel>();
                 services.AddScoped<SettingsViewModel>();
                 services.AddScoped<ConfirmationsViewModel>();
+                services.AddScoped<LoginViewModel>();
 
                 services.AddSingleton<ObservableCollection<SteamGuardAccount>>();
 
@@ -63,6 +65,7 @@ public sealed partial class App : Application
                 services.AddTransient<ISettingsService, DesktopSettingsService>();
                 services.AddSingleton<IPlatformImplementations, DesktopImplementations>();
 
+                services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
                 services.AddScoped<GoogleDriveManifestModelService>();
                 services.AddScoped<IManifestDirectoryService, DesktopManifestDirectoryService>();
                 services.AddScoped<LocalDriveManifestModelService>();
