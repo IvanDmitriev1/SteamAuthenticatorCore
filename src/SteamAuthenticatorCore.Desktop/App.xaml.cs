@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Sentry;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using SteamAuthenticatorCore.Desktop.Services;
@@ -24,15 +27,31 @@ public sealed partial class App : Application
 {
     public const string InternalName = "SteamDesktopAuthenticatorCore";
     public const string Name = "Steam desktop authenticator core";
+    public static IServiceProvider ServiceProvider { get; private set; } = null!;
+
+    private IServiceScope? _serviceScope;
 
     public App()
     {
         _host = Host
             .CreateDefaultBuilder()
+            .ConfigureHostConfiguration(builder =>
+            {
+                var appName = Assembly.GetEntryAssembly()!.GetName().Name;
+
+                var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{appName}.appsettings.json");
+                builder.AddJsonStream(stream);
+            })
             .ConfigureLogging((context, builder) =>
             {
                 builder.AddConfiguration(context.Configuration);
                 builder.AddDebug();
+
+                builder.AddSentry(options =>
+                {
+                    if (context.HostingEnvironment.IsDevelopment())
+                        options.InitializeSdk = false;
+                });
             })
             .ConfigureServices(services =>
             {
@@ -92,19 +111,42 @@ public sealed partial class App : Application
 
     private readonly IHost _host;
 
-    private void OnStartup(object sender, StartupEventArgs e)
+    private async void OnStartup(object sender, StartupEventArgs e)
     {
-        _host.StartAsync();
+        var environment = _host.Services.GetRequiredService<IHostEnvironment>();
+        if (environment.IsDevelopment())
+        {
+            _serviceScope = _host.Services.CreateScope();
+            ServiceProvider = _serviceScope.ServiceProvider;
+        }
+        else
+            ServiceProvider = _host.Services;
+
+        await _host.StartAsync();
     }
 
     private void OnExit(object sender, ExitEventArgs e)
     {
         _host.StopAsync();
+
+        _serviceScope?.Dispose();
         _host.Dispose();
     }
 
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
-        
+        e.Handled = true;
+
+        var hub = _host.Services.GetRequiredService<IHub>();
+        OnException(e.Exception, hub);
+    }
+
+    public static void OnException(Exception exception, IHub hub)
+    {
+        hub.CaptureException(exception);
+
+        MessageBox.Show( $"{exception.Message}\n\n{exception.StackTrace}", "Exception occurred", MessageBoxButton.OK, MessageBoxImage.Error);
+
+        Application.Current.Shutdown();
     }
 }
