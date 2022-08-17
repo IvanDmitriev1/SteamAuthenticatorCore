@@ -12,13 +12,15 @@ public partial class SettingsViewModel : ObservableObject
     {
         AppSettings = appSettings;
 
-        _themeSelection = AppSettings.AppTheme switch
+        _themeSelection = string.Empty;
+
+        /*_themeSelection = AppSettings.AppTheme switch
         {
             Theme.System => "System",
             Theme.Light => "Light",
             Theme.Dark => "Dark",
             _ => throw new ArgumentOutOfRangeException()
-        };
+        };*/
     }
 
     public AppSettings AppSettings { get; }
@@ -31,12 +33,12 @@ public partial class SettingsViewModel : ObservableObject
         set
         {
             _themeSelection = value;
-            AppSettings.AppTheme = Enum.Parse<Theme>(value);
+            /*AppSettings.AppTheme = Enum.Parse<Theme>(value);*/
             OnPropertyChanged(nameof(ThemeSelection));
         }
     }
 
-    [ICommand]
+    [RelayCommand]
     private void OnSettingsClicked(object obj)
     {
         switch (obj)
@@ -50,7 +52,7 @@ public partial class SettingsViewModel : ObservableObject
         }
     }
 
-    [ICommand]
+    [RelayCommand]
     private void StoppedTyping()
     {
         if (AppSettings.PeriodicCheckingInterval < 10)

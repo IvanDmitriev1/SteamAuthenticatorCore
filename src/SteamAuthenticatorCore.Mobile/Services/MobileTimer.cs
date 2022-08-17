@@ -1,72 +1,59 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
-using SteamAuthenticatorCore.Shared;
+using SteamAuthenticatorCore.Shared.Abstraction;
 using Xamarin.Forms;
 
 namespace SteamAuthenticatorCore.Mobile.Services;
 
 internal class MobileTimer : IPlatformTimer
 {
-    public MobileTimer()
-    {
-
-    }
-
-    public bool IsRunning { get; private set; }
+    private bool _isRunning;
     private TimeSpan _interval;
+    private Func<CancellationToken, ValueTask>? _func;
+    private readonly CancellationTokenSource _cts = new();
 
-    private Action? _actionCallback;
-    private Func<Task>? _taskCallback;
-
-
-    public void ChangeInterval(TimeSpan time)
+    public void Initialize(TimeSpan timeSpan, Func<CancellationToken, ValueTask> func)
     {
-        _interval = time;
+        _interval = timeSpan;
+        _func = func;
     }
 
-    public void SetFuncOnTick(Func<Task> callback)
+    public void Dispose()
     {
-        _taskCallback = callback;
-    }
-
-    public void SetFuncOnTick(Action callback)
-    {
-        _actionCallback = callback;
+        _cts.Dispose();   
     }
 
     public void Start()
     {
-        IsRunning = true;
+        if (_func is null)
+            throw new NullReferenceException("Timer is not initialized");
 
-        if (_actionCallback is not null)
-        {
-            Device.StartTimer(_interval, ActionCallback);
-            return;
-        }
+        _isRunning = true; 
+        Device.StartTimer(_interval, Callback);
+    }
 
-        Device.StartTimer(_interval, FuncCallback);
+    private bool Callback()
+    {
+        HelpMethod();
+        return _isRunning;
     }
 
     public void Stop()
     {
-        IsRunning = false;
-    }
-
-    private bool ActionCallback()
-    {
-        _actionCallback!.Invoke();
-
-        return IsRunning;
-    }
-
-    private bool FuncCallback()
-    {
-        HelpMethod();
-        return IsRunning;
+        _isRunning = false;
+        _cts.Cancel();
     }
 
     private async void HelpMethod()
     {
-        await _taskCallback!.Invoke();
+        try
+        {
+            await _func!.Invoke(_cts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            
+        }
     }
 }

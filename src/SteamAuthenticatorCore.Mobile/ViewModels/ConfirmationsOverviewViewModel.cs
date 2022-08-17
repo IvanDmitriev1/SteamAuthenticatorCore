@@ -2,7 +2,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SteamAuthenticatorCore.Mobile.Pages;
-using SteamAuthenticatorCore.Shared;
+using SteamAuthenticatorCore.Shared.Models;
+using SteamAuthenticatorCore.Shared.Services;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -10,9 +11,9 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
 {
-    public ConfirmationsOverviewViewModel(BaseConfirmationService baseConfirmationService)
+    public ConfirmationsOverviewViewModel(ConfirmationServiceBase confirmationServiceBase)
     {
-        ConfirmationService = baseConfirmationService;
+        ConfirmationServiceBase = confirmationServiceBase;
     }
 
     private bool _needRefresh;
@@ -20,9 +21,9 @@ public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
     [ObservableProperty]
     private bool _isRefreshing;
 
-    public BaseConfirmationService ConfirmationService { get; }
+    public ConfirmationServiceBase ConfirmationServiceBase { get; }
 
-    [ICommand]
+    [RelayCommand]
     private void OnAppearing()
     {
         if (_needRefresh)
@@ -31,7 +32,7 @@ public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
             IsRefreshing = true;
         }
 
-        if (ConfirmationService.Accounts.Count > 0)
+        if (ConfirmationServiceBase.Accounts.Count > 0)
             return;
 
         _needRefresh = true;
@@ -39,7 +40,7 @@ public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
         _needRefresh = false;
     }
 
-    [ICommand]
+    [RelayCommand]
     private async Task Refresh()
     {
         if (!_needRefresh)
@@ -54,14 +55,14 @@ public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
             }
         }
 
-        await ConfirmationService.CheckConfirmations();
+        await ConfirmationServiceBase.CheckConfirmations();
         IsRefreshing = false;
     }
 
-    [ICommand]
-    private Task OnTouched(ConfirmationAccountBase account)
+    [RelayCommand]
+    private Task OnTouched(ConfirmationAccountModelBase account)
     {
         _needRefresh = true;
-        return Shell.Current.GoToAsync($"{nameof(ConfirmationsPage)}?id={ConfirmationService.Accounts.IndexOf(account)}");
+        return Shell.Current.GoToAsync($"{nameof(ConfirmationsPage)}");
     }
 }

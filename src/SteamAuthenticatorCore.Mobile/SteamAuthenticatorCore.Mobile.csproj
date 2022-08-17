@@ -4,20 +4,9 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
     <Nullable>enable</Nullable>
+	  <LangVersion>latest</LangVersion>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Resousces\Fonts\MaterialIcons-Regular.ttf" />
-  </ItemGroup>
-
+	
   <ItemGroup>
     <EmbeddedResource Include="Resousces\Fonts\MaterialIcons-Regular.ttf" />
   </ItemGroup>
@@ -31,8 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\FrameWorks\SteamAuthCore\SteamAuthCore.csproj" />
-    <ProjectReference Include="..\..\SteamAuthenticatorCore.Shared\SteamAuthenticatorCore.Shared.csproj" />
+    <ProjectReference Include="..\SteamAuthenticatorCore.Shared\SteamAuthenticatorCore.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -54,10 +42,6 @@
     <EmbeddedResource Update="Views\MyTitleView.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Web;
-using System.Windows.Input;
+﻿using System.Collections.ObjectModel;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
-using SteamAuthenticatorCore.Shared;
+using SteamAuthenticatorCore.Shared.Services;
 using Xamarin.CommunityToolkit.ObjectModel;
-using Xamarin.Essentials;
-using Xamarin.Forms;
 
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
-public class LoginViewModel : ObservableObject, IQueryAttributable
+public class LoginViewModel : ObservableObject
 {
     public LoginViewModel(ObservableCollection<SteamGuardAccount> accounts, IManifestModelService manifestModelService, LoginService loginService)
     {
@@ -26,31 +20,4 @@ public class LoginViewModel : ObservableObject, IQueryAttributable
     private readonly IManifestModelService _manifestModelService;
 
     public LoginService LoginService { get; }
-
-    public void ApplyQueryAttributes(IDictionary<string, string> query)
-    {
-        var id= HttpUtility.UrlDecode(query["id"]);
-        LoginService.Account = _accounts[Convert.ToInt32(id)];
-    }
-
-    public ICommand LoginCommand => new SteamAuthenticatorCore.Shared.Helpers.AsyncRelayCommand(async () =>
-    {
-        try
-        {
-            HapticFeedback.Perform(HapticFeedbackType.LongPress);
-        }
-        catch
-        {
-            //
-        }
-
-        if (LoginService.Account is null)
-        {
-            await Shell.Current.GoToAsync("..");
-            return;
-        }
-
-        await LoginService.RefreshLogin(_manifestModelService);
-        await Shell.Current.GoToAsync("..");
-    });
 }

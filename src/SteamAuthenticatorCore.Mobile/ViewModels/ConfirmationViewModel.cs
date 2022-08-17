@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SteamAuthCore;
 using SteamAuthenticatorCore.Mobile.Extensions;
-using SteamAuthenticatorCore.Shared;
+using SteamAuthenticatorCore.Shared.Models;
+using SteamAuthenticatorCore.Shared.Services;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -16,14 +16,14 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributable
 {
-    public ConfirmationViewModel(BaseConfirmationService confirmationService)
+    public ConfirmationViewModel(ConfirmationServiceBase confirmationServiceBase)
     {
-        ConfirmationService = confirmationService;
+        ConfirmationService = confirmationServiceBase;
         SelectedItems = new ObservableCollection<(Frame, ConfirmationModel)>();
     }
 
     [ObservableProperty]
-    private ConfirmationAccountBase _account = null!;
+    private ConfirmationAccountModelBase _account = null!;
 
     [ObservableProperty]
     private bool _isRefreshing;
@@ -31,7 +31,7 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
     [ObservableProperty]
     private bool _isCountTitleViewVisible;
 
-    public BaseConfirmationService ConfirmationService { get; }
+    public ConfirmationServiceBase ConfirmationService { get; }
 
     public ObservableCollection<(Frame, ConfirmationModel)> SelectedItems { get; }
 
@@ -42,7 +42,7 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
         Account = ConfirmationService.Accounts[Convert.ToInt32(id)];
     }
 
-    [ICommand]
+    [RelayCommand]
     private async Task HideCountTitleView()
     {
         var tasks = new Task[SelectedItems.Count];
@@ -61,7 +61,7 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
         SelectedItems.Clear();
     }
 
-    [ICommand]
+    [RelayCommand]
     private Task OnElementTouch(Frame frame)
     {
         var item = (frame, (ConfirmationModel) frame.BindingContext);
@@ -88,7 +88,7 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
                 : "SecondDarkBackgroundSelectionColor"], 500);
     }
 
-    [ICommand]
+    [RelayCommand]
     private async Task RefreshConfirmations()
     {
         try
@@ -100,11 +100,13 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
             //
         }
 
+        
+
         await _account.CheckConfirmations();
         IsRefreshing = false;
     }
 
-    [ICommand]
+    [RelayCommand]
     private Task ConfirmSelected()
     {
         switch (SelectedItems.Count)
@@ -122,25 +124,25 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
         return HideCountTitleView();
     }
 
-    [ICommand]
-    private Task CancelSelected()
+    [RelayCommand]
+    private async Task CancelSelected()
     {
         switch (SelectedItems.Count)
         {
             case 0:
-                return Task.CompletedTask;
+                return;
             case 1:
-                SendConfirmation(SteamGuardAccount.Confirmation.Deny);
+                await SendConfirmation(SteamGuardAccount.Confirmation.Deny);
                 break;
             default:
-                SendConfirmations(SteamGuardAccount.Confirmation.Deny);
+                await SendConfirmations(SteamGuardAccount.Confirmation.Deny);
                 break;
         }
 
-        return HideCountTitleView();
+        await HideCountTitleView();
     }
 
-    private void SendConfirmation(SteamGuardAccount.Confirmation confirmation)
+    private Task SendConfirmation(SteamGuardAccount.Confirmation confirmation)
     {
         try
         {
@@ -152,10 +154,10 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
         }
 
         var model = SelectedItems[0];
-        Account!.SendConfirmation(model.Item2, confirmation);
+        return Account!.SendConfirmation(model.Item2, confirmation);
     }
 
-    private void SendConfirmations(SteamGuardAccount.Confirmation confirmation)
+    private Task SendConfirmations(SteamGuardAccount.Confirmation confirmation)
     {
         try
         {
@@ -170,6 +172,6 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
         for (var i = 0; i < SelectedItems.Count; i++)
             items[i] = SelectedItems[i].Item2;
 
-        Account?.SendConfirmations(items, confirmation);
+        return Account?.SendConfirmations(items, confirmation)!;
     }
 }

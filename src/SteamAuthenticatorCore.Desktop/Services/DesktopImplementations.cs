@@ -21,9 +21,9 @@ internal class DesktopImplementations : IPlatformImplementations
         return new BitmapImage(new Uri(imageSource, UriKind.Absolute));
     }
 
-    public void InvokeMainThread(Action method)
+    public async ValueTask InvokeMainThread(Action method)
     {
-        Application.Current.Dispatcher.Invoke(method);
+        await Application.Current.Dispatcher.InvokeAsync(method);
     }
 
     public async Task DisplayAlert(string message)

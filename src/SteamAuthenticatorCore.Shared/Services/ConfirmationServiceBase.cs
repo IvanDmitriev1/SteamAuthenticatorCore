@@ -3,7 +3,6 @@ using SteamAuthCore;
 using SteamAuthenticatorCore.Shared.Abstraction;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SteamAuthenticatorCore.Shared.Models;
@@ -72,7 +71,7 @@ public abstract class ConfirmationServiceBase : IDisposable
 
         foreach (var account in _steamGuardAccounts)
         {
-            var confirmations = await TryGetConfirmations(account);
+            var confirmations = await ConfirmationAccountModelBase.TryGetConfirmations(account);
 
             if (confirmations.Length == 0)
                 continue;
@@ -99,31 +98,5 @@ public abstract class ConfirmationServiceBase : IDisposable
 
             confirmationAccountViewModel.SendConfirmations(confirmations, SteamGuardAccount.Confirmation.Allow);
         }
-    }
-
-    private static async ValueTask<ConfirmationModel[]> TryGetConfirmations(SteamGuardAccount account)
-    {
-        try
-        {
-            return (await account.FetchConfirmationsAsync().ConfigureAwait(false)).ToArray();
-        }
-        catch (SteamGuardAccount.WgTokenInvalidException)
-        {
-            await account.RefreshSessionAsync();
-
-            try
-            {
-                return (await account.FetchConfirmationsAsync().ConfigureAwait(false)).ToArray();
-            }
-            catch (SteamGuardAccount.WgTokenInvalidException)
-            {
-            }
-        }
-        catch (SteamGuardAccount.WgTokenExpiredException)
-        {
-
-        }
-
-        return Array.Empty<ConfirmationModel>();
     }
 }

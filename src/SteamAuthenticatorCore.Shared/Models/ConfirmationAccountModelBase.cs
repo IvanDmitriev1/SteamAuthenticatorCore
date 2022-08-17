@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,34 +31,70 @@ public abstract class ConfirmationAccountModelBase
     public abstract ICommand ConfirmCommand { get; }
     public abstract ICommand CancelCommand { get; }
 
-    public Task SendConfirmation(ConfirmationModel confirmation, SteamGuardAccount.Confirmation command) =>
-        Task.Run(() =>
+    public async ValueTask CheckConfirmations()
+    {
+        Confirmations.Clear();
+
+        var confirmations = await TryGetConfirmations(Account);
+
+        foreach (var confirmation in confirmations)
         {
-            Account.SendConfirmationAjax(confirmation, command);
+            Confirmations.Add(confirmation);
+        }
+    }
 
-            _platformImplementations.InvokeMainThread(() =>
-            {
-                Confirmations.Remove(confirmation);
-            });
-        });
+    public async Task SendConfirmation(ConfirmationModel confirmation, SteamGuardAccount.Confirmation command)
+    {
+        Account.SendConfirmationAjax(confirmation, command);
 
-    public Task SendConfirmations(IEnumerable<ConfirmationModel> confirmations, SteamGuardAccount.Confirmation command) =>
-        Task.Run(() =>
+        await _platformImplementations.InvokeMainThread(() =>
         {
-            var confirmationModels = confirmations as ConfirmationModel[] ?? confirmations.ToArray();
-            SendConfirmations(confirmationModels, command);
+            Confirmations.Remove(confirmation);
         });
+    }
 
-    public void SendConfirmations(IReadOnlyCollection<ConfirmationModel> confirmations, SteamGuardAccount.Confirmation command)
+    public Task SendConfirmations(IEnumerable<ConfirmationModel> confirmations, SteamGuardAccount.Confirmation command)
+    {
+        var confirmationModels = confirmations as ConfirmationModel[] ?? confirmations.ToArray();
+        return SendConfirmations(confirmationModels, command);
+    }
+
+    public async Task SendConfirmations(IReadOnlyCollection<ConfirmationModel> confirmations, SteamGuardAccount.Confirmation command)
     {
         Account.SendConfirmationAjax(confirmations, command);
 
         foreach (var confirmation in confirmations)
         {
-            _platformImplementations.InvokeMainThread(() =>
+            await _platformImplementations.InvokeMainThread(() =>
             {
                 Confirmations.Remove(confirmation);
             });
         }
+    }
+
+    public static async ValueTask<ConfirmationModel[]> TryGetConfirmations(SteamGuardAccount account)
+    {
+        try
+        {
+            return (await account.FetchConfirmationsAsync().ConfigureAwait(false)).ToArray();
+        }
+        catch (SteamGuardAccount.WgTokenInvalidException)
+        {
+            await account.RefreshSessionAsync();
+
+            try
+            {
+                return (await account.FetchConfirmationsAsync().ConfigureAwait(false)).ToArray();
+            }
+            catch (SteamGuardAccount.WgTokenInvalidException)
+            {
+            }
+        }
+        catch (SteamGuardAccount.WgTokenExpiredException)
+        {
+
+        }
+
+        return Array.Empty<ConfirmationModel>();
     }
 }

@@ -5,7 +5,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Win32;
@@ -81,7 +80,7 @@ public partial class TokenViewModel : TokenViewModelBase
         if (fileDialog.ShowDialog() == false)
             return Task.CompletedTask;
 
-        return _accountsWatcherService.ImportSteamGuardAccount(fileDialog.FileNames);
+        return _accountsWatcherService.ImportSteamGuardAccounts(fileDialog.FileNames);
     }
 
     [RelayCommand]
@@ -199,6 +198,6 @@ public partial class TokenViewModel : TokenViewModelBase
         if (eventArgs.Data.GetData(DataFormats.FileDrop) is not string[] files)
             return Task.CompletedTask;
 
-        return _accountsWatcherService.ImportSteamGuardAccount(files);
+        return _accountsWatcherService.ImportSteamGuardAccounts(files);
     }
 }

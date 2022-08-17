@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using SteamAuthenticatorCore.Mobile.Services;
 using SteamAuthenticatorCore.Mobile.ViewModels;
 using SteamAuthenticatorCore.Shared;
+using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Services;
 
 namespace SteamAuthenticatorCore.Mobile;
 
@@ -36,17 +39,30 @@ public static class Startup
 
     private static IServiceCollection ConfigureServices(this IServiceCollection services)
     {
+        services.AddSingleton<AppSettings>();
+        services.AddSingleton<ObservableCollection<SteamGuardAccount>>();
         services.AddTransient<IPlatformTimer, MobileTimer>();
         services.AddTransient<ISettingsService, MobileSettingsService>();
         services.AddTransient<IManifestDirectoryService, MobileDirectoryService>();
         services.AddSingleton<IPlatformImplementations, MobileImplementations>();
         services.AddScoped<IManifestModelService, SecureStorageService>();
-        services.AddSingleton<ObservableCollection<SteamGuardAccount>>();
+        services.AddScoped<ConfirmationServiceBase, MobileConfirmationService>();
+        services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
+        services.AddScoped<LoginService>();
+        services.AddSingleton<ManifestAccountsWatcherService>();
 
-        services.AddTransient<LoginService>();
-        services.AddSingleton<AppSettings>();
-        services.AddSingleton<TokenService>();
-        services.AddSingleton<BaseConfirmationService, MobileConfirmationService>();
+        services.AddSingleton<ManifestServiceResolver>(provider => () =>
+        {
+            var appSettings = provider.GetRequiredService<AppSettings>();
+            return appSettings.ManifestLocation switch
+            {
+                AppSettings.ManifestLocationModel.LocalDrive => provider
+                    .GetRequiredService<IManifestModelService>(),
+                AppSettings.ManifestLocationModel.GoogleDrive => 
+                    throw new NotImplementedException(),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        });
 
         return services;
     }

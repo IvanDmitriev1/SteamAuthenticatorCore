@@ -5,8 +5,8 @@ using Android.OS;
 using Microsoft.Extensions.DependencyInjection;
 using SteamAuthenticatorCore.Mobile;
 using SteamAuthenticatorCore.Mobile.Helpers;
-using Xamarin.Forms;
 using SteamAuthenticatorCore.Mobile.Services.Interfaces;
+using Xamarin.Forms;
 
 namespace SteamMobileAuthenticatorCore.Droid
 {
@@ -31,7 +31,7 @@ namespace SteamMobileAuthenticatorCore.Droid
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
-        public override async void OnBackPressed()
+        public async override void OnBackPressed()
         {
             if (Shell.Current.CurrentPage is not IBackButtonAction backButtonAction)
             {
