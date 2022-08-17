@@ -3,6 +3,7 @@ using Android.Content.PM;
 using Android.Runtime;
 using Android.OS;
 using Microsoft.Extensions.DependencyInjection;
+using Sentry;
 using SteamAuthenticatorCore.Mobile;
 using SteamAuthenticatorCore.Mobile.Helpers;
 using SteamAuthenticatorCore.Mobile.Services.Interfaces;
@@ -15,6 +16,13 @@ namespace SteamMobileAuthenticatorCore.Droid
     {
         protected override void OnCreate(Bundle savedInstanceState)
         {
+            SentryXamarin.Init(options =>
+            {
+                options.Dsn = "https://4a0459ed781e49c28e6c8e85da244344@o1354225.ingest.sentry.io/6658167";
+                options.AddXamarinFormsIntegration();
+                options.AttachScreenshots = true;
+            });
+
             base.OnCreate(savedInstanceState);
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
