@@ -9,10 +9,11 @@
     xmlns:steamAuthCore="clr-namespace:SteamAuthCore;assembly=SteamAuthCore"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
     xmlns:views="clr-namespace:SteamAuthenticatorCore.Mobile.Views;assembly=SteamAuthenticatorCore.Mobile"
+    x:Name="Page"
     Title="Confirmations page"
     Padding="10,10,10,0"
-    d:DataContext="{d:DesignInstance viewModels:ConfirmationViewModel,
-                                     IsDesignTimeCreatable=False}"
+    d:BindingContext="{d:DesignInstance viewModels:ConfirmationViewModel,
+                                        IsDesignTimeCreatable=False}"
     BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor},
                                       Light={StaticResource LightBackgroundColor}}"
     Shell.NavBarHasShadow="True"
@@ -38,7 +39,7 @@
                 Command="{Binding Path=RefreshConfirmationsCommand}"
                 IsRefreshing="{Binding Path=IsRefreshing}">
 
-                <CollectionView x:Name="CollectionView" ItemsSource="{Binding Path=Account.Confirmations}">
+                <CollectionView ItemsSource="{Binding Path=Account.Confirmations}">
                     <CollectionView.EmptyView>
                         <StackLayout>
                             <Label
@@ -54,7 +55,7 @@
                             <StackLayout Margin="0,0,0,5">
                                 <Frame
                                     Padding="20,15"
-                                    effects:TouchEffect.Command="{Binding Source={x:Reference CollectionView}, Path=BindingContext.OnElementTouchCommand}"
+                                    effects:TouchEffect.Command="{Binding Source={x:Reference Page}, Path=BindingContext.ElementTouchCommand}"
                                     effects:TouchEffect.CommandParameter="{Binding Source={RelativeSource Self}}"
                                     effects:TouchEffect.NativeAnimation="True"
                                     CornerRadius="20">

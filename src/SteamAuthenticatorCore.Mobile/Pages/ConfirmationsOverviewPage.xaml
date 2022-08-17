@@ -6,14 +6,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:SteamAuthenticatorCore.Shared.Models;assembly=SteamAuthenticatorCore.Shared"
-    xmlns:shared="clr-namespace:SteamAuthenticatorCore.Shared;assembly=SteamAuthenticatorCore.Shared"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
     xmlns:views="clr-namespace:SteamAuthenticatorCore.Mobile.Views;assembly=SteamAuthenticatorCore.Mobile"
     xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
     Title="Confirmations overview"
     Padding="10,10,10,0"
-    d:DataContext="{d:DesignInstance viewModels:ConfirmationsOverviewViewModel,
-                                     IsDesignTimeCreatable=False}"
+    d:BindingContext="{d:DesignInstance viewModels:ConfirmationsOverviewViewModel,
+                                        IsDesignTimeCreatable=False}"
     BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor},
                                       Light={StaticResource LightBackgroundColor}}"
     Shell.NavBarHasShadow="True"
@@ -23,13 +22,9 @@
         <views:MyTitleView TitleName="Confirmations overview" />
     </Shell.TitleView>
 
-    <ContentPage.Behaviors>
-        <xct:EventToCommandBehavior Command="{Binding Path=OnAppearingCommand}" EventName="Appearing" />
-    </ContentPage.Behaviors>
-
     <ContentPage.Content>
         <RefreshView Command="{Binding Path=RefreshCommand}" IsRefreshing="{Binding Path=IsRefreshing}">
-            <CollectionView x:Name="CollectionView" ItemsSource="{Binding Path=ConfirmationService.Accounts}">
+            <CollectionView x:Name="CollectionView" ItemsSource="{Binding Path=ConfirmationServiceBase.Accounts}">
                 <CollectionView.EmptyView>
                     <Label
                         FontSize="Medium"
@@ -42,7 +37,7 @@
                         <StackLayout Margin="0,0,0,5">
                             <Frame
                                 Padding="20,15"
-                                xct:TouchEffect.Command="{Binding Source={x:Reference CollectionView}, Path=BindingContext.OnTouchedCommand}"
+                                xct:TouchEffect.Command="{Binding Source={x:Reference CollectionView}, Path=BindingContext.TouchedCommand}"
                                 xct:TouchEffect.CommandParameter="{Binding}"
                                 xct:TouchEffect.NativeAnimation="True"
                                 BorderColor="Transparent"

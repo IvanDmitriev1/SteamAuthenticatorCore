@@ -96,7 +96,7 @@ public abstract class ConfirmationServiceBase : IDisposable
                     confirmations.Add(confirmationModel);
             }
 
-            confirmationAccountViewModel.SendConfirmations(confirmations, SteamGuardAccount.Confirmation.Allow);
+            await confirmationAccountViewModel.SendConfirmations(confirmations, SteamGuardAccount.Confirmation.Allow);
         }
     }
 }

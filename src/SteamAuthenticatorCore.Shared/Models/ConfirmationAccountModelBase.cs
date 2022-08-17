@@ -39,6 +39,7 @@ public abstract class ConfirmationAccountModelBase
 
         foreach (var confirmation in confirmations)
         {
+            confirmation.BitMapImage = _platformImplementations.CreateImage(confirmation.ImageSource);
             Confirmations.Add(confirmation);
         }
     }

@@ -1,24 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Web;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthCore;
 using SteamAuthenticatorCore.Mobile.Extensions;
+using SteamAuthenticatorCore.Shared.Messages;
 using SteamAuthenticatorCore.Shared.Models;
-using SteamAuthenticatorCore.Shared.Services;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
-internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributable
+internal partial class ConfirmationViewModel : ObservableObject, IRecipient<UpdateAccountConfirmationPageMessage>
 {
-    public ConfirmationViewModel(ConfirmationServiceBase confirmationServiceBase)
+    public ConfirmationViewModel(IMessenger messenger)
     {
-        ConfirmationService = confirmationServiceBase;
+        messenger.Register(this);
         SelectedItems = new ObservableCollection<(Frame, ConfirmationModel)>();
     }
 
@@ -31,15 +29,11 @@ internal partial class ConfirmationViewModel : ObservableObject, IQueryAttributa
     [ObservableProperty]
     private bool _isCountTitleViewVisible;
 
-    public ConfirmationServiceBase ConfirmationService { get; }
-
     public ObservableCollection<(Frame, ConfirmationModel)> SelectedItems { get; }
 
-
-    public void ApplyQueryAttributes(IDictionary<string, string> query)
+    public void Receive(UpdateAccountConfirmationPageMessage message)
     {
-        var id= HttpUtility.UrlDecode(query["id"]);
-        Account = ConfirmationService.Accounts[Convert.ToInt32(id)];
+        Account = message.Value;
     }
 
     [RelayCommand]

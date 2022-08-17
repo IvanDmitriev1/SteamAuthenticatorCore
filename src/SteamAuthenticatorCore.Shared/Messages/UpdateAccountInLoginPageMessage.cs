@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Messaging.Messages;
 using SteamAuthCore;
 
-namespace SteamAuthenticatorCore.Desktop.Messages;
+namespace SteamAuthenticatorCore.Shared.Messages;
 
 public class UpdateAccountInLoginPageMessage : ValueChangedMessage<SteamGuardAccount>
 {

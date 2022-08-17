@@ -1,23 +1,42 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthCore;
-using SteamAuthCore.Manifest;
+using SteamAuthenticatorCore.Shared.Messages;
 using SteamAuthenticatorCore.Shared.Services;
-using Xamarin.CommunityToolkit.ObjectModel;
+using ObservableObject = CommunityToolkit.Mvvm.ComponentModel.ObservableObject;
 
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
-public class LoginViewModel : ObservableObject
+public partial class LoginViewModel : ObservableObject, IRecipient<UpdateAccountInLoginPageMessage>
 {
-    public LoginViewModel(ObservableCollection<SteamGuardAccount> accounts, IManifestModelService manifestModelService, LoginService loginService)
+    public LoginViewModel(LoginService loginService, IMessenger messenger)
     {
-        _accounts = accounts;
-        _manifestModelService = manifestModelService;
-        LoginService = loginService;
+        _loginService = loginService;
+        messenger.Register(this);
     }
 
-    private readonly ObservableCollection<SteamGuardAccount> _accounts;
-    private readonly IManifestModelService _manifestModelService;
+    private readonly LoginService _loginService;
 
-    public LoginService LoginService { get; }
+    [ObservableProperty]
+    private SteamGuardAccount _account = null!;
+
+    [ObservableProperty]
+    private string _password = string.Empty;
+
+    [ObservableProperty]
+    private bool _isPasswordBoxEnabled = true;
+
+    [RelayCommand]
+    public async Task OnLogin()
+    {
+        
+    }
+
+    public void Receive(UpdateAccountInLoginPageMessage message)
+    {
+        Account = message.Value;
+    }
 }

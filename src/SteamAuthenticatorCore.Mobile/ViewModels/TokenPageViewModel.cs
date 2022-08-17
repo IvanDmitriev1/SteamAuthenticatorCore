@@ -16,6 +16,7 @@ using Xamarin.Essentials;
 using System;
 using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.CommunityToolkit.UI.Views.Options;
+using SteamAuthenticatorCore.Shared.Messages;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
@@ -62,6 +63,7 @@ public partial class TokenPageViewModel : TokenViewModelBase
         var account = (SteamGuardAccount) _longPressFrame!.BindingContext;
 
         await Shell.Current.GoToAsync($"{nameof(LoginPage)}");
+        _messenger.Send(new UpdateAccountInLoginPageMessage(account));
     }
 
     [RelayCommand]

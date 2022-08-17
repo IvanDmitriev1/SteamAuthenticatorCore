@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthenticatorCore.Mobile.Pages;
+using SteamAuthenticatorCore.Shared.Messages;
 using SteamAuthenticatorCore.Shared.Models;
 using SteamAuthenticatorCore.Shared.Services;
 using Xamarin.Essentials;
@@ -11,34 +13,19 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
 {
-    public ConfirmationsOverviewViewModel(ConfirmationServiceBase confirmationServiceBase)
+    public ConfirmationsOverviewViewModel(ConfirmationServiceBase confirmationServiceBase, IMessenger messenger)
     {
+        _messenger = messenger;
         ConfirmationServiceBase = confirmationServiceBase;
     }
 
+    private readonly IMessenger _messenger;
     private bool _needRefresh;
 
     [ObservableProperty]
     private bool _isRefreshing;
 
     public ConfirmationServiceBase ConfirmationServiceBase { get; }
-
-    [RelayCommand]
-    private void OnAppearing()
-    {
-        if (_needRefresh)
-        {
-            _needRefresh = false;
-            IsRefreshing = true;
-        }
-
-        if (ConfirmationServiceBase.Accounts.Count > 0)
-            return;
-
-        _needRefresh = true;
-        IsRefreshing = true;
-        _needRefresh = false;
-    }
 
     [RelayCommand]
     private async Task Refresh()
@@ -60,9 +47,11 @@ public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private Task OnTouched(ConfirmationAccountModelBase account)
+    private async Task OnTouched(ConfirmationAccountModelBase account)
     {
         _needRefresh = true;
-        return Shell.Current.GoToAsync($"{nameof(ConfirmationsPage)}");
+
+        await Shell.Current.GoToAsync($"{nameof(ConfirmationsPage)}");
+        _messenger.Send(new UpdateAccountConfirmationPageMessage(account));
     }
 }
