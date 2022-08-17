@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
@@ -13,13 +14,13 @@ using SteamAuthCore;
 using SteamAuthCore.Manifest;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.ViewModels;
-using SteamAuthenticatorCore.Desktop.Views;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstraction;
 using SteamAuthenticatorCore.Shared.Services;
 using Wpf.Ui.Mvvm.Contracts;
 using Wpf.Ui.Mvvm.Services;
+using Container = SteamAuthenticatorCore.Desktop.Views.Container;
 
 namespace SteamAuthenticatorCore.Desktop;
 
@@ -107,9 +108,21 @@ public sealed partial class App : Application
                 });
             })
             .Build();
+
+        var settings = _host.Services.GetRequiredService<AppSettings>();
+        settings.PropertyChanged += SettingsOnPropertyChanged;
     }
 
     private readonly IHost _host;
+
+    public static void OnException(Exception exception, IHub hub)
+    {
+        hub.CaptureException(exception);
+
+        MessageBox.Show( $"{exception.Message}\n\n{exception.StackTrace}", "Exception occurred", MessageBoxButton.OK, MessageBoxImage.Error);
+
+        Application.Current.Shutdown();
+    }
 
     private async void OnStartup(object sender, StartupEventArgs e)
     {
@@ -141,12 +154,10 @@ public sealed partial class App : Application
         OnException(e.Exception, hub);
     }
 
-    public static void OnException(Exception exception, IHub hub)
+    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        hub.CaptureException(exception);
+        var settings = (sender as AppSettings)!;
 
-        MessageBox.Show( $"{exception.Message}\n\n{exception.StackTrace}", "Exception occurred", MessageBoxButton.OK, MessageBoxImage.Error);
-
-        Application.Current.Shutdown();
+        settings.SettingsService.SaveSetting(e.PropertyName!, settings);
     }
 }

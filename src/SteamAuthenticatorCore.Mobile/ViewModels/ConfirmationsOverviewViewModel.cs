@@ -1,8 +1,11 @@
 ﻿using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthenticatorCore.Mobile.Pages;
-using SteamAuthenticatorCore.Shared;
+using SteamAuthenticatorCore.Shared.Messages;
+using SteamAuthenticatorCore.Shared.Models;
+using SteamAuthenticatorCore.Shared.Services;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -10,19 +13,21 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
 {
-    public ConfirmationsOverviewViewModel(BaseConfirmationService baseConfirmationService)
+    public ConfirmationsOverviewViewModel(ConfirmationServiceBase confirmationServiceBase, IMessenger messenger)
     {
-        ConfirmationService = baseConfirmationService;
+        _messenger = messenger;
+        ConfirmationServiceBase = confirmationServiceBase;
     }
 
+    private readonly IMessenger _messenger;
     private bool _needRefresh;
 
     [ObservableProperty]
     private bool _isRefreshing;
 
-    public BaseConfirmationService ConfirmationService { get; }
+    public ConfirmationServiceBase ConfirmationServiceBase { get; }
 
-    [ICommand]
+    [RelayCommand]
     private void OnAppearing()
     {
         if (_needRefresh)
@@ -31,7 +36,7 @@ public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
             IsRefreshing = true;
         }
 
-        if (ConfirmationService.Accounts.Count > 0)
+        if (ConfirmationServiceBase.Accounts.Count > 0)
             return;
 
         _needRefresh = true;
@@ -39,7 +44,7 @@ public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
         _needRefresh = false;
     }
 
-    [ICommand]
+    [RelayCommand]
     private async Task Refresh()
     {
         if (!_needRefresh)
@@ -54,14 +59,16 @@ public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
             }
         }
 
-        await ConfirmationService.CheckConfirmations();
+        await ConfirmationServiceBase.CheckConfirmations();
         IsRefreshing = false;
     }
 
-    [ICommand]
-    private Task OnTouched(ConfirmationAccountBase account)
+    [RelayCommand]
+    private async Task OnTouched(ConfirmationAccountModelBase account)
     {
         _needRefresh = true;
-        return Shell.Current.GoToAsync($"{nameof(ConfirmationsPage)}?id={ConfirmationService.Accounts.IndexOf(account)}");
+
+        await Shell.Current.GoToAsync($"{nameof(ConfirmationsPage)}");
+        _messenger.Send(new UpdateAccountConfirmationPageMessage(account));
     }
 }

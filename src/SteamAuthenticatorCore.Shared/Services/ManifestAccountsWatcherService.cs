@@ -40,7 +40,7 @@ public class ManifestAccountsWatcherService : IDisposable
 
         foreach (var account in await _manifestServiceResolver.Invoke().GetAccounts().ConfigureAwait(false))
         {
-            _platformImplementations.InvokeMainThread(() =>
+            await _platformImplementations.InvokeMainThread(() =>
             {
                 _accounts.Add(account);
             });
@@ -69,21 +69,25 @@ public class ManifestAccountsWatcherService : IDisposable
         }
     }
 
-    public async Task ImportSteamGuardAccount(IEnumerable<string> files)
+    public async Task ImportSteamGuardAccounts(IEnumerable<string> files)
     {
         foreach (var file in files)
         {
-            try
-            {
-                await using var stream = new FileStream(file, FileMode.Open, FileAccess.Read);
+            await using var stream = new FileStream(file, FileMode.Open, FileAccess.Read);
+            await ImportSteamGuardAccount(stream, stream.Name);
+        }
+    }
 
-                if (await _manifestServiceResolver.Invoke().AddSteamGuardAccount(stream, stream.Name) is { } account)
-                    _accounts.Add(account);
-            }
-            catch
-            {
-                await _platformImplementations.DisplayAlert("Your file is corrupted");
-            }
+    public async Task ImportSteamGuardAccount(Stream stream, string fileName)
+    {
+        try
+        {
+            if (await _manifestServiceResolver.Invoke().AddSteamGuardAccount(stream, fileName) is { } account)
+                _accounts.Add(account);
+        }
+        catch
+        {
+            await _platformImplementations.DisplayAlert("Your file is corrupted");
         }
     }
 

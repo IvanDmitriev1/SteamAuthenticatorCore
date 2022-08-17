@@ -1,56 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Web;
-using System.Windows.Input;
+﻿using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthCore;
-using SteamAuthCore.Manifest;
-using SteamAuthenticatorCore.Shared;
-using Xamarin.CommunityToolkit.ObjectModel;
-using Xamarin.Essentials;
+using SteamAuthenticatorCore.Shared.Messages;
+using SteamAuthenticatorCore.Shared.Services;
 using Xamarin.Forms;
+using ObservableObject = CommunityToolkit.Mvvm.ComponentModel.ObservableObject;
 
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
-public class LoginViewModel : ObservableObject, IQueryAttributable
+public partial class LoginViewModel : ObservableObject, IRecipient<UpdateAccountInLoginPageMessage>
 {
-    public LoginViewModel(ObservableCollection<SteamGuardAccount> accounts, IManifestModelService manifestModelService, LoginService loginService)
+    public LoginViewModel(LoginService loginService, IMessenger messenger)
     {
-        _accounts = accounts;
-        _manifestModelService = manifestModelService;
-        LoginService = loginService;
+        _loginService = loginService;
+        messenger.Register(this);
     }
 
-    private readonly ObservableCollection<SteamGuardAccount> _accounts;
-    private readonly IManifestModelService _manifestModelService;
+    private readonly LoginService _loginService;
 
-    public LoginService LoginService { get; }
+    [ObservableProperty]
+    private SteamGuardAccount _account = null!;
 
-    public void ApplyQueryAttributes(IDictionary<string, string> query)
+    [ObservableProperty]
+    private string _password = string.Empty;
+
+    [ObservableProperty]
+    private bool _isPasswordBoxEnabled = true;
+
+    [RelayCommand]
+    public async Task OnLogin()
     {
-        var id= HttpUtility.UrlDecode(query["id"]);
-        LoginService.Account = _accounts[Convert.ToInt32(id)];
-    }
+        IsPasswordBoxEnabled = false;
 
-    public ICommand LoginCommand => new SteamAuthenticatorCore.Shared.Helpers.AsyncRelayCommand(async () =>
-    {
-        try
-        {
-            HapticFeedback.Perform(HapticFeedbackType.LongPress);
-        }
-        catch
-        {
-            //
-        }
-
-        if (LoginService.Account is null)
-        {
-            await Shell.Current.GoToAsync("..");
-            return;
-        }
-
-        await LoginService.RefreshLogin(_manifestModelService);
+        await _loginService.RefreshLogin(Account, Password);
         await Shell.Current.GoToAsync("..");
-    });
+
+        IsPasswordBoxEnabled = true;
+    }
+
+    public void Receive(UpdateAccountInLoginPageMessage message)
+    {
+        Account = message.Value;
+    }
 }
