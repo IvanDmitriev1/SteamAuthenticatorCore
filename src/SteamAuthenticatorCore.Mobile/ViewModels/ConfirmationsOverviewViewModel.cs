@@ -28,6 +28,23 @@ public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
     public ConfirmationServiceBase ConfirmationServiceBase { get; }
 
     [RelayCommand]
+    private void OnAppearing()
+    {
+        if (_needRefresh)
+        {
+            _needRefresh = false;
+            IsRefreshing = true;
+        }
+
+        if (ConfirmationServiceBase.Accounts.Count > 0)
+            return;
+
+        _needRefresh = true;
+        IsRefreshing = true;
+        _needRefresh = false;
+    }
+
+    [RelayCommand]
     private async Task Refresh()
     {
         if (!_needRefresh)

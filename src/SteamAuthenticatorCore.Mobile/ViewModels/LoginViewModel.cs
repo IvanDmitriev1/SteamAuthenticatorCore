@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthCore;
 using SteamAuthenticatorCore.Shared.Messages;
 using SteamAuthenticatorCore.Shared.Services;
+using Xamarin.Forms;
 using ObservableObject = CommunityToolkit.Mvvm.ComponentModel.ObservableObject;
 
 
@@ -32,7 +33,12 @@ public partial class LoginViewModel : ObservableObject, IRecipient<UpdateAccount
     [RelayCommand]
     public async Task OnLogin()
     {
-        
+        IsPasswordBoxEnabled = false;
+
+        await _loginService.RefreshLogin(Account, Password);
+        await Shell.Current.GoToAsync("..");
+
+        IsPasswordBoxEnabled = true;
     }
 
     public void Receive(UpdateAccountInLoginPageMessage message)

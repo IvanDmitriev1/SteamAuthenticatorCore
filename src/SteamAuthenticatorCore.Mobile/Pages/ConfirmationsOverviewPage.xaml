@@ -22,6 +22,10 @@
         <views:MyTitleView TitleName="Confirmations overview" />
     </Shell.TitleView>
 
+    <ContentPage.Behaviors>
+        <xct:EventToCommandBehavior Command="{Binding Path=AppearingCommand}" EventName="Appearing" />
+    </ContentPage.Behaviors>
+
     <ContentPage.Content>
         <RefreshView Command="{Binding Path=RefreshCommand}" IsRefreshing="{Binding Path=IsRefreshing}">
             <CollectionView x:Name="CollectionView" ItemsSource="{Binding Path=ConfirmationServiceBase.Accounts}">

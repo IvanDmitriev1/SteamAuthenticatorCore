@@ -21,6 +21,21 @@
             Margin="10"
             HorizontalOptions="FillAndExpand"
             Spacing="10"
-            VerticalOptions="CenterAndExpand" />
+            VerticalOptions="CenterAndExpand">
+
+            <Entry
+                IsEnabled="False"
+                IsReadOnly="True"
+                Placeholder="Login"
+                Text="{Binding Path=Account.AccountName}" />
+
+            <Entry
+                IsEnabled="{Binding IsPasswordBoxEnabled}"
+                IsPassword="True"
+                Placeholder="Password"
+                Text="{Binding Path=Password}" />
+
+            <Button Command="{Binding LoginCommand}" Text="Login" />
+        </StackLayout>
     </ContentPage.Content>
 </ContentPage>

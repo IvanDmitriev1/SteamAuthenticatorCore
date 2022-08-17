@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SteamAuthenticatorCore.Mobile.Services.Interfaces;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Services;
@@ -15,10 +14,15 @@ public partial class App : Application
         MainPage = new AppShell();
 
         _environment = Startup.ServiceProvider.GetRequiredService<IEnvironment>();
-
+        
         var settings = Startup.ServiceProvider.GetRequiredService<AppSettings>();
         settings.LoadSettings();
-        settings.PropertyChanged += SettingsOnPropertyChanged;
+        settings.PropertyChanged += (sender, args) =>
+        {
+            var senderSettings = (sender as AppSettings)!;
+
+            senderSettings.SettingsService.SaveSetting(args.PropertyName, senderSettings);
+        };
     }
 
     private readonly IEnvironment _environment;
@@ -37,13 +41,6 @@ public partial class App : Application
     protected override void OnResume()
     {
         RequestedThemeChanged += OnRequestedThemeChanged;
-    }
-
-    private void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        var settings = (sender as AppSettings)!;
-
-        settings.SettingsService.SaveSetting(e.PropertyName, settings);
     }
 
     private void OnRequestedThemeChanged(object sender, AppThemeChangedEventArgs e)
