@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Shared;
 using Wpf.Ui.Mvvm.Contracts;
@@ -27,9 +26,9 @@ public partial class Container
     private readonly AppSettings _appSettings;
     private readonly TaskBarServiceWrapper _taskBarServiceWrapper;
 
-    private async void NavigationFluentOnLoaded(object sender, RoutedEventArgs e)
+    private void NavigationFluentOnLoaded(object sender, RoutedEventArgs e)
     {
-        await Task.Run(_appSettings.LoadSettings);
+        _appSettings.LoadSettings();
 
         RootWelcomeGrid.Visibility = Visibility.Hidden;
         MainContent.Visibility = Visibility.Visible;

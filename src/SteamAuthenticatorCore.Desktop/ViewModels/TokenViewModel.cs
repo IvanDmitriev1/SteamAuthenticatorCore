@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstraction;
 using SteamAuthenticatorCore.Shared.Messages;
+using SteamAuthenticatorCore.Shared.Models;
 using SteamAuthenticatorCore.Shared.Services;
 using SteamAuthenticatorCore.Shared.ViewModel;
 using Wpf.Ui.Controls.Interfaces;
@@ -22,10 +24,11 @@ using Wpf.Ui.TaskBar;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
-public partial class TokenViewModel : TokenViewModelBase
+public partial class TokenViewModel : TokenViewModelBase, IDisposable
 {
     public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, ManifestAccountsWatcherService accountsWatcherService, TaskBarServiceWrapper taskBarServiceWrapper, IDialogService dialogService, INavigationService navigationService, AppSettings appSettings, IMessenger messenger) : base(accounts, platformTimer, platformImplementations)
     {
+        _platformImplementations = platformImplementations;
         _accountsWatcherService = accountsWatcherService;
         _taskBarServiceWrapper = taskBarServiceWrapper;
         _dialogService = dialogService;
@@ -34,7 +37,7 @@ public partial class TokenViewModel : TokenViewModelBase
         _messenger = messenger;
     }
 
-    private bool _isInitialized;
+    private readonly IPlatformImplementations _platformImplementations;
     private readonly ManifestAccountsWatcherService _accountsWatcherService;
     private readonly TaskBarServiceWrapper _taskBarServiceWrapper;
     private readonly IDialogService _dialogService;
@@ -42,29 +45,28 @@ public partial class TokenViewModel : TokenViewModelBase
     private readonly AppSettings _appSettings;
     private readonly IMessenger _messenger;
 
-    [RelayCommand]
-    private async Task PageLoaded(StackPanel stackPanel)
+    private StackPanel? _stackPanel;
+
+    public void Dispose()
     {
-        if (_isInitialized)
-        {
-            stackPanel!.Visibility = Visibility.Hidden;
+        _appSettings.PropertyChanged -= AppSettingsOnPropertyChanged;
+        _stackPanel = null;
+    }
+
+    [RelayCommand]
+    private async void PageLoaded(StackPanel stackPanel)
+    {
+        if (_stackPanel is not null)
             return;
-        }
 
-        if (!_isInitialized)
-            _isInitialized = true;
+        _stackPanel = stackPanel;
 
-        _taskBarServiceWrapper.SetState(TaskBarProgressState.Indeterminate);
-
-        try
+        await PerformLoadingOperation(async () =>
         {
             await _accountsWatcherService.Initialize();
-        }
-        finally
-        {
-            stackPanel!.Visibility = Visibility.Hidden;
-            _taskBarServiceWrapper.SetState(TaskBarProgressState.None);
-        }
+        });
+
+        _appSettings.PropertyChanged += AppSettingsOnPropertyChanged;
     }
 
     [RelayCommand]
@@ -86,26 +88,16 @@ public partial class TokenViewModel : TokenViewModelBase
     [RelayCommand]
     private async Task RefreshAccounts(StackPanel stackPanel)
     {
-        Token = string.Empty;
-        TokenProgressBar = 0;
-        stackPanel!.Visibility = Visibility.Visible;
-        _taskBarServiceWrapper.SetState(TaskBarProgressState.Indeterminate);
-
-        try
+        await PerformLoadingOperation(async () =>
         {
             await _accountsWatcherService.RefreshAccounts();
-        }
-        finally
-        {
-            stackPanel!.Visibility = Visibility.Hidden;
-            _taskBarServiceWrapper.SetState(TaskBarProgressState.None);
-        }
+        });
     }
 
     [RelayCommand]
     private async Task ShowAccountFilesFolder()
     {
-        if (_appSettings.ManifestLocation == AppSettings.ManifestLocationModel.GoogleDrive)
+        if (_appSettings.ManifestLocation == ManifestLocationModel.GoogleDrive)
         {
 
             var control = _dialogService.GetDialogControl();
@@ -199,5 +191,32 @@ public partial class TokenViewModel : TokenViewModelBase
             return Task.CompletedTask;
 
         return _accountsWatcherService.ImportSteamGuardAccounts(files);
+    }
+
+    private async void AppSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        await PerformLoadingOperation(async () =>
+        {
+            await _accountsWatcherService.Initialize();
+        });
+    }
+
+    private async ValueTask PerformLoadingOperation(Func<ValueTask> func)
+    {
+        Token = string.Empty;
+        TokenProgressBar = 0;
+
+        _stackPanel!.Visibility = Visibility.Visible;
+        _taskBarServiceWrapper.SetState(TaskBarProgressState.Indeterminate);
+
+        try
+        {
+            await func.Invoke();
+        }
+        finally
+        {
+            _taskBarServiceWrapper.SetState(TaskBarProgressState.None);
+            _stackPanel!.Visibility = Visibility.Hidden;
+        }
     }
 }

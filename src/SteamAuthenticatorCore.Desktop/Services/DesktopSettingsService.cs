@@ -17,7 +17,7 @@ internal sealed class DesktopSettingsService : ISettingsService
 
     private readonly string _appName;
     private static readonly Type SettingsType = typeof(AppSettings);
-    private static readonly PropertyInfo[] PropertyInfos = typeof(AppSettings).GetProperties().SkipWhile(info => info.GetCustomAttribute<IgnoreSettings>() is not null).ToArray();
+    private static readonly PropertyInfo[] PropertyInfos = typeof(AppSettings).GetProperties().SkipWhile(info => info.GetCustomAttribute<IgnoreSetting>() is not null).ToArray();
 
     public void LoadSettings(ISettings settings)
     {

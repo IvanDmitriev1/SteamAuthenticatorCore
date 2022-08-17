@@ -9,7 +9,7 @@ namespace SteamAuthenticatorCore.Mobile.Services;
 
 internal class MobileSettingsService : ISettingsService
 {
-    private static readonly PropertyInfo[] PropertyInfos = typeof(AppSettings).GetProperties().SkipWhile(info => info.GetCustomAttribute<IgnoreSettings>() is not null).ToArray();
+    private static readonly PropertyInfo[] PropertyInfos = typeof(AppSettings).GetProperties().SkipWhile(info => info.GetCustomAttribute<IgnoreSetting>() is not null).ToArray();
 
     public void LoadSettings(ISettings settings)
     {

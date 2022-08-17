@@ -2,8 +2,8 @@
 
 public interface ISettingsService
 {
-    public void LoadSettings(ISettings settings);
-    public void SaveSettings(ISettings settings);
+    void LoadSettings(ISettings settings);
+    void SaveSettings(ISettings settings);
 
-    public void SaveSetting(string fieldName, ISettings settings);
+    void SaveSetting(string fieldName, ISettings settings);
 }

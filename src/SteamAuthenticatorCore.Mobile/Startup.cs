@@ -8,6 +8,7 @@ using SteamAuthenticatorCore.Mobile.Services;
 using SteamAuthenticatorCore.Mobile.ViewModels;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Models;
 using SteamAuthenticatorCore.Shared.Services;
 
 namespace SteamAuthenticatorCore.Mobile;
@@ -56,9 +57,9 @@ public static class Startup
             var appSettings = provider.GetRequiredService<AppSettings>();
             return appSettings.ManifestLocation switch
             {
-                AppSettings.ManifestLocationModel.LocalDrive => provider
+                ManifestLocationModel.LocalDrive => provider
                     .GetRequiredService<IManifestModelService>(),
-                AppSettings.ManifestLocationModel.GoogleDrive => 
+                ManifestLocationModel.GoogleDrive => 
                     throw new NotImplementedException(),
                 _ => throw new ArgumentOutOfRangeException()
             };

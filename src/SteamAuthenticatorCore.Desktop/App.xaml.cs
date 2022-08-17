@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
@@ -17,6 +16,7 @@ using SteamAuthenticatorCore.Desktop.ViewModels;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Models;
 using SteamAuthenticatorCore.Shared.Services;
 using Wpf.Ui.Mvvm.Contracts;
 using Wpf.Ui.Mvvm.Services;
@@ -68,7 +68,7 @@ public sealed partial class App : Application
                 services.AddSingleton<TaskBarServiceWrapper>();
 
                 services.AddSingleton<Container>();
-                services.AddTransient<TokenPage>();
+                services.AddSingleton<TokenPage>();
                 services.AddTransient<ConfirmationsPage>();
                 services.AddTransient<SettingsPage>();
                 services.AddTransient<LoginPage>();
@@ -99,18 +99,15 @@ public sealed partial class App : Application
                     var appSettings = provider.GetRequiredService<AppSettings>();
                     return appSettings.ManifestLocation switch
                     {
-                        AppSettings.ManifestLocationModel.LocalDrive => provider
+                        ManifestLocationModel.LocalDrive => provider
                             .GetRequiredService<LocalDriveManifestModelService>(),
-                        AppSettings.ManifestLocationModel.GoogleDrive => provider
+                        ManifestLocationModel.GoogleDrive => provider
                             .GetRequiredService<GoogleDriveManifestModelService>(),
                         _ => throw new ArgumentOutOfRangeException()
                     };
                 });
             })
             .Build();
-
-        var settings = _host.Services.GetRequiredService<AppSettings>();
-        settings.PropertyChanged += SettingsOnPropertyChanged;
     }
 
     private readonly IHost _host;
@@ -152,12 +149,5 @@ public sealed partial class App : Application
 
         var hub = _host.Services.GetRequiredService<IHub>();
         OnException(e.Exception, hub);
-    }
-
-    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        var settings = (sender as AppSettings)!;
-
-        settings.SettingsService.SaveSetting(e.PropertyName!, settings);
     }
 }

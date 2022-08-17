@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using SteamAuthenticatorCore.Shared.Abstraction;
 using System.Windows.Media.Imaging;
+using SteamAuthenticatorCore.Shared.Models;
 using Wpf.Ui.Mvvm.Contracts;
 
 namespace SteamAuthenticatorCore.Desktop.Services;
@@ -23,7 +24,10 @@ internal class DesktopImplementations : IPlatformImplementations
 
     public async ValueTask InvokeMainThread(Action method)
     {
-        await Application.Current.Dispatcher.InvokeAsync(method);
+        if (Application.Current.Dispatcher.CheckAccess())
+            method.Invoke();
+        else
+            await Application.Current.Dispatcher.InvokeAsync(method);
     }
 
     public async Task DisplayAlert(string message)
@@ -31,5 +35,10 @@ internal class DesktopImplementations : IPlatformImplementations
         var control = _dialog.GetDialogControl();
         await control.ShowAndWaitAsync("Alert!" ,message);
         control.Hide();
+    }
+
+    public void SetTheme(Theme theme)
+    {
+        
     }
 }

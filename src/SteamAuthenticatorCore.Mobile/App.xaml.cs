@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SteamAuthenticatorCore.Mobile.Services.Interfaces;
 using SteamAuthenticatorCore.Shared;
+using SteamAuthenticatorCore.Shared.Abstraction;
 using SteamAuthenticatorCore.Shared.Services;
 using Xamarin.Forms;
 
@@ -17,12 +18,9 @@ public partial class App : Application
         
         var settings = Startup.ServiceProvider.GetRequiredService<AppSettings>();
         settings.LoadSettings();
-        settings.PropertyChanged += (sender, args) =>
-        {
-            var senderSettings = (sender as AppSettings)!;
 
-            senderSettings.SettingsService.SaveSetting(args.PropertyName, senderSettings);
-        };
+        var platformImplementations = Startup.ServiceProvider.GetRequiredService<IPlatformImplementations>();
+        platformImplementations.SetTheme(settings.Theme);
     }
 
     private readonly IEnvironment _environment;

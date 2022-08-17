@@ -62,18 +62,6 @@ public abstract partial class TokenViewModelBase : ObservableObject
 
     #endregion
 
-    protected async ValueTask<bool> RefreshAccountSession(SteamGuardAccount account)
-    {
-        try
-        {
-            return await account.RefreshSessionAsync();
-        }
-        catch (Exception)
-        {
-            return false;
-        }
-    }
-
     private ValueTask OnTimer(CancellationToken arg)
     {
         if (SelectedAccount is null)

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +9,7 @@ using SteamAuthenticatorCore.Shared.Abstraction;
 
 namespace SteamAuthenticatorCore.Shared.Services;
 
-public class ManifestAccountsWatcherService : IDisposable
+public class ManifestAccountsWatcherService
 {
     public ManifestAccountsWatcherService(AppSettings settings, ManifestServiceResolver manifestServiceResolver, IPlatformImplementations platformImplementations, ObservableCollection<SteamGuardAccount> accounts)
     {
@@ -18,21 +17,13 @@ public class ManifestAccountsWatcherService : IDisposable
         _manifestServiceResolver = manifestServiceResolver;
         _platformImplementations = platformImplementations;
         _accounts = accounts;
-
-        _settings.PropertyChanged += SettingsOnPropertyChanged;
     }
 
-    private bool _isFirstTime;
     private readonly AppSettings _settings;
     private readonly ManifestServiceResolver _manifestServiceResolver;
     private readonly IPlatformImplementations _platformImplementations;
     private readonly ObservableCollection<SteamGuardAccount> _accounts;
     private CancellationTokenSource _cts = new();
-
-    public void Dispose()
-    {
-        _settings.PropertyChanged -= SettingsOnPropertyChanged;
-    }
 
     public async ValueTask RefreshAccounts()
     {
@@ -95,23 +86,5 @@ public class ManifestAccountsWatcherService : IDisposable
     {
         await _manifestServiceResolver.Invoke().DeleteSteamGuardAccount(account);
         _accounts.Remove(account);
-    }
-
-    private async void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        var settings = (AppSettings) sender!;
-        if (!settings.IsInitialized)
-            return;
-
-        if (e.PropertyName != nameof(settings.ManifestLocation)) 
-            return;
-
-        if (!_isFirstTime)
-        {
-            _isFirstTime = true;
-            return;
-        }
-
-        await Initialize();
     }
 }

@@ -1,21 +1,20 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Models;
 
 namespace SteamAuthenticatorCore.Shared;
 
 public partial class AppSettings : ObservableObject, ISettings
 {
-    public AppSettings(ISettingsService settingsService)
+    public AppSettings(ISettingsService settingsService, IPlatformImplementations platformImplementations)
     {
+        _platformImplementations = platformImplementations;
         SettingsService = settingsService;
         IsInitialized = false;
     }
-    
-    public enum ManifestLocationModel
-    {
-        LocalDrive,
-        GoogleDrive
-    }
+
+    private readonly IPlatformImplementations _platformImplementations;
 
     [ObservableProperty]
     private ManifestLocationModel _manifestLocation;
@@ -32,10 +31,13 @@ public partial class AppSettings : ObservableObject, ISettings
     [ObservableProperty]
     private bool _autoConfirmMarketTransactions;
 
-    [IgnoreSettings]
+    [ObservableProperty]
+    private Theme _theme;
+
+    [IgnoreSetting]
     public bool IsInitialized { get; private set; }
     
-    [IgnoreSettings]
+    [IgnoreSetting]
     public ISettingsService SettingsService { get; }
 
     public void DefaultSettings()
@@ -45,6 +47,7 @@ public partial class AppSettings : ObservableObject, ISettings
         Updated = false;
         PeriodicCheckingInterval = 10;
         AutoConfirmMarketTransactions = false;
+        Theme = Theme.System;
 
         IsInitialized = true;
     }
@@ -53,6 +56,21 @@ public partial class AppSettings : ObservableObject, ISettings
     {
         DefaultSettings();
         SettingsService.LoadSettings(this);
+
+        PropertyChanged += async (sender, args) =>
+        {
+            var settings = (sender as AppSettings)!;
+
+            settings.SettingsService.SaveSetting(args.PropertyName!, settings);
+
+            if (args.PropertyName != nameof(settings.Theme))
+                return;
+
+            await _platformImplementations.InvokeMainThread(() =>
+            {
+                _platformImplementations.SetTheme(settings.Theme);
+            });
+        };
     }
 
     public void SaveSettings()
