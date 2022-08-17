@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="SteamAuthenticatorCore.Mobile.Pages.LoginPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
+    Title="Login page"
+    d:BindingContext="{d:DesignInstance viewModels:LoginViewModel,
+                                        IsDesignTimeCreatable=False}"
+    BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor},
+                                      Light={StaticResource LightBackgroundColor}}"
+    Shell.NavBarHasShadow="True"
+    Shell.TabBarIsVisible="False"
+    Visual="Material"
+    mc:Ignorable="d">
+
+    <ContentPage.Content>
+        <StackLayout
+            Margin="10"
+            HorizontalOptions="FillAndExpand"
+            Spacing="10"
+            VerticalOptions="CenterAndExpand">
+
+            <Entry
+                IsEnabled="False"
+                IsReadOnly="True"
+                Placeholder="Login"
+                Text="{Binding Path=Account.AccountName}" />
+
+            <Entry
+                IsEnabled="{Binding IsPasswordBoxEnabled}"
+                IsPassword="True"
+                Placeholder="Password"
+                Text="{Binding Path=Password}" />
+
+            <Button Command="{Binding LoginCommand}" Text="Login" />
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

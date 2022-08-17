@@ -365,3 +365,6 @@ FodyWeavers.xsd
 Android/SteamDesktopAuthenticatorCoreAndroid/client_secret.json
 SteamDesktopAuthenticatorCore/client_secret.json
 *.maFile
+
+
+client_secret.json
