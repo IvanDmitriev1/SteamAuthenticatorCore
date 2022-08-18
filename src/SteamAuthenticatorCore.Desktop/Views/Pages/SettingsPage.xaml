@@ -46,7 +46,7 @@
                     <ui:NumberBox
                         IntegersOnly="True"
                         Max="100"
-                        Min="10"
+                        Min="15"
                         Value="{Binding Path=PeriodicCheckingInterval, Mode=TwoWay, Converter={StaticResource DoubleToIntConverter}}" />
                 </ui:CardControl>
             </StackPanel>

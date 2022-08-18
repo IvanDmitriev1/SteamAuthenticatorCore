@@ -195,6 +195,9 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
 
     private async void AppSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName != nameof(AppSettings.ManifestLocation))
+            return;
+
         await PerformLoadingOperation(async () =>
         {
             await _accountsWatcherService.Initialize();

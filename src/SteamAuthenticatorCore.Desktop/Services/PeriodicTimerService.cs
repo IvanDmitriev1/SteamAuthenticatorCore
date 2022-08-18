@@ -7,16 +7,18 @@ namespace SteamAuthenticatorCore.Desktop.Services;
 
 internal class PeriodicTimerService : IPlatformTimer
 {
-    private CancellationTokenSource _cts = null!;
+    private CancellationTokenSource? _cts;
     private Func<CancellationToken, ValueTask> _func = null!;
     private Task? _timerTask;
     private PeriodicTimer? _timer;
+    private bool _isDisposed;
 
     public void Initialize(TimeSpan interval, Func<CancellationToken, ValueTask> func)
     {
         _cts = new CancellationTokenSource();
         _timer = new PeriodicTimer(interval);
         _func = func;
+        _isDisposed = false;
     }
 
     public void Start()
@@ -31,8 +33,12 @@ internal class PeriodicTimerService : IPlatformTimer
 
     public void Dispose()
     {
-        _cts.Cancel();
-        _cts.Dispose();
+        if (_isDisposed)
+            return;
+
+        _isDisposed = true;
+        _cts?.Cancel();
+        _cts?.Dispose();
         _timer?.Dispose();
     }
 

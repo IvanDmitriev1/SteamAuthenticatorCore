@@ -44,7 +44,7 @@ public partial class AppSettings : ObservableObject, ISettings
         ManifestLocation = ManifestLocationModel.LocalDrive;
         FirstRun = true;
         Updated = false;
-        PeriodicCheckingInterval = 10;
+        PeriodicCheckingInterval = 15;
         AutoConfirmMarketTransactions = false;
         Theme = Theme.System;
 

@@ -56,8 +56,14 @@
                     IsExpandButtonVisible="True"
                     SelectedPageIndex="0">
                     <ui:NavigationFluent.Items>
-                        <ui:NavigationItem Content="Token" PageType="{x:Type pages:TokenPage}" />
-                        <ui:NavigationItem Content="Confirmations" PageType="{x:Type pages:ConfirmationsPage}" />
+                        <ui:NavigationItem
+                            Content="Token"
+                            Icon="Timer24"
+                            PageType="{x:Type pages:TokenPage}" />
+                        <ui:NavigationItem
+                            Content="Confirmations"
+                            Icon="TaskListLtr24"
+                            PageType="{x:Type pages:ConfirmationsPage}" />
                     </ui:NavigationFluent.Items>
                     <ui:NavigationFluent.Footer>
                         <ui:NavigationItem

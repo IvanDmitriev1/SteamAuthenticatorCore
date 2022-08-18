@@ -56,7 +56,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void StoppedTyping()
     {
-        if (AppSettings.PeriodicCheckingInterval < 10)
-            AppSettings.PeriodicCheckingInterval = 10;
+        if (AppSettings.PeriodicCheckingInterval < 15)
+            AppSettings.PeriodicCheckingInterval = 15;
     }
 }

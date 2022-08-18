@@ -23,6 +23,8 @@ public partial class Container
         dialogService.SetDialogControl(RootDialog);
 
         NavigationFluent.Loaded += NavigationFluentOnLoaded;
+        Unloaded += OnUnloaded;
+        SizeChanged += OnSizeChanged;
     }
 
     private readonly AppSettings _appSettings;
@@ -37,5 +39,17 @@ public partial class Container
         RootWelcomeGrid.Visibility = Visibility.Hidden;
         MainContent.Visibility = Visibility.Visible;
         _taskBarServiceWrapper.SetActiveWindow(this);
+    }
+
+    private void OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        NavigationFluent.Loaded -= NavigationFluentOnLoaded;
+        Unloaded -= OnUnloaded;
+        SizeChanged -= OnSizeChanged;
+    }
+
+    private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        NavigationFluent.IsExpanded = !(e.NewSize.Width <= 800);
     }
 }

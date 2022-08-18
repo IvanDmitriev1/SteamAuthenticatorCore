@@ -11,7 +11,7 @@ internal class MobileTimer : IPlatformTimer
     private bool _isRunning;
     private TimeSpan _interval;
     private Func<CancellationToken, ValueTask>? _func;
-    private CancellationTokenSource _cts = null!;
+    private CancellationTokenSource? _cts;
 
     public void Initialize(TimeSpan timeSpan, Func<CancellationToken, ValueTask> func)
     {
@@ -23,8 +23,8 @@ internal class MobileTimer : IPlatformTimer
     public void Dispose()
     {
         _isRunning = false;
-        _cts.Cancel();
-        _cts.Dispose();
+        _cts?.Cancel();
+        _cts?.Dispose();
     }
 
     public void Start()
