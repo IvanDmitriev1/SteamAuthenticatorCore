@@ -93,7 +93,10 @@ public sealed partial class App : Application
                 services.AddTransient<IPlatformTimer, PeriodicTimerService>();
                 services.AddScoped<ConfirmationServiceBase, DesktopConfirmationService>();
                 services.AddScoped<LoginService>();
-                
+                services.AddScoped<IUpdateService, DesktopUpdateService>();
+
+                services.AddHttpClient<DesktopUpdateService>();
+
                 services.AddScoped<ManifestServiceResolver>(provider => () =>
                 {
                     var appSettings = provider.GetRequiredService<AppSettings>();

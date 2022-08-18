@@ -50,6 +50,27 @@
                         Value="{Binding Path=PeriodicCheckingInterval, Mode=TwoWay, Converter={StaticResource DoubleToIntConverter}}" />
                 </ui:CardControl>
             </StackPanel>
+
+            <ui:Card Grid.Row="1" Margin="0,0,0,10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Text="{Binding Path=CurrentVersion, StringFormat={} Current version: {0}}" />
+
+                    <ui:Button
+                        Grid.Column="1"
+                        HorizontalAlignment="Right"
+                        Appearance="Primary"
+                        Command="{Binding Path=CheckForUpdatesCommand}"
+                        Content="Check for updates" />
+                </Grid>
+            </ui:Card>
         </Grid>
     </ScrollViewer>
 </ui:UiPage>
