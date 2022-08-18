@@ -29,6 +29,9 @@ public partial class App : Application
     {
         var accountsWatcherService = Startup.ServiceProvider.GetRequiredService<ManifestAccountsWatcherService>();
         await accountsWatcherService.Initialize();
+
+        var confirmationBase = Startup.ServiceProvider.GetRequiredService<ConfirmationServiceBase>();
+        confirmationBase.Initialize();
     }
 
     protected override void OnSleep()

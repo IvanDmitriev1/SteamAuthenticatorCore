@@ -21,7 +21,6 @@ public abstract class ConfirmationServiceBase : IDisposable
         _timer = timer;
 
         _settings = settings;
-        _settings.PropertyChanged += SettingsOnPropertyChanged;
     }
 
     private readonly ObservableCollection<SteamGuardAccount> _steamGuardAccounts;
@@ -34,9 +33,19 @@ public abstract class ConfirmationServiceBase : IDisposable
     public void Dispose()
     {
         _settings.PropertyChanged -= SettingsOnPropertyChanged;
-        _timer.Dispose();
     }
 
+    public void Initialize()
+    {
+        _settings.PropertyChanged += SettingsOnPropertyChanged;
+
+        if (!_settings.AutoConfirmMarketTransactions)
+            return;
+
+        _timer.Initialize(TimeSpan.FromSeconds(_settings.PeriodicCheckingInterval), TradeAutoConfirmationTimerOnTick);
+        _timer.Start();
+    }
+    
     protected abstract ConfirmationAccountModelBase CreateConfirmationAccountViewModel(SteamGuardAccount account, ConfirmationModel[] confirmation, IPlatformImplementations platformImplementations);
 
     private void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -48,7 +57,11 @@ public abstract class ConfirmationServiceBase : IDisposable
         switch (e.PropertyName)
         {
             case nameof(settings.PeriodicCheckingInterval):
+                if (!settings.AutoConfirmMarketTransactions)
+                    break;
+
                 _timer.Initialize(TimeSpan.FromSeconds(settings.PeriodicCheckingInterval), TradeAutoConfirmationTimerOnTick);
+                _timer.Start();
                 break;
             case nameof(settings.AutoConfirmMarketTransactions):
                 switch (settings.AutoConfirmMarketTransactions)
@@ -65,7 +78,7 @@ public abstract class ConfirmationServiceBase : IDisposable
         }
     }
 
-    public async Task CheckConfirmations()
+    public async ValueTask CheckConfirmations()
     {
         Accounts.Clear();
 
@@ -90,8 +103,10 @@ public abstract class ConfirmationServiceBase : IDisposable
         {
             var confirmations = new List<ConfirmationModel>();
 
-            foreach (var confirmationModel in confirmationAccountViewModel.Confirmations)
+            for (var i = 0; i < confirmationAccountViewModel.Confirmations.Count; i++)
             {
+                var confirmationModel = confirmationAccountViewModel.Confirmations[i];
+
                 if (confirmationModel.ConfType == ConfirmationModel.ConfirmationType.MarketSellTransaction)
                     confirmations.Add(confirmationModel);
             }

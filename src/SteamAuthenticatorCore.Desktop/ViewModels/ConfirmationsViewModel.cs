@@ -9,7 +9,11 @@ public class ConfirmationsViewModel
     public ConfirmationsViewModel(ConfirmationServiceBase confirmationServiceBase)
     {
         ConfirmationServiceBase = confirmationServiceBase;
-        CheckConfirmationsCommand = new AsyncRelayCommand(confirmationServiceBase.CheckConfirmations);
+
+        CheckConfirmationsCommand = new AsyncRelayCommand( async () =>
+        {
+            await confirmationServiceBase.CheckConfirmations();
+        });
     }
 
     public ConfirmationServiceBase ConfirmationServiceBase { get; }

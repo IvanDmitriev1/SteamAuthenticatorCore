@@ -101,21 +101,21 @@ internal partial class ConfirmationViewModel : ObservableObject, IRecipient<Upda
     }
 
     [RelayCommand]
-    private Task ConfirmSelected()
+    private async Task ConfirmSelected()
     {
         switch (SelectedItems.Count)
         {
             case 0:
-                return Task.CompletedTask;
+                return;
             case 1:
-                SendConfirmation(SteamGuardAccount.Confirmation.Allow);
+                await SendConfirmation(SteamGuardAccount.Confirmation.Allow);
                 break;
             default:
-                SendConfirmations(SteamGuardAccount.Confirmation.Allow);
+                await SendConfirmations(SteamGuardAccount.Confirmation.Allow);
                 break;
         }
 
-        return HideCountTitleView();
+        await HideCountTitleView();
     }
 
     [RelayCommand]
@@ -148,7 +148,7 @@ internal partial class ConfirmationViewModel : ObservableObject, IRecipient<Upda
         }
 
         var model = SelectedItems[0];
-        return Account!.SendConfirmation(model.Item2, confirmation);
+        return Account.SendConfirmation(model.Item2, confirmation);
     }
 
     private Task SendConfirmations(SteamGuardAccount.Confirmation confirmation)
@@ -166,6 +166,6 @@ internal partial class ConfirmationViewModel : ObservableObject, IRecipient<Upda
         for (var i = 0; i < SelectedItems.Count; i++)
             items[i] = SelectedItems[i].Item2;
 
-        return Account?.SendConfirmations(items, confirmation)!;
+        return Account.SendConfirmations(items, confirmation)!;
     }
 }

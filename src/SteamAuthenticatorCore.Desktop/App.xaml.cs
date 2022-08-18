@@ -67,8 +67,8 @@ public sealed partial class App : Application
                 services.AddSingleton<IThemeService, ThemeService>();
                 services.AddSingleton<TaskBarServiceWrapper>();
 
-                services.AddSingleton<Container>();
-                services.AddSingleton<TokenPage>();
+                services.AddScoped<Container>();
+                services.AddScoped<TokenPage>();
                 services.AddTransient<ConfirmationsPage>();
                 services.AddTransient<SettingsPage>();
                 services.AddTransient<LoginPage>();
@@ -139,7 +139,7 @@ public sealed partial class App : Application
     {
         _host.StopAsync();
 
-        _serviceScope?.Dispose();
+       _serviceScope?.Dispose();
         _host.Dispose();
     }
 

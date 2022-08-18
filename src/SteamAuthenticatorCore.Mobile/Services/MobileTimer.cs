@@ -11,17 +11,20 @@ internal class MobileTimer : IPlatformTimer
     private bool _isRunning;
     private TimeSpan _interval;
     private Func<CancellationToken, ValueTask>? _func;
-    private readonly CancellationTokenSource _cts = new();
+    private CancellationTokenSource _cts = null!;
 
     public void Initialize(TimeSpan timeSpan, Func<CancellationToken, ValueTask> func)
     {
         _interval = timeSpan;
         _func = func;
+        _cts = new CancellationTokenSource();
     }
 
     public void Dispose()
     {
-        _cts.Dispose();   
+        _isRunning = false;
+        _cts.Cancel();
+        _cts.Dispose();
     }
 
     public void Start()
@@ -39,17 +42,13 @@ internal class MobileTimer : IPlatformTimer
         return _isRunning;
     }
 
-    public void Stop()
-    {
-        _isRunning = false;
-        _cts.Cancel();
-    }
+    public void Stop() => Dispose();
 
     private async void HelpMethod()
     {
         try
         {
-            await _func!.Invoke(_cts.Token);
+            await _func!.Invoke(_cts!.Token);
         }
         catch (OperationCanceledException)
         {
