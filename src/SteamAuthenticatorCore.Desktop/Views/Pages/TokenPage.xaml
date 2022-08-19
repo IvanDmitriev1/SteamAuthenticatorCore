@@ -1,0 +1,173 @@
+﻿<ui:UiPage
+    x:Class="SteamAuthenticatorCore.Desktop.Views.Pages.TokenPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:steamAuthCore="clr-namespace:SteamAuthCore;assembly=SteamAuthCore"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Desktop.ViewModels"
+    x:Name="Page"
+    Title="TokenPage"
+    d:DataContext="{d:DesignInstance viewModels:TokenViewModel,
+                                     IsDesignTimeCreatable=False}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+
+    <b:Interaction.Triggers>
+        <b:EventTrigger EventName="Loaded">
+            <b:InvokeCommandAction Command="{Binding Path=PageLoadedCommand}" CommandParameter="{Binding ElementName=LoadingStackPanel}" />
+        </b:EventTrigger>
+    </b:Interaction.Triggers>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Menu Grid.Row="0" Margin="0,0,0,5">
+            <Menu.Resources>
+                <Style BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="{x:Type MenuItem}">
+                    <Setter Property="FontSize" Value="13" />
+                </Style>
+            </Menu.Resources>
+
+            <MenuItem Header="File">
+                <MenuItem Command="{Binding Path=ImportAccountsCommand}" Header="Import accounts" />
+                <MenuItem
+                    Command="{Binding Path=RefreshAccountsCommand}"
+                    CommandParameter="{Binding ElementName=LoadingStackPanel}"
+                    Header="Refresh account list" />
+                <MenuItem Command="{Binding Path=ShowAccountFilesFolderCommand}" Header="Show accounts file folder" />
+            </MenuItem>
+
+            <MenuItem Header="Selected account">
+                <MenuItem
+                    Command="{Binding LoginAgainCommand}"
+                    CommandParameter="{Binding SelectedAccount}"
+                    Header="Login again" />
+                <MenuItem
+                    Command="{Binding Path=LoginInSelectedAccountCommand}"
+                    CommandParameter="{Binding SelectedAccount}"
+                    Header="Force refresh session" />
+                <Separator />
+                <MenuItem
+                    Command="{Binding Path=DeleteAccountCommand}"
+                    CommandParameter="{Binding SelectedAccount}"
+                    Header="Delete from list" />
+            </MenuItem>
+
+            <!--<MenuItem Command="{Binding Path=OnSetUpNewAccountCommand}" Header="Set up new account" />-->
+        </Menu>
+
+        <ui:Card Grid.Row="1">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox
+                        Grid.Column="0"
+                        Margin="0,0,5,0"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        ContextMenu="{x:Null}"
+                        FontSize="13"
+                        IsEnabled="False"
+                        Text="{Binding Token, Mode=OneWay}">
+                        <TextBox.Foreground>
+                            <SolidColorBrush Color="{DynamicResource TextFillColorPrimary}" />
+                        </TextBox.Foreground>
+                    </TextBox>
+
+                    <ui:Button
+                        Grid.Column="1"
+                        HorizontalAlignment="Right"
+                        VerticalContentAlignment="Center"
+                        Appearance="Primary"
+                        Command="{StaticResource CopyCommand}"
+                        CommandParameter="{Binding Token, Mode=OneWay}"
+                        Content="Copy" />
+                </Grid>
+
+                <ProgressBar
+                    Margin="0,5,0,0"
+                    Maximum="30"
+                    Value="{Binding TokenProgressBar, Mode=OneWay}" />
+
+            </StackPanel>
+        </ui:Card>
+
+        <Grid Grid.Row="2" Margin="0,5,0,0">
+            <StackPanel x:Name="LoadingStackPanel" VerticalAlignment="Center">
+                <ui:ProgressRing IsIndeterminate="True" />
+                <TextBlock
+                    Margin="0,12,0,0"
+                    FontSize="16"
+                    FontWeight="Medium"
+                    Text="Loading..."
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
+            </StackPanel>
+
+            <ListBox
+                Margin="0,0,0,10"
+                AllowDrop="True"
+                ItemsSource="{Binding Accounts}"
+                SelectedItem="{Binding SelectedAccount}"
+                VirtualizingPanel.IsContainerVirtualizable="True"
+                VirtualizingPanel.IsVirtualizing="True"
+                VirtualizingPanel.VirtualizationMode="Recycling">
+
+                <b:Interaction.Triggers>
+                    <b:EventTrigger EventName="DragOver">
+                        <b:InvokeCommandAction Command="{Binding Path=ListBoxDragOverCommand}" PassEventArgsToCommand="True" />
+                    </b:EventTrigger>
+                    <b:EventTrigger EventName="Drop">
+                        <b:InvokeCommandAction Command="{Binding Path=ListBoxDragAndDropCommand}" PassEventArgsToCommand="True" />
+                    </b:EventTrigger>
+                </b:Interaction.Triggers>
+
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type steamAuthCore:SteamGuardAccount}">
+                        <StackPanel HorizontalAlignment="Stretch">
+                            <TextBlock Padding="2.5" Text="{Binding Path=AccountName}" />
+
+                            <StackPanel.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem
+                                        Command="{Binding Source={x:Reference Page}, Path=DataContext.LoginAgainCommand}"
+                                        CommandParameter="{Binding}"
+                                        Header="Login again" />
+                                    <MenuItem
+                                        Command="{Binding Source={x:Reference Page}, Path=DataContext.LoginInSelectedAccountCommand}"
+                                        CommandParameter="{Binding}"
+                                        Header="Force refresh session" />
+                                    <Separator />
+                                    <MenuItem
+                                        Command="{Binding Source={x:Reference Page}, Path=DataContext.DeleteAccountCommand}"
+                                        CommandParameter="{Binding}"
+                                        Header="Delete from list" />
+                                </ContextMenu>
+                            </StackPanel.ContextMenu>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </Grid>
+
+
+</ui:UiPage>
