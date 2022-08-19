@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Windows;
 using Sentry;
+using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Models;
 using SteamAuthenticatorCore.Shared.Services;
 using Wpf.Ui.Controls.Interfaces;
@@ -13,16 +16,18 @@ namespace SteamAuthenticatorCore.Desktop.Services;
 
 internal class DesktopUpdateService : UpdateServiceBase
 {
-    public DesktopUpdateService(HttpClient client, ISnackbarService snackbarService, IDialogService dialogService, IHub hub) : base(client)
+    public DesktopUpdateService(HttpClient client, ISnackbarService snackbarService, IDialogService dialogService, IHub hub, AppSettings settings) : base(client)
     {
         _snackbarService = snackbarService;
         _dialogService = dialogService;
         _hub = hub;
+        _settings = settings;
     }
 
     private readonly ISnackbarService _snackbarService;
     private readonly IDialogService _dialogService;
     private readonly IHub _hub;
+    private readonly AppSettings _settings;
 
     public async override ValueTask CheckForUpdateAndDownloadInstall(bool isInBackground)
     {
@@ -86,9 +91,23 @@ internal class DesktopUpdateService : UpdateServiceBase
         var fileName = $"{Assembly.GetExecutingAssembly().GetName().Name}-{updateModel.NewVersion}.exe";
         var filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
 
-        await using var stream = await Client.GetStreamAsync(updateModel.DownloadUrl);
+        await using (var stream = await Client.GetStreamAsync(updateModel.DownloadUrl))
+        {
+            await using var fileStream = new FileStream(filePath, FileMode.OpenOrCreate);
+            await stream.CopyToAsync(fileStream);
+        }
 
-        await using var fileStream = new FileStream(filePath, FileMode.Create);
-        await stream.CopyToAsync(fileStream);
+        _settings.Updated = true;
+
+        try
+        {
+            Process.Start(filePath);
+            Application.Current.Shutdown(0);
+        }
+        catch (Exception e)
+        {
+            
+
+        }
     }
 }

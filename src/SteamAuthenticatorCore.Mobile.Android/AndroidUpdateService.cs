@@ -72,7 +72,7 @@ internal class AndroidUpdateService : UpdateServiceBase
 
             try
             {
-                await DownloadAndInstall(new CheckForUpdateModel("", "", new Version(0, 0, 0), false));
+                await DownloadAndInstall(new CheckForUpdateModel(model.AppFileName, model.DownloadUrl, new Version(0, 0, 0), false));
             }
             catch (Exception e)
             {

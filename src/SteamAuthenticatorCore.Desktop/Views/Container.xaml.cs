@@ -1,5 +1,8 @@
-﻿using System.Windows;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using SteamAuthenticatorCore.Desktop.Extensions;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
@@ -46,6 +49,13 @@ public partial class Container
         _taskBarServiceWrapper.SetActiveWindow(this);
 
         await _updateService.CheckForUpdateAndDownloadInstall(true);
+
+        if (!_appSettings.Updated)
+            return;
+
+        await Task.Delay(TimeSpan.FromSeconds(3));
+        _updateService.DeletePreviousFile("SteamAuthenticatorCore.Desktop");
+        _appSettings.Updated = false;
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
