@@ -1,14 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="0.9.5.0" package="com.companyname.SteamAuthenticatorCore.Mobile.Android" android:installLocation="internalOnly">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="0.9.5.0" package="com.companyname.SteamAuthenticatorCore.Android" android:installLocation="internalOnly">
 	<uses-sdk android:minSdkVersion="24" android:targetSdkVersion="31" />
-	<application android:label="r" android:theme="@style/MainTheme" android:icon="@mipmap/icon">
-		<provider android:name="androidx.core.content.FileProvider" 
-		          android:authorities="${applicationId}.provider" 
-		          android:exported="false" 
-		          android:grantUriPermissions="true">
-          
-			<meta-data android:name="android.support.FILE_PROVIDER_PATHS" 
-			           android:resource="@xml/file_paths"></meta-data>
+	<application android:label="SteamAuthenticatorCore.Android" android:theme="@style/MainTheme" android:icon="@mipmap/icon">
+		<provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.provider" android:exported="false" android:grantUriPermissions="true">
+			<meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"></meta-data>
 		</provider>
 	</application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
