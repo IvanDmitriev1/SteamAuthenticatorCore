@@ -1,4 +1,6 @@
-﻿using Android.App;
+﻿#nullable enable
+using System.Threading.Tasks;
+using Android.App;
 using Android.Content.PM;
 using Android.Runtime;
 using Android.OS;
@@ -7,11 +9,13 @@ using Sentry;
 using SteamAuthenticatorCore.Mobile;
 using SteamAuthenticatorCore.Mobile.Helpers;
 using SteamAuthenticatorCore.Mobile.Services.Interfaces;
+using SteamAuthenticatorCore.Shared.Abstraction;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace SteamMobileAuthenticatorCore.Droid
 {
-    [Activity(Label = "SteamMobileAuthenticatorCore", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
+    [Activity(Label = "SteamMobileAuthenticatorCore", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize, Exported = true)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         protected override void OnCreate(Bundle savedInstanceState)
@@ -54,9 +58,20 @@ namespace SteamMobileAuthenticatorCore.Droid
                 base.OnBackPressed();
         }
 
+        public static async ValueTask CheckOrGrandPermission<TPermission>() where TPermission : Permissions.BasePermission, new()
+        {
+            if (await Permissions.CheckStatusAsync<TPermission>() == PermissionStatus.Granted)
+                return;
+
+            await Permissions.RequestAsync<TPermission>();
+        }
+
         private static void NativeConfiguration(IServiceCollection services)
         {
             services.AddSingleton<IEnvironment, AndroidEnvironment>();
+            services.AddScoped<IUpdateService, AndroidUpdateService>();
+
+            services.AddHttpClient<AndroidUpdateService>();
         }
     }
 }

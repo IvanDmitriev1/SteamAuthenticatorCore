@@ -30,12 +30,12 @@ internal class DesktopUpdateService : UpdateServiceBase
 
         try
         {
-            updateModel = await CheckForUpdate($"{Assembly.GetExecutingAssembly().GetName().Name}.exe");
+            updateModel = await CheckForUpdate($"{Assembly.GetExecutingAssembly().GetName().Name}.exe", Assembly.GetExecutingAssembly().GetName().Version!);
 
             if (updateModel is null)
             {
                 if (!isInBackground)
-                    await _snackbarService.ShowAsync("Update", "Failed to check update");
+                    await _snackbarService.ShowAsync("Update", "Failed to fetch update");
 
                 return;
             }
@@ -45,7 +45,7 @@ internal class DesktopUpdateService : UpdateServiceBase
             _hub.CaptureException(e);
 
             if (!isInBackground)
-                await _snackbarService.ShowAsync("Update", "Failed to check update");
+                await _snackbarService.ShowAsync("Update", "Failed to fetch update");
             
             return;
         }

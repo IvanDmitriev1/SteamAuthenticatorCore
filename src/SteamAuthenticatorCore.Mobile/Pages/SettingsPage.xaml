@@ -202,6 +202,11 @@
                     </Frame>
                 </StackLayout>
             </StackLayout>
+
+            <StackLayout>
+                <Label FontSize="18" Text="{Binding CurrentVersion, StringFormat='Current version: {0}'}" />
+                <Button Command="{Binding CheckForUpdatesCommand}" Text="check for updates" />
+            </StackLayout>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

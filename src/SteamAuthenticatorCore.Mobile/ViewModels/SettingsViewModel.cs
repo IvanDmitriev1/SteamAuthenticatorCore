@@ -1,17 +1,22 @@
 ﻿using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SteamAuthenticatorCore.Shared;
+using SteamAuthenticatorCore.Shared.Abstraction;
 using SteamAuthenticatorCore.Shared.Models;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public partial class SettingsViewModel : ObservableObject
 {
-    public SettingsViewModel(AppSettings appSettings)
+    public SettingsViewModel(AppSettings appSettings, IUpdateService updateService)
     {
+        _updateService = updateService;
         AppSettings = appSettings;
+        CurrentVersion = VersionTracking.CurrentVersion;
 
         _themeSelection = string.Empty;
 
@@ -23,8 +28,10 @@ public partial class SettingsViewModel : ObservableObject
             _ => throw new ArgumentOutOfRangeException()
         };
     }
+    private readonly IUpdateService _updateService;
 
     public AppSettings AppSettings { get; }
+    public string CurrentVersion { get; }
 
     private string _themeSelection;
 
@@ -58,5 +65,11 @@ public partial class SettingsViewModel : ObservableObject
     {
         if (AppSettings.PeriodicCheckingInterval < 15)
             AppSettings.PeriodicCheckingInterval = 15;
+    }
+
+    [RelayCommand]
+    private async Task CheckForUpdates()
+    {
+        await _updateService.CheckForUpdateAndDownloadInstall(false);
     }
 }

@@ -4,7 +4,6 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Net.Http.Json;
 using SteamAuthenticatorCore.Shared.Models.GithubApi;
-using System.Reflection;
 using SteamAuthenticatorCore.Shared.Models;
 using SteamAuthenticatorCore.Shared.Abstraction;
 
@@ -24,7 +23,7 @@ public abstract class UpdateServiceBase : IUpdateService
     private readonly string _repo;
     protected readonly HttpClient Client;
 
-    public async ValueTask<CheckForUpdateModel?> CheckForUpdate(string fileName)
+    public async ValueTask<CheckForUpdateModel?> CheckForUpdate(string fileName, Version currentVersion)
     {
         if (await Client.GetFromJsonAsync<GitHubRequestApiModel>($"https://api.github.com/repos/{_repo}/releases/latest").ConfigureAwait(false) is not { } apiModel)
             return null;
@@ -40,7 +39,6 @@ public abstract class UpdateServiceBase : IUpdateService
         }
 
         Version newVersion = new(apiModel.TagName);
-        Version currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
 
         switch (newVersion.CompareTo(currentVersion))
         {

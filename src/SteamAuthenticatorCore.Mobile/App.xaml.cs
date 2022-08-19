@@ -3,6 +3,7 @@ using SteamAuthenticatorCore.Mobile.Services.Interfaces;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstraction;
 using SteamAuthenticatorCore.Shared.Services;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace SteamAuthenticatorCore.Mobile;
@@ -27,11 +28,16 @@ public partial class App : Application
 
     protected async override void OnStart()
     {
+        VersionTracking.Track();
+
         var accountsWatcherService = Startup.ServiceProvider.GetRequiredService<ManifestAccountsWatcherService>();
         await accountsWatcherService.Initialize();
 
         var confirmationBase = Startup.ServiceProvider.GetRequiredService<ConfirmationServiceBase>();
         confirmationBase.Initialize();
+
+        var updateService = Startup.ServiceProvider.GetRequiredService<IUpdateService>();
+        await updateService.CheckForUpdateAndDownloadInstall(true);
     }
 
     protected override void OnSleep()
