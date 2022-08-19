@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pages="clr-namespace:SteamAuthenticatorCore.Desktop.Views.Pages"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    x:Name="Window"
     Title="Container"
     Width="800"
     Height="450"
@@ -95,6 +96,41 @@
             ButtonLeftName="Ok"
             ButtonRightName="Cancel" />
 
-        <ui:TitleBar Title="SteamAuthenticatorCore.Desktop" Margin="42,0,0,0" />
+        <ui:TitleBar
+            Title="SteamAuthenticatorCore.Desktop"
+            Margin="42,0,0,0"
+            MinimizeToTray="True">
+            <ui:TitleBar.Tray>
+                <ui:NotifyIcon
+                    FocusOnLeftClick="True"
+                    Icon="pack://application:,,,/icon.ico"
+                    MenuOnRightClick="True">
+                    <ui:NotifyIcon.Menu>
+                        <ContextMenu>
+                            <ui:MenuItem
+                                Click="MenuItem_OnClick"
+                                Header="Token page"
+                                SymbolIcon="Timer24"
+                                Tag="token" />
+                            <ui:MenuItem
+                                Click="MenuItem_OnClick"
+                                Header="Confirmations page"
+                                SymbolIcon="TaskListLtr24"
+                                Tag="confirms" />
+                            <Separator />
+                            <ui:MenuItem
+                                Click="MenuItem_OnClick"
+                                Header="Settings"
+                                SymbolIcon="Settings24"
+                                Tag="settings" />
+                            <MenuItem
+                                Click="MenuItem_OnClick"
+                                Header="Close"
+                                Tag="close" />
+                        </ContextMenu>
+                    </ui:NotifyIcon.Menu>
+                </ui:NotifyIcon>
+            </ui:TitleBar.Tray>
+        </ui:TitleBar>
     </Grid>
 </ui:UiWindow>

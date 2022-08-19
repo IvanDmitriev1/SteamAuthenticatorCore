@@ -1,5 +1,7 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using SteamAuthenticatorCore.Desktop.Services;
+using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstraction;
 using SteamAuthenticatorCore.Shared.Services;
@@ -56,5 +58,26 @@ public partial class Container
     private void OnSizeChanged(object sender, SizeChangedEventArgs e)
     {
         NavigationFluent.IsExpanded = !(e.NewSize.Width <= 800);
+    }
+
+    private void MenuItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        var menuItem = (MenuItem)sender;
+
+        switch ((string) menuItem.Tag)
+        {
+            case "token":
+                NavigationFluent.NavigateTo(typeof(TokenPage));
+                break;
+            case "confirms":
+                NavigationFluent.NavigateTo(typeof(ConfirmationsPage));
+                break;
+            case "settings":
+                NavigationFluent.NavigateTo(typeof(SettingsPage));
+                break;
+            case "close":
+                Application.Current.Shutdown();
+                break;
+        }
     }
 }
