@@ -1,0 +1,20 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: main
+    
+jobs:
+  deploy-to-github-pages:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Setup .NET 6
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+        include-prerelease: true
+        
+    - name: Publish .NET Core Project
+      run: dotnet publish src/SteamAuthenticatorCore.Web/SteamAuthenticatorCore.Web.csproj -c Release --output release --nologo
