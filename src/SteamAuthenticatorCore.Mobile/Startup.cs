@@ -52,11 +52,11 @@ public static class Startup
         services.AddSingleton<AccountsFileServiceResolver>(provider => () =>
         {
             var appSettings = provider.GetRequiredService<AppSettings>();
-            return appSettings.ManifestLocation switch
+            return appSettings.AccountsLocation switch
             {
-                ManifestLocationModel.LocalDrive => provider
+                AccountsLocationModel.LocalDrive => provider
                     .GetRequiredService<SecureStorageService>(),
-                ManifestLocationModel.GoogleDrive => 
+                AccountsLocationModel.GoogleDrive => 
                     throw new NotImplementedException(),
                 _ => throw new ArgumentOutOfRangeException()
             };

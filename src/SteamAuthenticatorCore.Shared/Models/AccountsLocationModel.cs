@@ -1,6 +1,6 @@
 ﻿namespace SteamAuthenticatorCore.Shared.Models;
 
-public enum ManifestLocationModel
+public enum AccountsLocationModel
 {
     LocalDrive = 0,
     GoogleDrive = 1

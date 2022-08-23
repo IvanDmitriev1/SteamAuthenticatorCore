@@ -16,7 +16,7 @@ public partial class AppSettings : ObservableObject, ISettings
     private readonly IPlatformImplementations _platformImplementations;
 
     [ObservableProperty]
-    private ManifestLocationModel _manifestLocation;
+    private AccountsLocationModel _accountsLocation;
     
     [ObservableProperty]
     private bool _firstRun;
@@ -41,7 +41,7 @@ public partial class AppSettings : ObservableObject, ISettings
 
     public void DefaultSettings()
     {
-        ManifestLocation = ManifestLocationModel.LocalDrive;
+        AccountsLocation = AccountsLocationModel.LocalDrive;
         FirstRun = true;
         Updated = false;
         PeriodicCheckingInterval = 15;
