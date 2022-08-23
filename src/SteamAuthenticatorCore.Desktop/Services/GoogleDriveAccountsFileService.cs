@@ -101,20 +101,27 @@ internal class GoogleDriveAccountsFileService : IAccountsFileService
         var cts = new CancellationTokenSource();
         GoogleFile? foundedFile = null;
 
-        await Parallel.ForEachAsync(files, cts.Token, async (file, token) =>
+        try
         {
-            if (!file.Name.Contains(IAccountsFileService.AccountFileExtension))
-                return;
+            await Parallel.ForEachAsync(files, cts.Token, async (file, token) =>
+            {
+                if (!file.Name.Contains(IAccountsFileService.AccountFileExtension))
+                    return;
 
-            if (await ApiDownload<SteamGuardAccount>(file.Id).ConfigureAwait(false) is not { } account)
-                return;
+                if (await ApiDownload<SteamGuardAccount>(file.Id).ConfigureAwait(false) is not { } account)
+                    return;
 
-            if (accountToRemove.Secret1 != account.Secret1 || accountToRemove.IdentitySecret != account.IdentitySecret)
-                return;
+                if (accountToRemove.Secret1 != account.Secret1 || accountToRemove.IdentitySecret != account.IdentitySecret)
+                    return;
 
-            foundedFile = file;
-            cts.Cancel();
-        }).ConfigureAwait(false);
+                foundedFile = file;
+                cts.Cancel();
+            }).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            
+        }
 
         return foundedFile;
     }

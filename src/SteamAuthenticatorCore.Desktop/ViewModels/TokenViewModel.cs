@@ -77,10 +77,10 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
 
         var accountsService = _accountsFileServiceResolver.Invoke();
 
-        foreach (var fileName in fileDialog.FileNames)
+        foreach (var filePath in fileDialog.FileNames)
         {
-            await using var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            await accountsService.SaveAccount(stream, fileName);
+            await using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            await accountsService.SaveAccount(stream, Path.GetFileName(filePath));
         }
     }
 
@@ -191,7 +191,7 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
         foreach (var fileName in files)
         {
             await using var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            await accountsService.SaveAccount(stream, fileName);
+            await accountsService.SaveAccount(stream, Path.GetFileName(fileName));
         }
     }
 
