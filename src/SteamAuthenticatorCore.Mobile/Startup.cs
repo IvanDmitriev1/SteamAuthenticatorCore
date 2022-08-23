@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using SteamAuthCore;
-using SteamAuthCore.Manifest;
 using SteamAuthenticatorCore.Mobile.Services;
 using SteamAuthenticatorCore.Mobile.ViewModels;
 using SteamAuthenticatorCore.Shared;
@@ -44,21 +43,19 @@ public static class Startup
         services.AddSingleton<ObservableCollection<SteamGuardAccount>>();
         services.AddTransient<IPlatformTimer, MobileTimer>();
         services.AddTransient<ISettingsService, MobileSettingsService>();
-        services.AddTransient<IManifestDirectoryService, MobileDirectoryService>();
         services.AddSingleton<IPlatformImplementations, MobileImplementations>();
-        services.AddScoped<IManifestModelService, SecureStorageService>();
+        services.AddScoped<SecureStorageService>();
         services.AddScoped<ConfirmationServiceBase, MobileConfirmationService>();
         services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
         services.AddScoped<LoginService>();
-        services.AddSingleton<ManifestAccountsWatcherService>();
 
-        services.AddSingleton<ManifestServiceResolver>(provider => () =>
+        services.AddSingleton<AccountsFileServiceResolver>(provider => () =>
         {
             var appSettings = provider.GetRequiredService<AppSettings>();
             return appSettings.ManifestLocation switch
             {
                 ManifestLocationModel.LocalDrive => provider
-                    .GetRequiredService<IManifestModelService>(),
+                    .GetRequiredService<SecureStorageService>(),
                 ManifestLocationModel.GoogleDrive => 
                     throw new NotImplementedException(),
                 _ => throw new ArgumentOutOfRangeException()

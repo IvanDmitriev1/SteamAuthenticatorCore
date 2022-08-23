@@ -8,7 +8,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SteamAuthenticatorCore.Mobile.Extensions;
 using SteamAuthenticatorCore.Mobile.Pages;
-using SteamAuthenticatorCore.Shared.Services;
 using Xamarin.Forms;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,16 +21,16 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public partial class TokenPageViewModel : TokenViewModelBase
 {
-    public TokenPageViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, IMessenger messenger, ManifestAccountsWatcherService accountsWatcherService) : base(accounts, platformTimer, platformImplementations)
+    public TokenPageViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, IMessenger messenger, AccountsFileServiceResolver accountsFileServiceResolver) : base(accounts, platformTimer, platformImplementations)
     {
         IsMobile = true;
 
         _messenger = messenger;
-        _accountsWatcherService = accountsWatcherService;
+        _accountsFileServiceResolver = accountsFileServiceResolver;
     }
 
     private readonly IMessenger _messenger;
-    private readonly ManifestAccountsWatcherService _accountsWatcherService;
+    private readonly AccountsFileServiceResolver _accountsFileServiceResolver;
 
     private Frame? _longPressFrame;
 
@@ -82,7 +81,7 @@ public partial class TokenPageViewModel : TokenViewModelBase
             return;
 
         var account = (SteamGuardAccount) _longPressFrame!.BindingContext;
-        await _accountsWatcherService.DeleteAccount(account);
+        await _accountsFileServiceResolver.Invoke().DeleteAccount(account);
 
         IsLongPressTitleViewVisible = false;
         await UnselectLongPressFrame();
@@ -105,10 +104,12 @@ public partial class TokenPageViewModel : TokenViewModelBase
             files = Enumerable.Empty<FileResult>();
         }
 
+        var accountsFileService = _accountsFileServiceResolver.Invoke();
+
         foreach (var fileResult in files)
         {
             await using var stream = await fileResult.OpenReadAsync();
-            await _accountsWatcherService.ImportSteamGuardAccount(stream, fileResult.FileName);
+            await accountsFileService.SaveAccount(stream, fileResult.FileName);
         }
     }
 

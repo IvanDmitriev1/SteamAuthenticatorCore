@@ -30,8 +30,8 @@ public partial class App : Application
     {
         VersionTracking.Track();
 
-        var accountsWatcherService = Startup.ServiceProvider.GetRequiredService<ManifestAccountsWatcherService>();
-        await accountsWatcherService.Initialize();
+        var accountsFileServiceResolver = Startup.ServiceProvider.GetRequiredService<AccountsFileServiceResolver>();
+        await accountsFileServiceResolver.Invoke().InitializeOrRefreshAccounts();
 
         var confirmationBase = Startup.ServiceProvider.GetRequiredService<ConfirmationServiceBase>();
         confirmationBase.Initialize();
