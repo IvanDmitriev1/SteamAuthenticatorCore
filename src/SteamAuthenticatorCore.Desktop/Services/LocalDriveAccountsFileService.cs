@@ -64,35 +64,47 @@ internal class LocalDriveAccountsFileService : IAccountsFileService
 
     public async ValueTask DeleteAccount(SteamGuardAccount accountToRemove)
     {
-        var cts = new CancellationTokenSource();
-        var removed = false;
+        if (await FindAccountInDirectory(accountToRemove) is not { } filePath)
+            return;
 
-        await Parallel.ForEachAsync(Directory.GetFiles(_maFilesDirectory), cts.Token, async (filePath, token) =>
-        {
-            if (!filePath.Contains(IAccountsFileService.AccountFileExtension))
-                return;
-
-            await using var fileStream = File.OpenRead(filePath);
-            if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(fileStream, cancellationToken: token) is not { } account)
-                return;
-
-            if (account.Secret1 != accountToRemove.Secret1 || account.AccountName != accountToRemove.AccountName)
-                return;
-
-            removed = true;
-            cts.Cancel();
-            File.Delete(filePath);
-        });
-
-        if (removed)
-        {
-            _accounts.Remove(accountToRemove);
-        }
+        File.Delete(filePath);
+        _accounts.Remove(accountToRemove);
     }
 
     private void CreateDirectory()
     {
         if (!Directory.Exists(_maFilesDirectory))
             Directory.CreateDirectory(_maFilesDirectory);
+    }
+
+    private async ValueTask<string?> FindAccountInDirectory(SteamGuardAccount accountToRemove)
+    {
+        var cts = new CancellationTokenSource();
+        string? foundedFilePath = null;
+
+        try
+        {
+            await Parallel.ForEachAsync(Directory.GetFiles(_maFilesDirectory), cts.Token, async (filePath, token) =>
+            {
+                if (!filePath.Contains(IAccountsFileService.AccountFileExtension))
+                    return;
+
+                await using var fileStream = File.OpenRead(filePath);
+                if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(fileStream, cancellationToken: token) is not { } account)
+                    return;
+
+                if (account.Secret1 != accountToRemove.Secret1 || account.AccountName != accountToRemove.AccountName)
+                    return;
+
+                foundedFilePath = filePath;
+                cts.Cancel();
+            });
+        }
+        catch (OperationCanceledException)
+        {
+            
+        }
+
+        return foundedFilePath;
     }
 }
