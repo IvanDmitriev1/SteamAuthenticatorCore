@@ -10,7 +10,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Sentry;
 using SteamAuthCore;
-using SteamAuthCore.Manifest;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.ViewModels;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
@@ -86,10 +85,7 @@ public sealed partial class App : Application
                 services.AddSingleton<IPlatformImplementations, DesktopImplementations>();
 
                 services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
-                services.AddScoped<GoogleDriveManifestModelService>();
-                services.AddScoped<IManifestDirectoryService, DesktopManifestDirectoryService>();
-                services.AddScoped<LocalDriveManifestModelService>();
-                services.AddScoped<ManifestAccountsWatcherService>();
+                services.AddScoped<LocalDriveAccountsFileService>();
                 services.AddTransient<IPlatformTimer, PeriodicTimerService>();
                 services.AddScoped<ConfirmationServiceBase, DesktopConfirmationService>();
                 services.AddScoped<LoginService>();
@@ -97,15 +93,15 @@ public sealed partial class App : Application
 
                 services.AddHttpClient<DesktopUpdateService>();
 
-                services.AddScoped<ManifestServiceResolver>(provider => () =>
+                services.AddScoped<AccountsFileServiceResolver>(provider => () =>
                 {
                     var appSettings = provider.GetRequiredService<AppSettings>();
                     return appSettings.ManifestLocation switch
                     {
-                        ManifestLocationModel.LocalDrive => provider
-                            .GetRequiredService<LocalDriveManifestModelService>(),
-                        ManifestLocationModel.GoogleDrive => provider
-                            .GetRequiredService<GoogleDriveManifestModelService>(),
+                        ManifestLocationModel.LocalDrive =>
+                            provider.GetRequiredService<LocalDriveAccountsFileService>(),
+                        ManifestLocationModel.GoogleDrive =>
+                            throw new NotImplementedException(),
                         _ => throw new ArgumentOutOfRangeException()
                     };
                 });

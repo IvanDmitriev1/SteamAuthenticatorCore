@@ -7,13 +7,13 @@ namespace SteamAuthenticatorCore.Shared.Services;
 
 public sealed class LoginService
 {
-    public LoginService(ManifestServiceResolver manifestServiceResolver, IPlatformImplementations platformImplementations)
+    public LoginService(AccountsFileServiceResolver accountsFileServiceResolver, IPlatformImplementations platformImplementations)
     {
-        _manifestServiceResolver = manifestServiceResolver;
+        _accountsFileServiceResolver = accountsFileServiceResolver;
         _platformImplementations = platformImplementations;
     }
 
-    private readonly ManifestServiceResolver _manifestServiceResolver;
+    private readonly AccountsFileServiceResolver _accountsFileServiceResolver;
     private readonly IPlatformImplementations _platformImplementations;
 
     public async Task RefreshLogin(SteamGuardAccount account, string password)
@@ -22,8 +22,8 @@ public sealed class LoginService
             return;
 
         account.Session = session;
-        var manifestService = _manifestServiceResolver.Invoke();
-        await manifestService.SaveSteamGuardAccount(account);
+        var manifestService = _accountsFileServiceResolver.Invoke();
+        await manifestService.SaveAccount(account);
 
         await _platformImplementations.DisplayAlert("Session successfully refreshed");
     }
