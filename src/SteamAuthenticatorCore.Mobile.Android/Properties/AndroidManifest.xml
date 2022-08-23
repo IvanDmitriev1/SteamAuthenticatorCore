@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="0.9.5.0" package="com.companyname.SteamAuthenticatorCore.Android" android:installLocation="internalOnly">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="0.9.6.0" package="com.companyname.SteamAuthenticatorCore.Android" android:installLocation="internalOnly">
 	<uses-sdk android:minSdkVersion="24" android:targetSdkVersion="31" />
 	<application android:label="SteamAuthenticatorCore.Android" android:theme="@style/MainTheme" android:icon="@mipmap/icon">
 		<provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.provider" android:exported="false" android:grantUriPermissions="true">
