@@ -1,135 +1,105 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using SteamAuthCore;
-using SteamAuthCore.Manifest;
+using SteamAuthenticatorCore.Shared.Abstraction;
 using Xamarin.Essentials;
 
-namespace SteamAuthenticatorCore.Mobile.Services
+namespace SteamAuthenticatorCore.Mobile.Services;
+
+public class SecureStorageService : IAccountsFileService
 {
-    public class SecureStorageService : IManifestModelService
+    public SecureStorageService(ObservableCollection<SteamGuardAccount> accounts)
     {
-        public SecureStorageService()
+        _accounts = accounts;
+    }
+
+    private readonly ObservableCollection<SteamGuardAccount> _accounts;
+    private readonly List<string> _fileNames = new();
+    private const string Key = "AccountsNames";
+    private bool _isInitialized;
+
+    public async ValueTask InitializeOrRefreshAccounts()
+    {
+        if (!_isInitialized)
         {
-            _accountNames = new HashSet<string>();
+            _isInitialized = true;
+            _fileNames.AddRange(GetFileNames());
         }
 
-        private readonly HashSet<string> _accountNames;
+        _accounts.Clear();
 
-        public Task Initialize()
+        foreach (var accountsName in _fileNames)
         {
-            var json = Preferences.Get("AccountsNames", string.Empty);
-            if (string.IsNullOrEmpty(json))
-                return Task.CompletedTask;
+            if (await GetFromSecureStorage<SteamGuardAccount>(accountsName) is not { } account)
+                continue;
 
-            foreach (var val in JsonSerializer.Deserialize<string[]>(json) ?? Array.Empty<string>())
-            {
-                _accountNames.Add(val);
-            };
-
-            return Task.CompletedTask;
+            _accounts.Add(account);
         }
+    }
 
-        public ManifestModel GetManifestModel()
+    public async ValueTask<bool> SaveAccount(Stream stream, string fileName)
+    {
+        if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(stream) is not { } account)
+            return false;
+
+        stream.Seek(0, SeekOrigin.Begin);
+
+        using var streamReader = new StreamReader(stream);
+        var json = await streamReader.ReadToEndAsync();
+
+        await SecureStorage.SetAsync(account.AccountName, json);
+
+        _fileNames.Add(account.AccountName);
+        Preferences.Set(Key, JsonSerializer.Serialize(_fileNames));
+
+        _accounts.Add(account);
+        return true;
+    }
+
+    public ValueTask SaveAccount(SteamGuardAccount account)
+    {
+        throw new NotImplementedException();
+    }
+
+    public ValueTask DeleteAccount(SteamGuardAccount accountToRemove)
+    {
+        _fileNames.Remove(accountToRemove.AccountName);
+        Preferences.Set(Key, JsonSerializer.Serialize(_fileNames));
+
+        SecureStorage.Remove(accountToRemove.AccountName);
+        _accounts.Remove(accountToRemove);
+        return new ValueTask(Task.CompletedTask);
+    }
+
+    private static string[] GetFileNames()
+    {
+        if (Preferences.Get(Key, string.Empty) is not { } json)
+            return Array.Empty<string>();
+
+        try
         {
-            throw new NotImplementedException();
+            return JsonSerializer.Deserialize<string[]>(json) ?? Array.Empty<string>();
         }
-
-        public Task SaveManifest()
+        catch (Exception)
         {
-            return Task.CompletedTask;
+            return Array.Empty<string>();
         }
+    }
 
-        public async Task<ICollection<SteamGuardAccount>> GetAccounts()
+    private static async ValueTask<T?> GetFromSecureStorage<T>(string key)
+    {
+        try
         {
-            List<SteamGuardAccount> accounts = new List<SteamGuardAccount>();
-
-            foreach (var key in _accountNames)
-            {
-                if (await GetForSecureStorage(key) is not { } account)
-                    continue;
-
-                accounts.Add(account);
-            }
-            return accounts;
+            var json = await SecureStorage.GetAsync(key).ConfigureAwait(false);
+            return JsonSerializer.Deserialize<T>(json);
         }
-
-        public async Task<SteamGuardAccount?> AddSteamGuardAccount(Stream fileStream, string fileName)
+        catch (Exception)
         {
-            var account = await JsonSerializer.DeserializeAsync<SteamGuardAccount>(fileStream);
-
-            if (account == null) 
-                return account;
-
-            if (_accountNames.Contains(account.AccountName))
-                return null;
-
-            await fileStream.FlushAsync();
-            fileStream.Position = 0;
-            using var streamReader = new StreamReader(fileStream);
-
-            var json = await streamReader.ReadToEndAsync();
-            await SaveToSecureStorage(account.AccountName, json);
-            SaveAccountNames();
-
-            return account;
-        }
-
-        public async Task SaveSteamGuardAccount(SteamGuardAccount account)
-        {
-            if (_accountNames.Contains(account.AccountName))
-                return;
-
-            var json = JsonSerializer.Serialize(account);
-            await SaveToSecureStorage(account.AccountName, json);
-
-            SaveAccountNames();
-        }
-
-        public Task DeleteSteamGuardAccount(SteamGuardAccount account)
-        {
-            _accountNames.Remove(account.AccountName);
-            SecureStorage.Remove(account.AccountName);
-            SaveAccountNames();
-
-            return Task.CompletedTask;
-        }
-
-        private async Task<SteamGuardAccount?> GetForSecureStorage(string key)
-        {
-            try
-            {
-                if (JsonSerializer.Deserialize<SteamGuardAccount>(await SecureStorage.GetAsync(key)) is { } account)
-                    return account;
-
-                SecureStorage.Remove(key);
-                _accountNames.Remove(key);
-
-                return null;
-
-            }
-            catch (Exception)
-            {
-                SecureStorage.Remove(key);
-                _accountNames.Remove(key);
-
-                return null;
-            }
-        }
-
-        private Task SaveToSecureStorage(string key, string json)
-        {
-            _accountNames.Add(key);
-            return SecureStorage.SetAsync(key, json);
-        }
-
-        private void SaveAccountNames()
-        {
-            var arr = _accountNames.ToArray();
-            Preferences.Set("AccountsNames", JsonSerializer.Serialize(arr));
+            return default;
         }
     }
 }
