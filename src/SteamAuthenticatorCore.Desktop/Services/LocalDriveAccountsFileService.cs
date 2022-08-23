@@ -57,9 +57,15 @@ internal class LocalDriveAccountsFileService : IAccountsFileService
         return true;
     }
 
-    public ValueTask SaveAccount(SteamGuardAccount account)
+    public async ValueTask SaveAccount(SteamGuardAccount account)
     {
-        throw new NotImplementedException();
+        if (await FindAccountInDirectory(account) is not { } filePath)
+            return;
+
+        var json = JsonSerializer.Serialize(account);
+        await using var fileStream = File.OpenWrite(filePath);
+        await using var streamWriter = new StreamWriter(fileStream);
+        await streamWriter.WriteAsync(json);
     }
 
     public async ValueTask DeleteAccount(SteamGuardAccount accountToRemove)
@@ -77,7 +83,7 @@ internal class LocalDriveAccountsFileService : IAccountsFileService
             Directory.CreateDirectory(_maFilesDirectory);
     }
 
-    private async ValueTask<string?> FindAccountInDirectory(SteamGuardAccount accountToRemove)
+    private async ValueTask<string?> FindAccountInDirectory(SteamGuardAccount accountToFind)
     {
         var cts = new CancellationTokenSource();
         string? foundedFilePath = null;
@@ -93,7 +99,7 @@ internal class LocalDriveAccountsFileService : IAccountsFileService
                 if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(fileStream, cancellationToken: token) is not { } account)
                     return;
 
-                if (account.Secret1 != accountToRemove.Secret1 || account.AccountName != accountToRemove.AccountName)
+                if (account.Secret1 != accountToFind.Secret1 || account.AccountName != accountToFind.AccountName)
                     return;
 
                 foundedFilePath = filePath;

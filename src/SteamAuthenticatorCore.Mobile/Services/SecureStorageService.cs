@@ -50,7 +50,6 @@ public class SecureStorageService : IAccountsFileService
 
         using var streamReader = new StreamReader(stream);
         var json = await streamReader.ReadToEndAsync();
-
         await SecureStorage.SetAsync(account.AccountName, json);
 
         _fileNames.Add(account.AccountName);
@@ -60,9 +59,10 @@ public class SecureStorageService : IAccountsFileService
         return true;
     }
 
-    public ValueTask SaveAccount(SteamGuardAccount account)
+    public async ValueTask SaveAccount(SteamGuardAccount account)
     {
-        throw new NotImplementedException();
+        var json = JsonSerializer.Serialize(account);
+        await SecureStorage.SetAsync(account.AccountName, json);
     }
 
     public ValueTask DeleteAccount(SteamGuardAccount accountToRemove)

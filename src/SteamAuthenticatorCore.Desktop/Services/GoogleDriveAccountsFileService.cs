@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -68,7 +69,16 @@ internal class GoogleDriveAccountsFileService : IAccountsFileService
         return true;
     }
 
-    public ValueTask SaveAccount(SteamGuardAccount account) => throw new NotImplementedException();
+    public async ValueTask SaveAccount(SteamGuardAccount account)
+    {
+        if (await FindMaFileInGoogleDrive(account) is not { } file)
+            return;
+
+        var json = JsonSerializer.Serialize(account);
+
+        await using MemoryStream stream = new(Encoding.UTF8.GetBytes(json));
+        await _api.UploadFile(file, stream);
+    }
 
     public async ValueTask DeleteAccount(SteamGuardAccount accountToRemove)
     {
@@ -93,7 +103,7 @@ internal class GoogleDriveAccountsFileService : IAccountsFileService
         return await JsonSerializer.DeserializeAsync<T>(stream).ConfigureAwait(false);
     }
 
-    private async ValueTask<GoogleFile?> FindMaFileInGoogleDrive(SteamGuardAccount accountToRemove)
+    private async ValueTask<GoogleFile?> FindMaFileInGoogleDrive(SteamGuardAccount accountToFind)
     {
         if (await _api.GetFiles().ConfigureAwait(false) is not { } files)
             return null;
@@ -111,7 +121,7 @@ internal class GoogleDriveAccountsFileService : IAccountsFileService
                 if (await ApiDownload<SteamGuardAccount>(file.Id).ConfigureAwait(false) is not { } account)
                     return;
 
-                if (accountToRemove.Secret1 != account.Secret1 || accountToRemove.IdentitySecret != account.IdentitySecret)
+                if (accountToFind.Secret1 != account.Secret1 || accountToFind.IdentitySecret != account.IdentitySecret)
                     return;
 
                 foundedFile = file;
