@@ -3,8 +3,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthCore;
+using SteamAuthenticatorCore.Shared.Abstraction;
 using SteamAuthenticatorCore.Shared.Messages;
-using SteamAuthenticatorCore.Shared.Services;
 using Xamarin.Forms;
 using ObservableObject = CommunityToolkit.Mvvm.ComponentModel.ObservableObject;
 
@@ -13,13 +13,13 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public partial class LoginViewModel : ObservableObject, IRecipient<UpdateAccountInLoginPageMessage>
 {
-    public LoginViewModel(LoginService loginService, IMessenger messenger)
+    public LoginViewModel(ILoginService loginService, IMessenger messenger)
     {
         _loginService = loginService;
         messenger.Register(this);
     }
 
-    private readonly LoginService _loginService;
+    private readonly ILoginService _loginService;
 
     [ObservableProperty]
     private SteamGuardAccount _account = null!;

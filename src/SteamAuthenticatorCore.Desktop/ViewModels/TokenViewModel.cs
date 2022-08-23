@@ -93,7 +93,7 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
     [RelayCommand]
     private async Task ShowAccountFilesFolder()
     {
-        if (_appSettings.ManifestLocation == ManifestLocationModel.GoogleDrive)
+        if (_appSettings.AccountsLocation == AccountsLocationModel.GoogleDrive)
         {
 
             var control = _dialogService.GetDialogControl();
@@ -197,7 +197,7 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
 
     private async void AppSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName != nameof(AppSettings.ManifestLocation))
+        if (e.PropertyName != nameof(AppSettings.AccountsLocation))
             return;
 
         await RefreshAccounts();

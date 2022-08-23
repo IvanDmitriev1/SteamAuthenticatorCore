@@ -3,9 +3,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthenticatorCore.Mobile.Pages;
+using SteamAuthenticatorCore.Shared.Abstraction;
 using SteamAuthenticatorCore.Shared.Messages;
 using SteamAuthenticatorCore.Shared.Models;
-using SteamAuthenticatorCore.Shared.Services;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -13,7 +13,7 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
 {
-    public ConfirmationsOverviewViewModel(ConfirmationServiceBase confirmationServiceBase, IMessenger messenger)
+    public ConfirmationsOverviewViewModel(IConfirmationService confirmationServiceBase, IMessenger messenger)
     {
         _messenger = messenger;
         ConfirmationServiceBase = confirmationServiceBase;
@@ -25,7 +25,7 @@ public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
     [ObservableProperty]
     private bool _isRefreshing;
 
-    public ConfirmationServiceBase ConfirmationServiceBase { get; }
+    public IConfirmationService ConfirmationServiceBase { get; }
 
     [RelayCommand]
     private void OnAppearing()

@@ -5,7 +5,7 @@ using SteamAuthenticatorCore.Shared.Abstraction;
 
 namespace SteamAuthenticatorCore.Shared.Services;
 
-public sealed class LoginService
+public sealed class LoginService : ILoginService
 {
     public LoginService(AccountsFileServiceResolver accountsFileServiceResolver, IPlatformImplementations platformImplementations)
     {

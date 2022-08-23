@@ -2,7 +2,6 @@
 using SteamAuthenticatorCore.Mobile.Services.Interfaces;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstraction;
-using SteamAuthenticatorCore.Shared.Services;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -33,7 +32,7 @@ public partial class App : Application
         var accountsFileServiceResolver = Startup.ServiceProvider.GetRequiredService<AccountsFileServiceResolver>();
         await accountsFileServiceResolver.Invoke().InitializeOrRefreshAccounts();
 
-        var confirmationBase = Startup.ServiceProvider.GetRequiredService<ConfirmationServiceBase>();
+        var confirmationBase = Startup.ServiceProvider.GetRequiredService<IConfirmationService>();
         confirmationBase.Initialize();
 
         var updateService = Startup.ServiceProvider.GetRequiredService<IUpdateService>();

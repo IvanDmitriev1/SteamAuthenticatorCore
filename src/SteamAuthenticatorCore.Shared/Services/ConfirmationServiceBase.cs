@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace SteamAuthenticatorCore.Shared.Services;
 
-public abstract class ConfirmationServiceBase : IDisposable
+public abstract class ConfirmationServiceBase : IConfirmationService, IDisposable
 {
     protected ConfirmationServiceBase(ObservableCollection<SteamGuardAccount> steamGuardAccounts, AppSettings settings, IPlatformImplementations platformImplementations, IPlatformTimer timer)
     {
@@ -46,6 +46,21 @@ public abstract class ConfirmationServiceBase : IDisposable
         _timer.Start();
     }
     
+    public async ValueTask CheckConfirmations()
+    {
+        Accounts.Clear();
+
+        foreach (var account in _steamGuardAccounts)
+        {
+            var confirmations = await ConfirmationAccountModelBase.TryGetConfirmations(account);
+
+            if (confirmations.Length == 0)
+                continue;
+
+            Accounts.Add(CreateConfirmationAccountViewModel(account, confirmations, _platformImplementations));
+        }
+    }
+
     protected abstract ConfirmationAccountModelBase CreateConfirmationAccountViewModel(SteamGuardAccount account, ConfirmationModel[] confirmation, IPlatformImplementations platformImplementations);
 
     private void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -75,21 +90,6 @@ public abstract class ConfirmationServiceBase : IDisposable
                         break;
                 }
                 break;
-        }
-    }
-
-    public async ValueTask CheckConfirmations()
-    {
-        Accounts.Clear();
-
-        foreach (var account in _steamGuardAccounts)
-        {
-            var confirmations = await ConfirmationAccountModelBase.TryGetConfirmations(account);
-
-            if (confirmations.Length == 0)
-                continue;
-
-            Accounts.Add(CreateConfirmationAccountViewModel(account, confirmations, _platformImplementations));
         }
     }
 

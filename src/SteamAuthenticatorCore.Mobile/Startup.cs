@@ -45,9 +45,9 @@ public static class Startup
         services.AddTransient<ISettingsService, MobileSettingsService>();
         services.AddSingleton<IPlatformImplementations, MobileImplementations>();
         services.AddScoped<SecureStorageService>();
-        services.AddScoped<ConfirmationServiceBase, MobileConfirmationService>();
+        services.AddScoped<IConfirmationService, MobileConfirmationService>();
         services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
-        services.AddScoped<LoginService>();
+        services.AddScoped<ILoginService, LoginService>();
 
         services.AddSingleton<AccountsFileServiceResolver>(provider => () =>
         {

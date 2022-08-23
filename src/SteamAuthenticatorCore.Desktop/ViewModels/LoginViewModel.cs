@@ -3,15 +3,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthCore;
+using SteamAuthenticatorCore.Shared.Abstraction;
 using SteamAuthenticatorCore.Shared.Messages;
-using SteamAuthenticatorCore.Shared.Services;
 using Wpf.Ui.Mvvm.Contracts;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public partial class LoginViewModel : ObservableObject, IRecipient<UpdateAccountInLoginPageMessage>
 {
-    public LoginViewModel(INavigationService navigation, IMessenger messenger, LoginService loginService)
+    public LoginViewModel(INavigationService navigation, IMessenger messenger, ILoginService loginService)
     {
         _navigation = navigation;
         _loginService = loginService;
@@ -19,7 +19,7 @@ public partial class LoginViewModel : ObservableObject, IRecipient<UpdateAccount
     }
 
     private readonly INavigationService _navigation;
-    private readonly LoginService _loginService;
+    private readonly ILoginService _loginService;
 
     [ObservableProperty]
     private SteamGuardAccount _account = null!;

@@ -88,8 +88,8 @@ public sealed partial class App : Application
                 services.AddScoped<LocalDriveAccountsFileService>();
                 services.AddScoped<GoogleDriveAccountsFileService>();
                 services.AddTransient<IPlatformTimer, PeriodicTimerService>();
-                services.AddScoped<ConfirmationServiceBase, DesktopConfirmationService>();
-                services.AddScoped<LoginService>();
+                services.AddScoped<IConfirmationService, DesktopConfirmationService>();
+                services.AddScoped<ILoginService, LoginService>();
                 services.AddScoped<IUpdateService, DesktopUpdateService>();
 
                 services.AddHttpClient<DesktopUpdateService>();
@@ -97,11 +97,11 @@ public sealed partial class App : Application
                 services.AddScoped<AccountsFileServiceResolver>(provider => () =>
                 {
                     var appSettings = provider.GetRequiredService<AppSettings>();
-                    return appSettings.ManifestLocation switch
+                    return appSettings.AccountsLocation switch
                     {
-                        ManifestLocationModel.LocalDrive =>
+                        AccountsLocationModel.LocalDrive =>
                             provider.GetRequiredService<LocalDriveAccountsFileService>(),
-                        ManifestLocationModel.GoogleDrive =>
+                        AccountsLocationModel.GoogleDrive =>
                             provider.GetRequiredService<GoogleDriveAccountsFileService>(),
                         _ => throw new ArgumentOutOfRangeException()
                     };

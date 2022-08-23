@@ -1,12 +1,12 @@
 ﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using SteamAuthenticatorCore.Shared.Services;
+using SteamAuthenticatorCore.Shared.Abstraction;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public class ConfirmationsViewModel
 {
-    public ConfirmationsViewModel(ConfirmationServiceBase confirmationServiceBase)
+    public ConfirmationsViewModel(IConfirmationService confirmationServiceBase)
     {
         ConfirmationServiceBase = confirmationServiceBase;
 
@@ -16,6 +16,6 @@ public class ConfirmationsViewModel
         });
     }
 
-    public ConfirmationServiceBase ConfirmationServiceBase { get; }
+    public IConfirmationService ConfirmationServiceBase { get; }
     public ICommand CheckConfirmationsCommand { get; }
 }

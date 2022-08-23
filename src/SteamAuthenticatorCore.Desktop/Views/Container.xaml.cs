@@ -7,14 +7,13 @@ using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstraction;
-using SteamAuthenticatorCore.Shared.Services;
 using Wpf.Ui.Mvvm.Contracts;
 
 namespace SteamAuthenticatorCore.Desktop.Views;
 
 public partial class Container
 {
-    public Container(INavigationService navigationService, IPageService pageService, AppSettings appSettings, ISnackbarService snackbarService, IDialogService dialogService, TaskBarServiceWrapper taskBarServiceWrapper, ConfirmationServiceBase confirmationServiceBase, IUpdateService updateService)
+    public Container(INavigationService navigationService, IPageService pageService, AppSettings appSettings, ISnackbarService snackbarService, IDialogService dialogService, TaskBarServiceWrapper taskBarServiceWrapper, IConfirmationService confirmationServiceBase, IUpdateService updateService)
     {
         InitializeComponent();
 
@@ -36,7 +35,7 @@ public partial class Container
 
     private readonly AppSettings _appSettings;
     private readonly TaskBarServiceWrapper _taskBarServiceWrapper;
-    private readonly ConfirmationServiceBase _confirmationServiceBase;
+    private readonly IConfirmationService _confirmationServiceBase;
     private readonly IUpdateService _updateService;
 
     private async void NavigationFluentOnLoaded(object sender, RoutedEventArgs e)
