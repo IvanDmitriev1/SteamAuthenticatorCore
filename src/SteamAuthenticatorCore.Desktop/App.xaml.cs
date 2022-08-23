@@ -86,6 +86,7 @@ public sealed partial class App : Application
 
                 services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
                 services.AddScoped<LocalDriveAccountsFileService>();
+                services.AddScoped<GoogleDriveAccountsFileService>();
                 services.AddTransient<IPlatformTimer, PeriodicTimerService>();
                 services.AddScoped<ConfirmationServiceBase, DesktopConfirmationService>();
                 services.AddScoped<LoginService>();
@@ -101,7 +102,7 @@ public sealed partial class App : Application
                         ManifestLocationModel.LocalDrive =>
                             provider.GetRequiredService<LocalDriveAccountsFileService>(),
                         ManifestLocationModel.GoogleDrive =>
-                            throw new NotImplementedException(),
+                            provider.GetRequiredService<GoogleDriveAccountsFileService>(),
                         _ => throw new ArgumentOutOfRangeException()
                     };
                 });
