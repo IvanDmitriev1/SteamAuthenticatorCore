@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using SteamAuthCore.Exceptions;
 
@@ -51,6 +52,28 @@ public class SessionData
             cookies.Add(new Cookie("Steam_Language", "english", "/", ".steamcommunity.com"));
             cookies.Add(new Cookie("dob", "", "/", ".steamcommunity.com"));
             cookies.Add(new Cookie("sessionid", SessionId, "/", ".steamcommunity.com"));
+
+            return cookies;
+        }
+        catch (CookieException)
+        {
+            throw new WgTokenExpiredException();
+        }
+    }
+
+    public KeyValuePair<string, string>[] GetKeyValuePairCookies()
+    {
+        try
+        {
+            var cookies = new KeyValuePair<string, string>[8];
+            cookies[0] = new KeyValuePair<string, string>("mobileClientVersion", "0 (2.1.3)");
+            cookies[1] = new KeyValuePair<string, string>("mobileClient", "android");
+            cookies[2] = new KeyValuePair<string, string>("steamid", SteamId.ToString());
+            cookies[3] = new KeyValuePair<string, string>("steamLogin", SteamLogin);
+            cookies[4] = new KeyValuePair<string, string>("steamLoginSecure", SteamLoginSecure);
+            cookies[5] = new KeyValuePair<string, string>("Steam_Language", "english");
+            cookies[6] = new KeyValuePair<string, string>("dob", "");
+            cookies[7] = new KeyValuePair<string, string>("sessionid", SessionId);
 
             return cookies;
         }

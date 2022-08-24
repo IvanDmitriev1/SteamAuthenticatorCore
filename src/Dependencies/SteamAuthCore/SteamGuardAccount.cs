@@ -144,6 +144,7 @@ namespace SteamAuthCore
             return Encoding.UTF8.GetString(codeArray);
         }
 
+        [Obsolete]
         public async Task<IEnumerable<ConfirmationModel>> FetchConfirmationsAsync()
         {
             string url = GenerateConfirmationUrl();
