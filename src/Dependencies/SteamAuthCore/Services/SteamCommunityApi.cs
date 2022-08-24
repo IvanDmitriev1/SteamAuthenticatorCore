@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using SteamAuthCore.Abstractions;
@@ -21,23 +20,14 @@ internal sealed class SteamCommunityApi : ISteamCommunityApi
 
     private readonly HttpClient _client;
 
-    public async ValueTask<string> Mobileconf(string query, CookieContainer cookies)
+    public async ValueTask<string> Mobileconf(string query, string cookieString)
     {
-        var httpClientHandler = new HttpClientHandler()
-        {
-            CookieContainer = cookies,
-            UseCookies = true
-        };
-
-        httpClientHandler.CookieContainer = cookies;
-        using var client = new HttpClient(httpClientHandler, true);
-        client.BaseAddress = new Uri(ApiEndpoints.CommunityBase);
-        client.AddDefaultHeaders();
-        client.DefaultRequestHeaders.Referrer = new Uri(ApiEndpoints.CommunityBase);
-
         var url = ApiEndpoints.Mobileconf + query;
 
-        using var responseMessage = await client.GetAsync(url);
+        var message = new HttpRequestMessage(HttpMethod.Get, url);
+        message.Headers.Add("Cookie", cookieString);
+
+        using var responseMessage = await _client.SendAsync(message);
         if (!responseMessage.IsSuccessStatusCode)
             throw new WgTokenInvalidException();
 

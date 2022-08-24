@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net;
+using System.Text;
 using SteamAuthCore.Exceptions;
 
 namespace SteamAuthCore.Models;
@@ -18,15 +18,10 @@ public class SessionData
     }
 
     public string SessionId { get; }
-
     public string SteamLogin { get; set; }
-
     public string SteamLoginSecure { get; set; }
-
     public string WebCookie { get; }
-
     public string OAuthToken { get; }
-
     public ulong SteamId { get; }
 
     public CookieContainer GetCookies()
@@ -81,5 +76,20 @@ public class SessionData
         {
             throw new WgTokenExpiredException();
         }
+    }
+
+    public string GetCookieString()
+    {
+        var builder = new StringBuilder(8);
+        builder.Append("mobileClientVersion=0 (2.1.3);");
+        builder.Append("mobileClient=android;");
+        builder.Append($"steamid={SteamId};");
+        builder.Append($"steamLogin={SteamLogin};");
+        builder.Append($"steamLoginSecure={SteamLoginSecure};");
+        builder.Append("Steam_Language=english;");
+        builder.Append("dob= ;");
+        builder.Append($"sessionid={SessionId};");
+
+        return builder.ToString();
     }
 }

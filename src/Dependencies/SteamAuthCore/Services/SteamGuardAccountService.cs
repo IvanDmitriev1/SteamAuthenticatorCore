@@ -47,16 +47,23 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         if (string.IsNullOrEmpty(account.DeviceId))
             throw new ArgumentException("Device ID is not present");
 
-        var tag = "conf";
+        const string tag = "conf";
         var time = _timeAligner.SteamTime;
 
-        var query = "p=" + account.DeviceId + "&a=" + account.Session.SteamId + "&k=" + GenerateConfirmationHashForTime(time, tag, account.IdentitySecret) + "&t=" + time + "&m=android&tag=" + tag;
+        var builder = new StringBuilder($"{tag}?");
+        builder.Append($"p={account.DeviceId}");
+        builder.Append($"&a={account.Session.SteamId}");
+        builder.Append($"&k={GenerateConfirmationHashForTime(time, tag, account.IdentitySecret)}");
+        builder.Append($"&t={time}");
+        builder.Append("&m=android");
+        builder.Append($"&tag={tag}");
 
+        var query = builder.ToString();
         string html;
 
         try
         {
-            html = await _steamCommunityApi.Mobileconf(query, account.Session.GetCookies());
+            html = await _steamCommunityApi.Mobileconf(query, account.Session.GetCookieString());
         }
         catch (WgTokenInvalidException)
         {
@@ -64,7 +71,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
 
             try
             {
-                html = await _steamCommunityApi.Mobileconf(query, account.Session.GetCookies());
+                html = await _steamCommunityApi.Mobileconf(query, account.Session.GetCookieString());
             }
             catch (WgTokenInvalidException)
             {
@@ -83,7 +90,6 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
     {
         if (html.Contains("<div>Nothing to confirm</div>"))
             return Array.Empty<ConfirmationModel>();
-
 
         using var document = Parser.ParseDocument(html);
         List<ConfirmationModel> confirmationModels = new();
