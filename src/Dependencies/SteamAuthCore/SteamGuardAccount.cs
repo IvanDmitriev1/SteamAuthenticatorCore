@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net;
@@ -10,13 +11,12 @@ using System.Threading.Tasks;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using SteamAuthCore.Exceptions;
-using SteamAuthCore.Implementations;
 using SteamAuthCore.Models;
 using SteamAuthCore.Models.Internal;
 
 namespace SteamAuthCore
 {
-    public class SteamGuardAccount
+    public class SteamGuardAccount : IDisposable
     {
         #region Properties
 
@@ -63,6 +63,17 @@ namespace SteamAuthCore
 
         #endregion
 
+        private static readonly byte[] SteamGuardCodeTranslations = { 50, 51, 52, 53, 54, 55, 56, 57, 66, 67, 68, 70, 71, 72, 74, 75, 77, 78, 80, 81, 82, 84, 86, 87, 88, 89 };
+        private static readonly HtmlParser Parser = new();
+        private static readonly ArrayPool<byte> ArrayPool = ArrayPool<byte>.Create();
+
+        private HMACSHA1? _hmacGenerator;
+
+        public void Dispose()
+        {
+            _hmacGenerator?.Dispose();
+        }
+
         public override bool Equals(object obj)
         {
             if (obj is not SteamGuardAccount account) return false;
@@ -70,8 +81,7 @@ namespace SteamAuthCore
             return account.Secret1 == this.Secret1 && account.IdentitySecret == this.IdentitySecret;
         }
 
-        private static readonly byte[] SteamGuardCodeTranslations = { 50, 51, 52, 53, 54, 55, 56, 57, 66, 67, 68, 70, 71, 72, 74, 75, 77, 78, 80, 81, 82, 84, 86, 87, 88, 89 };
-        private static readonly HtmlParser Parser = new HtmlParser();
+        
 
         public async Task<bool> DeactivateAuthenticator(int scheme = 2)
         {
@@ -88,18 +98,19 @@ namespace SteamAuthCore
                 SteamApi.RequestMethod.Post, postData) is not { Response: { Success: true } };
         }
 
-        public string? GenerateSteamGuardCode(Int64 time = 0)
+        public string? GenerateSteamGuardCode(Int64 time)
         {
-            if (time == 0)
+            if (_hmacGenerator is null)
             {
-                //TODO time = TimeAligner.GetSteamTime();
+                if (string.IsNullOrEmpty(SharedSecret))
+                    return null;
+
+                var sharedSecretUnescaped = Regex.Unescape(SharedSecret!);
+                var sharedSecretArray = Convert.FromBase64String(sharedSecretUnescaped);
+                _hmacGenerator = new HMACSHA1(sharedSecretArray);
             }
 
-            if (string.IsNullOrEmpty(SharedSecret)) return "";
-
-            string sharedSecretUnescaped = Regex.Unescape(SharedSecret!);
-            byte[] sharedSecretArray = Convert.FromBase64String(sharedSecretUnescaped);
-            byte[] timeArray = new byte[8];
+            var timeArray = ArrayPool.Rent(8);
 
             time /= 30L;
 
@@ -109,13 +120,9 @@ namespace SteamAuthCore
                 time >>= 8;
             }
 
-            using HMACSHA1 hmacGenerator = new()
-            {
-                Key = sharedSecretArray
-            };
+            var hashedData= _hmacGenerator.ComputeHash(timeArray, 0, 8);
 
-            byte[] hashedData = hmacGenerator.ComputeHash(timeArray);
-            byte[] codeArray = new byte[5];
+            Span<byte> codeArray = stackalloc byte[5];
             try
             {
                 byte b = (byte)(hashedData[19] & 0xF);
@@ -129,9 +136,11 @@ namespace SteamAuthCore
             }
             catch (Exception)
             {
+                ArrayPool.Return(timeArray, true);
                 return null; //Change later, catch-alls are bad!
             }
 
+            ArrayPool.Return(timeArray, true);
             return Encoding.UTF8.GetString(codeArray);
         }
 
@@ -324,6 +333,5 @@ namespace SteamAuthCore
         }
 
         #endregion
-
     }
 }
