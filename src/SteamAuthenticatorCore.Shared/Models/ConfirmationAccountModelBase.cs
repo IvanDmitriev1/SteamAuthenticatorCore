@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using SteamAuthCore;
+using SteamAuthCore.Exceptions;
+using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Shared.Abstraction;
 
 namespace SteamAuthenticatorCore.Shared.Models;
@@ -44,7 +46,7 @@ public abstract class ConfirmationAccountModelBase
         }
     }
 
-    public async Task SendConfirmation(ConfirmationModel confirmation, SteamGuardAccount.Confirmation command)
+    public async Task SendConfirmation(ConfirmationModel confirmation, ConfirmationOptions command)
     {
         Account.SendConfirmationAjax(confirmation, command);
 
@@ -54,13 +56,13 @@ public abstract class ConfirmationAccountModelBase
         });
     }
 
-    public Task SendConfirmations(IEnumerable<ConfirmationModel> confirmations, SteamGuardAccount.Confirmation command)
+    public Task SendConfirmations(IEnumerable<ConfirmationModel> confirmations, ConfirmationOptions command)
     {
         var confirmationModels = confirmations as ConfirmationModel[] ?? confirmations.ToArray();
         return SendConfirmations(confirmationModels, command);
     }
 
-    public async Task SendConfirmations(IReadOnlyCollection<ConfirmationModel> confirmations, SteamGuardAccount.Confirmation command)
+    public async Task SendConfirmations(IReadOnlyCollection<ConfirmationModel> confirmations, ConfirmationOptions command)
     {
         Account.SendConfirmationAjax(confirmations, command);
 
@@ -79,7 +81,7 @@ public abstract class ConfirmationAccountModelBase
         {
             return (await account.FetchConfirmationsAsync().ConfigureAwait(false)).ToArray();
         }
-        catch (SteamGuardAccount.WgTokenInvalidException)
+        catch (WgTokenInvalidException)
         {
             await account.RefreshSessionAsync();
 
@@ -87,11 +89,11 @@ public abstract class ConfirmationAccountModelBase
             {
                 return (await account.FetchConfirmationsAsync().ConfigureAwait(false)).ToArray();
             }
-            catch (SteamGuardAccount.WgTokenInvalidException)
+            catch (WgTokenInvalidException)
             {
             }
         }
-        catch (SteamGuardAccount.WgTokenExpiredException)
+        catch (WgTokenExpiredException)
         {
 
         }

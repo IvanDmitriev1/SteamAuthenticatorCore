@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using SteamAuthCore;
+using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Shared.Abstraction;
 using SteamAuthenticatorCore.Shared.Models;
 
@@ -23,12 +24,12 @@ public sealed class ConfirmationAccountModel : ConfirmationAccountModelBase
     private Task Confirm(IList list)
     {
         var confirmations = list.OfType<ConfirmationModel>();
-        return SendConfirmations(confirmations, SteamGuardAccount.Confirmation.Allow);
+        return SendConfirmations(confirmations, ConfirmationOptions.Deny);
     }
 
     private Task Cancel(IList list)
     {
         var confirmations = list.OfType<ConfirmationModel>();
-        return SendConfirmations(confirmations, SteamGuardAccount.Confirmation.Deny);
+        return SendConfirmations(confirmations, ConfirmationOptions.Deny);
     }
 }

@@ -9,74 +9,14 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
+using SteamAuthCore.Exceptions;
+using SteamAuthCore.Models;
+using SteamAuthCore.Models.Internal;
 
 namespace SteamAuthCore
 {
     public class SteamGuardAccount
     {
-        #region Exception
-
-        public class WgTokenInvalidException : Exception
-        {
-        }
-
-        public class WgTokenExpiredException : Exception
-        {
-        }
-
-        #endregion
-
-        #region HelpClasess
-
-        public enum Confirmation
-        {
-            Allow,
-            Deny,
-        }
-
-        private class RefreshSessionDataResponse
-        {
-            [JsonPropertyName("response")]
-            public RefreshSessionDataInternalResponse? Response { get; set; }
-            internal class RefreshSessionDataInternalResponse
-            {
-                [JsonPropertyName("token")]
-                public string Token { get; set; } = null!;
-
-                [JsonPropertyName("token_secure")]
-                public string TokenSecure { get; set; } = null!;
-            }
-        }
-
-        private class RemoveAuthenticatorResponse
-        {
-            [JsonPropertyName("response")]
-            public RemoveAuthenticatorInternalResponse? Response { get; set; }
-
-            internal class RemoveAuthenticatorInternalResponse
-            {
-                [JsonPropertyName("success")]
-                public bool Success { get; set; }
-            }
-        }
-
-        private class SendConfirmationResponse
-        {
-            [JsonPropertyName("success")]
-            public bool Success { get; set; }
-        }
-
-        public class ConfirmationDetailsResponse
-        {
-            [JsonPropertyName("success")]
-            public bool Success { get; set; }
-
-            [JsonPropertyName("html")]
-            public string Html { get; set; } = null!;
-        }
-
-        #endregion
-
         #region Properties
 
         [JsonPropertyName("shared_secret")]
@@ -198,7 +138,7 @@ namespace SteamAuthCore
             return FetchConfirmationInternal(await SteamApi.RequestAsync(url, SteamApi.RequestMethod.Get, "", Session.GetCookies()));
         }
 
-        public bool SendConfirmationAjax(ConfirmationModel conf, Confirmation op)
+        public bool SendConfirmationAjax(ConfirmationModel conf, ConfirmationOptions op)
         {
             string url = ApiEndpoints.CommunityBase + "/mobileconf/ajaxop";
             string queryString = "?op=" + op.ToString().ToLower() + "&";
@@ -212,7 +152,7 @@ namespace SteamAuthCore
             };
         }
 
-        public bool SendConfirmationAjax(IEnumerable<ConfirmationModel> confs, Confirmation op)
+        public bool SendConfirmationAjax(IEnumerable<ConfirmationModel> confs, ConfirmationOptions op)
         {
             string url = ApiEndpoints.CommunityBase + "/mobileconf/multiajaxop";
 

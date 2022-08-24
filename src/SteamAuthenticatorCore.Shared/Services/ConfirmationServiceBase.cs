@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SteamAuthenticatorCore.Shared.Models;
 using System.Collections.Generic;
+using SteamAuthCore.Models;
 
 namespace SteamAuthenticatorCore.Shared.Services;
 
@@ -111,7 +112,7 @@ public abstract class ConfirmationServiceBase : IConfirmationService, IDisposabl
                     confirmations.Add(confirmationModel);
             }
 
-            await confirmationAccountViewModel.SendConfirmations(confirmations, SteamGuardAccount.Confirmation.Allow);
+            await confirmationAccountViewModel.SendConfirmations(confirmations, ConfirmationOptions.Allow);
         }
     }
 }

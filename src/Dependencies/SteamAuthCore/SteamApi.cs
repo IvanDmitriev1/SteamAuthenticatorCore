@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
+using SteamAuthCore.Exceptions;
 
 namespace SteamAuthCore
 {
@@ -177,7 +178,7 @@ namespace SteamAuthCore
             //Our OAuth token has expired. This is given both when we must refresh our session, or the entire OAuth Token cannot be refreshed anymore.
             //Thus, we should only throw this exception when we're attempting to refresh our session.
             if (location == "steammobile://lostauth" && requestUrl == ApiEndpoints.MobileauthGetwgtoken)
-                throw new SteamGuardAccount.WgTokenExpiredException();
+                throw new WgTokenExpiredException();
         }
 
         private static string CreateQuery(NameValueCollection? data) => (data == null

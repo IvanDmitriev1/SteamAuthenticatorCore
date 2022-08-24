@@ -3,25 +3,12 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading;
 using System.Threading.Tasks;
+using SteamAuthCore.Models;
+using SteamAuthCore.Models.Internal;
 
 namespace SteamAuthCore
 {
-    public enum LoginResult
-    {
-        GeneralFailure,
-        LoginOkay,
-        BadRsa,
-        BadCredentials,
-        NeedCaptcha,
-        Need2Fa,
-        NeedEmail,
-        TooManyFailedLogins
-    }
-
     public class UserLogin
     {
         public UserLogin(string username, string password)
@@ -31,78 +18,6 @@ namespace SteamAuthCore
 
             _cookies = new CookieContainer();
         }
-
-        #region HelpClasses
-
-        private class LoginResponse
-        {
-            [JsonPropertyName("success")]
-            public bool Success { get; set; }
-
-            [JsonPropertyName("login_complete")]
-            public bool LoginComplete { get; set; }
-
-            [JsonPropertyName("oauth")]
-            public string? OAuthDataString { get; set; }
-
-            public OAuth? OAuthData => OAuthDataString != null ? JsonSerializer.Deserialize<OAuth>(OAuthDataString) : null;
-
-            [JsonPropertyName("captcha_needed")]
-            public bool CaptchaNeeded { get; set; }
-
-            [JsonPropertyName("captcha_gid")]
-            public string CaptchaGid { get; set; } = null!;
-
-            [JsonPropertyName("emailsteamid")]
-            public ulong EmailSteamID { get; set; }
-
-            [JsonPropertyName("emailauth_needed")]
-            public bool EmailAuthNeeded { get; set; }
-
-            [JsonPropertyName("requires_twofactor")]
-            public bool TwoFactorNeeded { get; set; }
-
-            [JsonPropertyName("message")]
-            public string? Message { get; set; }
-
-            internal class OAuth
-            {
-                [JsonPropertyName("steamid")]
-                public string SteamId { get; set; } = string.Empty;
-
-                [JsonPropertyName("oauth_token")]
-                public string? OAuthToken { get; set; }
-
-                [JsonPropertyName("wgtoken")]
-                public string SteamLogin { get; set; } = null!;
-
-                [JsonPropertyName("wgtoken_secure")]
-                public string SteamLoginSecure { get; set; } = null!;
-
-                [JsonPropertyName("webcookie")]
-                public string Webcookie { get; set; } = null!;
-            }
-        }
-
-        private class RsaResponse
-        {
-            [JsonPropertyName("success")]
-            public bool Success { get; set; }
-
-            [JsonPropertyName("publickey_exp")]
-            public string Exponent { get; set; } = null!;
-
-            [JsonPropertyName("publickey_mod")]
-            public string Modulus { get; set; } = null!;
-
-            [JsonPropertyName("timestamp")]
-            public string Timestamp { get; set; } = null!;
-
-            [JsonPropertyName("steamid")]
-            public ulong SteamId { get; set; }
-        }
-
-        #endregion
 
         #region Fiedls
 
