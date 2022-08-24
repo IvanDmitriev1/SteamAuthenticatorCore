@@ -10,6 +10,7 @@ using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Exceptions;
+using SteamAuthCore.Models;
 
 namespace SteamAuthCore.Services;
 
@@ -47,23 +48,15 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         if (string.IsNullOrEmpty(account.DeviceId))
             throw new ArgumentException("Device ID is not present");
 
-        const string tag = "conf";
-        var time = _timeAligner.SteamTime;
-
-        var builder = new StringBuilder($"{tag}?");
-        builder.Append($"p={account.DeviceId}");
-        builder.Append($"&a={account.Session.SteamId}");
-        builder.Append($"&k={GenerateConfirmationHashForTime(time, tag, account.IdentitySecret)}");
-        builder.Append($"&t={time}");
-        builder.Append("&m=android");
-        builder.Append($"&tag={tag}");
+        var builder = new StringBuilder("conf?");
+        builder.Append(GenerateConfirmationQueryParams(account, "conf"));
 
         var query = builder.ToString();
         string html;
 
         try
         {
-            html = await _steamCommunityApi.Mobileconf(query, account.Session.GetCookieString());
+            html = await _steamCommunityApi.Mobileconf<string>(query, account.Session.GetCookieString());
         }
         catch (WgTokenInvalidException)
         {
@@ -71,7 +64,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
 
             try
             {
-                html = await _steamCommunityApi.Mobileconf(query, account.Session.GetCookieString());
+                html = await _steamCommunityApi.Mobileconf<string>(query, account.Session.GetCookieString());
             }
             catch (WgTokenInvalidException)
             {
@@ -84,6 +77,43 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         }
 
         return ParseConfirmationsHtml(html);
+    }
+
+    public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel confirmation, ConfirmationOptions options)
+    {
+        var strOption = options.ToString().ToLower();
+
+        var builder = new StringBuilder("ajaxop");
+        builder.Append($"?op={strOption}");
+        builder.Append('&');
+        builder.Append(GenerateConfirmationQueryParams(account, strOption));
+        builder.Append($"&cid={confirmation.Id}");
+        builder.Append($"&ck={confirmation.Key}");
+
+        var query = builder.ToString();
+
+        var response = await _steamCommunityApi.Mobileconf<ConfirmationDetailsResponse>(query, account.Session.GetCookieString());
+        return response.Success;
+    }
+
+    public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, IEnumerable<ConfirmationModel> confirmations, ConfirmationOptions options)
+    {
+        var strOption = options.ToString().ToLower();
+
+        var builder = new StringBuilder();
+        builder.Append($"op={strOption}");
+        builder.Append('&');
+        builder.Append(GenerateConfirmationQueryParams(account, strOption));
+
+        foreach (var confirmation in confirmations)
+        {
+            builder.Append($"&cid[]={confirmation.Id}");
+            builder.Append($"&ck[]={confirmation.Key}");
+        }
+
+        var response = await _steamCommunityApi.SendMultipleConfirmations(builder.ToString(), account.Session.GetCookieString());
+
+        return false;
     }
 
     private IEnumerable<ConfirmationModel> ParseConfirmationsHtml(string html)
@@ -120,6 +150,21 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         }
 
         return confirmationModels;
+    }
+
+    private string GenerateConfirmationQueryParams(SteamGuardAccount account, string tag)
+    {
+        var time = _timeAligner.SteamTime;
+
+        var builder = new StringBuilder();
+        builder.Append($"p={account.DeviceId}");
+        builder.Append($"&a={account.Session.SteamId}");
+        builder.Append($"&k={GenerateConfirmationHashForTime(time, tag, account.IdentitySecret)}");
+        builder.Append($"&t={time}");
+        builder.Append("&m=android");
+        builder.Append($"&tag={tag}");
+
+        return builder.ToString();
     }
 
     private static string? GenerateConfirmationHashForTime(Int64 time, string tag, string identitySecret)

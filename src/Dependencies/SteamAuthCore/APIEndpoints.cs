@@ -11,4 +11,5 @@ public static class ApiEndpoints
     public const string CommunityBase = "https://steamcommunity.com";
 
     public const string Mobileconf = "/mobileconf/";
+    public const string MultipleConfirmations = Mobileconf + "multiajaxop";
 }
