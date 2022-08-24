@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using static SteamAuthCore.Models.Internal.RefreshSessionDataResponse;
+using SteamAuthCore.Models.Internal;
 
 namespace SteamAuthCore.Abstractions;
 

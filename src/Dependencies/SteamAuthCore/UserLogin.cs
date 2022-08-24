@@ -4,7 +4,6 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using SteamAuthCore.Implementations;
 using SteamAuthCore.Models;
 using SteamAuthCore.Models.Internal;
 

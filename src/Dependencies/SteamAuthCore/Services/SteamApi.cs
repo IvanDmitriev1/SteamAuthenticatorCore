@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -8,9 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models.Internal;
-using static SteamAuthCore.Models.Internal.RefreshSessionDataResponse;
 
-namespace SteamAuthCore.Implementations;
+namespace SteamAuthCore.Services;
 
 internal sealed class SteamApi : ISteamApi
 {
