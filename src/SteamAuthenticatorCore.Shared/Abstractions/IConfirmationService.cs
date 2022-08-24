@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
-namespace SteamAuthenticatorCore.Shared.Abstraction;
+namespace SteamAuthenticatorCore.Shared.Abstractions;
 
 public interface IConfirmationService
 {

@@ -1,6 +1,5 @@
 ﻿using System;
 using SteamAuthCore;
-using SteamAuthenticatorCore.Shared.Abstraction;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading;
@@ -8,10 +7,11 @@ using System.Threading.Tasks;
 using System.Linq;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
+using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Shared.Services;
 
-public class ConfirmationService : IConfirmationService, IDisposable
+internal class ConfirmationService : IConfirmationService, IDisposable
 {
     public ConfirmationService(ObservableCollection<SteamGuardAccount> steamGuardAccounts, AppSettings settings, IPlatformTimer timer, ISteamGuardAccountService accountService, IConfirmationViewModelFactory confirmationViewModelFactory)
     {

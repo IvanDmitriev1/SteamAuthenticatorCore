@@ -1,7 +1,7 @@
-﻿using SteamAuthCore;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using SteamAuthCore;
 
-namespace SteamAuthenticatorCore.Shared.Abstraction;
+namespace SteamAuthenticatorCore.Shared.Abstractions;
 
 public interface ILoginService
 {

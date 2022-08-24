@@ -13,8 +13,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITimeAligner, TimeAligner>();
         services.AddScoped<ISteamGuardAccountService, SteamGuardAccountService>();
 
-        services.AddHttpClient<Services.SteamApi>();
-        services.AddHttpClient<SteamCommunityApi>();
+        services.AddHttpClient<ISteamApi, Services.SteamApi>();
+        services.AddHttpClient<ISteamCommunityApi, SteamCommunityApi>();
 
         return services;
     }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SteamAuthenticatorCore.Shared.Abstraction;
+namespace SteamAuthenticatorCore.Shared.Abstractions;
 
 public interface ISettings
 {

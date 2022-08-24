@@ -1,8 +1,8 @@
 ﻿using System;
-using SteamAuthenticatorCore.Shared.Models;
 using System.Threading.Tasks;
+using SteamAuthenticatorCore.Shared.Models;
 
-namespace SteamAuthenticatorCore.Shared.Abstraction;
+namespace SteamAuthenticatorCore.Shared.Abstractions;
 
 public interface IUpdateService
 {

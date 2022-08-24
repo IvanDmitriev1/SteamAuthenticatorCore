@@ -7,7 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using SteamAuthCore;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Models;
 
 namespace SteamAuthenticatorCore.Desktop.Models;

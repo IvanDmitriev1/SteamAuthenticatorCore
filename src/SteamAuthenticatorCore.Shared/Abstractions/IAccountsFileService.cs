@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using SteamAuthCore;
 
-namespace SteamAuthenticatorCore.Shared.Abstraction;
+namespace SteamAuthenticatorCore.Shared.Abstractions;
 
 public interface IAccountsFileService
 {

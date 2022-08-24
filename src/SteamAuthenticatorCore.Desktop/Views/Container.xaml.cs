@@ -7,7 +7,7 @@ using SteamAuthenticatorCore.Desktop.Extensions;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using Wpf.Ui.Mvvm.Contracts;
 
 namespace SteamAuthenticatorCore.Desktop.Views;

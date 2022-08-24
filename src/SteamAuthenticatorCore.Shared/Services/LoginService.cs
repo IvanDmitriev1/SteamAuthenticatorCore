@@ -2,11 +2,11 @@
 using System.Threading.Tasks;
 using SteamAuthCore;
 using SteamAuthCore.Models;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Shared.Services;
 
-public sealed class LoginService : ILoginService
+internal sealed class LoginService : ILoginService
 {
     public LoginService(AccountsFileServiceResolver accountsFileServiceResolver, IPlatformImplementations platformImplementations)
     {

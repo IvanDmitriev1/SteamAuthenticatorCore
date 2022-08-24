@@ -1,4 +1,4 @@
-﻿namespace SteamAuthenticatorCore.Shared.Abstraction;
+﻿namespace SteamAuthenticatorCore.Shared.Abstractions;
 
 public interface ISettingsService
 {

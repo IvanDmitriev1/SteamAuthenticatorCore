@@ -1,9 +1,9 @@
-﻿using SteamAuthCore.Models;
-using SteamAuthCore;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
+using SteamAuthCore;
+using SteamAuthCore.Models;
 
-namespace SteamAuthenticatorCore.Shared.Abstraction;
+namespace SteamAuthenticatorCore.Shared.Abstractions;
 
 public interface IConfirmationViewModel
 {

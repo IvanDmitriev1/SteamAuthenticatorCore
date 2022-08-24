@@ -2,7 +2,7 @@
 using SteamAuthCore;
 using SteamAuthCore.Models;
 
-namespace SteamAuthenticatorCore.Shared.Abstraction;
+namespace SteamAuthenticatorCore.Shared.Abstractions;
 
 public interface IConfirmationViewModelFactory
 {

@@ -6,7 +6,7 @@ using System.Windows.Input;
 using SteamAuthCore;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Shared.Models;
 

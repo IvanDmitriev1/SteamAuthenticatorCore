@@ -13,7 +13,7 @@ using SteamAuthCore;
 using SteamAuthCore.Abstractions;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Shared;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
 using SteamAuthenticatorCore.Shared.Models;
 using SteamAuthenticatorCore.Shared.ViewModel;
