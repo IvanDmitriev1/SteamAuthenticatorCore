@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Sentry;
 using SteamAuthCore;
+using SteamAuthCore.Extensions;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.ViewModels;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
@@ -93,6 +94,8 @@ public sealed partial class App : Application
                 services.AddScoped<IUpdateService, DesktopUpdateService>();
 
                 services.AddHttpClient<DesktopUpdateService>();
+
+                services.AddSteamAuthCoreServices();
 
                 services.AddScoped<AccountsFileServiceResolver>(provider => () =>
                 {

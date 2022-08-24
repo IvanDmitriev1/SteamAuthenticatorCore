@@ -31,7 +31,9 @@ public sealed class LoginService : ILoginService
 
     private async ValueTask<SessionData?> RefreshSession(UserLogin userLogin, SteamGuardAccount account)
     {
-        while (true)
+        return null;
+
+        /*while (true)
         {
             switch (await userLogin.DoLogin())
             {
@@ -57,6 +59,6 @@ public sealed class LoginService : ILoginService
                 default:
                     return null;
             }
-        }
+        }*/
     }
 }

@@ -4,6 +4,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using SteamAuthCore.Implementations;
 using SteamAuthCore.Models;
 using SteamAuthCore.Models.Internal;
 
@@ -50,7 +51,7 @@ namespace SteamAuthCore
 
         public async Task<LoginResult> DoLogin()
         {
-            NameValueCollection postData = new();
+            /*NameValueCollection postData = new();
             CookieContainer cookies = _cookies;
 
             if (cookies.Count == 0)
@@ -163,7 +164,7 @@ namespace SteamAuthCore
                 return LoginResult.GeneralFailure;
 
             if (!loginResponse.LoginComplete)
-                return LoginResult.BadCredentials;
+                return LoginResult.BadCredentials;*/
 
             return LoginResult.GeneralFailure;
         }

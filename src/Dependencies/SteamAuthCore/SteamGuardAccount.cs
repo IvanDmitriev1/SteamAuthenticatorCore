@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using SteamAuthCore.Exceptions;
+using SteamAuthCore.Implementations;
 using SteamAuthCore.Models;
 using SteamAuthCore.Models.Internal;
 
@@ -90,7 +91,9 @@ namespace SteamAuthCore
         public string? GenerateSteamGuardCode(Int64 time = 0)
         {
             if (time == 0)
-                time = TimeAligner.GetSteamTime();
+            {
+                //TODO time = TimeAligner.GetSteamTime();
+            }
 
             if (string.IsNullOrEmpty(SharedSecret)) return "";
 
@@ -215,7 +218,9 @@ namespace SteamAuthCore
             if (string.IsNullOrEmpty(DeviceId))
                 throw new ArgumentException("Device ID is not present");
 
-            var time = TimeAligner.GetSteamTime();
+            //TODO var time = TimeAligner.GetSteamTime();
+
+            var time = 0;
 
             var ret = new NameValueCollection
             {

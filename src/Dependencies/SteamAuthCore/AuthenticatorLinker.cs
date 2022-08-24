@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using SteamAuthCore.Implementations;
 using SteamAuthCore.Models;
 
 namespace SteamAuthCore
@@ -191,7 +192,7 @@ namespace SteamAuthCore
             while (tries <= 30)
             {
                 postData.Set("authenticator_code", LinkedAccount.GenerateSteamGuardCode());
-                postData.Set("authenticator_time", TimeAligner.GetSteamTime().ToString());
+                //TODO postData.Set("authenticator_time", TimeAligner.GetSteamTime().ToString());
 
                 if (await SteamApi.MobileLoginRequest(ApiEndpoints.SteamApiBase + "/ITwoFactorService/FinalizeAddAuthenticator/v0001", SteamApi.RequestMethod.Post, postData) is not { } response)
                     return FinalizeResult.GeneralFailure;

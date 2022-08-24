@@ -5,27 +5,27 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SteamAuthCore;
+using SteamAuthCore.Abstractions;
 using SteamAuthenticatorCore.Shared.Abstraction;
 
 namespace SteamAuthenticatorCore.Shared.ViewModel;
 
 public abstract partial class TokenViewModelBase : ObservableObject
 {
-    protected TokenViewModelBase(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations)
+    protected TokenViewModelBase(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, ITimeAligner timeAligner)
     {
-        _platformTimer = platformTimer;
         _platformImplementations = platformImplementations;
+        _timeAligner = timeAligner;
         Accounts = accounts;
         _token = string.Empty;
         
-        _platformTimer.Initialize(TimeSpan.FromSeconds(2), OnTimer);
-        _platformTimer.Start();
+        platformTimer.Initialize(TimeSpan.FromSeconds(2), OnTimer);
+        platformTimer.Start();
     }
 
-    private readonly IPlatformTimer _platformTimer;
     private readonly IPlatformImplementations _platformImplementations;
+    private readonly ITimeAligner _timeAligner;
     private Int64 _currentSteamChunk;
-    private Int64 _steamTime;
 
     #region Propertis
 
@@ -67,13 +67,13 @@ public abstract partial class TokenViewModelBase : ObservableObject
         if (SelectedAccount is null)
             return new ValueTask(Task.CompletedTask);
 
-        _steamTime = TimeAligner.GetSteamTime();
-        _currentSteamChunk = _steamTime / 30L;
-        var secondsUntilChange = (int)(_steamTime - (_currentSteamChunk * 30L));
+        var steamTime = _timeAligner.SteamTime;
+        _currentSteamChunk = steamTime / 30L;
+        var secondsUntilChange = (int)(steamTime - (_currentSteamChunk * 30L));
 
-        if (_steamTime != 0)
+        if (steamTime != 0)
         {
-            if (SelectedAccount.GenerateSteamGuardCode(_steamTime) is { } token)
+            if (SelectedAccount.GenerateSteamGuardCode(steamTime) is { } token)
                 Token = token;
         }
 

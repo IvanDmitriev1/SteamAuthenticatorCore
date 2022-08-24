@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Win32;
 using SteamAuthCore;
+using SteamAuthCore.Abstractions;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstraction;
@@ -24,7 +25,7 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public partial class TokenViewModel : TokenViewModelBase, IDisposable
 {
-    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, TaskBarServiceWrapper taskBarServiceWrapper, IDialogService dialogService, INavigationService navigationService, AppSettings appSettings, IMessenger messenger, AccountsFileServiceResolver accountsFileServiceResolver) : base(accounts, platformTimer, platformImplementations)
+    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, TaskBarServiceWrapper taskBarServiceWrapper, IDialogService dialogService, INavigationService navigationService, AppSettings appSettings, IMessenger messenger, AccountsFileServiceResolver accountsFileServiceResolver, ITimeAligner timeAligner) : base(accounts, platformTimer, platformImplementations, timeAligner)
     {
         _taskBarServiceWrapper = taskBarServiceWrapper;
         _dialogService = dialogService;
