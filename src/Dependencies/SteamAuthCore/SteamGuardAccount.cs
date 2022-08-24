@@ -189,6 +189,7 @@ namespace SteamAuthCore
             return SteamApi.Request<ConfirmationDetailsResponse>(url, SteamApi.RequestMethod.Get, "", Session.GetCookies());
         }
 
+        [Obsolete]
         public async Task<bool> RefreshSessionAsync()
         {
             string url = ApiEndpoints.MobileauthGetwgtoken;

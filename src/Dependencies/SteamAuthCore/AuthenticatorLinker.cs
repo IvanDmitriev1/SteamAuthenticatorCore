@@ -191,7 +191,7 @@ namespace SteamAuthCore
             int tries = 0;
             while (tries <= 30)
             {
-                postData.Set("authenticator_code", LinkedAccount.GenerateSteamGuardCode());
+                //TODO postData.Set("authenticator_code", LinkedAccount.GenerateSteamGuardCode());
                 //TODO postData.Set("authenticator_time", TimeAligner.GetSteamTime().ToString());
 
                 if (await SteamApi.MobileLoginRequest(ApiEndpoints.SteamApiBase + "/ITwoFactorService/FinalizeAddAuthenticator/v0001", SteamApi.RequestMethod.Post, postData) is not { } response)

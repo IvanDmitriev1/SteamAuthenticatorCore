@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using static SteamAuthCore.Models.Internal.RefreshSessionDataResponse;
 
 namespace SteamAuthCore.Abstractions;
 
@@ -9,4 +10,6 @@ internal interface ISteamApi
     /// </summary>
     /// <returns></returns>
     ValueTask<string> GetSteamTime();
+
+    ValueTask<RefreshSessionDataInternalResponse?> MobileauthGetwgtoken(string token);
 }

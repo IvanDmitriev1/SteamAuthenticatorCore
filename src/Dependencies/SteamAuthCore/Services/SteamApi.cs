@@ -1,10 +1,14 @@
 ﻿using System;
+using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
 using System.Threading.Tasks;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models.Internal;
+using static SteamAuthCore.Models.Internal.RefreshSessionDataResponse;
 
 namespace SteamAuthCore.Implementations;
 
@@ -28,10 +32,21 @@ internal sealed class SteamApi : ISteamApi
 
     public async ValueTask<string> GetSteamTime()
     {
-        using var response = await _client.PostAsJsonAsync(ApiEndpoints.TwoFactorTimeQuery, "steamid=0");
-        response.EnsureSuccessStatusCode();
-        var timeQuery = (await response.Content.ReadFromJsonAsync<TimeQuery>())!;
+        using var responseMessage = await _client.PostAsJsonAsync(ApiEndpoints.TwoFactorTimeQuery, "steamid=0");
+        responseMessage.EnsureSuccessStatusCode();
+        var timeQuery = (await responseMessage.Content.ReadFromJsonAsync<TimeQuery>())!;
         
         return timeQuery.Response.ServerTime;
+    }
+
+    public async ValueTask<RefreshSessionDataInternalResponse?> MobileauthGetwgtoken(string token)
+    {
+        var query = $"{WebUtility.UrlEncode("access_token")}={WebUtility.UrlEncode(token)}";
+
+        using var responseMessage = await _client.PostAsync(ApiEndpoints.MobileauthGetwgtoken, new StringContent(query, Encoding.UTF8, "application/x-www-form-urlencoded"));
+        responseMessage.EnsureSuccessStatusCode();
+
+        var response = await responseMessage.Content.ReadFromJsonAsync<RefreshSessionDataResponse>();
+        return response!.Response;
     }
 }
