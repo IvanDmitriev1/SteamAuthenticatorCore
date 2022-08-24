@@ -151,6 +151,7 @@ namespace SteamAuthCore
             return FetchConfirmationInternal(await SteamApi.RequestAsync(url, SteamApi.RequestMethod.Get, "", Session.GetCookies()));
         }
 
+        [Obsolete]
         public bool SendConfirmationAjax(ConfirmationModel conf, ConfirmationOptions op)
         {
             string url = ApiEndpoints.CommunityBase + "/mobileconf/ajaxop";
@@ -165,6 +166,7 @@ namespace SteamAuthCore
             };
         }
 
+        [Obsolete]
         public bool SendConfirmationAjax(IEnumerable<ConfirmationModel> confs, ConfirmationOptions op)
         {
             string url = ApiEndpoints.CommunityBase + "/mobileconf/multiajaxop";
@@ -207,6 +209,7 @@ namespace SteamAuthCore
             return true;
         }
 
+        [Obsolete]
         public string GenerateConfirmationUrl(string tag = "conf")
         {
             string endpoint = ApiEndpoints.CommunityBase + "/mobileconf/conf?";
@@ -214,6 +217,7 @@ namespace SteamAuthCore
             return endpoint + queryString;
         }
 
+        [Obsolete]
         public string GenerateConfirmationQueryParams(string tag)
         {
             if (string.IsNullOrEmpty(DeviceId))
@@ -224,6 +228,7 @@ namespace SteamAuthCore
             return "p=" + queryParams["p"] + "&a=" + queryParams["a"] + "&k=" + queryParams["k"] + "&t=" + queryParams["t"] + "&m=android&tag=" + queryParams["tag"];
         }
 
+        [Obsolete]
         public NameValueCollection GenerateConfirmationQueryParamsAsNvc(string tag)
         {
             if (string.IsNullOrEmpty(DeviceId))

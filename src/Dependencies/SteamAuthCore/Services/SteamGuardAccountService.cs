@@ -6,6 +6,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using SteamAuthCore.Abstractions;
@@ -112,8 +113,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         }
 
         var response = await _steamCommunityApi.SendMultipleConfirmations(builder.ToString(), account.Session.GetCookieString());
-
-        return false;
+        return response.Success;
     }
 
     private IEnumerable<ConfirmationModel> ParseConfirmationsHtml(string html)
@@ -122,34 +122,35 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
             return Array.Empty<ConfirmationModel>();
 
         using var document = Parser.ParseDocument(html);
-        List<ConfirmationModel> confirmationModels = new();
 
-        foreach (var confirmationElement in document.GetElementsByClassName("mobileconf_list_entry"))
+        return document.GetElementsByClassName("mobileconf_list_entry").Select(GetConfirmationModelFromHtml);
+    }
+
+    private ConfirmationModel GetConfirmationModelFromHtml(IElement confirmationElement)
+    {
+        var attributesValue = _uintArrayPool.Rent(5);
+
+        for (var i = 2; i <= 5; i++)
         {
-            var attributesValue = _uintArrayPool.Rent(5);
-
-            for (var i = 2; i <= 5; i++)
-            {
-                attributesValue[i - 2] = UInt64.Parse(confirmationElement.Attributes[i]!.Value);
-            }
-
-            var confirmationElementContent = confirmationElement.FirstElementChild!;
-            var imageSource = ((IHtmlImageElement)confirmationElementContent.QuerySelector("img")!).Source!;
-            var children = confirmationElementContent.Children[^1].Children;
-
-            var descriptionArray = _stringArrayPool.Rent(3);
-            for (var i = 0; i < 3; i++)
-            {
-                var description = children[i];
-                descriptionArray[i] = description.TextContent;
-            }
-
-            confirmationModels.Add(new ConfirmationModel(attributesValue, imageSource, descriptionArray));
-            _stringArrayPool.Return(descriptionArray, true);
-            _uintArrayPool.Return(attributesValue);
+            attributesValue[i - 2] = UInt64.Parse(confirmationElement.Attributes[i]!.Value);
         }
 
-        return confirmationModels;
+        var confirmationElementContent = confirmationElement.FirstElementChild!;
+        var imageSource = ((IHtmlImageElement)confirmationElementContent.QuerySelector("img")!).Source!;
+        var children = confirmationElementContent.Children[^1].Children;
+
+        var descriptionArray = _stringArrayPool.Rent(3);
+        for (var i = 0; i < 3; i++)
+        {
+            var description = children[i];
+            descriptionArray[i] = description.TextContent;
+        }
+
+        var model = new ConfirmationModel(attributesValue, imageSource, descriptionArray);
+        _stringArrayPool.Return(descriptionArray, true);
+        _uintArrayPool.Return(attributesValue);
+
+        return model;
     }
 
     private string GenerateConfirmationQueryParams(SteamGuardAccount account, string tag)
@@ -169,46 +170,40 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
 
     private static string? GenerateConfirmationHashForTime(Int64 time, string tag, string identitySecret)
     {
-        byte[] decode = Convert.FromBase64String(identitySecret);
-        int n2 = 8;
+        var n2 = 8 + tag.Length;
 
-        if (tag is not null)
-        {
-            if (tag.Length > 32)
-            {
-                n2 = 8 + 32;
-            }
-            else
-            {
-                n2 = 8 + tag.Length;
-            }
-        }
-
-        byte[] array = new byte[n2];
-        int n3 = 8;
+        Span<byte> array = stackalloc byte[n2];
+        var n3 = 8;
 
         while (true)
         {
             int n4 = n3 - 1;
+
             if (n3 <= 0)
-            {
                 break;
-            }
+
             array[n4] = (byte)time;
             time >>= 8;
             n3 = n4;
         }
-        if (tag is not null)
-            Array.Copy(Encoding.UTF8.GetBytes(tag), 0, array, 8, n2 - 8);
+
+
+        Span<byte> buffer = stackalloc byte[tag.Length];
+        Encoding.UTF8.GetBytes(tag, buffer);
+
+        int j = 8;
+        for (int i = 0; i < n2 - 8; i++)
+        {
+            array[j] = buffer[i];
+
+            j++;
+        }
 
         try
         {
-            using HMACSHA1 hmacGenerator = new()
-            {
-                Key = decode
-            };
-            byte[] hashedData = hmacGenerator.ComputeHash(array);
-            string encodedData = Convert.ToBase64String(hashedData, Base64FormattingOptions.None);
+            using HMACSHA1 hmacGenerator = new(Convert.FromBase64String(identitySecret));
+            var hashedData = hmacGenerator.ComputeHash(array.ToArray());
+            var encodedData = Convert.ToBase64String(hashedData, Base64FormattingOptions.None);
             return WebUtility.UrlEncode(encodedData);
         }
         catch
