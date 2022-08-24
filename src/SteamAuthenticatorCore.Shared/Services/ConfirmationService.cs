@@ -5,31 +5,32 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using SteamAuthenticatorCore.Shared.Models;
-using System.Collections.Generic;
+using System.Linq;
+using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
 
 namespace SteamAuthenticatorCore.Shared.Services;
 
-public abstract class ConfirmationServiceBase : IConfirmationService, IDisposable
+public class ConfirmationService : IConfirmationService, IDisposable
 {
-    protected ConfirmationServiceBase(ObservableCollection<SteamGuardAccount> steamGuardAccounts, AppSettings settings, IPlatformImplementations platformImplementations, IPlatformTimer timer)
+    public ConfirmationService(ObservableCollection<SteamGuardAccount> steamGuardAccounts, AppSettings settings, IPlatformTimer timer, ISteamGuardAccountService accountService, IConfirmationViewModelFactory confirmationViewModelFactory)
     {
-        Accounts = new ObservableCollection<ConfirmationAccountModelBase>();
+        ConfirmationViewModels = new ObservableCollection<IConfirmationViewModel>();
 
         _steamGuardAccounts = steamGuardAccounts;
-        _platformImplementations = platformImplementations;
         _timer = timer;
-
+        _accountService = accountService;
+        _confirmationViewModelFactory = confirmationViewModelFactory;
         _settings = settings;
     }
 
     private readonly ObservableCollection<SteamGuardAccount> _steamGuardAccounts;
     private readonly AppSettings _settings;
-    private readonly IPlatformImplementations _platformImplementations;
     private readonly IPlatformTimer _timer;
+    private readonly ISteamGuardAccountService _accountService;
+    private readonly IConfirmationViewModelFactory _confirmationViewModelFactory;
 
-    public ObservableCollection<ConfirmationAccountModelBase> Accounts { get; }
+    public ObservableCollection<IConfirmationViewModel> ConfirmationViewModels { get; }
 
     public void Dispose()
     {
@@ -49,20 +50,18 @@ public abstract class ConfirmationServiceBase : IConfirmationService, IDisposabl
     
     public async ValueTask CheckConfirmations()
     {
-        Accounts.Clear();
+        ConfirmationViewModels.Clear();
 
         foreach (var account in _steamGuardAccounts)
         {
-            var confirmations = await ConfirmationAccountModelBase.TryGetConfirmations(account);
+            var confirmations = (await _accountService.FetchConfirmations(account)).ToArray();
 
             if (confirmations.Length == 0)
                 continue;
 
-            Accounts.Add(CreateConfirmationAccountViewModel(account, confirmations, _platformImplementations));
+            ConfirmationViewModels.Add(_confirmationViewModelFactory.Create(account, confirmations));
         }
     }
-
-    protected abstract ConfirmationAccountModelBase CreateConfirmationAccountViewModel(SteamGuardAccount account, ConfirmationModel[] confirmation, IPlatformImplementations platformImplementations);
 
     private void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
@@ -98,21 +97,20 @@ public abstract class ConfirmationServiceBase : IConfirmationService, IDisposabl
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        await CheckConfirmations();
-
-        foreach (var confirmationAccountViewModel in Accounts)
+        foreach (var account in _steamGuardAccounts)
         {
-            var confirmations = new List<ConfirmationModel>();
+            var confirmations = (await _accountService.FetchConfirmations(account)).Where(model => model.ConfType == ConfirmationType.MarketSellTransaction).ToArray();
 
-            for (var i = 0; i < confirmationAccountViewModel.Confirmations.Count; i++)
+            if (confirmations.Length == 0)
+                continue;
+
+            if (confirmations.Length == 1)
             {
-                var confirmationModel = confirmationAccountViewModel.Confirmations[i];
-
-                if (confirmationModel.ConfType == ConfirmationModel.ConfirmationType.MarketSellTransaction)
-                    confirmations.Add(confirmationModel);
+                await _accountService.SendConfirmation(account, confirmations[0], ConfirmationOptions.Allow);
+                continue;
             }
 
-            await confirmationAccountViewModel.SendConfirmations(confirmations, ConfirmationOptions.Allow);
+            await _accountService.SendConfirmation(account, confirmations, ConfirmationOptions.Allow);
         }
     }
 }

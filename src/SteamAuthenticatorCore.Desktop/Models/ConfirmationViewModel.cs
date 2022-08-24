@@ -1,18 +1,20 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using SteamAuthCore;
+using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Shared.Abstraction;
 using SteamAuthenticatorCore.Shared.Models;
 
 namespace SteamAuthenticatorCore.Desktop.Models;
 
-public sealed class ConfirmationAccountModel : ConfirmationAccountModelBase
+public sealed class ConfirmationViewModel : ConfirmationViewModelBase
 {
-    public ConfirmationAccountModel(SteamGuardAccount account, ConfirmationModel[] confirmations, IPlatformImplementations platformImplementations) : base(account, confirmations, platformImplementations)
+    public ConfirmationViewModel(SteamGuardAccount account, IEnumerable<ConfirmationModel> confirmations, IPlatformImplementations platformImplementations, ISteamGuardAccountService accountService) : base(account, confirmations, platformImplementations, accountService)
     {
         ConfirmCommand = new AsyncRelayCommand<IList>(Confirm!);
         CancelCommand = new AsyncRelayCommand<IList>(Cancel!);

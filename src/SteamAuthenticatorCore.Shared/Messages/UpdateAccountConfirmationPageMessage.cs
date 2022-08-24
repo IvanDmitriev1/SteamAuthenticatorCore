@@ -3,9 +3,9 @@ using SteamAuthenticatorCore.Shared.Models;
 
 namespace SteamAuthenticatorCore.Shared.Messages;
 
-public class UpdateAccountConfirmationPageMessage : ValueChangedMessage<ConfirmationAccountModelBase>
+public class UpdateAccountConfirmationPageMessage : ValueChangedMessage<ConfirmationViewModelBase>
 {
-    public UpdateAccountConfirmationPageMessage(ConfirmationAccountModelBase value) : base(value)
+    public UpdateAccountConfirmationPageMessage(ConfirmationViewModelBase value) : base(value)
     {
     }
 }

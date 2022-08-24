@@ -89,9 +89,10 @@ public sealed partial class App : Application
                 services.AddScoped<LocalDriveAccountsFileService>();
                 services.AddScoped<GoogleDriveAccountsFileService>();
                 services.AddTransient<IPlatformTimer, PeriodicTimerService>();
-                services.AddScoped<IConfirmationService, DesktopConfirmationService>();
+                services.AddScoped<IConfirmationViewModelFactory, ConfirmationViewModelFactory>();
                 services.AddScoped<ILoginService, LoginService>();
                 services.AddScoped<IUpdateService, DesktopUpdateService>();
+                services.AddScoped<IConfirmationService, ConfirmationService>();
 
                 services.AddHttpClient<DesktopUpdateService>();
 

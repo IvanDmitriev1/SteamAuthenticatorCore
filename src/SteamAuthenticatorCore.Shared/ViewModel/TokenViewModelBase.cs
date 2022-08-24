@@ -12,10 +12,11 @@ namespace SteamAuthenticatorCore.Shared.ViewModel;
 
 public abstract partial class TokenViewModelBase : ObservableObject
 {
-    protected TokenViewModelBase(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, ITimeAligner timeAligner)
+    protected TokenViewModelBase(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, ITimeAligner timeAligner, ISteamGuardAccountService accountService)
     {
         _platformImplementations = platformImplementations;
         _timeAligner = timeAligner;
+        _accountService = accountService;
         Accounts = accounts;
         _token = string.Empty;
         
@@ -25,6 +26,7 @@ public abstract partial class TokenViewModelBase : ObservableObject
 
     private readonly IPlatformImplementations _platformImplementations;
     private readonly ITimeAligner _timeAligner;
+    private readonly ISteamGuardAccountService _accountService;
     private Int64 _currentSteamChunk;
 
     #region Propertis
@@ -51,7 +53,7 @@ public abstract partial class TokenViewModelBase : ObservableObject
         if (SelectedAccount is null)
             return;
 
-        if (await SelectedAccount.RefreshSessionAsync())
+        if (await _accountService.RefreshSession(SelectedAccount))
         {
             await _platformImplementations.DisplayAlert("Your session has been refreshed.");
             return;
