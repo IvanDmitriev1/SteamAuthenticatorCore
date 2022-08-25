@@ -1,8 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Threading.Tasks;
-using SteamAuthCore;
-using SteamAuthenticatorCore.Shared.Abstraction;
 using SteamAuthenticatorCore.Shared.ViewModel;
 using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -13,24 +11,29 @@ using System.Collections.Generic;
 using System.Linq;
 using Xamarin.Essentials;
 using System;
+using SteamAuthCore.Models;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using Xamarin.CommunityToolkit.Extensions;
 using Xamarin.CommunityToolkit.UI.Views.Options;
 using SteamAuthenticatorCore.Shared.Messages;
+using SteamAuthCore.Abstractions;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public partial class TokenPageViewModel : TokenViewModelBase
 {
-    public TokenPageViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, IMessenger messenger, AccountsFileServiceResolver accountsFileServiceResolver) : base(accounts, platformTimer, platformImplementations)
+    public TokenPageViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, IMessenger messenger, AccountsFileServiceResolver accountsFileServiceResolver, ISteamGuardAccountService accountService) : base(accounts, platformTimer, platformImplementations, accountService)
     {
         IsMobile = true;
 
         _messenger = messenger;
         _accountsFileServiceResolver = accountsFileServiceResolver;
+        _accountService = accountService;
     }
 
     private readonly IMessenger _messenger;
     private readonly AccountsFileServiceResolver _accountsFileServiceResolver;
+    private readonly ISteamGuardAccountService _accountService;
 
     private Frame? _longPressFrame;
 
@@ -70,7 +73,7 @@ public partial class TokenPageViewModel : TokenViewModelBase
     {
         var account = (SteamGuardAccount) _longPressFrame!.BindingContext;
 
-        if (await account.RefreshSessionAsync())
+        if (await _accountService.RefreshSession(account))
             await Application.Current.MainPage.DisplayAlert("Refresh session", "the session has been refreshed", "Ok");
     }
 

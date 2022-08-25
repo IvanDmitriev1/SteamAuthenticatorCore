@@ -9,7 +9,7 @@ using Sentry;
 using SteamAuthenticatorCore.Mobile;
 using SteamAuthenticatorCore.Mobile.Helpers;
 using SteamAuthenticatorCore.Mobile.Services.Interfaces;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -71,7 +71,7 @@ namespace SteamMobileAuthenticatorCore.Droid
             services.AddSingleton<IEnvironment, AndroidEnvironment>();
             services.AddScoped<IUpdateService, AndroidUpdateService>();
 
-            services.AddHttpClient<AndroidUpdateService>();
+            services.AddHttpClient<IUpdateService, AndroidUpdateService>();
         }
     }
 }

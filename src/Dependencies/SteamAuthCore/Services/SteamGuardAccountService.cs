@@ -59,7 +59,10 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         }
         catch (WgTokenInvalidException)
         {
-            await RefreshSession(account);
+            if (!await RefreshSession(account))
+            {
+                return Enumerable.Empty<ConfirmationModel>();
+            }
 
             try
             {

@@ -3,9 +3,9 @@
     x:Class="SteamAuthenticatorCore.Mobile.Pages.ConfirmationsOverviewPage"
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:abstractions="clr-namespace:SteamAuthenticatorCore.Shared.Abstractions;assembly=SteamAuthenticatorCore.Shared"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="clr-namespace:SteamAuthenticatorCore.Shared.Models;assembly=SteamAuthenticatorCore.Shared"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
     xmlns:views="clr-namespace:SteamAuthenticatorCore.Mobile.Views;assembly=SteamAuthenticatorCore.Mobile"
     xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
@@ -28,7 +28,7 @@
 
     <ContentPage.Content>
         <RefreshView Command="{Binding Path=RefreshCommand}" IsRefreshing="{Binding Path=IsRefreshing}">
-            <CollectionView x:Name="CollectionView" ItemsSource="{Binding Path=ConfirmationServiceBase.Accounts}">
+            <CollectionView x:Name="CollectionView" ItemsSource="{Binding Path=ConfirmationService.ConfirmationViewModels}">
                 <CollectionView.EmptyView>
                     <Label
                         FontSize="Medium"
@@ -37,7 +37,7 @@
                 </CollectionView.EmptyView>
 
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:ConfirmationAccountModelBase">
+                    <DataTemplate x:DataType="abstractions:IConfirmationViewModel">
                         <StackLayout Margin="0,0,0,5">
                             <Frame
                                 Padding="20,15"

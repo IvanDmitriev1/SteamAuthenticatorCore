@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using SteamAuthCore;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Shared.Abstractions;

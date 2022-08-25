@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using SteamAuthCore;
 using SteamAuthCore.Models;
@@ -12,4 +13,6 @@ public interface IConfirmationViewModel
 
     ICommand ConfirmCommand { get; }
     ICommand CancelCommand { get; }
+
+    ValueTask CheckConfirmations();
 }

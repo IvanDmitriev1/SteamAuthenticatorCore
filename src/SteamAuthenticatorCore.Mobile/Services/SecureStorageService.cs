@@ -4,8 +4,8 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using SteamAuthCore;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthCore.Models;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using Xamarin.Essentials;
 
 namespace SteamAuthenticatorCore.Mobile.Services;

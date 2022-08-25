@@ -38,7 +38,8 @@ internal sealed class SteamApi : ISteamApi
         message.Content = new FormUrlEncodedContent(new[] {pair});
 
         var responseMessage = await _client.SendAsync(message);
-        responseMessage.EnsureSuccessStatusCode();
+        if (!responseMessage.IsSuccessStatusCode)
+            return null;
 
         var response = await responseMessage.Content.ReadFromJsonAsync<RefreshSessionDataResponse>();
         return response!.Response;

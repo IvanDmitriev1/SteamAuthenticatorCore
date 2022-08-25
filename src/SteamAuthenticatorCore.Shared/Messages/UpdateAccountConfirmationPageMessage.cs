@@ -1,11 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.Messaging.Messages;
-using SteamAuthenticatorCore.Shared.Models;
+using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Shared.Messages;
 
-public class UpdateAccountConfirmationPageMessage : ValueChangedMessage<ConfirmationViewModelBase>
+public class UpdateAccountConfirmationPageMessage : ValueChangedMessage<IConfirmationViewModel>
 {
-    public UpdateAccountConfirmationPageMessage(ConfirmationViewModelBase value) : base(value)
+    public UpdateAccountConfirmationPageMessage(IConfirmationViewModel value) : base(value)
     {
     }
 }

@@ -1,12 +1,14 @@
 ﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using AngleSharp.Dom;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using SteamAuthCore;
+using SteamAuthCore.Abstractions;
+using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Mobile.Extensions;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
-using SteamAuthenticatorCore.Shared.Models;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -14,14 +16,17 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 internal partial class ConfirmationViewModel : ObservableObject, IRecipient<UpdateAccountConfirmationPageMessage>
 {
-    public ConfirmationViewModel(IMessenger messenger)
+    public ConfirmationViewModel(IMessenger messenger, ISteamGuardAccountService accountService)
     {
+        _accountService = accountService;
         messenger.Register(this);
         SelectedItems = new ObservableCollection<(Frame, ConfirmationModel)>();
     }
 
+    private readonly ISteamGuardAccountService _accountService;
+
     [ObservableProperty]
-    private ConfirmationAccountModelBase _account = null!;
+    private IConfirmationViewModel _account = null!;
 
     [ObservableProperty]
     private bool _isRefreshing;
@@ -108,10 +113,10 @@ internal partial class ConfirmationViewModel : ObservableObject, IRecipient<Upda
             case 0:
                 return;
             case 1:
-                await SendConfirmation(SteamGuardAccount.Confirmation.Allow);
+                await SendConfirmation(ConfirmationOptions.Allow);
                 break;
             default:
-                await SendConfirmations(SteamGuardAccount.Confirmation.Allow);
+                await SendConfirmations(ConfirmationOptions.Allow);
                 break;
         }
 
@@ -126,17 +131,17 @@ internal partial class ConfirmationViewModel : ObservableObject, IRecipient<Upda
             case 0:
                 return;
             case 1:
-                await SendConfirmation(SteamGuardAccount.Confirmation.Deny);
+                await SendConfirmation(ConfirmationOptions.Deny);
                 break;
             default:
-                await SendConfirmations(SteamGuardAccount.Confirmation.Deny);
+                await SendConfirmations(ConfirmationOptions.Deny);
                 break;
         }
 
         await HideCountTitleView();
     }
 
-    private Task SendConfirmation(SteamGuardAccount.Confirmation confirmation)
+    private async Task SendConfirmation(ConfirmationOptions confirmation)
     {
         try
         {
@@ -148,10 +153,15 @@ internal partial class ConfirmationViewModel : ObservableObject, IRecipient<Upda
         }
 
         var model = SelectedItems[0];
-        return Account.SendConfirmation(model.Item2, confirmation);
+
+        if (await _accountService.SendConfirmation(Account.Account, model.Item2, confirmation))
+        {
+            Account.Confirmations.Remove(model.Item2);
+            SelectedItems.Clear();
+        }
     }
 
-    private Task SendConfirmations(SteamGuardAccount.Confirmation confirmation)
+    private async Task SendConfirmations(ConfirmationOptions confirmation)
     {
         try
         {
@@ -166,6 +176,12 @@ internal partial class ConfirmationViewModel : ObservableObject, IRecipient<Upda
         for (var i = 0; i < SelectedItems.Count; i++)
             items[i] = SelectedItems[i].Item2;
 
-        return Account.SendConfirmations(items, confirmation)!;
+        if (await _accountService.SendConfirmation(Account.Account, items, confirmation))
+        {
+            foreach (var item in items)
+                Account.Confirmations.Remove(item);
+
+            SelectedItems.Clear();
+        }
     }
 }

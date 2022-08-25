@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using SteamAuthenticatorCore.Mobile.Services.Interfaces;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Models;
 using Xamarin.Forms;
 

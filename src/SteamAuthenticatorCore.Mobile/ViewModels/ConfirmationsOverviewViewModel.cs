@@ -3,9 +3,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthenticatorCore.Mobile.Pages;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
-using SteamAuthenticatorCore.Shared.Models;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -13,10 +12,10 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
 {
-    public ConfirmationsOverviewViewModel(IConfirmationService confirmationServiceBase, IMessenger messenger)
+    public ConfirmationsOverviewViewModel(IConfirmationService confirmationService, IMessenger messenger)
     {
         _messenger = messenger;
-        ConfirmationServiceBase = confirmationServiceBase;
+        ConfirmationService = confirmationService;
     }
 
     private readonly IMessenger _messenger;
@@ -25,7 +24,7 @@ public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
     [ObservableProperty]
     private bool _isRefreshing;
 
-    public IConfirmationService ConfirmationServiceBase { get; }
+    public IConfirmationService ConfirmationService { get; }
 
     [RelayCommand]
     private void OnAppearing()
@@ -36,7 +35,7 @@ public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
             IsRefreshing = true;
         }
 
-        if (ConfirmationServiceBase.Accounts.Count > 0)
+        if (ConfirmationService.ConfirmationViewModels.Count > 0)
             return;
 
         _needRefresh = true;
@@ -59,12 +58,12 @@ public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
             }
         }
 
-        await ConfirmationServiceBase.CheckConfirmations();
+        await ConfirmationService.CheckConfirmations();
         IsRefreshing = false;
     }
 
     [RelayCommand]
-    private async Task OnTouched(ConfirmationAccountModelBase account)
+    private async Task OnTouched(IConfirmationViewModel account)
     {
         _needRefresh = true;
 
