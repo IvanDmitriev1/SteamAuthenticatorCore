@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using SteamAuthCore.Models.Internal;
 
 namespace SteamAuthCore.Abstractions;
@@ -11,5 +12,5 @@ internal interface ISteamApi
     /// <returns></returns>
     ValueTask<string> GetSteamTime();
 
-    ValueTask<RefreshSessionDataInternalResponse?> MobileauthGetwgtoken(string token);
+    ValueTask<RefreshSessionDataInternalResponse?> MobileauthGetwgtoken(string token, CancellationToken cancellationToken);
 }

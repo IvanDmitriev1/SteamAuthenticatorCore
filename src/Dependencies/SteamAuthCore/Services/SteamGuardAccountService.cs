@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
@@ -29,9 +30,9 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
     private readonly ArrayPool<UInt64> _uintArrayPool = ArrayPool<UInt64>.Create();
     private readonly ArrayPool<string> _stringArrayPool = ArrayPool<string>.Create();
 
-    public async ValueTask<bool> RefreshSession(SteamGuardAccount account)
+    public async ValueTask<bool> RefreshSession(SteamGuardAccount account, CancellationToken cancellationToken)
     {
-        if (await _steamApi.MobileauthGetwgtoken(account.Session.OAuthToken) is not { } refreshResponse)
+        if (await _steamApi.MobileauthGetwgtoken(account.Session.OAuthToken, cancellationToken).ConfigureAwait(false) is not { } refreshResponse)
             return false;
 
         var token = account.Session.SteamId + "%7C%7C" + refreshResponse.Token;
@@ -42,7 +43,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         return true;
     }
 
-    public async ValueTask<IEnumerable<ConfirmationModel>> FetchConfirmations(SteamGuardAccount account)
+    public async ValueTask<IEnumerable<ConfirmationModel>> FetchConfirmations(SteamGuardAccount account, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(account.DeviceId))
             throw new ArgumentException("Device ID is not present");
@@ -55,18 +56,18 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
 
         try
         {
-            html = await _steamCommunityApi.Mobileconf<string>(query, account.Session.GetCookieString());
+            html = await _steamCommunityApi.Mobileconf<string>(query, account.Session.GetCookieString(), cancellationToken).ConfigureAwait(false);
         }
         catch (WgTokenInvalidException)
         {
-            if (!await RefreshSession(account))
+            if (!await RefreshSession(account, cancellationToken).ConfigureAwait(false))
             {
                 return Enumerable.Empty<ConfirmationModel>();
             }
 
             try
             {
-                html = await _steamCommunityApi.Mobileconf<string>(query, account.Session.GetCookieString());
+                html = await _steamCommunityApi.Mobileconf<string>(query, account.Session.GetCookieString(), cancellationToken).ConfigureAwait(false);
             }
             catch (WgTokenInvalidException)
             {
@@ -81,7 +82,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         return ParseConfirmationsHtml(html);
     }
 
-    public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel confirmation, ConfirmationOptions options)
+    public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel confirmation, ConfirmationOptions options, CancellationToken cancellationToken)
     {
         var strOption = options.ToString().ToLower();
 
@@ -94,11 +95,11 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
 
         var query = builder.ToString();
 
-        var response = await _steamCommunityApi.Mobileconf<ConfirmationDetailsResponse>(query, account.Session.GetCookieString());
+        var response = await _steamCommunityApi.Mobileconf<ConfirmationDetailsResponse>(query, account.Session.GetCookieString(), cancellationToken).ConfigureAwait(false);
         return response.Success;
     }
 
-    public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, IEnumerable<ConfirmationModel> confirmations, ConfirmationOptions options)
+    public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, IEnumerable<ConfirmationModel> confirmations, ConfirmationOptions options, CancellationToken cancellationToken)
     {
         var strOption = options.ToString().ToLower();
 
@@ -113,7 +114,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
             builder.Append($"&ck[]={confirmation.Key}");
         }
 
-        var response = await _steamCommunityApi.SendMultipleConfirmations(builder.ToString(), account.Session.GetCookieString());
+        var response = await _steamCommunityApi.SendMultipleConfirmations(builder.ToString(), account.Session.GetCookieString(), cancellationToken).ConfigureAwait(false);
         return response.Success;
     }
 

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using SteamAuthCore;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Shared.Abstractions;
@@ -40,7 +40,7 @@ public abstract class ConfirmationViewModelBase : IConfirmationViewModel
     {
         Confirmations.Clear();
 
-        foreach (var confirmation in await _accountService.FetchConfirmations(Account))
+        foreach (var confirmation in await _accountService.FetchConfirmations(Account, CancellationToken.None))
         {
             confirmation.BitMapImage = _platformImplementations.CreateImage(confirmation.ImageSource);
             Confirmations.Add(confirmation);
@@ -49,7 +49,7 @@ public abstract class ConfirmationViewModelBase : IConfirmationViewModel
 
     public async Task SendConfirmation(ConfirmationModel confirmation, ConfirmationOptions command)
     {
-        if (!await _accountService.SendConfirmation(Account, confirmation, command))
+        if (!await _accountService.SendConfirmation(Account, confirmation, command, CancellationToken.None))
             return;
 
         await _platformImplementations.InvokeMainThread(() =>
@@ -71,7 +71,7 @@ public abstract class ConfirmationViewModelBase : IConfirmationViewModel
                 return;
         }
 
-        await _accountService.SendConfirmation(Account, confirms, command);
+        await _accountService.SendConfirmation(Account, confirms, command, CancellationToken.None);
 
         foreach (var confirmation in confirms)
         {

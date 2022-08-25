@@ -51,7 +51,7 @@ public abstract partial class TokenViewModelBase : ObservableObject
         if (SelectedAccount is null)
             return;
 
-        if (await _accountService.RefreshSession(SelectedAccount))
+        if (await _accountService.RefreshSession(SelectedAccount, CancellationToken.None))
         {
             await _platformImplementations.DisplayAlert("Your session has been refreshed.");
             return;

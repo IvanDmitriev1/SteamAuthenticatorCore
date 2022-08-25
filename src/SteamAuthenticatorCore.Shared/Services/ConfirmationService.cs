@@ -1,5 +1,4 @@
 ﻿using System;
-using SteamAuthCore;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading;
@@ -54,7 +53,7 @@ internal class ConfirmationService : IConfirmationService, IDisposable
 
         foreach (var account in _steamGuardAccounts)
         {
-            var confirmations = (await _accountService.FetchConfirmations(account)).ToArray();
+            var confirmations = (await _accountService.FetchConfirmations(account, CancellationToken.None)).ToArray();
 
             if (confirmations.Length == 0)
                 continue;
@@ -95,22 +94,20 @@ internal class ConfirmationService : IConfirmationService, IDisposable
 
     private async ValueTask TradeAutoConfirmationTimerOnTick(CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
         foreach (var account in _steamGuardAccounts)
         {
-            var confirmations = (await _accountService.FetchConfirmations(account)).Where(model => model.ConfType == ConfirmationType.MarketSellTransaction).ToArray();
+            var confirmations = (await _accountService.FetchConfirmations(account, cancellationToken).ConfigureAwait(false)).Where(model => model.ConfType == ConfirmationType.MarketSellTransaction).ToArray();
 
             if (confirmations.Length == 0)
                 continue;
 
             if (confirmations.Length == 1)
             {
-                await _accountService.SendConfirmation(account, confirmations[0], ConfirmationOptions.Allow);
+                await _accountService.SendConfirmation(account, confirmations[0], ConfirmationOptions.Allow, cancellationToken).ConfigureAwait(false);
                 continue;
             }
 
-            await _accountService.SendConfirmation(account, confirmations, ConfirmationOptions.Allow);
+            await _accountService.SendConfirmation(account, confirmations, ConfirmationOptions.Allow, cancellationToken).ConfigureAwait(false);
         }
     }
 }
