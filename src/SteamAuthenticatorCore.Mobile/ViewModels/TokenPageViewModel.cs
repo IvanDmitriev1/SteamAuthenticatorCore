@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xamarin.Essentials;
 using System;
+using System.Threading;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using Xamarin.CommunityToolkit.Extensions;
@@ -66,15 +67,6 @@ public partial class TokenPageViewModel : TokenViewModelBase
 
         await Shell.Current.GoToAsync($"{nameof(LoginPage)}");
         _messenger.Send(new UpdateAccountInLoginPageMessage(account));
-    }
-
-    [RelayCommand]
-    private async Task ForceRefreshSession()
-    {
-        var account = (SteamGuardAccount) _longPressFrame!.BindingContext;
-
-        if (await _accountService.RefreshSession(account))
-            await Application.Current.MainPage.DisplayAlert("Refresh session", "the session has been refreshed", "Ok");
     }
 
     [RelayCommand]

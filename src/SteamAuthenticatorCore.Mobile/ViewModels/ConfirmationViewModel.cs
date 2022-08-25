@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
-using AngleSharp.Dom;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -154,7 +154,7 @@ internal partial class ConfirmationViewModel : ObservableObject, IRecipient<Upda
 
         var model = SelectedItems[0];
 
-        if (await _accountService.SendConfirmation(Account.Account, model.Item2, confirmation))
+        if (await _accountService.SendConfirmation(Account.Account, model.Item2, confirmation, CancellationToken.None))
         {
             Account.Confirmations.Remove(model.Item2);
             SelectedItems.Clear();
@@ -176,7 +176,7 @@ internal partial class ConfirmationViewModel : ObservableObject, IRecipient<Upda
         for (var i = 0; i < SelectedItems.Count; i++)
             items[i] = SelectedItems[i].Item2;
 
-        if (await _accountService.SendConfirmation(Account.Account, items, confirmation))
+        if (await _accountService.SendConfirmation(Account.Account, items, confirmation, CancellationToken.None))
         {
             foreach (var item in items)
                 Account.Confirmations.Remove(item);
