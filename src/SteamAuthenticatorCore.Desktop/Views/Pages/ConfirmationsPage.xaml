@@ -6,7 +6,7 @@
     xmlns:local="clr-namespace:SteamAuthenticatorCore.Desktop.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:SteamAuthenticatorCore.Shared.Models;assembly=SteamAuthenticatorCore.Shared"
-    xmlns:steamAuthCore="clr-namespace:SteamAuthCore;assembly=SteamAuthCore"
+    xmlns:steamAuthCore="clr-namespace:SteamAuthCore.Models;assembly=SteamAuthCore"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Desktop.ViewModels"
     Title="ConfirmationsPage"
@@ -37,7 +37,7 @@
 
             <ItemsControl
                 VerticalAlignment="Top"
-                ItemsSource="{Binding Path=ConfirmationServiceBase.Accounts}"
+                ItemsSource="{Binding Path=ConfirmationServiceBase.ConfirmationViewModels}"
                 ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                 ScrollViewer.VerticalScrollBarVisibility="Hidden"
                 VirtualizingStackPanel.IsVirtualizing="True"
@@ -50,7 +50,7 @@
                 </ItemsControl.ItemsPanel>
 
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type models:ConfirmationAccountModelBase}">
+                    <DataTemplate DataType="{x:Type models:ConfirmationViewModelBase}">
                         <ui:Card>
                             <StackPanel>
                                 <TextBlock

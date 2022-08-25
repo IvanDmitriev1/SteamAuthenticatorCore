@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using SteamAuthCore;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthCore.Models;
+using SteamAuthCore.Obsolete;
+using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Shared.Services;
 
-public sealed class LoginService : ILoginService
+internal sealed class LoginService : ILoginService
 {
     public LoginService(AccountsFileServiceResolver accountsFileServiceResolver, IPlatformImplementations platformImplementations)
     {
@@ -19,7 +20,10 @@ public sealed class LoginService : ILoginService
     public async Task RefreshLogin(SteamGuardAccount account, string password)
     {
         if (await RefreshSession(new UserLogin(account.AccountName, password), account) is not { } session)
+        {
+            await _platformImplementations.DisplayAlert("Error logging in: Steam returned \"GeneralFailure\".");
             return;
+        }
 
         account.Session = session;
         var manifestService = _accountsFileServiceResolver.Invoke();
@@ -28,7 +32,7 @@ public sealed class LoginService : ILoginService
         await _platformImplementations.DisplayAlert("Session successfully refreshed");
     }
 
-    private async ValueTask<SessionData?> RefreshSession(UserLogin userLogin, SteamGuardAccount account)
+    private async Task<SessionData?> RefreshSession(UserLogin userLogin, SteamGuardAccount account)
     {
         while (true)
         {
@@ -39,7 +43,7 @@ public sealed class LoginService : ILoginService
                 case LoginResult.NeedCaptcha:
                     throw new NotImplementedException($"{LoginResult.NeedCaptcha} not implemented");
                 case LoginResult.Need2Fa:
-                    userLogin.TwoFactorCode = account.GenerateSteamGuardCode(await TimeAligner.GetSteamTimeAsync());
+                    userLogin.TwoFactorCode = account.GenerateSteamGuardCode();
                     continue;
                 case LoginResult.BadRsa:
                     await _platformImplementations.DisplayAlert("Error logging in: Steam returned \"BadRSA\".");

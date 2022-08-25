@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SteamAuthCore.Abstractions;
 using SteamAuthenticatorCore.Mobile.Services.Interfaces;
 using SteamAuthenticatorCore.Shared;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -28,6 +29,8 @@ public partial class App : Application
     protected async override void OnStart()
     {
         VersionTracking.Track();
+
+        await Startup.ServiceProvider.GetRequiredService<ITimeAligner>().AlignTimeAsync();
 
         var accountsFileServiceResolver = Startup.ServiceProvider.GetRequiredService<AccountsFileServiceResolver>();
         await accountsFileServiceResolver.Invoke().InitializeOrRefreshAccounts();

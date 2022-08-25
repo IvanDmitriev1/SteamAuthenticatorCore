@@ -2,24 +2,24 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Extensions.DependencyInjection;
 using SteamAuthenticatorCore.Desktop.Extensions;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using Wpf.Ui.Mvvm.Contracts;
 
 namespace SteamAuthenticatorCore.Desktop.Views;
 
 public partial class Container
 {
-    public Container(INavigationService navigationService, IPageService pageService, AppSettings appSettings, ISnackbarService snackbarService, IDialogService dialogService, TaskBarServiceWrapper taskBarServiceWrapper, IConfirmationService confirmationServiceBase, IUpdateService updateService)
+    public Container(INavigationService navigationService, IPageService pageService, AppSettings appSettings, ISnackbarService snackbarService, IDialogService dialogService, TaskBarServiceWrapper taskBarServiceWrapper, IUpdateService updateService)
     {
         InitializeComponent();
 
         _appSettings = appSettings;
         _taskBarServiceWrapper = taskBarServiceWrapper;
-        _confirmationServiceBase = confirmationServiceBase;
         _updateService = updateService;
 
         navigationService.SetNavigationControl(NavigationFluent);
@@ -35,13 +35,12 @@ public partial class Container
 
     private readonly AppSettings _appSettings;
     private readonly TaskBarServiceWrapper _taskBarServiceWrapper;
-    private readonly IConfirmationService _confirmationServiceBase;
     private readonly IUpdateService _updateService;
 
     private async void NavigationFluentOnLoaded(object sender, RoutedEventArgs e)
     {
         _appSettings.LoadSettings();
-        _confirmationServiceBase.Initialize();
+        App.ServiceProvider.GetRequiredService<IConfirmationService>().Initialize();
 
         RootWelcomeGrid.Visibility = Visibility.Hidden;
         MainContent.Visibility = Visibility.Visible;

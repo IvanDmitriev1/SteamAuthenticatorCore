@@ -5,6 +5,7 @@
     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:SteamAuthCore.Models;assembly=SteamAuthCore"
     xmlns:steamAuthCore="clr-namespace:SteamAuthCore;assembly=SteamAuthCore"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Desktop.ViewModels"
@@ -141,7 +142,7 @@
                 </ListBox.ItemsPanel>
 
                 <ListBox.ItemTemplate>
-                    <DataTemplate DataType="{x:Type steamAuthCore:SteamGuardAccount}">
+                    <DataTemplate DataType="{x:Type models:SteamGuardAccount}">
                         <StackPanel HorizontalAlignment="Stretch">
                             <TextBlock Padding="2.5" Text="{Binding Path=AccountName}" />
 

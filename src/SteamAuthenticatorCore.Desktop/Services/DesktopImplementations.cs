@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
-using SteamAuthenticatorCore.Shared.Abstraction;
 using System.Windows.Media.Imaging;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Models;
 using Wpf.Ui.Mvvm.Contracts;
 

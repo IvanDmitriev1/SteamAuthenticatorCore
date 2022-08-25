@@ -10,13 +10,15 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Sentry;
 using SteamAuthCore;
+using SteamAuthCore.Extensions;
+using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.ViewModels;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
+using SteamAuthenticatorCore.Shared.Extensions;
 using SteamAuthenticatorCore.Shared.Models;
-using SteamAuthenticatorCore.Shared.Services;
 using Wpf.Ui.Mvvm.Contracts;
 using Wpf.Ui.Mvvm.Services;
 using Container = SteamAuthenticatorCore.Desktop.Views.Container;
@@ -79,7 +81,6 @@ public sealed partial class App : Application
 
                 services.AddSingleton<ObservableCollection<SteamGuardAccount>>();
 
-                services.AddSingleton<AppSettings>();
                 services.AddGoogleDriveApi(Name);
                 services.AddTransient<ISettingsService, DesktopSettingsService>();
                 services.AddSingleton<IPlatformImplementations, DesktopImplementations>();
@@ -88,11 +89,13 @@ public sealed partial class App : Application
                 services.AddScoped<LocalDriveAccountsFileService>();
                 services.AddScoped<GoogleDriveAccountsFileService>();
                 services.AddTransient<IPlatformTimer, PeriodicTimerService>();
-                services.AddScoped<IConfirmationService, DesktopConfirmationService>();
-                services.AddScoped<ILoginService, LoginService>();
+                services.AddScoped<IConfirmationViewModelFactory, ConfirmationViewModelFactory>();
                 services.AddScoped<IUpdateService, DesktopUpdateService>();
 
-                services.AddHttpClient<DesktopUpdateService>();
+                services.AddHttpClient<IUpdateService, DesktopUpdateService>();
+
+                services.AddSteamAuthCoreServices();
+                services.AddSharedServices();
 
                 services.AddScoped<AccountsFileServiceResolver>(provider => () =>
                 {

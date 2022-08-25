@@ -3,12 +3,14 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using SteamAuthCore;
+using SteamAuthCore.Extensions;
+using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Mobile.Services;
 using SteamAuthenticatorCore.Mobile.ViewModels;
 using SteamAuthenticatorCore.Shared;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
+using SteamAuthenticatorCore.Shared.Extensions;
 using SteamAuthenticatorCore.Shared.Models;
-using SteamAuthenticatorCore.Shared.Services;
 
 namespace SteamAuthenticatorCore.Mobile;
 
@@ -45,9 +47,11 @@ public static class Startup
         services.AddTransient<ISettingsService, MobileSettingsService>();
         services.AddSingleton<IPlatformImplementations, MobileImplementations>();
         services.AddScoped<SecureStorageService>();
-        services.AddScoped<IConfirmationService, MobileConfirmationService>();
         services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
-        services.AddScoped<ILoginService, LoginService>();
+        services.AddScoped<IConfirmationViewModelFactory, ConfirmationViewModelFactory>();
+
+        services.AddSteamAuthCoreServices();
+        services.AddSharedServices();
 
         services.AddSingleton<AccountsFileServiceResolver>(provider => () =>
         {

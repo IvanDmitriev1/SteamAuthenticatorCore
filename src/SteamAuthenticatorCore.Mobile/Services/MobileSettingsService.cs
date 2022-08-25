@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using SteamAuthenticatorCore.Shared;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using Xamarin.Essentials;
 
 namespace SteamAuthenticatorCore.Mobile.Services;
