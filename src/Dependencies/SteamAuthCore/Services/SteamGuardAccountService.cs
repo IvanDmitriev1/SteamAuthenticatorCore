@@ -122,19 +122,20 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         if (string.IsNullOrEmpty(loginData.SessionId))
         {
             loginData.SessionId = await _steamCommunityApi.Login(LoginData.DefaultCookies);
+
+            var cookieBuilder = new StringBuilder();
+            cookieBuilder.Append($"sessionid={loginData.SessionId};");
+            cookieBuilder.Append(LoginData.DefaultCookies);
+
+            loginData.CookieString = cookieBuilder.ToString();
         }
 
         var getRsaKeyContent = new KeyValuePair<string, string>[2];
         getRsaKeyContent[0] = new KeyValuePair<string, string>("donotcache", $"{_timeAligner.SteamTime * 1000}");
         getRsaKeyContent[1] = new KeyValuePair<string, string>("username", loginData.Username);
 
-        var cookieBuilder = new StringBuilder();
-        cookieBuilder.Append($"sessionid={loginData.SessionId};");
-        cookieBuilder.Append(LoginData.DefaultCookies);
-
-        var cookieString = cookieBuilder.ToString();
-
-        if (await _steamCommunityApi.GetRsaKey(getRsaKeyContent, cookieString) is not { } rsaResponse)
+        
+        if (await _steamCommunityApi.GetRsaKey(getRsaKeyContent, loginData.CookieString) is not { } rsaResponse)
         {
             loginData.Result = LoginResult.GeneralFailure;
             return loginData;
@@ -158,31 +159,85 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
             encryptedPassword = Convert.ToBase64String(rsaEncryptor.Encrypt(passwordBytes, false));
         }
 
-        var doLoginPostData = new KeyValuePair<string, string>[12];
-        getRsaKeyContent[0] = new KeyValuePair<string, string>("donotcache", $"{_timeAligner.SteamTime * 1000}");
+        var doLoginPostData = new KeyValuePair<string, string>[13];
+        doLoginPostData[0] = new KeyValuePair<string, string>("donotcache", $"{_timeAligner.SteamTime * 1000}");
 
-        getRsaKeyContent[1] = new KeyValuePair<string, string>("password", encryptedPassword);
-        getRsaKeyContent[2] = new KeyValuePair<string, string>("username", loginData.Username);
-        getRsaKeyContent[3] = new KeyValuePair<string, string>("twofactorcode", loginData.TwoFactorCode);
+        doLoginPostData[1] = new KeyValuePair<string, string>("password", encryptedPassword);
+        doLoginPostData[2] = new KeyValuePair<string, string>("username", loginData.Username);
+        doLoginPostData[3] = new KeyValuePair<string, string>("twofactorcode", loginData.TwoFactorCode);
 
-        getRsaKeyContent[4] = new KeyValuePair<string, string>("emailauth", string.Empty);
-        getRsaKeyContent[5] = new KeyValuePair<string, string>("loginfriendlyname", string.Empty);
-        getRsaKeyContent[6] = new KeyValuePair<string, string>("captchagid", loginData.CaptchaGid is null ? "-1" : loginData.CaptchaGid);
-        getRsaKeyContent[7] = new KeyValuePair<string, string>("captcha_text", loginData.CaptchaGid is null ? string.Empty : loginData.CaptchaText);
-        getRsaKeyContent[8] = new KeyValuePair<string, string>("emailsteamid", loginData.Result == LoginResult.Need2Fa ? loginData.SteamId.ToString() : string.Empty);
+        doLoginPostData[4] = new KeyValuePair<string, string>("emailauth", string.Empty);
+        doLoginPostData[5] = new KeyValuePair<string, string>("loginfriendlyname", string.Empty);
+        doLoginPostData[6] = new KeyValuePair<string, string>("captchagid", loginData.CaptchaGid is null ? "-1" : loginData.CaptchaGid);
+        doLoginPostData[7] = new KeyValuePair<string, string>("captcha_text", loginData.CaptchaGid is null ? string.Empty : loginData.CaptchaText);
+        doLoginPostData[8] = new KeyValuePair<string, string>("emailsteamid", loginData.Result == LoginResult.Need2Fa ? loginData.SteamId.ToString() : string.Empty);
 
-        getRsaKeyContent[9] = new KeyValuePair<string, string>("rsatimestamp", rsaResponse.Timestamp);
-        getRsaKeyContent[10] = new KeyValuePair<string, string>("remember_login", "true");
-        getRsaKeyContent[11] = new KeyValuePair<string, string>("oauth_client_id", "DE45CD61");
-        getRsaKeyContent[12] = new KeyValuePair<string, string>("oauth_scope", "read_profile write_profile read_client write_client");
+        doLoginPostData[9] = new KeyValuePair<string, string>("rsatimestamp", rsaResponse.Timestamp);
+        doLoginPostData[10] = new KeyValuePair<string, string>("remember_login", "true");
+        doLoginPostData[11] = new KeyValuePair<string, string>("oauth_client_id", "DE45CD61");
+        doLoginPostData[12] = new KeyValuePair<string, string>("oauth_scope", "read_profile write_profile read_client write_client");
 
-        if (await _steamCommunityApi.DoLogin(doLoginPostData, cookieString) is not { } loginResponse)
+        if (await _steamCommunityApi.DoLogin(doLoginPostData, loginData.CookieString) is not { } loginResponse)
         {
             loginData.Result = LoginResult.GeneralFailure;
             return loginData;   
         }
 
+        if (loginResponse.LoginComplete)
+        {
+            var oAuthData = loginResponse.OAuthData!;
 
+            loginData.SessionData = new SessionData(loginData.SessionId,
+                oAuthData.SteamId + "%7C%7C" + oAuthData.SteamLogin,
+                oAuthData.SteamId + "%7C%7C" + oAuthData.SteamLogin,
+                oAuthData.Webcookie,
+                oAuthData.OAuthToken!, loginData.SteamId);
+
+            loginData.Result = LoginResult.LoginOkay;
+            return loginData;
+        }
+
+        if (loginResponse.Message is null)
+        {
+            loginData.Result = LoginResult.GeneralFailure;
+            return loginData;
+        }
+
+        if (loginResponse.Message.Contains("There have been too many login failures"))
+        {
+            loginData.Result = LoginResult.TooManyFailedLogins;
+            return loginData;
+        }
+
+        if (loginResponse.Message.Contains("Incorrect login"))
+        {
+            loginData.Result = LoginResult.BadCredentials;
+            return loginData;
+        }
+
+        if (loginResponse.CaptchaNeeded)
+        {
+            loginData.CaptchaGid = loginResponse.CaptchaGid;
+            loginData.Result = LoginResult.NeedCaptcha;
+            return loginData;
+        }
+
+        if (loginResponse.EmailAuthNeeded)
+        {
+            throw new NotImplementedException();
+        }
+
+        if (loginResponse.TwoFactorNeeded && !loginResponse.Success)
+        {
+            loginData.Result = LoginResult.Need2Fa;
+            return loginData;
+        }
+
+        if (loginResponse.OAuthData?.OAuthToken is null || loginResponse.OAuthData.OAuthToken.Length == 0)
+        {
+            loginData.Result = LoginResult.GeneralFailure;
+            return loginData;
+        }
 
         return loginData;
     }

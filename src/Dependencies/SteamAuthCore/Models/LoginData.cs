@@ -12,6 +12,7 @@ public class LoginData
         TwoFactorCode = string.Empty;
         SessionId = string.Empty;
         CaptchaText = string.Empty;
+        CookieString = string.Empty;
     }
 
     static LoginData()
@@ -31,7 +32,8 @@ public class LoginData
     public string? CaptchaGid { get; internal set; }
     public string SessionId { get; internal set; }
     public UInt64 SteamId { get; internal set; }
-
+    public string CookieString { get; internal set; }
+    public SessionData? SessionData { get; internal set; }
     public LoginResult Result { get; internal set; }
 
     internal static string DefaultCookies { get; }

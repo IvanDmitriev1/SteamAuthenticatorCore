@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Exceptions;
 using SteamAuthCore.Extensions;
@@ -61,6 +58,7 @@ internal sealed class SteamCommunityApi : ISteamCommunityApi
     public async ValueTask<string> Login(string cookieString)
     {
         using var message = new HttpRequestMessage(HttpMethod.Get, ApiEndpoints.Login);
+        message.Headers.Referrer = new Uri(ApiEndpoints.MobileLoginRequestRefer);
         message.Headers.Add("Cookie", cookieString);
         message.Headers.Add("X-Requested-With", "com.valvesoftware.android.steam.community");
 
@@ -76,6 +74,7 @@ internal sealed class SteamCommunityApi : ISteamCommunityApi
     public async ValueTask<RsaResponse?> GetRsaKey(KeyValuePair<string, string>[] content, string cookieString)
     {
         using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.GetRsaKey);
+        message.Headers.Referrer = new Uri(ApiEndpoints.MobileLoginRequestRefer);
         message.Headers.Add("Cookie", cookieString);
         message.Content = new FormUrlEncodedContent(content);
 
@@ -83,15 +82,13 @@ internal sealed class SteamCommunityApi : ISteamCommunityApi
         if (!responseMessage.IsSuccessStatusCode)
             return null;
 
-        await using var stream = await responseMessage.Content.ReadAsStreamAsync();
-        using var streamReader = new StreamReader(stream);
-
         return await responseMessage.Content.ReadFromJsonAsync<RsaResponse>();
     }
 
     public async ValueTask<LoginResponse?> DoLogin(KeyValuePair<string, string>[] content, string cookieString)
     {
         using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.GetRsaKey);
+        message.Headers.Referrer = new Uri(ApiEndpoints.MobileLoginRequestRefer);
         message.Headers.Add("Cookie", cookieString);
         message.Content = new FormUrlEncodedContent(content);
 
