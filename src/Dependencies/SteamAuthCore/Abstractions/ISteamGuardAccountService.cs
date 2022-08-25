@@ -10,5 +10,5 @@ public interface ISteamGuardAccountService
     ValueTask<IEnumerable<ConfirmationModel>> FetchConfirmations(SteamGuardAccount account);
     ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel confirmation, ConfirmationOptions options);
     ValueTask<bool> SendConfirmation(SteamGuardAccount account, IEnumerable<ConfirmationModel> confirmations, ConfirmationOptions options);
-    Task<LoginData> Login();
+    Task<LoginData> Login(LoginData loginData);
 }

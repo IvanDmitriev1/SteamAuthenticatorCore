@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Exceptions;
 using SteamAuthCore.Extensions;
@@ -64,9 +67,10 @@ internal sealed class SteamCommunityApi : ISteamCommunityApi
         using var responseMessage = await _client.SendAsync(message);
         responseMessage.EnsureSuccessStatusCode();
 
-        await using var stream = await responseMessage.Content.ReadAsStreamAsync();
-        using var streamReader = new StreamReader(stream);
-        return await streamReader.ReadToEndAsync();
+        var sessionCookie = responseMessage.Headers.GetValues("Set-Cookie").ElementAt(0);
+        var arr = sessionCookie.Split(new[] {'=', ';'}, StringSplitOptions.RemoveEmptyEntries);
+
+        return arr[1];
     }
 
     public async ValueTask<RsaResponse?> GetRsaKey(KeyValuePair<string, string>[] content, string cookieString)
@@ -78,6 +82,9 @@ internal sealed class SteamCommunityApi : ISteamCommunityApi
         using var responseMessage = await _client.SendAsync(message);
         if (!responseMessage.IsSuccessStatusCode)
             return null;
+
+        await using var stream = await responseMessage.Content.ReadAsStreamAsync();
+        using var streamReader = new StreamReader(stream);
 
         return await responseMessage.Content.ReadFromJsonAsync<RsaResponse>();
     }

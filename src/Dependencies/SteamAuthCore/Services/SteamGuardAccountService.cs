@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -116,9 +117,74 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         return response.Success;
     }
 
-    public Task<LoginData> Login()
+    public async Task<LoginData> Login(LoginData loginData)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(loginData.SessionId))
+        {
+            loginData.SessionId = await _steamCommunityApi.Login(LoginData.DefaultCookies);
+        }
+
+        var getRsaKeyContent = new KeyValuePair<string, string>[2];
+        getRsaKeyContent[0] = new KeyValuePair<string, string>("donotcache", $"{_timeAligner.SteamTime * 1000}");
+        getRsaKeyContent[1] = new KeyValuePair<string, string>("username", loginData.Username);
+
+        var cookieBuilder = new StringBuilder();
+        cookieBuilder.Append($"sessionid={loginData.SessionId};");
+        cookieBuilder.Append(LoginData.DefaultCookies);
+
+        var cookieString = cookieBuilder.ToString();
+
+        if (await _steamCommunityApi.GetRsaKey(getRsaKeyContent, cookieString) is not { } rsaResponse)
+        {
+            loginData.Result = LoginResult.GeneralFailure;
+            return loginData;
+        }
+
+        if (!rsaResponse.Success)
+        {
+            loginData.Result = LoginResult.BadRsa;
+            return loginData;
+        }
+
+        string encryptedPassword;
+        using (var rsaEncryptor = new RSACryptoServiceProvider())
+        {
+            var passwordBytes = Encoding.ASCII.GetBytes(loginData.Password);
+            var rsaParameters = rsaEncryptor.ExportParameters(false);
+            rsaParameters.Exponent = Util.HexStringToByteArray(rsaResponse.Exponent);
+            rsaParameters.Modulus = Util.HexStringToByteArray(rsaResponse.Modulus);
+            rsaEncryptor.ImportParameters(rsaParameters);
+
+            encryptedPassword = Convert.ToBase64String(rsaEncryptor.Encrypt(passwordBytes, false));
+        }
+
+        var doLoginPostData = new KeyValuePair<string, string>[12];
+        getRsaKeyContent[0] = new KeyValuePair<string, string>("donotcache", $"{_timeAligner.SteamTime * 1000}");
+
+        getRsaKeyContent[1] = new KeyValuePair<string, string>("password", encryptedPassword);
+        getRsaKeyContent[2] = new KeyValuePair<string, string>("username", loginData.Username);
+        getRsaKeyContent[3] = new KeyValuePair<string, string>("twofactorcode", loginData.TwoFactorCode);
+
+        getRsaKeyContent[4] = new KeyValuePair<string, string>("emailauth", string.Empty);
+        getRsaKeyContent[5] = new KeyValuePair<string, string>("loginfriendlyname", string.Empty);
+        getRsaKeyContent[6] = new KeyValuePair<string, string>("captchagid", loginData.CaptchaGid is null ? "-1" : loginData.CaptchaGid);
+        getRsaKeyContent[7] = new KeyValuePair<string, string>("captcha_text", loginData.CaptchaGid is null ? string.Empty : loginData.CaptchaText);
+        getRsaKeyContent[8] = new KeyValuePair<string, string>("emailsteamid", loginData.Result == LoginResult.Need2Fa ? loginData.SteamId.ToString() : string.Empty);
+
+        getRsaKeyContent[9] = new KeyValuePair<string, string>("rsatimestamp", rsaResponse.Timestamp);
+        getRsaKeyContent[10] = new KeyValuePair<string, string>("remember_login", "true");
+        getRsaKeyContent[11] = new KeyValuePair<string, string>("oauth_client_id", "DE45CD61");
+        getRsaKeyContent[12] = new KeyValuePair<string, string>("oauth_scope", "read_profile write_profile read_client write_client");
+
+        if (await _steamCommunityApi.DoLogin(doLoginPostData, cookieString) is not { } loginResponse)
+        {
+            loginData.Result = LoginResult.GeneralFailure;
+            return loginData;   
+        }
+
+
+
+        return loginData;
     }
 
     private IEnumerable<ConfirmationModel> ParseConfirmationsHtml(string html)
