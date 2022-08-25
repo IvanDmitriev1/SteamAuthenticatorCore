@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
@@ -51,5 +53,45 @@ internal sealed class SteamCommunityApi : ISteamCommunityApi
 
         using var responseMessage = await _client.SendAsync(message);
         return (await responseMessage.Content.ReadFromJsonAsync<SendConfirmationResponse>())!;
+    }
+
+    public async ValueTask<string> Login(string cookieString)
+    {
+        using var message = new HttpRequestMessage(HttpMethod.Get, ApiEndpoints.Login);
+        message.Headers.Add("Cookie", cookieString);
+        message.Headers.Add("X-Requested-With", "com.valvesoftware.android.steam.community");
+
+        using var responseMessage = await _client.SendAsync(message);
+        responseMessage.EnsureSuccessStatusCode();
+
+        await using var stream = await responseMessage.Content.ReadAsStreamAsync();
+        using var streamReader = new StreamReader(stream);
+        return await streamReader.ReadToEndAsync();
+    }
+
+    public async ValueTask<RsaResponse?> GetRsaKey(KeyValuePair<string, string>[] content, string cookieString)
+    {
+        using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.GetRsaKey);
+        message.Headers.Add("Cookie", cookieString);
+        message.Content = new FormUrlEncodedContent(content);
+
+        using var responseMessage = await _client.SendAsync(message);
+        if (!responseMessage.IsSuccessStatusCode)
+            return null;
+
+        return await responseMessage.Content.ReadFromJsonAsync<RsaResponse>();
+    }
+
+    public async ValueTask<LoginResponse?> DoLogin(KeyValuePair<string, string>[] content, string cookieString)
+    {
+        using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.GetRsaKey);
+        message.Headers.Add("Cookie", cookieString);
+        message.Content = new FormUrlEncodedContent(content);
+
+        using var responseMessage = await _client.SendAsync(message);
+        if (!responseMessage.IsSuccessStatusCode)
+            return null;
+
+        return await responseMessage.Content.ReadFromJsonAsync<LoginResponse>();
     }
 }

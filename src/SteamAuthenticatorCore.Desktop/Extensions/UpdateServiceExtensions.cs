@@ -2,7 +2,7 @@
 using System.IO;
 using System;
 using Sentry;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Desktop.Extensions;
 

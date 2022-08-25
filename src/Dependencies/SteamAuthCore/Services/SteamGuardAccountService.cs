@@ -116,6 +116,11 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         return response.Success;
     }
 
+    public Task<LoginData> Login()
+    {
+        throw new NotImplementedException();
+    }
+
     private IEnumerable<ConfirmationModel> ParseConfirmationsHtml(string html)
     {
         if (html.Contains("<div>Nothing to confirm</div>"))

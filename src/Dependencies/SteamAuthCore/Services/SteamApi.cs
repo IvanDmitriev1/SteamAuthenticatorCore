@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Net;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
 using System.Threading.Tasks;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Extensions;
@@ -33,9 +32,12 @@ internal sealed class SteamApi : ISteamApi
 
     public async ValueTask<RefreshSessionDataInternalResponse?> MobileauthGetwgtoken(string token)
     {
-        var query = $"{WebUtility.UrlEncode("access_token")}={WebUtility.UrlEncode(token)}";
+        var pair = new KeyValuePair<string, string>("access_token", token);
 
-        using var responseMessage = await _client.PostAsync(ApiEndpoints.MobileauthGetwgtoken, new StringContent(query, Encoding.UTF8, "application/x-www-form-urlencoded"));
+        var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.MobileauthGetwgtoken);
+        message.Content = new FormUrlEncodedContent(new[] {pair});
+
+        var responseMessage = await _client.SendAsync(message);
         responseMessage.EnsureSuccessStatusCode();
 
         var response = await responseMessage.Content.ReadFromJsonAsync<RefreshSessionDataResponse>();
