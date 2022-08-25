@@ -9,7 +9,10 @@ namespace SteamAuthCore.Abstractions;
 /// </summary>
 public interface ITimeAligner
 {
-    public Int64 SteamTime { get; }
+    public static Int64 SteamTime => GetSystemUnixTime() + TimeDifference;
+    internal static Int64 TimeDifference;
 
     ValueTask AlignTimeAsync();
+
+    internal static Int64 GetSystemUnixTime() => Convert.ToInt64(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
 }

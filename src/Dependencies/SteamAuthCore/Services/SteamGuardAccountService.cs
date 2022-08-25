@@ -3,7 +3,6 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,16 +17,14 @@ namespace SteamAuthCore.Services;
 
 internal class SteamGuardAccountService : ISteamGuardAccountService
 {
-    public SteamGuardAccountService(ISteamApi steamApi, ISteamCommunityApi steamCommunityApi, ITimeAligner timeAligner)
+    public SteamGuardAccountService(ISteamApi steamApi, ISteamCommunityApi steamCommunityApi)
     {
         _steamApi = steamApi;
         _steamCommunityApi = steamCommunityApi;
-        _timeAligner = timeAligner;
     }
 
     private readonly ISteamApi _steamApi;
     private readonly ISteamCommunityApi _steamCommunityApi;
-    private readonly ITimeAligner _timeAligner;
     private static readonly HtmlParser Parser = new();
     private readonly ArrayPool<UInt64> _uintArrayPool = ArrayPool<UInt64>.Create();
     private readonly ArrayPool<string> _stringArrayPool = ArrayPool<string>.Create();
@@ -117,7 +114,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         return response.Success;
     }
 
-    public async Task<LoginData> Login(LoginData loginData)
+    public async Task<LoginResult> Login(LoginData loginData)
     {
         if (string.IsNullOrEmpty(loginData.SessionId))
         {
@@ -131,20 +128,20 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         }
 
         var getRsaKeyContent = new KeyValuePair<string, string>[2];
-        getRsaKeyContent[0] = new KeyValuePair<string, string>("donotcache", $"{_timeAligner.SteamTime * 1000}");
+        getRsaKeyContent[0] = new KeyValuePair<string, string>("donotcache", $"{ITimeAligner.SteamTime * 1000}");
         getRsaKeyContent[1] = new KeyValuePair<string, string>("username", loginData.Username);
 
         
         if (await _steamCommunityApi.GetRsaKey(getRsaKeyContent, loginData.CookieString) is not { } rsaResponse)
         {
             loginData.Result = LoginResult.GeneralFailure;
-            return loginData;
+            return loginData.Result;
         }
 
         if (!rsaResponse.Success)
         {
             loginData.Result = LoginResult.BadRsa;
-            return loginData;
+            return loginData.Result;
         }
 
         string encryptedPassword;
@@ -160,7 +157,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         }
 
         var doLoginPostData = new KeyValuePair<string, string>[13];
-        doLoginPostData[0] = new KeyValuePair<string, string>("donotcache", $"{_timeAligner.SteamTime * 1000}");
+        doLoginPostData[0] = new KeyValuePair<string, string>("donotcache", $"{ITimeAligner.SteamTime * 1000}");
 
         doLoginPostData[1] = new KeyValuePair<string, string>("password", encryptedPassword);
         doLoginPostData[2] = new KeyValuePair<string, string>("username", loginData.Username);
@@ -168,7 +165,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
 
         doLoginPostData[4] = new KeyValuePair<string, string>("emailauth", string.Empty);
         doLoginPostData[5] = new KeyValuePair<string, string>("loginfriendlyname", string.Empty);
-        doLoginPostData[6] = new KeyValuePair<string, string>("captchagid", loginData.CaptchaGid is null ? "-1" : loginData.CaptchaGid);
+        doLoginPostData[6] = new KeyValuePair<string, string>("captchagid", loginData.CaptchaGid ?? "-1");
         doLoginPostData[7] = new KeyValuePair<string, string>("captcha_text", loginData.CaptchaGid is null ? string.Empty : loginData.CaptchaText);
         doLoginPostData[8] = new KeyValuePair<string, string>("emailsteamid", loginData.Result == LoginResult.Need2Fa ? loginData.SteamId.ToString() : string.Empty);
 
@@ -180,7 +177,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         if (await _steamCommunityApi.DoLogin(doLoginPostData, loginData.CookieString) is not { } loginResponse)
         {
             loginData.Result = LoginResult.GeneralFailure;
-            return loginData;   
+            return loginData.Result;   
         }
 
         if (loginResponse.LoginComplete)
@@ -194,32 +191,32 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
                 oAuthData.OAuthToken!, loginData.SteamId);
 
             loginData.Result = LoginResult.LoginOkay;
-            return loginData;
+            return loginData.Result;
         }
 
         if (loginResponse.Message is null)
         {
             loginData.Result = LoginResult.GeneralFailure;
-            return loginData;
+            return loginData.Result;
         }
 
         if (loginResponse.Message.Contains("There have been too many login failures"))
         {
             loginData.Result = LoginResult.TooManyFailedLogins;
-            return loginData;
+            return loginData.Result;
         }
 
         if (loginResponse.Message.Contains("Incorrect login"))
         {
             loginData.Result = LoginResult.BadCredentials;
-            return loginData;
+            return loginData.Result;
         }
 
         if (loginResponse.CaptchaNeeded)
         {
             loginData.CaptchaGid = loginResponse.CaptchaGid;
             loginData.Result = LoginResult.NeedCaptcha;
-            return loginData;
+            return loginData.Result;
         }
 
         if (loginResponse.EmailAuthNeeded)
@@ -230,16 +227,16 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         if (loginResponse.TwoFactorNeeded && !loginResponse.Success)
         {
             loginData.Result = LoginResult.Need2Fa;
-            return loginData;
+            return loginData.Result;
         }
 
         if (loginResponse.OAuthData?.OAuthToken is null || loginResponse.OAuthData.OAuthToken.Length == 0)
         {
             loginData.Result = LoginResult.GeneralFailure;
-            return loginData;
+            return loginData.Result;
         }
 
-        return loginData;
+        return loginData.Result;
     }
 
     private IEnumerable<ConfirmationModel> ParseConfirmationsHtml(string html)
@@ -279,9 +276,9 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         return model;
     }
 
-    private string GenerateConfirmationQueryParams(SteamGuardAccount account, string tag)
+    private static string GenerateConfirmationQueryParams(SteamGuardAccount account, string tag)
     {
-        var time = _timeAligner.SteamTime;
+        var time = ITimeAligner.SteamTime;
 
         var builder = new StringBuilder();
         builder.Append($"p={account.DeviceId}");

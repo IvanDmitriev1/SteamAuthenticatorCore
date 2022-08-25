@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using GoogleDrive;
 using SteamAuthCore;
+using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using GoogleFile = Google.Apis.Drive.v3.Data.File;
 

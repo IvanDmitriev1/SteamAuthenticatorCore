@@ -12,15 +12,10 @@ internal class TimeAligner : ITimeAligner
     }
 
     private readonly ISteamApi _steamApi;
-    private long _timeDifference;
-
-    public long SteamTime => GetSystemUnixTime() + _timeDifference;
 
     public async ValueTask AlignTimeAsync()
     {
         var time = await _steamApi.GetSteamTime();
-        _timeDifference = long.Parse(time) - GetSystemUnixTime();
+        ITimeAligner.TimeDifference = Int64.Parse(time) - ITimeAligner.GetSystemUnixTime();
     }
-
-    private static long GetSystemUnixTime() => Convert.ToInt64(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
 }

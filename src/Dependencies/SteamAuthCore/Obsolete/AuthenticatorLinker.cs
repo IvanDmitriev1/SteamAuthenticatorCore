@@ -7,8 +7,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using SteamAuthCore.Models;
 
-namespace SteamAuthCore
+namespace SteamAuthCore.Obsolete
 {
+    [Obsolete]
     public class AuthenticatorLinker
     {
         public AuthenticatorLinker(SessionData session)
@@ -44,40 +45,64 @@ namespace SteamAuthCore
         private class AddAuthenticatorResponse
         {
             [JsonPropertyName("response")]
-            public SteamGuardAccount? Response { get; set; }
+            public SteamGuardAccount? Response
+            {
+                get; set;
+            }
         }
 
         private class FinalizeAuthenticatorResponse
         {
             [JsonPropertyName("response")]
-            public FinalizeAuthenticatorInternalResponse? Response { get; set; }
+            public FinalizeAuthenticatorInternalResponse? Response
+            {
+                get; set;
+            }
 
             internal class FinalizeAuthenticatorInternalResponse
             {
                 [JsonPropertyName("status")]
-                public int Status { get; set; }
+                public int Status
+                {
+                    get; set;
+                }
 
                 [JsonPropertyName("server_time")]
-                public long ServerTime { get; set; }
+                public long ServerTime
+                {
+                    get; set;
+                }
 
                 [JsonPropertyName("want_more")]
-                public bool WantMore { get; set; }
+                public bool WantMore
+                {
+                    get; set;
+                }
 
                 [JsonPropertyName("success")]
-                public bool Success { get; set; }
+                public bool Success
+                {
+                    get; set;
+                }
             }
         }
 
         private class HasPhoneResponse
         {
             [JsonPropertyName("has_phone")]
-            public bool HasPhone { get; set; }
+            public bool HasPhone
+            {
+                get; set;
+            }
         }
 
         private class AddPhoneResponse
         {
             [JsonPropertyName("success")]
-            public bool Success { get; set; }
+            public bool Success
+            {
+                get; set;
+            }
         }
 
 
@@ -88,7 +113,10 @@ namespace SteamAuthCore
         /// <summary>
         /// Randomly-generated device ID. Should only be generated once per linker.
         /// </summary>
-        public string DeviceId { get; }
+        public string DeviceId
+        {
+            get;
+        }
 
         /// <summary>
         /// After the initial link step, if successful, this will be the SteamGuard data for the account. PLEASE save this somewhere after generating it; it's vital data.
@@ -126,13 +154,13 @@ namespace SteamAuthCore
                     return LinkResult.MustProvidePhoneNumber;
 
                 case false when _confirmationEmailSent:
-                {
-                    if ( !(await _checkEmailConfirmation()))
-                        return LinkResult.GeneralFailure;
+                    {
+                        if (!await _checkEmailConfirmation())
+                            return LinkResult.GeneralFailure;
 
-                    break;
-                }
-                case false when !(await AddPhoneNumber()):
+                        break;
+                    }
+                case false when !await AddPhoneNumber():
                     return LinkResult.GeneralFailure;
 
                 case false:
@@ -149,11 +177,11 @@ namespace SteamAuthCore
                 {"sms_phone_id", "1"}
             };
 
-            string? response = await SteamApi.MobileLoginRequest(ApiEndpoints.SteamApiBase + "/ITwoFactorService/AddAuthenticator/v0001", SteamApi.RequestMethod.Post, postData);
+            var response = await SteamApi.MobileLoginRequest(ApiEndpoints.SteamApiBase + "/ITwoFactorService/AddAuthenticator/v0001", SteamApi.RequestMethod.Post, postData);
             if (response is null)
                 return LinkResult.GeneralFailure;
 
-            AddAuthenticatorResponse? addAuthenticatorResponse = JsonSerializer.Deserialize<AddAuthenticatorResponse>(response);
+            var addAuthenticatorResponse = JsonSerializer.Deserialize<AddAuthenticatorResponse>(response);
             if (addAuthenticatorResponse?.Response is null)
                 return LinkResult.GeneralFailure;
 
@@ -187,7 +215,7 @@ namespace SteamAuthCore
                 {"activation_code", smsCode}
             };
 
-            int tries = 0;
+            var tries = 0;
             while (tries <= 30)
             {
                 //TODO postData.Set("authenticator_code", LinkedAccount.GenerateSteamGuardCode());
@@ -240,7 +268,7 @@ namespace SteamAuthCore
             if (await SteamApi.RequestAsync<AddPhoneResponse>(ApiEndpoints.CommunityBase + "/steamguard/phoneajax", SteamApi.RequestMethod.Post, postData, _cookies) is not { } addPhoneNumberResponse)
                 throw new ArgumentNullException(nameof(addPhoneNumberResponse));
 
-            if (addPhoneNumberResponse.Success) 
+            if (addPhoneNumberResponse.Success)
                 return true;
 
             Thread.Sleep(3500); //It seems that Steam needs a few seconds to finalize the phone number on the account.

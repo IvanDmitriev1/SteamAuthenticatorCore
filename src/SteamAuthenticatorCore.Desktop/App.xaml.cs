@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Sentry;
 using SteamAuthCore;
 using SteamAuthCore.Extensions;
+using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.ViewModels;
 using SteamAuthenticatorCore.Desktop.Views.Pages;

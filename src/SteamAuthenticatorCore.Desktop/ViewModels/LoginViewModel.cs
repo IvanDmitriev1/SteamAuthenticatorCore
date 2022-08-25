@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using SteamAuthCore;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Shared.Abstractions;
@@ -40,13 +39,11 @@ public partial class LoginViewModel : ObservableObject, IRecipient<UpdateAccount
     }
 
     [RelayCommand]
-    public async Task OnLogin()
+    private async Task OnLogin()
     {
         IsPasswordBoxEnabled = false;
 
-        await _accountService.Login(new LoginData(_account.AccountName, Password));
-
-        //await _loginService.RefreshLogin(Account, Password);
+        await _loginService.RefreshLogin(Account, Password);
         _navigation.NavigateTo("..");
 
         IsPasswordBoxEnabled = true;

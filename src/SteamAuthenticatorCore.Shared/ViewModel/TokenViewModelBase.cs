@@ -4,18 +4,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SteamAuthCore;
 using SteamAuthCore.Abstractions;
+using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Shared.ViewModel;
 
 public abstract partial class TokenViewModelBase : ObservableObject
 {
-    protected TokenViewModelBase(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, ITimeAligner timeAligner, ISteamGuardAccountService accountService)
+    protected TokenViewModelBase(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, ISteamGuardAccountService accountService)
     {
         _platformImplementations = platformImplementations;
-        _timeAligner = timeAligner;
         _accountService = accountService;
         Accounts = accounts;
         _token = string.Empty;
@@ -25,7 +24,6 @@ public abstract partial class TokenViewModelBase : ObservableObject
     }
 
     private readonly IPlatformImplementations _platformImplementations;
-    private readonly ITimeAligner _timeAligner;
     private readonly ISteamGuardAccountService _accountService;
     private Int64 _currentSteamChunk;
 
@@ -68,14 +66,14 @@ public abstract partial class TokenViewModelBase : ObservableObject
     {
         if (SelectedAccount is null)
             return new ValueTask(Task.CompletedTask);
-
-        var steamTime = _timeAligner.SteamTime;
+        
+        var steamTime = ITimeAligner.SteamTime;
         _currentSteamChunk = steamTime / 30L;
         var secondsUntilChange = (int)(steamTime - (_currentSteamChunk * 30L));
 
         if (steamTime != 0)
         {
-            if (SelectedAccount.GenerateSteamGuardCode(steamTime) is { } token)
+            if (SelectedAccount.GenerateSteamGuardCode() is { } token)
                 Token = token;
         }
 

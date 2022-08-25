@@ -6,8 +6,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using SteamAuthCore.Exceptions;
 
-namespace SteamAuthCore
+namespace SteamAuthCore.Obsolete
 {
+    [Obsolete]
     public static class SteamApi
     {
         public enum RequestMethod
@@ -42,7 +43,7 @@ namespace SteamAuthCore
 
             try
             {
-                using var response = (HttpWebResponse) request.GetResponse();
+                using var response = (HttpWebResponse)request.GetResponse();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     HandleFailedWebRequestResponse(response, url);
@@ -67,7 +68,7 @@ namespace SteamAuthCore
 
         public static async Task<T?> RequestAsync<T>(string url, RequestMethod method, NameValueCollection? data = null, CookieContainer? cookies = null, NameValueCollection? headers = null, string referer = ApiEndpoints.CommunityBase)
         {
-            string query = CreateQuery(data);
+            var query = CreateQuery(data);
             return await RequestAsync<T>(url, method, query, cookies, headers, referer);
         }
 
@@ -107,7 +108,7 @@ namespace SteamAuthCore
 
         public static async Task<string?> RequestAsync(string url, RequestMethod method, NameValueCollection? data = null, CookieContainer? cookies = null, NameValueCollection? headers = null, string referer = ApiEndpoints.CommunityBase)
         {
-            string query = CreateQuery(data);
+            var query = CreateQuery(data);
             return await RequestAsync(url, method, query, cookies, headers, referer);
         }
 
@@ -123,7 +124,7 @@ namespace SteamAuthCore
 
             try
             {
-                using var response = (HttpWebResponse) await request.GetResponseAsync();
+                using var response = (HttpWebResponse)await request.GetResponseAsync();
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     HandleFailedWebRequestResponse(response, url);
@@ -132,7 +133,7 @@ namespace SteamAuthCore
 
                 using StreamReader responseStream =
                     new(response.GetResponseStream() ?? throw new InvalidOperationException());
-                string responseData = await responseStream.ReadToEndAsync();
+                var responseData = await responseStream.ReadToEndAsync();
                 return responseData;
             }
             catch (WebException e)
@@ -149,7 +150,7 @@ namespace SteamAuthCore
 
         private static HttpWebRequest CreateHttpWebRequest(string url, RequestMethod method, CookieContainer? cookies = null, NameValueCollection? headers = null, string referer = ApiEndpoints.CommunityBase)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            var request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = method.ToString().ToUpper();
             request.Accept = "text/javascript, text/html, application/xml, text/xml, */*";
             request.UserAgent = "Mozilla/5.0 (Linux; U; Android 4.1.1; en-us; Google Nexus 4 - 4.1.1 - API 16 - 768x1280 Build/JRO03S) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30";
@@ -181,11 +182,11 @@ namespace SteamAuthCore
                 throw new WgTokenExpiredException();
         }
 
-        private static string CreateQuery(NameValueCollection? data) => (data == null
+        private static string CreateQuery(NameValueCollection? data) => data == null
             ? string.Empty
             : string.Join("&",
                 Array.ConvertAll(data.AllKeys,
-                    key => $"{WebUtility.UrlEncode(key)}={WebUtility.UrlEncode(data[key])}")));
+                    key => $"{WebUtility.UrlEncode(key)}={WebUtility.UrlEncode(data[key])}"));
 
         private static async Task<HttpWebRequest> WritePostData(HttpWebRequest request, string query)
         {

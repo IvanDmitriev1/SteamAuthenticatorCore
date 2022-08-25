@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using SteamAuthCore;
+using SteamAuthCore.Models;
 
 namespace SteamAuthenticatorCore.Shared.Abstractions;
 

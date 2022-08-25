@@ -65,10 +65,17 @@ internal sealed class SteamCommunityApi : ISteamCommunityApi
         using var responseMessage = await _client.SendAsync(message);
         responseMessage.EnsureSuccessStatusCode();
 
-        var sessionCookie = responseMessage.Headers.GetValues("Set-Cookie").ElementAt(0);
-        var arr = sessionCookie.Split(new[] {'=', ';'}, StringSplitOptions.RemoveEmptyEntries);
+        try
+        {
+            var sessionCookie = responseMessage.Headers.GetValues("Set-Cookie").ElementAt(0);
+            var arr = sessionCookie.Split(new[] {'=', ';'}, StringSplitOptions.RemoveEmptyEntries);
 
-        return arr[1];
+            return arr[1];
+        }
+        catch (Exception)
+        {
+            return string.Empty;
+        }
     }
 
     public async ValueTask<RsaResponse?> GetRsaKey(KeyValuePair<string, string>[] content, string cookieString)

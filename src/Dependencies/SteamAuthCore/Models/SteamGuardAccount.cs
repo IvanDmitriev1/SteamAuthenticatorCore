@@ -6,10 +6,11 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using SteamAuthCore.Models;
+using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models.Internal;
+using SteamAuthCore.Obsolete;
 
-namespace SteamAuthCore;
+namespace SteamAuthCore.Models;
 
 public class SteamGuardAccount
 {
@@ -76,7 +77,7 @@ public class SteamGuardAccount
             SteamApi.RequestMethod.Post, postData) is not { Response: { Success: true } };
     }
 
-    public string? GenerateSteamGuardCode(Int64 time)
+    public string? GenerateSteamGuardCode()
     {
         if (string.IsNullOrEmpty(SharedSecret))
             return null;
@@ -84,6 +85,8 @@ public class SteamGuardAccount
         using var hmacGenerator = new HMACSHA1(Convert.FromBase64String(Regex.Unescape(SharedSecret!)));
 
         var timeArray = ArrayPool.Rent(8);
+
+        var time = ITimeAligner.SteamTime;
 
         time /= 30L;
 
