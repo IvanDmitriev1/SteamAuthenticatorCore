@@ -23,7 +23,7 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public partial class TokenPageViewModel : TokenViewModelBase
 {
-    public TokenPageViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, IMessenger messenger, AccountsFileServiceResolver accountsFileServiceResolver, ISteamGuardAccountService accountService) : base(accounts, platformTimer, platformImplementations, accountService)
+    public TokenPageViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IMessenger messenger, AccountsFileServiceResolver accountsFileServiceResolver, ISteamGuardAccountService accountService) : base(accounts, platformTimer)
     {
         IsMobile = true;
 
@@ -58,6 +58,17 @@ public partial class TokenPageViewModel : TokenViewModelBase
     {
         IsLongPressTitleViewVisible = false;
         return UnselectLongPressFrame();
+    }
+
+    [RelayCommand]
+    private async Task ForceRefreshSession()
+    {
+        var account = (SteamGuardAccount) _longPressFrame!.BindingContext;
+
+        if (await _accountService.RefreshSession(account, CancellationToken.None))
+            await Application.Current.MainPage.DisplayAlert("Refresh session", "the session has been refreshed", "Ok");
+        else
+            await Application.Current.MainPage.DisplayAlert("Refresh session", "failed to refresh session", "Ok");
     }
 
     [RelayCommand]

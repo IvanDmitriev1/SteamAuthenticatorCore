@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,22 +26,26 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public partial class TokenViewModel : TokenViewModelBase, IDisposable
 {
-    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, TaskBarServiceWrapper taskBarServiceWrapper, IDialogService dialogService, INavigationService navigationService, AppSettings appSettings, IMessenger messenger, AccountsFileServiceResolver accountsFileServiceResolver, ISteamGuardAccountService accountService) : base(accounts, platformTimer, platformImplementations, accountService)
+    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, TaskBarServiceWrapper taskBarServiceWrapper, IDialogService dialogService, INavigationService navigationService, AppSettings appSettings, IMessenger messenger, AccountsFileServiceResolver accountsFileServiceResolver, ISteamGuardAccountService accountService) : base(accounts, platformTimer)
     {
+        _platformImplementations = platformImplementations;
         _taskBarServiceWrapper = taskBarServiceWrapper;
         _dialogService = dialogService;
         _navigationService = navigationService;
         _appSettings = appSettings;
         _messenger = messenger;
         _accountsFileServiceResolver = accountsFileServiceResolver;
+        _accountService = accountService;
     }
 
+    private readonly IPlatformImplementations _platformImplementations;
     private readonly TaskBarServiceWrapper _taskBarServiceWrapper;
     private readonly IDialogService _dialogService;
     private readonly INavigationService _navigationService;
     private readonly AppSettings _appSettings;
     private readonly IMessenger _messenger;
     private readonly AccountsFileServiceResolver _accountsFileServiceResolver;
+    private readonly ISteamGuardAccountService _accountService;
 
     private StackPanel? _stackPanel;
 
@@ -83,6 +88,21 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
             await using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             await accountsService.SaveAccount(stream, Path.GetFileName(filePath));
         }
+    }
+
+    [RelayCommand]
+    private async Task ForceRefreshSession()
+    {
+        if (SelectedAccount is null)
+            return;
+
+        if (await _accountService.RefreshSession(SelectedAccount, CancellationToken.None))
+        {
+            await _platformImplementations.DisplayAlert("Your session has been refreshed.");
+            return;
+        }
+
+        await _platformImplementations.DisplayAlert("Failed to refresh your session.\nTry using the \"Login again\" option.");
     }
 
     [RelayCommand]

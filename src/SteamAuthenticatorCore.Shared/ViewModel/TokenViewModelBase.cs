@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Shared.Abstractions;
@@ -12,10 +11,8 @@ namespace SteamAuthenticatorCore.Shared.ViewModel;
 
 public abstract partial class TokenViewModelBase : ObservableObject
 {
-    protected TokenViewModelBase(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, ISteamGuardAccountService accountService)
+    protected TokenViewModelBase(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer)
     {
-        _platformImplementations = platformImplementations;
-        _accountService = accountService;
         Accounts = accounts;
         _token = string.Empty;
         
@@ -23,8 +20,6 @@ public abstract partial class TokenViewModelBase : ObservableObject
         platformTimer.Start();
     }
 
-    private readonly IPlatformImplementations _platformImplementations;
-    private readonly ISteamGuardAccountService _accountService;
     private Int64 _currentSteamChunk;
 
     #region Propertis
@@ -40,25 +35,6 @@ public abstract partial class TokenViewModelBase : ObservableObject
 
     public ObservableCollection<SteamGuardAccount> Accounts { get; }
     public bool IsMobile { get; set; }
-
-    #endregion
-
-    #region Commands
-
-    [RelayCommand]
-    private async Task LoginInSelectedAccount()
-    {
-        if (SelectedAccount is null)
-            return;
-
-        if (await _accountService.RefreshSession(SelectedAccount, CancellationToken.None))
-        {
-            await _platformImplementations.DisplayAlert("Your session has been refreshed.");
-            return;
-        }
-
-        await _platformImplementations.DisplayAlert("Failed to refresh your session.\nTry using the \"Login again\" option.");
-    }
 
     #endregion
 

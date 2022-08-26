@@ -52,7 +52,7 @@
                     CommandParameter="{Binding SelectedAccount}"
                     Header="Login again" />
                 <MenuItem
-                    Command="{Binding Path=LoginInSelectedAccountCommand}"
+                    Command="{Binding Path=ForceRefreshSessionCommand}"
                     CommandParameter="{Binding SelectedAccount}"
                     Header="Force refresh session" />
                 <Separator />
@@ -153,7 +153,7 @@
                                         CommandParameter="{Binding}"
                                         Header="Login again" />
                                     <MenuItem
-                                        Command="{Binding Source={x:Reference Page}, Path=DataContext.LoginInSelectedAccountCommand}"
+                                        Command="{Binding Source={x:Reference Page}, Path=DataContext.ForceRefreshSessionCommand}"
                                         CommandParameter="{Binding}"
                                         Header="Force refresh session" />
                                     <Separator />

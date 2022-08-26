@@ -36,7 +36,7 @@
                         Text="Login again" />
                     <Button
                         xct:TouchEffect.NativeAnimation="True"
-                        Command="{Binding Path=LoginInSelectedAccountCommand}"
+                        Command="{Binding Path=ForceRefreshSessionCommand}"
                         Text="Refresh session" />
                     <Button
                         xct:TouchEffect.NativeAnimation="True"
