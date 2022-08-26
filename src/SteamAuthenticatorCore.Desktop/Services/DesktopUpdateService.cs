@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Sentry;
-using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Models;
 using SteamAuthenticatorCore.Shared.Services;
 using Wpf.Ui.Controls.Interfaces;
@@ -16,26 +15,24 @@ namespace SteamAuthenticatorCore.Desktop.Services;
 
 internal class DesktopUpdateService : UpdateServiceBase
 {
-    public DesktopUpdateService(HttpClient client, ISnackbarService snackbarService, IDialogService dialogService, IHub hub, AppSettings settings) : base(client)
+    public DesktopUpdateService(HttpClient client, ISnackbarService snackbarService, IDialogService dialogService, IHub hub) : base(client)
     {
         _snackbarService = snackbarService;
         _dialogService = dialogService;
         _hub = hub;
-        _settings = settings;
     }
 
     private readonly ISnackbarService _snackbarService;
     private readonly IDialogService _dialogService;
     private readonly IHub _hub;
-    private readonly AppSettings _settings;
 
     public async override ValueTask CheckForUpdateAndDownloadInstall(bool isInBackground)
     {
-        CheckForUpdateModel? updateModel = null!;
+        CheckForUpdateModel? updateModel;
 
         try
         {
-            updateModel = await CheckForUpdate($"{Assembly.GetExecutingAssembly().GetName().Name}.exe", Assembly.GetExecutingAssembly().GetName().Version!);
+            updateModel = await CheckForUpdate("exe", Assembly.GetExecutingAssembly().GetName().Version!);
 
             if (updateModel is null)
             {

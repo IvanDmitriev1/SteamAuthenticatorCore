@@ -35,7 +35,7 @@ internal class AndroidUpdateService : UpdateServiceBase
             CheckForUpdateModel? model;
             try
             {
-                model = await CheckForUpdate($"{Platform.AppContext.PackageName}.apk", new Version(VersionTracking.CurrentVersion));
+                model = await CheckForUpdate("apk", new Version(VersionTracking.CurrentVersion));
                 if (model is null)
                 {
                     if (!isInBackground)
@@ -72,7 +72,7 @@ internal class AndroidUpdateService : UpdateServiceBase
 
             try
             {
-                await DownloadAndInstall(new CheckForUpdateModel(model.AppFileName, model.DownloadUrl, new Version(0, 0, 0), false));
+                await DownloadAndInstall(new CheckForUpdateModel(model.DownloadUrl, new Version(0, 0, 0), false));
             }
             catch (Exception e)
             {
@@ -94,10 +94,12 @@ internal class AndroidUpdateService : UpdateServiceBase
             var manager = DownloadManager.FromContext(Application.Context)!;
             var request = new DownloadManager.Request(Uri.Parse(updateModel.DownloadUrl));
 
+            var fileName = $"{Platform.AppContext.PackageName}.apk";
+
             request.SetNotificationVisibility(DownloadVisibility.Visible);
-            request.SetDestinationInExternalPublicDir(Environment.DirectoryDownloads, updateModel.AppFileName);
+            request.SetDestinationInExternalPublicDir(Environment.DirectoryDownloads, fileName);
             request.SetTitle("Downloading SteamAuthenticatorCore.Mobile.Android");
-            request.SetDescription(updateModel.AppFileName);
+            request.SetDescription(fileName);
 
             var downloadId = manager.Enqueue(request);
             MonitorDownload(downloadId);

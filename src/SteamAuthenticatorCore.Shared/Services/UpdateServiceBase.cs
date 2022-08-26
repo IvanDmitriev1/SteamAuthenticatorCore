@@ -11,7 +11,7 @@ namespace SteamAuthenticatorCore.Shared.Services;
 
 public abstract class UpdateServiceBase : IUpdateService
 {
-    public UpdateServiceBase(HttpClient client)
+    protected UpdateServiceBase(HttpClient client)
     {
         Client = client;
         Client.DefaultRequestHeaders.Add("User-Agent", "User");
@@ -23,7 +23,7 @@ public abstract class UpdateServiceBase : IUpdateService
     private readonly string _repo;
     protected readonly HttpClient Client;
 
-    public async ValueTask<CheckForUpdateModel?> CheckForUpdate(string fileName, Version currentVersion)
+    public async ValueTask<CheckForUpdateModel?> CheckForUpdate(string fileContains, Version currentVersion)
     {
         if (await Client.GetFromJsonAsync<GitHubRequestApiModel>($"https://api.github.com/repos/{_repo}/releases/latest").ConfigureAwait(false) is not { } apiModel)
             return null;
@@ -31,7 +31,7 @@ public abstract class UpdateServiceBase : IUpdateService
         var downloadUrl = string.Empty;
         foreach (var asset in apiModel.Assets)
         {
-            if (asset.Name != fileName)
+            if (!asset.Name.Contains(fileContains))
                 continue;
 
             downloadUrl = asset.BrowserDownloadUrl;
@@ -44,9 +44,9 @@ public abstract class UpdateServiceBase : IUpdateService
         {
             case 0:
             case < 0:
-                return new CheckForUpdateModel(fileName, downloadUrl, newVersion, false);
+                return new CheckForUpdateModel(downloadUrl, newVersion, false);
             case > 0:
-                return new CheckForUpdateModel(fileName, downloadUrl, newVersion, true);
+                return new CheckForUpdateModel(downloadUrl, newVersion, true);
         }
     }
 
