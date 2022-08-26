@@ -3,13 +3,14 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using SteamAuthCore;
-using SteamAuthCore.Manifest;
+using SteamAuthCore.Extensions;
+using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Mobile.Services;
 using SteamAuthenticatorCore.Mobile.ViewModels;
 using SteamAuthenticatorCore.Shared;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
+using SteamAuthenticatorCore.Shared.Extensions;
 using SteamAuthenticatorCore.Shared.Models;
-using SteamAuthenticatorCore.Shared.Services;
 
 namespace SteamAuthenticatorCore.Mobile;
 
@@ -44,22 +45,22 @@ public static class Startup
         services.AddSingleton<ObservableCollection<SteamGuardAccount>>();
         services.AddTransient<IPlatformTimer, MobileTimer>();
         services.AddTransient<ISettingsService, MobileSettingsService>();
-        services.AddTransient<IManifestDirectoryService, MobileDirectoryService>();
         services.AddSingleton<IPlatformImplementations, MobileImplementations>();
-        services.AddScoped<IManifestModelService, SecureStorageService>();
-        services.AddScoped<ConfirmationServiceBase, MobileConfirmationService>();
+        services.AddScoped<SecureStorageService>();
         services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
-        services.AddScoped<LoginService>();
-        services.AddSingleton<ManifestAccountsWatcherService>();
+        services.AddScoped<IConfirmationViewModelFactory, ConfirmationViewModelFactory>();
 
-        services.AddSingleton<ManifestServiceResolver>(provider => () =>
+        services.AddSteamAuthCoreServices();
+        services.AddSharedServices();
+
+        services.AddSingleton<AccountsFileServiceResolver>(provider => () =>
         {
             var appSettings = provider.GetRequiredService<AppSettings>();
-            return appSettings.ManifestLocation switch
+            return appSettings.AccountsLocation switch
             {
-                ManifestLocationModel.LocalDrive => provider
-                    .GetRequiredService<IManifestModelService>(),
-                ManifestLocationModel.GoogleDrive => 
+                AccountsLocationModel.LocalDrive => provider
+                    .GetRequiredService<SecureStorageService>(),
+                AccountsLocationModel.GoogleDrive => 
                     throw new NotImplementedException(),
                 _ => throw new ArgumentOutOfRangeException()
             };

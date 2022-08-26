@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SteamAuthCore.Abstractions;
 using SteamAuthenticatorCore.Mobile.Services.Interfaces;
 using SteamAuthenticatorCore.Shared;
-using SteamAuthenticatorCore.Shared.Abstraction;
-using SteamAuthenticatorCore.Shared.Services;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -30,10 +30,12 @@ public partial class App : Application
     {
         VersionTracking.Track();
 
-        var accountsWatcherService = Startup.ServiceProvider.GetRequiredService<ManifestAccountsWatcherService>();
-        await accountsWatcherService.Initialize();
+        await Startup.ServiceProvider.GetRequiredService<ITimeAligner>().AlignTimeAsync();
 
-        var confirmationBase = Startup.ServiceProvider.GetRequiredService<ConfirmationServiceBase>();
+        var accountsFileServiceResolver = Startup.ServiceProvider.GetRequiredService<AccountsFileServiceResolver>();
+        await accountsFileServiceResolver.Invoke().InitializeOrRefreshAccounts();
+
+        var confirmationBase = Startup.ServiceProvider.GetRequiredService<IConfirmationService>();
         confirmationBase.Initialize();
 
         var updateService = Startup.ServiceProvider.GetRequiredService<IUpdateService>();

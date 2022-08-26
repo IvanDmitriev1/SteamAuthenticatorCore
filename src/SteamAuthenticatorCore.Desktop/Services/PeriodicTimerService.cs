@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Desktop.Services;
 
@@ -46,9 +46,9 @@ internal class PeriodicTimerService : IPlatformTimer
     {
         try
         {
-            while (await _timer!.WaitForNextTickAsync(_cts.Token))
+            while (await _timer!.WaitForNextTickAsync(_cts?.Token ?? CancellationToken.None).ConfigureAwait(false))
             {
-                await func.Invoke(_cts.Token);
+                await func.Invoke(_cts?.Token ?? CancellationToken.None).ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException)

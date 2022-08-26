@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:effects="http://xamarin.com/schemas/2020/toolkit"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:steamAuthCore="clr-namespace:SteamAuthCore;assembly=SteamAuthCore"
+    xmlns:models="clr-namespace:SteamAuthCore.Models;assembly=SteamAuthCore"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
     xmlns:views="clr-namespace:SteamAuthenticatorCore.Mobile.Views;assembly=SteamAuthenticatorCore.Mobile"
     x:Name="Page"
@@ -51,7 +51,7 @@
                     </CollectionView.EmptyView>
 
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="steamAuthCore:ConfirmationModel">
+                        <DataTemplate x:DataType="models:ConfirmationModel">
                             <StackLayout Margin="0,0,0,5">
                                 <Frame
                                     Padding="20,15"
@@ -96,6 +96,7 @@
                     FontSize="Medium"
                     HorizontalOptions="FillAndExpand"
                     Text="Confirm" />
+
                 <Button
                     Grid.Column="1"
                     Margin="10,0,0,0"

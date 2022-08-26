@@ -34,8 +34,8 @@
                 <ui:CardControl Header=".maFiles location">
                     <ComboBox
                         MinWidth="105"
-                        ItemsSource="{helpers:EnumBindingSource {x:Type models:ManifestLocationModel}}"
-                        SelectedValue="{Binding Path=ManifestLocation}" />
+                        ItemsSource="{helpers:EnumBindingSource {x:Type models:AccountsLocationModel}}"
+                        SelectedValue="{Binding Path=AccountsLocation}" />
                 </ui:CardControl>
 
                 <ui:CardControl Header="Auto-confirm market transactions">

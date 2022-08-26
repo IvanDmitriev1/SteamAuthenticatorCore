@@ -3,20 +3,20 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Win32;
-using SteamAuthCore;
-using SteamAuthCore.Manifest;
+using SteamAuthCore.Abstractions;
+using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Shared;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
 using SteamAuthenticatorCore.Shared.Models;
-using SteamAuthenticatorCore.Shared.Services;
 using SteamAuthenticatorCore.Shared.ViewModel;
 using Wpf.Ui.Controls.Interfaces;
 using Wpf.Ui.Mvvm.Contracts;
@@ -26,24 +26,26 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public partial class TokenViewModel : TokenViewModelBase, IDisposable
 {
-    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, ManifestAccountsWatcherService accountsWatcherService, TaskBarServiceWrapper taskBarServiceWrapper, IDialogService dialogService, INavigationService navigationService, AppSettings appSettings, IMessenger messenger) : base(accounts, platformTimer, platformImplementations)
+    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, TaskBarServiceWrapper taskBarServiceWrapper, IDialogService dialogService, INavigationService navigationService, AppSettings appSettings, IMessenger messenger, AccountsFileServiceResolver accountsFileServiceResolver, ISteamGuardAccountService accountService) : base(accounts, platformTimer)
     {
         _platformImplementations = platformImplementations;
-        _accountsWatcherService = accountsWatcherService;
         _taskBarServiceWrapper = taskBarServiceWrapper;
         _dialogService = dialogService;
         _navigationService = navigationService;
         _appSettings = appSettings;
         _messenger = messenger;
+        _accountsFileServiceResolver = accountsFileServiceResolver;
+        _accountService = accountService;
     }
 
     private readonly IPlatformImplementations _platformImplementations;
-    private readonly ManifestAccountsWatcherService _accountsWatcherService;
     private readonly TaskBarServiceWrapper _taskBarServiceWrapper;
     private readonly IDialogService _dialogService;
     private readonly INavigationService _navigationService;
     private readonly AppSettings _appSettings;
     private readonly IMessenger _messenger;
+    private readonly AccountsFileServiceResolver _accountsFileServiceResolver;
+    private readonly ISteamGuardAccountService _accountService;
 
     private StackPanel? _stackPanel;
 
@@ -61,43 +63,58 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
 
         _stackPanel = stackPanel;
 
-        await PerformLoadingOperation(async () =>
-        {
-            await _accountsWatcherService.Initialize();
-        });
+        await RefreshAccounts();
 
         _appSettings.PropertyChanged += AppSettingsOnPropertyChanged;
     }
 
     [RelayCommand]
-    private Task ImportAccounts()
+    private async Task ImportAccounts()
     {
         OpenFileDialog fileDialog = new()
         {
             Multiselect = true,
             CheckFileExists = true,
-            Filter = $"mafile| *{ManifestModelServiceConstants.FileExtension}"
+            Filter = $"mafile| *{IAccountsFileService.AccountFileExtension}"
         };
 
         if (fileDialog.ShowDialog() == false)
-            return Task.CompletedTask;
+            return;
 
-        return _accountsWatcherService.ImportSteamGuardAccounts(fileDialog.FileNames);
+        var accountsService = _accountsFileServiceResolver.Invoke();
+
+        foreach (var filePath in fileDialog.FileNames)
+        {
+            await using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            await accountsService.SaveAccount(stream, Path.GetFileName(filePath));
+        }
+    }
+
+    [RelayCommand]
+    private async Task ForceRefreshSession()
+    {
+        if (SelectedAccount is null)
+            return;
+
+        if (await _accountService.RefreshSession(SelectedAccount, CancellationToken.None))
+        {
+            await _platformImplementations.DisplayAlert("Your session has been refreshed.");
+            return;
+        }
+
+        await _platformImplementations.DisplayAlert("Failed to refresh your session.\nTry using the \"Login again\" option.");
     }
 
     [RelayCommand]
     private async Task RefreshAccounts(StackPanel stackPanel)
     {
-        await PerformLoadingOperation(async () =>
-        {
-            await _accountsWatcherService.RefreshAccounts();
-        });
+        await RefreshAccounts();
     }
 
     [RelayCommand]
     private async Task ShowAccountFilesFolder()
     {
-        if (_appSettings.ManifestLocation == ManifestLocationModel.GoogleDrive)
+        if (_appSettings.AccountsLocation == AccountsLocationModel.GoogleDrive)
         {
 
             var control = _dialogService.GetDialogControl();
@@ -113,7 +130,7 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
         {
             var startInfo = new ProcessStartInfo
             {
-                Arguments = Path.Combine(Directory.GetCurrentDirectory(), "maFiles"),
+                Arguments = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SteamAuthenticatorCore.Desktop"),
                 FileName = "explorer.exe"
             };
 
@@ -140,7 +157,7 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
         }
 
         control.Hide();
-        await _accountsWatcherService.DeleteAccount(SelectedAccount);
+        await _accountsFileServiceResolver.Invoke().DeleteAccount(SelectedAccount);
     }
 
     [RelayCommand]
@@ -170,7 +187,7 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
                 return;
             }
 
-            if (extension.Contains(ManifestModelServiceConstants.FileExtension)) continue;
+            if (extension.Contains(IAccountsFileService.AccountFileExtension)) continue;
 
             eventArgs.Effects = DragDropEffects.None;
             eventArgs.Handled = true;
@@ -182,29 +199,32 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
     }
 
     [RelayCommand]
-    private Task ListBoxDragAndDrop(DragEventArgs eventArgs)
+    private async Task ListBoxDragAndDrop(DragEventArgs eventArgs)
     {
         if (!eventArgs.Data.GetDataPresent(DataFormats.FileDrop))
-            return Task.CompletedTask;
+            return;
 
         if (eventArgs.Data.GetData(DataFormats.FileDrop) is not string[] files)
-            return Task.CompletedTask;
+            return;
 
-        return _accountsWatcherService.ImportSteamGuardAccounts(files);
+        var accountsService = _accountsFileServiceResolver.Invoke();
+
+        foreach (var fileName in files)
+        {
+            await using var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            await accountsService.SaveAccount(stream, Path.GetFileName(fileName));
+        }
     }
 
     private async void AppSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName != nameof(AppSettings.ManifestLocation))
+        if (e.PropertyName != nameof(AppSettings.AccountsLocation))
             return;
 
-        await PerformLoadingOperation(async () =>
-        {
-            await _accountsWatcherService.Initialize();
-        });
+        await RefreshAccounts();
     }
 
-    private async ValueTask PerformLoadingOperation(Func<ValueTask> func)
+    private async ValueTask RefreshAccounts()
     {
         Token = string.Empty;
         TokenProgressBar = 0;
@@ -214,7 +234,7 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
 
         try
         {
-            await func.Invoke();
+            await _accountsFileServiceResolver.Invoke().InitializeOrRefreshAccounts();
         }
         finally
         {

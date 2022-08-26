@@ -1,23 +1,22 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Extensions.DependencyInjection;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
-using SteamAuthenticatorCore.Shared.Abstraction;
-using SteamAuthenticatorCore.Shared.Services;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using Wpf.Ui.Mvvm.Contracts;
 
 namespace SteamAuthenticatorCore.Desktop.Views;
 
 public partial class Container
 {
-    public Container(INavigationService navigationService, IPageService pageService, AppSettings appSettings, ISnackbarService snackbarService, IDialogService dialogService, TaskBarServiceWrapper taskBarServiceWrapper, ConfirmationServiceBase confirmationServiceBase, IUpdateService updateService)
+    public Container(INavigationService navigationService, IPageService pageService, AppSettings appSettings, ISnackbarService snackbarService, IDialogService dialogService, TaskBarServiceWrapper taskBarServiceWrapper, IUpdateService updateService)
     {
         InitializeComponent();
 
         _appSettings = appSettings;
         _taskBarServiceWrapper = taskBarServiceWrapper;
-        _confirmationServiceBase = confirmationServiceBase;
         _updateService = updateService;
 
         navigationService.SetNavigationControl(NavigationFluent);
@@ -33,13 +32,12 @@ public partial class Container
 
     private readonly AppSettings _appSettings;
     private readonly TaskBarServiceWrapper _taskBarServiceWrapper;
-    private readonly ConfirmationServiceBase _confirmationServiceBase;
     private readonly IUpdateService _updateService;
 
     private async void NavigationFluentOnLoaded(object sender, RoutedEventArgs e)
     {
         _appSettings.LoadSettings();
-        _confirmationServiceBase.Initialize();
+        App.ServiceProvider.GetRequiredService<IConfirmationService>().Initialize();
 
         RootWelcomeGrid.Visibility = Visibility.Hidden;
         MainContent.Visibility = Visibility.Visible;

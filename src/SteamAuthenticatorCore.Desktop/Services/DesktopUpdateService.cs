@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using Sentry;
 using SteamAuthenticatorCore.Shared.Models;
@@ -26,11 +28,11 @@ internal class DesktopUpdateService : UpdateServiceBase
 
     public async override ValueTask CheckForUpdateAndDownloadInstall(bool isInBackground)
     {
-        CheckForUpdateModel? updateModel = null!;
+        CheckForUpdateModel? updateModel;
 
         try
         {
-            updateModel = await CheckForUpdate($"{Assembly.GetExecutingAssembly().GetName().Name}.exe", Assembly.GetExecutingAssembly().GetName().Version!);
+            updateModel = await CheckForUpdate("exe", Assembly.GetExecutingAssembly().GetName().Version!);
 
             if (updateModel is null)
             {
@@ -83,12 +85,46 @@ internal class DesktopUpdateService : UpdateServiceBase
 
     public async override Task DownloadAndInstall(CheckForUpdateModel updateModel)
     {
-        var fileName = $"{Assembly.GetExecutingAssembly().GetName().Name}-{updateModel.NewVersion}.exe";
-        var filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+        const string newFileName = "new.exe";
+        var newFilePath = Path.Combine(Directory.GetCurrentDirectory(), newFileName);
 
-        await using var stream = await Client.GetStreamAsync(updateModel.DownloadUrl);
+        await using (var stream = await Client.GetStreamAsync(updateModel.DownloadUrl))
+        {
+            await using var fileStream = new FileStream(newFilePath, FileMode.OpenOrCreate);
+            await stream.CopyToAsync(fileStream);
+        }
 
-        await using var fileStream = new FileStream(filePath, FileMode.Create);
-        await stream.CopyToAsync(fileStream);
+        var currentExeName = AppDomain.CurrentDomain.FriendlyName + ".exe";
+
+        var stringBuilder = new StringBuilder(Assembly.GetExecutingAssembly().Location);
+        stringBuilder[^1] = 'e';
+        stringBuilder[^2] = 'x';
+        stringBuilder[^3] = 'e';
+
+        var currentExePath = stringBuilder.ToString();
+
+        var commandLineBuilder = new StringBuilder();
+        commandLineBuilder.Append($"taskkill /f /im \"{currentExeName}\"");
+        commandLineBuilder.Append(" && ");
+        commandLineBuilder.Append("timeout /t 1");
+        commandLineBuilder.Append(" && ");
+        commandLineBuilder.Append($"del \"{currentExePath}\"");
+        commandLineBuilder.Append(" && ");
+        commandLineBuilder.Append($"ren \"{newFileName}\" \"{currentExeName}\"");
+        commandLineBuilder.Append(" && ");
+        commandLineBuilder.Append($"\"{currentExePath}\"");
+
+        Cmd(commandLineBuilder.ToString());
+    }
+
+    private static void Cmd(string line)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "cmd",
+            Arguments = $"/c {line}",
+            UseShellExecute = true,
+            WindowStyle = ProcessWindowStyle.Hidden
+        });
     }
 }

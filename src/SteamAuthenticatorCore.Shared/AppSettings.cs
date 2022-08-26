@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using SteamAuthenticatorCore.Shared.Abstraction;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Models;
 
 namespace SteamAuthenticatorCore.Shared;
@@ -16,14 +16,11 @@ public partial class AppSettings : ObservableObject, ISettings
     private readonly IPlatformImplementations _platformImplementations;
 
     [ObservableProperty]
-    private ManifestLocationModel _manifestLocation;
+    private AccountsLocationModel _accountsLocation;
     
     [ObservableProperty]
     private bool _firstRun;
-    
-    [ObservableProperty]
-    private bool _updated;
-    
+
     [ObservableProperty]
     private int _periodicCheckingInterval;
     
@@ -41,9 +38,8 @@ public partial class AppSettings : ObservableObject, ISettings
 
     public void DefaultSettings()
     {
-        ManifestLocation = ManifestLocationModel.LocalDrive;
+        AccountsLocation = AccountsLocationModel.LocalDrive;
         FirstRun = true;
-        Updated = false;
         PeriodicCheckingInterval = 15;
         AutoConfirmMarketTransactions = false;
         Theme = Theme.System;

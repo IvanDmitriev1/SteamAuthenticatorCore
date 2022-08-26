@@ -5,6 +5,7 @@
     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:SteamAuthCore.Models;assembly=SteamAuthCore"
     xmlns:steamAuthCore="clr-namespace:SteamAuthCore;assembly=SteamAuthCore"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Desktop.ViewModels"
@@ -51,7 +52,7 @@
                     CommandParameter="{Binding SelectedAccount}"
                     Header="Login again" />
                 <MenuItem
-                    Command="{Binding Path=LoginInSelectedAccountCommand}"
+                    Command="{Binding Path=ForceRefreshSessionCommand}"
                     CommandParameter="{Binding SelectedAccount}"
                     Header="Force refresh session" />
                 <Separator />
@@ -141,7 +142,7 @@
                 </ListBox.ItemsPanel>
 
                 <ListBox.ItemTemplate>
-                    <DataTemplate DataType="{x:Type steamAuthCore:SteamGuardAccount}">
+                    <DataTemplate DataType="{x:Type models:SteamGuardAccount}">
                         <StackPanel HorizontalAlignment="Stretch">
                             <TextBlock Padding="2.5" Text="{Binding Path=AccountName}" />
 
@@ -152,7 +153,7 @@
                                         CommandParameter="{Binding}"
                                         Header="Login again" />
                                     <MenuItem
-                                        Command="{Binding Source={x:Reference Page}, Path=DataContext.LoginInSelectedAccountCommand}"
+                                        Command="{Binding Source={x:Reference Page}, Path=DataContext.ForceRefreshSessionCommand}"
                                         CommandParameter="{Binding}"
                                         Header="Force refresh session" />
                                     <Separator />
