@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
@@ -111,6 +112,8 @@ public sealed partial class App : Application
                 });
             })
             .Build();
+
+        Directory.SetCurrentDirectory(AppContext.BaseDirectory);
     }
 
     private readonly IHost _host;
