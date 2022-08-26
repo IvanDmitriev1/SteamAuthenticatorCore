@@ -35,14 +35,27 @@ internal sealed class SteamApi : ISteamApi
     {
         var pair = new KeyValuePair<string, string>("access_token", token);
 
-        var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.MobileauthGetwgtoken);
+        using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.MobileauthGetwgtoken);
         message.Content = new FormUrlEncodedContent(new[] {pair});
 
-        var responseMessage = await _client.SendAsync(message, cancellationToken).ConfigureAwait(false);
+        using var responseMessage = await _client.SendAsync(message, cancellationToken).ConfigureAwait(false);
         if (!responseMessage.IsSuccessStatusCode)
             return null;
 
         var response = await responseMessage.Content.ReadFromJsonAsync<RefreshSessionDataResponse>(cancellationToken: cancellationToken).ConfigureAwait(false);
         return response!.Response;
+    }
+
+    public async Task<bool> RemoveAuthenticator(KeyValuePair<string, string>[] postData)
+    {
+        using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.MobileauthGetwgtoken);
+        message.Headers.Referrer = new Uri(ApiEndpoints.MobileLoginRequestRefer);
+        message.Content = new FormUrlEncodedContent(postData);
+
+        using var responseMessage = await _client.SendAsync(message).ConfigureAwait(false);
+        if (!responseMessage.IsSuccessStatusCode)
+            return false;
+
+        return await responseMessage.Content.ReadFromJsonAsync<RemoveAuthenticatorResponse>().ConfigureAwait(false) is not {Response.Success: true};
     }
 }

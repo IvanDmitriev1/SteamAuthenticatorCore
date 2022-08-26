@@ -243,6 +243,17 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         return loginData.Result;
     }
 
+    public Task<bool> RemoveAuthenticator(SteamGuardAccount account)
+    {
+        var posData = new KeyValuePair<string, string>[4];
+        posData[0] = new KeyValuePair<string, string>("steamid", account.Session.SessionId);
+        posData[1] = new KeyValuePair<string, string>("steamguard_scheme", "2");
+        posData[2] = new KeyValuePair<string, string>("revocation_code", account.RevocationCode);
+        posData[3] = new KeyValuePair<string, string>("access_token", account.Session.OAuthToken);
+
+        return _steamApi.RemoveAuthenticator(posData);
+    }
+
     private IEnumerable<ConfirmationModel> ParseConfirmationsHtml(string html)
     {
         if (html.Contains("<div>Nothing to confirm</div>"))

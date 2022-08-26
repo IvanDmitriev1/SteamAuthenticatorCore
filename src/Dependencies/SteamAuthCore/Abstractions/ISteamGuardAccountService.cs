@@ -12,4 +12,5 @@ public interface ISteamGuardAccountService
     ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel confirmation, ConfirmationOptions options, CancellationToken cancellationToken);
     ValueTask<bool> SendConfirmation(SteamGuardAccount account, IEnumerable<ConfirmationModel> confirmations, ConfirmationOptions options, CancellationToken cancellationToken);
     Task<LoginResult> Login(LoginData loginData);
+    Task<bool> RemoveAuthenticator(SteamGuardAccount account);
 }
