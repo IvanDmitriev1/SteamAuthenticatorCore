@@ -7,6 +7,6 @@ namespace SteamAuthenticatorCore.Shared.Abstractions;
 public interface IUpdateService
 {
     ValueTask CheckForUpdateAndDownloadInstall(bool isInBackground);
-    ValueTask<CheckForUpdateModel?> CheckForUpdate(string fileName, Version currentVersion);
+    ValueTask<CheckForUpdateModel?> CheckForUpdate(string fileContains, Version currentVersion);
     Task DownloadAndInstall(CheckForUpdateModel updateModel);
 }

@@ -20,10 +20,7 @@ public partial class AppSettings : ObservableObject, ISettings
     
     [ObservableProperty]
     private bool _firstRun;
-    
-    [ObservableProperty]
-    private bool _updated;
-    
+
     [ObservableProperty]
     private int _periodicCheckingInterval;
     
@@ -43,7 +40,6 @@ public partial class AppSettings : ObservableObject, ISettings
     {
         AccountsLocation = AccountsLocationModel.LocalDrive;
         FirstRun = true;
-        Updated = false;
         PeriodicCheckingInterval = 15;
         AutoConfirmMarketTransactions = false;
         Theme = Theme.System;
