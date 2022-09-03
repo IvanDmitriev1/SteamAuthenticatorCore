@@ -1,4 +1,4 @@
-﻿using Syncfusion.Maui.Core;
+﻿using SteamAuthenticatorCore.MobileMaui.Extensions;
 using Syncfusion.Maui.Core.Hosting;
 
 namespace SteamAuthenticatorCore.MobileMaui;
@@ -13,9 +13,10 @@ public static class MauiProgram
             .ConfigureSyncfusionCore()
             .ConfigureFonts(fonts =>
             {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                fonts.AddFont("MaterialIcons-Regular.ttf", "Material");
             });
+
+        builder.Services.AddAllServices();
 
         return builder.Build();
     }

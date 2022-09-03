@@ -2,6 +2,7 @@
 using Android.Runtime;
 
 namespace SteamAuthenticatorCore.MobileMaui;
+
 [Application]
 public class MainApplication : MauiApplication
 {

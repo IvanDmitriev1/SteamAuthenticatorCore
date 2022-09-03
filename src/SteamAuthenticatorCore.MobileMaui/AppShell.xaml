@@ -4,11 +4,36 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:SteamAuthenticatorCore.MobileMaui"
+    xmlns:pages="clr-namespace:SteamAuthenticatorCore.MobileMaui.Pages"
     Shell.FlyoutBehavior="Disabled">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <TabBar>
+        <ShellContent
+            Title="Token"
+            ContentTemplate="{DataTemplate pages:TokenPage}"
+            Route="Token">
+            <ShellContent.Icon>
+                <x:FontImage FontFamily="Material" Glyph="{x:Static local:MaterialDesignIcons.GeneratingTokens}" />
+            </ShellContent.Icon>
+        </ShellContent>
+
+        <ShellContent
+            Title="Token"
+            ContentTemplate="{DataTemplate pages:ConfirmationsOverviewPage}"
+            Route="Token">
+            <ShellContent.Icon>
+                <x:FontImage FontFamily="Material" Glyph="{x:Static local:MaterialDesignIcons.ConfirmationNum}" />
+            </ShellContent.Icon>
+        </ShellContent>
+
+        <ShellContent
+            Title="Token"
+            ContentTemplate="{DataTemplate pages:SettingsPage}"
+            Route="Token">
+            <ShellContent.Icon>
+                <x:FontImage FontFamily="Material" Glyph="{x:Static local:MaterialDesignIcons.Settings}" />
+            </ShellContent.Icon>
+        </ShellContent>
+    </TabBar>
 
 </Shell>
