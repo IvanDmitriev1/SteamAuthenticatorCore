@@ -24,4 +24,14 @@ public class PlatformEnvironment : IEnvironment
 
         window.SetStatusBarColor(color.ToAndroid());
     }
+
+    public void SetStatusBarColorBasedOnAppTheme()
+    {
+        var dictionary = Application.Current!.Resources.MergedDictionaries.ElementAt(0);
+
+        if (Application.Current.RequestedTheme == AppTheme.Dark)
+            SetStatusBarColor((Color)dictionary["SecondDarkBackground"], false);
+        else
+            SetStatusBarColor((Color)dictionary["SecondLightBackgroundColor"], true);
+    }
 }

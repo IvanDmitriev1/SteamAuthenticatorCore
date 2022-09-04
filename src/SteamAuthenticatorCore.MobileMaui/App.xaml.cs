@@ -1,39 +1,35 @@
 ﻿using SteamAuthenticatorCore.MobileMaui.Abstractions;
 using SteamAuthenticatorCore.MobileMaui.Pages;
+using SteamAuthenticatorCore.Shared;
+using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.MobileMaui;
 
 public partial class App : Application
 {
-    public App(IEnvironment environment)
+    public App(IEnvironment environment, AppSettings appSettings, IPlatformImplementations platformImplementations)
     {
-        _environment = environment;
         InitializeComponent();
 
-        MainPage = new AppShell();
+        _environment = environment;
+        _appSettings = appSettings;
+        _platformImplementations = platformImplementations;
 
+        MainPage = new AppShell();
         Shell.Current.Navigating += CurrentOnNavigating;
     }
 
-    private static void CurrentOnNavigating(object? sender, ShellNavigatingEventArgs e)
-    {
-        if (e.Target.Location.OriginalString != string.Empty)
-            return;
-
-        if (e.Current.Location.OriginalString.Contains(nameof(TokenPage)))
-            return;
-
-        e.Cancel();
-
-        var shell = (Shell)sender!;
-        shell.GoToAsync($"//{nameof(TokenPage)}");
-    }
-
     private readonly IEnvironment _environment;
+    private readonly AppSettings _appSettings;
+    private readonly IPlatformImplementations _platformImplementations;
 
     protected override void OnStart()
     {
         VersionTracking.Track();
+
+        _appSettings.LoadSettings();
+        _platformImplementations.SetTheme(_appSettings.Theme);
+
         RequestedThemeChanged += OnRequestedThemeChanged;
     }
 
@@ -49,16 +45,20 @@ public partial class App : Application
 
     private void OnRequestedThemeChanged(object? sender, AppThemeChangedEventArgs e)
     {
-        ApplyStatusBarColor();
+        _environment.SetStatusBarColorBasedOnAppTheme();
     }
 
-    private void ApplyStatusBarColor()
+    private static void CurrentOnNavigating(object? sender, ShellNavigatingEventArgs e)
     {
-        var dictionary = Current!.Resources.MergedDictionaries.ElementAt(0);
+        if (e.Target.Location.OriginalString != string.Empty)
+            return;
 
-        if (Current.RequestedTheme == AppTheme.Dark)
-            _environment.SetStatusBarColor((Color) dictionary["SecondDarkBackground"], false);
-        else 
-            _environment.SetStatusBarColor((Color) dictionary["SecondLightBackgroundColor"], true);
+        if (e.Current.Location.OriginalString.Contains(nameof(TokenPage)))
+            return;
+
+        e.Cancel();
+
+        var shell = (Shell)sender!;
+        shell.GoToAsync($"//{nameof(TokenPage)}");
     }
 }
