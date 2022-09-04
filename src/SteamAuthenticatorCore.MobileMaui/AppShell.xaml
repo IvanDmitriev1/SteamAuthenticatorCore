@@ -11,25 +11,25 @@
         <ShellContent
             Title="Token"
             ContentTemplate="{DataTemplate pages:TokenPage}"
-            Route="Token">
+            Route="TokenPage">
             <ShellContent.Icon>
                 <x:FontImage FontFamily="Material" Glyph="{x:Static local:MaterialDesignIcons.GeneratingTokens}" />
             </ShellContent.Icon>
         </ShellContent>
 
         <ShellContent
-            Title="Token"
+            Title="Confirmations"
             ContentTemplate="{DataTemplate pages:ConfirmationsOverviewPage}"
-            Route="Token">
+            Route="ConfirmationsPage">
             <ShellContent.Icon>
                 <x:FontImage FontFamily="Material" Glyph="{x:Static local:MaterialDesignIcons.ConfirmationNum}" />
             </ShellContent.Icon>
         </ShellContent>
 
         <ShellContent
-            Title="Token"
+            Title="Settings"
             ContentTemplate="{DataTemplate pages:SettingsPage}"
-            Route="Token">
+            Route="SettingsPage">
             <ShellContent.Icon>
                 <x:FontImage FontFamily="Material" Glyph="{x:Static local:MaterialDesignIcons.Settings}" />
             </ShellContent.Icon>
