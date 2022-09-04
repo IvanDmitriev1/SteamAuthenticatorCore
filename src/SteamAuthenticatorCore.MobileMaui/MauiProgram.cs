@@ -1,4 +1,5 @@
-﻿using SteamAuthenticatorCore.MobileMaui.Extensions;
+﻿using SteamAuthCore.Extensions;
+using SteamAuthenticatorCore.MobileMaui.Extensions;
 using Syncfusion.Maui.Core.Hosting;
 
 namespace SteamAuthenticatorCore.MobileMaui;
@@ -17,6 +18,7 @@ public static class MauiProgram
             });
 
         builder.Services.AddAllServices();
+        builder.Services.AddSteamAuthCoreServices();
 
         return builder.Build();
     }

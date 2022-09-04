@@ -54,4 +54,7 @@
     <Color x:Key="LightTextColor">#222222</Color>
     <Color x:Key="DisabledTextColor">#898989</Color>
 
+    <Color x:Key="ShellDisabledColor">#B4FFFFFF</Color>
+    <Color x:Key="ShellUnselectedColor">#95FFFFFF</Color>
+
 </ResourceDictionary>
