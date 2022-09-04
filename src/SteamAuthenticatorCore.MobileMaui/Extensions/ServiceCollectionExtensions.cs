@@ -1,5 +1,5 @@
 ﻿using SteamAuthenticatorCore.MobileMaui.Abstractions;
-using SteamAuthenticatorCore.MobileMaui.Platforms;
+using SteamAuthenticatorCore.MobileMaui.Services;
 
 namespace SteamAuthenticatorCore.MobileMaui.Extensions;
 
