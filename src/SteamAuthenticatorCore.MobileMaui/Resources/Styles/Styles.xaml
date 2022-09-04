@@ -12,9 +12,14 @@
     </Style>
 
     <Style TargetType="Border">
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
-        <Setter Property="StrokeShape" Value="Rectangle" />
-        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Dark={StaticResource SecondDarkBackground}, Light={StaticResource SecondLightBackgroundColor}}" />
+        <Setter Property="Stroke" Value="Transparent" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="20" />
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="BoxView">
@@ -119,9 +124,10 @@
     </Style>
 
     <Style TargetType="Frame">
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Dark={StaticResource SecondDarkBackground}, Light={StaticResource SecondLightBackgroundColor}}" />
         <Setter Property="HasShadow" Value="False" />
-        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray950}}" />
-        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="BorderColor" Value="Transparent" />
+        <Setter Property="CornerRadius" Value="20" />
     </Style>
 
     <Style TargetType="ImageButton">
@@ -145,7 +151,7 @@
 
     <Style TargetType="Label">
         <Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="18" />
         <Setter Property="VerticalTextAlignment" Value="Center" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
@@ -203,7 +209,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="RadioButton">
+    <!--<Style TargetType="RadioButton">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
@@ -220,7 +226,7 @@
                 </VisualStateGroup>
             </VisualStateGroupList>
         </Setter>
-    </Style>
+    </Style>-->
 
     <Style TargetType="RefreshView">
         <Setter Property="RefreshColor" Value="{StaticResource ActionColor}" />

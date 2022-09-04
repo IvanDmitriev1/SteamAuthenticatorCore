@@ -1,4 +1,5 @@
-﻿using SteamAuthCore.Extensions;
+﻿using CommunityToolkit.Maui;
+using SteamAuthCore.Extensions;
 using SteamAuthenticatorCore.MobileMaui.Extensions;
 using SteamAuthenticatorCore.Shared.Extensions;
 using Syncfusion.Maui.Core.Hosting;
@@ -13,6 +14,7 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .ConfigureSyncfusionCore()
+            .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("MaterialIcons-Regular.ttf", "Material");
