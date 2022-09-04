@@ -15,7 +15,29 @@
                 StrokeShape="RoundRectangle 8"
                 StrokeThickness="1"
                 WidthRequest="100">
-                <Grid Margin="4" WidthRequest="100">
+                <Grid WidthRequest="100">
+                    <Grid
+                        Margin="0,5,5,0"
+                        HeightRequest="18"
+                        HorizontalOptions="End"
+                        VerticalOptions="Start"
+                        WidthRequest="18">
+                        <Ellipse
+                            Fill="White"
+                            HeightRequest="16"
+                            HorizontalOptions="Center"
+                            Stroke="{StaticResource ActionColor}"
+                            VerticalOptions="Center"
+                            WidthRequest="16" />
+                        <Ellipse
+                            x:Name="check"
+                            Fill="{StaticResource ActionColor}"
+                            HeightRequest="8"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            WidthRequest="8" />
+                    </Grid>
+
                     <ContentPresenter />
                 </Grid>
                 <VisualStateManager.VisualStateGroups>
@@ -24,11 +46,13 @@
                             <VisualState x:Name="Checked">
                                 <VisualState.Setters>
                                     <Setter Property="Stroke" Value="{StaticResource ActionColor}" />
+                                    <Setter TargetName="check" Property="Opacity" Value="1" />
                                 </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Unchecked">
                                 <VisualState.Setters>
                                     <Setter Property="Stroke" Value="#F3F2F1" />
+                                    <Setter TargetName="check" Property="Opacity" Value="0" />
                                 </VisualState.Setters>
                             </VisualState>
                         </VisualStateGroup>
@@ -53,7 +77,10 @@
                     RadioButtonGroup.SelectedValue="{Binding Path=ThemeSelection}">
                     <RadioButton Grid.Column="0" Value="System">
                         <RadioButton.Content>
-                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                            <VerticalStackLayout
+                                HorizontalOptions="Center"
+                                Spacing="5"
+                                VerticalOptions="Center">
                                 <Label
                                     FontFamily="Material"
                                     FontSize="21"
@@ -70,7 +97,10 @@
 
                     <RadioButton Grid.Column="1" Value="Light">
                         <RadioButton.Content>
-                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                            <VerticalStackLayout
+                                HorizontalOptions="Center"
+                                Spacing="5"
+                                VerticalOptions="Center">
                                 <Label
                                     FontFamily="Material"
                                     FontSize="21"
@@ -87,7 +117,10 @@
 
                     <RadioButton Grid.Column="2" Value="Dark">
                         <RadioButton.Content>
-                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                            <VerticalStackLayout
+                                HorizontalOptions="Center"
+                                Spacing="5"
+                                VerticalOptions="Center">
                                 <Label
                                     FontFamily="Material"
                                     FontSize="21"
