@@ -33,5 +33,7 @@ internal static class ServiceCollectionExtensions
         services.AddSingleton<ISettingsService, SettingsService>();
         services.AddSingleton<IPlatformImplementations, PlatformImplementations>();
         services.AddSingleton<IUpdateService, UpdateService>();
+
+        services.AddHttpClient<IUpdateService, UpdateService>();
     }
 }

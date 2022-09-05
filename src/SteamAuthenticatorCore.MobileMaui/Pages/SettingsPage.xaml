@@ -176,7 +176,6 @@
                             <Entry
                                 x:Name="IntervalEntry"
                                 Grid.Column="1"
-                                Margin="0,0,5,0"
                                 CursorPosition="2"
                                 Keyboard="Numeric"
                                 MaxLength="2"
@@ -196,7 +195,7 @@
 
         <VerticalStackLayout Spacing="5">
             <Label Text="{Binding CurrentVersion, StringFormat='Current version: {0}'}" />
-            <Button Text="Check for updates" />
+            <Button Command="{Binding CheckForUpdatesCommand}" Text="Check for updates" />
         </VerticalStackLayout>
     </VerticalStackLayout>
 </ContentPage>
