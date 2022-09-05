@@ -6,7 +6,9 @@
     xmlns:effectsView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
     xmlns:steamMobileAuthenticatorCore1="clr-namespace:SteamAuthenticatorCore.MobileMaui"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-    Title="Settings">
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.MobileMaui.ViewModels"
+    Title="Settings"
+    x:DataType="viewModels:SettingsViewModel">
 
     <ContentPage.Resources>
         <ControlTemplate x:Key="RadioButtonTemplate">
@@ -144,40 +146,49 @@
             <VerticalStackLayout Spacing="10">
                 <Border>
                     <effectsView:SfEffectsView TouchUpCommand="{Binding SettingsClickedCommand}" TouchUpCommandParameter="{Binding Source={x:Reference AutoConfirmSwitch}}">
-                        <StackLayout Margin="15" Orientation="Horizontal">
-                            <Label HorizontalOptions="Start" Text="Auto-confirm market sell transactions" />
+                        <Grid Margin="15" ColumnDefinitions="*,Auto">
+                            <Label
+                                Grid.Column="0"
+                                LineBreakMode="WordWrap"
+                                MaxLines="2"
+                                Text="Auto-confirm market sell transactions"
+                                VerticalOptions="Center" />
+
                             <Switch
                                 x:Name="AutoConfirmSwitch"
-                                HorizontalOptions="EndAndExpand"
-                                IsToggled="{Binding Path=AppSettings.AutoConfirmMarketTransactions, Mode=OneWay}" />
-                        </StackLayout>
+                                Grid.Column="1"
+                                IsToggled="{Binding Path=AppSettings.AutoConfirmMarketTransactions}"
+                                VerticalOptions="Center" />
+                        </Grid>
                     </effectsView:SfEffectsView>
                 </Border>
 
-
                 <Border>
                     <effectsView:SfEffectsView TouchUpCommand="{Binding SettingsClickedCommand}" TouchUpCommandParameter="{Binding Source={x:Reference IntervalEntry}}">
-                        <StackLayout Margin="15" Orientation="Horizontal">
+                        <Grid Margin="15" ColumnDefinitions="*,Auto">
                             <Label
+                                Grid.Column="0"
                                 LineBreakMode="WordWrap"
                                 MaxLines="2"
-                                Text="Seconds between checking confirmations" />
+                                Text="Seconds between checking confirmations"
+                                VerticalOptions="Center" />
 
                             <Entry
                                 x:Name="IntervalEntry"
+                                Grid.Column="1"
                                 Margin="0,0,5,0"
                                 CursorPosition="2"
-                                HorizontalOptions="EndAndExpand"
                                 Keyboard="Numeric"
                                 MaxLength="2"
-                                Text="{Binding Path=AppSettings.PeriodicCheckingInterval}">
+                                Text="{Binding Path=AppSettings.PeriodicCheckingInterval}"
+                                VerticalOptions="Center">
 
                                 <Entry.Behaviors>
                                     <toolkit:UserStoppedTypingBehavior Command="{Binding StoppedTypingCommand}" ShouldDismissKeyboardAutomatically="True" />
                                 </Entry.Behaviors>
 
                             </Entry>
-                        </StackLayout>
+                        </Grid>
                     </effectsView:SfEffectsView>
                 </Border>
             </VerticalStackLayout>
@@ -185,10 +196,7 @@
 
         <VerticalStackLayout Spacing="5">
             <Label Text="{Binding CurrentVersion, StringFormat='Current version: {0}'}" />
-            <Button
-                Padding="15"
-                Command="{Binding CheckForUpdatesCommand}"
-                Text="Check for updates" />
+            <Button Text="Check for updates" />
         </VerticalStackLayout>
     </VerticalStackLayout>
 </ContentPage>

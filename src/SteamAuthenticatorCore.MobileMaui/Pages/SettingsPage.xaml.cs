@@ -9,9 +9,4 @@ public partial class SettingsPage : ContentPage
 		InitializeComponent();
         BindingContext = viewModel;
     }
-
-	private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
-	{
-
-    }
 }

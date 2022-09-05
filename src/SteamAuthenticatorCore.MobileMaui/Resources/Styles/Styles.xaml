@@ -17,7 +17,7 @@
         <Setter Property="StrokeThickness" Value="0" />
         <Setter Property="StrokeShape">
             <Setter.Value>
-                <RoundRectangle CornerRadius="20" />
+                <RoundRectangle CornerRadius="15" />
             </Setter.Value>
         </Setter>
     </Style>
@@ -27,10 +27,10 @@
     </Style>
 
     <Style TargetType="Button">
+        <Setter Property="FontSize" Value="18" />
         <Setter Property="TextColor" Value="White" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="CornerRadius" Value="12" />
-        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="15" />
+        <Setter Property="Padding" Value="15" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -105,9 +105,9 @@
     </Style>
 
     <Style TargetType="Entry">
+        <Setter Property="FontSize" Value="18" />
         <Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Dark={StaticResource SecondDarkBackground}, Light={StaticResource SecondLightBackgroundColor}}" />
-        <Setter Property="FontSize" Value="14" />
         <Setter Property="PlaceholderColor" Value="{AppThemeBinding Dark={StaticResource DarkTextColor}, Light={StaticResource LightTextColor}}" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
