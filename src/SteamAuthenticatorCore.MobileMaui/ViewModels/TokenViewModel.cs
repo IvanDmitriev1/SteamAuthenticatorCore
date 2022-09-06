@@ -6,7 +6,9 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
+using SteamAuthenticatorCore.MobileMaui.Pages;
 using SteamAuthenticatorCore.Shared.Abstractions;
+using SteamAuthenticatorCore.Shared.Messages;
 using SteamAuthenticatorCore.Shared.ViewModel;
 
 namespace SteamAuthenticatorCore.MobileMaui.ViewModels;
@@ -21,6 +23,21 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
 
         Token = "Login token";
         IsMobile = true;
+
+        Shell.Current.Navigating += CurrentOnNavigating;
+    }
+
+    private async void CurrentOnNavigating(object? sender, ShellNavigatingEventArgs e)
+    {
+        if (e.Current.Location.OriginalString.Length != nameof(TokenPage).Length + 2)
+            return;
+
+        if (_longPressView is null || e.Target.Location.OriginalString.Contains(nameof(LoginPage)))
+            return;
+
+        e.Cancel();
+
+        await HideLongPressTitleView();
     }
 
     private readonly IMessenger _messenger;
@@ -36,6 +53,7 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
     public void Dispose()
     {
         _longPressView = null;
+        Shell.Current.Navigating -= CurrentOnNavigating;
     }
 
     [RelayCommand]
@@ -65,17 +83,36 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
     }
 
     [RelayCommand]
-    private Task OnPress(SteamGuardAccount account)
+    private async Task Login()
     {
-        if (_pressed)
-        {
-            _pressed = false;
-            return Task.CompletedTask;
-        }
+        var account = (SteamGuardAccount) _longPressView!.BindingContext;
 
-        SelectedAccount = account;
+        await Shell.Current.GoToAsync($"{nameof(LoginPage)}");
+        _messenger.Send(new UpdateAccountInLoginPageMessage(account));
+    }
+
+    [RelayCommand]
+    private async Task ForceRefreshSession()
+    {
+        var account = (SteamGuardAccount) _longPressView!.BindingContext;
+
+        if (await _accountService.RefreshSession(account, CancellationToken.None))
+            await Application.Current!.MainPage!.DisplayAlert("Refresh session", "Session has been refreshed", "Ok");
+        else
+            await Application.Current!.MainPage!.DisplayAlert("Refresh session", "Failed to refresh session", "Ok");
+    }
+
+    [RelayCommand]
+    private async Task Delete()
+    {
+        if (!await Application.Current!.MainPage!.DisplayAlert("Delete account", "Are you sure?", "yes", "no"))
+            return;
+
+        var account = (SteamGuardAccount) _longPressView!.BindingContext;
+        await _accountsFileServiceResolver.Invoke().DeleteAccount(account);
+
         IsLongPressTitleViewVisible = false;
-        return UnselectLongPressFrame();
+        await UnselectLongPressFrame();
     }
 
     [RelayCommand]
@@ -100,6 +137,20 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
     }
 
     [RelayCommand]
+    private Task OnPress(SteamGuardAccount account)
+    {
+        if (_pressed)
+        {
+            _pressed = false;
+            return Task.CompletedTask;
+        }
+
+        SelectedAccount = account;
+        IsLongPressTitleViewVisible = false;
+        return UnselectLongPressFrame();
+    }
+
+    [RelayCommand]
     private async Task OnLongPress(View view)
     {
         await UnselectLongPressFrame();
@@ -115,6 +166,15 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
         view.BackgroundColor = (Color)color!;
         _longPressView = view;
         _pressed = true;
+
+        try
+        {
+            HapticFeedback.Perform(HapticFeedbackType.LongPress);
+        }
+        catch
+        {
+            //
+        }
     }
 
     [RelayCommand]
@@ -137,14 +197,5 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
 
         await _longPressView.BackgroundColorTo((Color)color!, 16, 150);
         _longPressView = null;
-
-        try
-        {
-            HapticFeedback.Perform(HapticFeedbackType.LongPress);
-        }
-        catch
-        {
-            //
-        }
     }
 }

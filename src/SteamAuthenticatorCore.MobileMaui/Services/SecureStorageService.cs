@@ -81,7 +81,7 @@ internal class SecureStorageService : IAccountsFileService
 
         await MainThreadExtensions.InvokeOnMainThread(() =>
         {
-            _accounts.Add(accountToRemove);
+            _accounts.Remove(accountToRemove);
         });
     }
 

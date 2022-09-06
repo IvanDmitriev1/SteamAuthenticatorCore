@@ -36,6 +36,7 @@ internal static class ServiceCollectionExtensions
     {
         services.AddTransient<SettingsViewModel>();
         services.AddTransient<TokenViewModel>();
+        services.AddTransient<LoginViewModel>();
     }
 
     private static void AddPages(this IServiceCollection services)
@@ -43,6 +44,7 @@ internal static class ServiceCollectionExtensions
         services.AddTransient<TokenPage>();
         services.AddTransient<ConfirmationsOverviewPage>();
         services.AddTransient<SettingsPage>();
+        services.AddTransient<LoginPage>();
     }
 
     private static void AddServices(this IServiceCollection services)

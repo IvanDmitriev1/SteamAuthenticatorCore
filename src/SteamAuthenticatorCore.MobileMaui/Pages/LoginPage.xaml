@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="SteamAuthenticatorCore.MobileMaui.Pages.LoginPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.MobileMaui.ViewModels"
+    Title="LoginPage"
+    x:DataType="viewModels:LoginViewModel">
+
+    <VerticalStackLayout
+        Margin="10"
+        HorizontalOptions="FillAndExpand"
+        Spacing="10"
+        VerticalOptions="CenterAndExpand">
+
+        <Border Padding="5">
+            <Entry
+                IsEnabled="False"
+                IsReadOnly="True"
+                Placeholder="Login"
+                Text="{Binding Path=Account.AccountName}" />
+        </Border>
+
+
+        <Border Padding="5">
+            <Entry
+                IsEnabled="{Binding IsPasswordBoxEnabled}"
+                IsPassword="True"
+                Placeholder="Password"
+                Text="{Binding Path=Password}" />
+        </Border>
+
+        <Button Command="{Binding LoginCommand}" Text="Login" />
+
+    </VerticalStackLayout>
+</ContentPage>
