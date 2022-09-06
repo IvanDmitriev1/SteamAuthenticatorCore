@@ -27,11 +27,15 @@ public class PlatformEnvironment : IEnvironment
 
     public void SetStatusBarColorBasedOnAppTheme()
     {
-        var dictionary = Application.Current!.Resources.MergedDictionaries.ElementAt(0);
-
-        if (Application.Current.RequestedTheme == AppTheme.Dark)
-            SetStatusBarColor((Color)dictionary["SecondDarkBackground"], false);
+        if (Application.Current!.RequestedTheme == AppTheme.Dark)
+        {
+            Application.Current!.Resources.TryGetValue("SecondDarkBackground", out var color);
+            SetStatusBarColor((Color)color!, false);
+        }
         else
-            SetStatusBarColor((Color)dictionary["SecondLightBackgroundColor"], true);
+        {
+            Application.Current!.Resources.TryGetValue("SecondLightBackgroundColor", out var color);
+            SetStatusBarColor((Color)color!, true);
+        }
     }
 }

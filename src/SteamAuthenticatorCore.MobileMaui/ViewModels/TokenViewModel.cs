@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Extensions;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthCore.Abstractions;
@@ -9,7 +11,7 @@ using SteamAuthenticatorCore.Shared.ViewModel;
 
 namespace SteamAuthenticatorCore.MobileMaui.ViewModels;
 
-public partial class TokenViewModel : TokenViewModelBase
+public partial class TokenViewModel : TokenViewModelBase, IDisposable
 {
     public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IMessenger messenger, AccountsFileServiceResolver accountsFileServiceResolver, ISteamGuardAccountService accountService) : base(accounts, platformTimer)
     {
@@ -25,8 +27,19 @@ public partial class TokenViewModel : TokenViewModelBase
     private readonly AccountsFileServiceResolver _accountsFileServiceResolver;
     private readonly ISteamGuardAccountService _accountService;
 
+    private View? _longPressView;
+    private bool _pressed;
+
+    [ObservableProperty]
+    private bool _isLongPressTitleViewVisible;
+
+    public void Dispose()
+    {
+        _longPressView = null;
+    }
+
     [RelayCommand]
-    public async Task Import()
+    private async Task Import()
     {
         IEnumerable<FileResult> files;
 
@@ -35,7 +48,7 @@ public partial class TokenViewModel : TokenViewModelBase
             files = await FilePicker.PickMultipleAsync(new PickOptions()
             {
                 PickerTitle = "Select maFile"
-            }) ?? Enumerable.Empty<FileResult>();
+            }).ConfigureAwait(false) ?? Enumerable.Empty<FileResult>();
         }
         catch
         {
@@ -52,13 +65,21 @@ public partial class TokenViewModel : TokenViewModelBase
     }
 
     [RelayCommand]
-    public void OnPress(SteamGuardAccount account)
+    private Task OnPress(SteamGuardAccount account)
     {
+        if (_pressed)
+        {
+            _pressed = false;
+            return Task.CompletedTask;
+        }
+
         SelectedAccount = account;
+        IsLongPressTitleViewVisible = false;
+        return UnselectLongPressFrame();
     }
 
     [RelayCommand]
-    public async Task Copy(string token)
+    private async Task Copy(string token)
     {
         if (string.IsNullOrEmpty(token) || string.IsNullOrWhiteSpace(token) || token == "Login token")
             return;
@@ -72,9 +93,58 @@ public partial class TokenViewModel : TokenViewModelBase
             //
         }
 
-        await Clipboard.SetTextAsync(Token);
+        await Clipboard.SetTextAsync(Token).ConfigureAwait(false);
 
         var toast = Toast.Make("Login token copied");
-        await toast.Show();
+        await toast.Show().ConfigureAwait(false);
+    }
+
+    [RelayCommand]
+    private async Task OnLongPress(View view)
+    {
+        await UnselectLongPressFrame();
+
+        IsLongPressTitleViewVisible = true;
+
+        var value = Application.Current!.RequestedTheme == AppTheme.Light
+            ? "SecondLightBackgroundSelectionColor"
+            : "SecondDarkBackgroundSelectionColor";
+
+        Application.Current!.Resources.TryGetValue(value, out var color);
+
+        view.BackgroundColor = (Color)color!;
+        _longPressView = view;
+        _pressed = true;
+    }
+
+    [RelayCommand]
+    private Task HideLongPressTitleView()
+    {
+        IsLongPressTitleViewVisible = false;
+        return UnselectLongPressFrame();
+    }
+
+    private async Task UnselectLongPressFrame()
+    {
+        if (_longPressView is null) 
+            return;
+
+        var value = Application.Current!.RequestedTheme == AppTheme.Light
+            ? "SecondLightBackgroundColor"
+            : "SecondDarkBackground";
+
+        Application.Current!.Resources.TryGetValue(value, out var color);
+
+        await _longPressView.BackgroundColorTo((Color)color!, 16, 150);
+        _longPressView = null;
+
+        try
+        {
+            HapticFeedback.Perform(HapticFeedbackType.LongPress);
+        }
+        catch
+        {
+            //
+        }
     }
 }

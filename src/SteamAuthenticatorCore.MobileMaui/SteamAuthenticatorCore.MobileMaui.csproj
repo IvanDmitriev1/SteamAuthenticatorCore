@@ -79,6 +79,9 @@
 	  <MauiXaml Update="Pages\TokenPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Resources\Controls\MyTitleView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	</ItemGroup>
 
 	<!-- Android -->

@@ -34,7 +34,6 @@
                         FontSize="35"
                         HeightRequest="45"
                         HorizontalOptions="Start"
-                        IsVisible="{TemplateBinding Path=IsCloseButtonVisible}"
                         Text="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.Close}"
                         TextColor="{AppThemeBinding Dark={StaticResource DarkTextColor},
                                                     Light={StaticResource LightTextColor}}"
