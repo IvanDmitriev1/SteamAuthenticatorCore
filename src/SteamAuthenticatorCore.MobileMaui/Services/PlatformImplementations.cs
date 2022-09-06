@@ -20,6 +20,12 @@ public class PlatformImplementations : IPlatformImplementations
 
     public async ValueTask InvokeMainThread(Action method)
     {
+        if (MainThread.IsMainThread)
+        {
+            method.Invoke();
+            return;
+        }
+
         await MainThread.InvokeOnMainThreadAsync(method);
     }
 
