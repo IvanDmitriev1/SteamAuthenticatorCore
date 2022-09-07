@@ -3,11 +3,50 @@
     x:Class="SteamAuthenticatorCore.MobileMaui.Pages.ConfirmationsOverviewPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Confirmations">
-    <VerticalStackLayout>
-        <Label
-            HorizontalOptions="Center"
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" />
-    </VerticalStackLayout>
+    xmlns:abstractions="clr-namespace:SteamAuthenticatorCore.Shared.Abstractions;assembly=SteamAuthenticatorCore.Shared"
+    xmlns:behaviors="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:controls="clr-namespace:SteamAuthenticatorCore.MobileMaui.Controls"
+    xmlns:effectsView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.MobileMaui.ViewModels"
+    x:Name="Page"
+    Title="Confirmations overview"
+    x:DataType="viewModels:ConfirmationsOverviewViewModel">
+
+    <Shell.TitleView>
+        <controls:MyTitleView TitleName="Confirmations" />
+    </Shell.TitleView>
+
+    <ContentPage.Behaviors>
+        <behaviors:EventToCommandBehavior Command="{Binding Path=AppearingCommand}" EventName="Appearing" />
+    </ContentPage.Behaviors>
+
+    <RefreshView Command="{Binding Path=RefreshCommand}" IsRefreshing="{Binding Path=IsRefreshing}">
+        <CollectionView ItemsSource="{Binding Path=ConfirmationService.ConfirmationViewModels}">
+            <CollectionView.EmptyView>
+                <Label
+                    FontSize="Medium"
+                    HorizontalTextAlignment="Center"
+                    Text="Nothing to confirm" />
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="abstractions:IConfirmationViewModel">
+                    <Border Margin="0,0,0,5">
+                        <effectsView:SfEffectsView TouchUpCommand="{Binding Source={x:Reference Page}, Path=BindingContext.TouchedCommand}" TouchUpCommandParameter="{Binding}">
+                            <Grid Margin="20,15" ColumnDefinitions="*,Auto">
+                                <Label Text="{Binding Account.AccountName, Mode=OneTime}" />
+
+                                <HorizontalStackLayout Margin="0,0,5,0">
+
+                                    <Label Text="Confirmations:" />
+                                    <Label Text="{Binding Path=Confirmations.Count}" />
+
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </effectsView:SfEffectsView>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </RefreshView>
 </ContentPage>

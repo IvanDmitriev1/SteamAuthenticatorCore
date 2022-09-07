@@ -17,22 +17,20 @@
             HorizontalOptions="EndAndExpand"
             IsContentVisible="{Binding IsLongPressTitleViewVisible}"
             TitleName="Token Page">
-            <controls:MyTitleView.Content>
-                <HorizontalStackLayout Spacing="10">
-                    <Button
-                        Padding="5,0"
-                        Command="{Binding Source={x:Reference Page}, Path=BindingContext.LoginCommand}"
-                        Text="Login again" />
-                    <Button
-                        Padding="5,0"
-                        Command="{Binding Source={x:Reference Page}, Path=BindingContext.ForceRefreshSessionCommand}"
-                        Text="Refresh session" />
-                    <Button
-                        Padding="5,0"
-                        Command="{Binding Source={x:Reference Page}, Path=BindingContext.DeleteCommand}"
-                        Text="Delete" />
-                </HorizontalStackLayout>
-            </controls:MyTitleView.Content>
+            <HorizontalStackLayout Spacing="10">
+                <Button
+                    Padding="5,0"
+                    Command="{Binding Source={x:Reference Page}, Path=BindingContext.LoginCommand}"
+                    Text="Login again" />
+                <Button
+                    Padding="5,0"
+                    Command="{Binding Source={x:Reference Page}, Path=BindingContext.ForceRefreshSessionCommand}"
+                    Text="Refresh session" />
+                <Button
+                    Padding="5,0"
+                    Command="{Binding Source={x:Reference Page}, Path=BindingContext.DeleteCommand}"
+                    Text="Delete" />
+            </HorizontalStackLayout>
         </controls:MyTitleView>
     </Shell.TitleView>
 

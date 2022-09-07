@@ -37,14 +37,16 @@ internal static class ServiceCollectionExtensions
         services.AddTransient<SettingsViewModel>();
         services.AddTransient<TokenViewModel>();
         services.AddTransient<LoginViewModel>();
+        services.AddTransient<ConfirmationsOverviewViewModel>();
     }
 
     private static void AddPages(this IServiceCollection services)
     {
         services.AddTransient<TokenPage>();
-        services.AddTransient<ConfirmationsOverviewPage>();
         services.AddTransient<SettingsPage>();
         services.AddTransient<LoginPage>();
+        services.AddTransient<ConfirmationsOverviewPage>();
+        services.AddTransient<ConfirmationsPage>();
     }
 
     private static void AddServices(this IServiceCollection services)
@@ -53,6 +55,7 @@ internal static class ServiceCollectionExtensions
         services.AddSingleton<ISettingsService, SettingsService>();
         services.AddSingleton<IPlatformImplementations, PlatformImplementations>();
         services.AddSingleton<IUpdateService, UpdateService>();
+        services.AddSingleton<IConfirmationViewModelFactory, ConfirmationViewModelFactory>();
         services.AddTransient<IPlatformTimer, PeriodicTimerService>();
         services.AddScoped<SecureStorageService>();
 
