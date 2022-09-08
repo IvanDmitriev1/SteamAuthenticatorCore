@@ -19,7 +19,10 @@
             IsContentVisible="{Binding Path=IsCountTitleViewVisible}"
             TitleName="Confirmations">
 
-            <Label FontSize="Large" Text="{Binding Path=SelectedItems.Count}" />
+            <Label
+                FontAttributes="Bold"
+                FontSize="Large"
+                Text="{Binding Path=SelectedItems.Count}" />
         </controls:MyTitleView>
     </Shell.TitleView>
 

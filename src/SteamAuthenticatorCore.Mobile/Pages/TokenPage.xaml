@@ -20,15 +20,15 @@
             <HorizontalStackLayout Spacing="10">
                 <Button
                     Padding="5,0"
-                    Command="{Binding Source={x:Reference Page}, Path=BindingContext.LoginCommand}"
+                    Command="{Binding LoginCommand}"
                     Text="Login again" />
                 <Button
                     Padding="5,0"
-                    Command="{Binding Source={x:Reference Page}, Path=BindingContext.ForceRefreshSessionCommand}"
+                    Command="{Binding ForceRefreshSessionCommand}"
                     Text="Refresh session" />
                 <Button
                     Padding="5,0"
-                    Command="{Binding Source={x:Reference Page}, Path=BindingContext.DeleteCommand}"
+                    Command="{Binding DeleteCommand}"
                     Text="Delete" />
             </HorizontalStackLayout>
         </controls:MyTitleView>

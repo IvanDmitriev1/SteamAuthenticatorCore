@@ -39,12 +39,11 @@
 
                 <ScrollView
                     Grid.Column="1"
-                    Margin="{TemplateBinding Margin}"
                     HeightRequest="45"
                     HorizontalOptions="{TemplateBinding HorizontalOptions}"
                     HorizontalScrollBarVisibility="Never"
                     Orientation="Horizontal">
-                    <ContentPresenter Content="{TemplateBinding Content, Mode=OneTime}" />
+                    <ContentPresenter Content="{TemplateBinding Content}" />
                 </ScrollView>
             </Grid>
         </Grid>
