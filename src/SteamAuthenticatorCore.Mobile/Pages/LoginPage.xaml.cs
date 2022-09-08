@@ -1,17 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using SteamAuthenticatorCore.Mobile.ViewModels;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using LoginViewModel = SteamAuthenticatorCore.Mobile.ViewModels.LoginViewModel;
 
-namespace SteamAuthenticatorCore.Mobile.Pages
+namespace SteamAuthenticatorCore.Mobile.Pages;
+
+public partial class LoginPage : ContentPage
 {
-    [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class LoginPage : ContentPage
-    {
-        public LoginPage()
-        {
-            InitializeComponent();
-            BindingContext = Startup.ServiceProvider.GetRequiredService<LoginViewModel>();
-        }
+	public LoginPage(LoginViewModel viewModel)
+	{
+		InitializeComponent();
+        BindingContext = viewModel;
     }
 }

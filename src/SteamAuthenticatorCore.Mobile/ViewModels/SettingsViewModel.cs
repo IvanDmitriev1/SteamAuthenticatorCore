@@ -1,12 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Models;
-using Xamarin.Essentials;
-using Xamarin.Forms;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
@@ -28,12 +24,12 @@ public partial class SettingsViewModel : ObservableObject
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-    private readonly IUpdateService _updateService;
 
+    private readonly IUpdateService _updateService;
+    private string _themeSelection;
+    
     public AppSettings AppSettings { get; }
     public string CurrentVersion { get; }
-
-    private string _themeSelection;
 
     public string ThemeSelection
     {
@@ -42,7 +38,7 @@ public partial class SettingsViewModel : ObservableObject
         {
             _themeSelection = value;
             AppSettings.Theme = Enum.Parse<Theme>(value);
-            OnPropertyChanged(nameof(ThemeSelection));
+            OnPropertyChanged();
         }
     }
 
@@ -55,7 +51,8 @@ public partial class SettingsViewModel : ObservableObject
                 AppSettings.AutoConfirmMarketTransactions = !AppSettings.AutoConfirmMarketTransactions;
                 return;
             case Entry entry:
-                entry.Focus();
+                if (!entry.Focus())
+                    entry.Unfocus();
                 return;
         }
     }

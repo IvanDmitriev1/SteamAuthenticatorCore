@@ -1,212 +1,206 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="SteamAuthenticatorCore.Mobile.Pages.SettingsPage"
-    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:steamMobileAuthenticatorCore1="clr-namespace:SteamAuthenticatorCore.Mobile.Helpers;assembly=SteamAuthenticatorCore.Mobile"
-    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
-    xmlns:views="clr-namespace:SteamAuthenticatorCore.Mobile.Views;assembly=SteamAuthenticatorCore.Mobile"
-    xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+    xmlns:controls="clr-namespace:SteamAuthenticatorCore.Mobile.Controls"
+    xmlns:effectsView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:mobile="clr-namespace:SteamAuthenticatorCore.Mobile"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
     Title="Settings"
-    Padding="10,10,10,0"
-    d:BindingContext="{d:DesignInstance viewModels:SettingsViewModel,
-                                        IsDesignTimeCreatable=False}"
-    BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor},
-                                      Light={StaticResource LightBackgroundColor}}"
-    Shell.NavBarHasShadow="True"
-    mc:Ignorable="d">
+    x:DataType="viewModels:SettingsViewModel">
 
     <Shell.TitleView>
-        <views:MyTitleView TitleName="Settings" />
+        <controls:MyTitleView TitleName="Settings" />
     </Shell.TitleView>
 
     <ContentPage.Resources>
-        <ResourceDictionary>
-            <ControlTemplate x:Key="ThemeRadioTemplate">
-                <Frame
-                    Padding="0"
-                    CornerRadius="5"
-                    HasShadow="False"
-                    HeightRequest="80"
-                    HorizontalOptions="Start"
-                    VerticalOptions="Start"
-                    WidthRequest="80">
-                    <Grid Margin="4" WidthRequest="80">
-                        <Grid
-                            HeightRequest="20"
-                            HorizontalOptions="End"
-                            VerticalOptions="Start"
-                            WidthRequest="20">
-                            <Ellipse
-                                Fill="White"
-                                HeightRequest="18"
-                                HorizontalOptions="Center"
-                                Stroke="#2E2545"
-                                StrokeThickness="1"
-                                VerticalOptions="Center"
-                                WidthRequest="18" />
-                            <Ellipse
-                                x:Name="Check"
-                                BackgroundColor="Transparent"
-                                Fill="{StaticResource ActionColor}"
-                                HeightRequest="10"
-                                HorizontalOptions="Center"
-                                Stroke="{StaticResource ActionColor}"
-                                StrokeThickness="0"
-                                VerticalOptions="Center"
-                                WidthRequest="10" />
-                        </Grid>
-                        <ContentPresenter />
+        <ControlTemplate x:Key="RadioButtonTemplate">
+            <Border
+                HeightRequest="100"
+                StrokeShape="RoundRectangle 8"
+                StrokeThickness="1"
+                WidthRequest="100">
+                <Grid WidthRequest="100">
+                    <Grid
+                        Margin="0,5,5,0"
+                        HeightRequest="18"
+                        HorizontalOptions="End"
+                        VerticalOptions="Start"
+                        WidthRequest="18">
+                        <Ellipse
+                            Fill="White"
+                            HeightRequest="16"
+                            HorizontalOptions="Center"
+                            Stroke="{StaticResource ActionColor}"
+                            VerticalOptions="Center"
+                            WidthRequest="16" />
+                        <Ellipse
+                            x:Name="check"
+                            Fill="{StaticResource ActionColor}"
+                            HeightRequest="8"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            WidthRequest="8" />
                     </Grid>
-                    <VisualStateManager.VisualStateGroups>
-                        <VisualStateGroupList>
-                            <VisualStateGroup x:Name="CheckedStates">
-                                <VisualState x:Name="Checked">
-                                    <VisualState.Setters>
-                                        <Setter Property="BorderColor" Value="{StaticResource ActionColor}" />
-                                        <Setter TargetName="Check" Property="Opacity" Value="1" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                                <VisualState x:Name="Unchecked">
-                                    <VisualState.Setters>
-                                        <Setter Property="BorderColor" Value="#F3F2F1" />
-                                        <Setter TargetName="Check" Property="Opacity" Value="0" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateGroupList>
-                    </VisualStateManager.VisualStateGroups>
-                </Frame>
-            </ControlTemplate>
-        </ResourceDictionary>
+
+                    <ContentPresenter />
+                </Grid>
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CheckedStates">
+                            <VisualState x:Name="Checked">
+                                <VisualState.Setters>
+                                    <Setter Property="Stroke" Value="{StaticResource ActionColor}" />
+                                    <Setter TargetName="check" Property="Opacity" Value="1" />
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Unchecked">
+                                <VisualState.Setters>
+                                    <Setter Property="Stroke" Value="#F3F2F1" />
+                                    <Setter TargetName="check" Property="Opacity" Value="0" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </VisualStateManager.VisualStateGroups>
+            </Border>
+        </ControlTemplate>
+
+        <Style TargetType="RadioButton">
+            <Setter Property="ControlTemplate" Value="{StaticResource RadioButtonTemplate}" />
+        </Style>
     </ContentPage.Resources>
 
-    <ContentPage.Content>
-        <StackLayout Spacing="20">
-            <StackLayout>
-                <Label FontSize="18" Text="Theme" />
+    <VerticalStackLayout Spacing="20">
+        <VerticalStackLayout Spacing="5">
+            <Label Text="Theme" />
 
-                <Frame CornerRadius="20" HasShadow="True">
-                    <Grid
-                        ColumnDefinitions="*,*,*"
-                        RadioButtonGroup.GroupName="Themes"
-                        RadioButtonGroup.SelectedValue="{Binding Path=ThemeSelection}">
-                        <RadioButton
-                            Grid.Column="0"
-                            ControlTemplate="{StaticResource ThemeRadioTemplate}"
-                            HorizontalOptions="CenterAndExpand"
-                            Value="System">
-                            <RadioButton.Content>
-                                <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Label
-                                        FontFamily="Material"
-                                        FontSize="21"
-                                        HorizontalTextAlignment="Center"
-                                        Text="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.Settings}" />
-                                    <Label FontSize="Small" Text="System" />
-                                </StackLayout>
-                            </RadioButton.Content>
-                        </RadioButton>
-                        <RadioButton
-                            Grid.Column="1"
-                            ControlTemplate="{StaticResource ThemeRadioTemplate}"
-                            HorizontalOptions="CenterAndExpand"
-                            Value="Light">
-                            <RadioButton.Content>
-                                <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Label
-                                        FontFamily="Material"
-                                        FontSize="21"
-                                        HorizontalTextAlignment="Center"
-                                        Text="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.LightMode}" />
-                                    <Label FontSize="Small" Text="Light" />
-                                </StackLayout>
-                            </RadioButton.Content>
-                        </RadioButton>
-                        <RadioButton
-                            Grid.Column="2"
-                            ControlTemplate="{StaticResource ThemeRadioTemplate}"
-                            HorizontalOptions="CenterAndExpand"
-                            Value="Dark">
-                            <RadioButton.Content>
-                                <StackLayout HorizontalOptions="Center" VerticalOptions="Center">
-                                    <Label
-                                        FontFamily="Material"
-                                        FontSize="21"
-                                        HorizontalTextAlignment="Center"
-                                        Text="{x:Static steamMobileAuthenticatorCore1:MaterialDesignIcons.DarkMode}" />
-                                    <Label FontSize="Small" Text="Dark" />
-                                </StackLayout>
-                            </RadioButton.Content>
-                        </RadioButton>
-                    </Grid>
-                </Frame>
-            </StackLayout>
+            <Border Padding="15">
+                <Grid
+                    ColumnDefinitions="*,*,*"
+                    RadioButtonGroup.GroupName="Themes"
+                    RadioButtonGroup.SelectedValue="{Binding Path=ThemeSelection}">
+                    <RadioButton Grid.Column="0" Value="System">
+                        <RadioButton.Content>
+                            <VerticalStackLayout
+                                HorizontalOptions="Center"
+                                Spacing="5"
+                                VerticalOptions="Center">
+                                <Label
+                                    FontFamily="Material"
+                                    FontSize="21"
+                                    HorizontalOptions="Center"
+                                    HorizontalTextAlignment="Center"
+                                    Text="{x:Static mobile:MaterialDesignIcons.Settings}" />
+                                <Label
+                                    HorizontalOptions="Center"
+                                    HorizontalTextAlignment="Center"
+                                    Text="System" />
+                            </VerticalStackLayout>
+                        </RadioButton.Content>
+                    </RadioButton>
 
-            <StackLayout>
-                <Label FontSize="18" Text="Options" />
+                    <RadioButton Grid.Column="1" Value="Light">
+                        <RadioButton.Content>
+                            <VerticalStackLayout
+                                HorizontalOptions="Center"
+                                Spacing="5"
+                                VerticalOptions="Center">
+                                <Label
+                                    FontFamily="Material"
+                                    FontSize="21"
+                                    HorizontalOptions="Center"
+                                    HorizontalTextAlignment="Center"
+                                    Text="{x:Static mobile:MaterialDesignIcons.LightMode}" />
+                                <Label
+                                    HorizontalOptions="Center"
+                                    HorizontalTextAlignment="Center"
+                                    Text="Light" />
+                            </VerticalStackLayout>
+                        </RadioButton.Content>
+                    </RadioButton>
 
-                <StackLayout Spacing="10">
-                    <Frame
-                        xct:TouchEffect.Command="{Binding Path=SettingsClickedCommand}"
-                        xct:TouchEffect.CommandParameter="{Binding Source={x:Reference AutoConfirmSwitch}}"
-                        xct:TouchEffect.NativeAnimation="True"
-                        CornerRadius="20"
-                        HasShadow="True">
+                    <RadioButton Grid.Column="2" Value="Dark">
+                        <RadioButton.Content>
+                            <VerticalStackLayout
+                                HorizontalOptions="Center"
+                                Spacing="5"
+                                VerticalOptions="Center">
+                                <Label
+                                    FontFamily="Material"
+                                    FontSize="21"
+                                    HorizontalOptions="Center"
+                                    HorizontalTextAlignment="Center"
+                                    Text="{x:Static mobile:MaterialDesignIcons.DarkMode}" />
+                                <Label
+                                    HorizontalOptions="Center"
+                                    HorizontalTextAlignment="Center"
+                                    Text="Dark" />
+                            </VerticalStackLayout>
+                        </RadioButton.Content>
+                    </RadioButton>
+                </Grid>
+            </Border>
+        </VerticalStackLayout>
 
-                        <StackLayout Orientation="Horizontal">
+        <VerticalStackLayout Spacing="5">
+            <Label Text="Options" />
+
+            <VerticalStackLayout Spacing="10">
+                <Border>
+                    <effectsView:SfEffectsView TouchUpCommand="{Binding SettingsClickedCommand}" TouchUpCommandParameter="{Binding Source={x:Reference AutoConfirmSwitch}}">
+                        <Grid Margin="15" ColumnDefinitions="*,Auto">
                             <Label
-                                FontSize="Small"
-                                HorizontalOptions="Start"
+                                Grid.Column="0"
+                                LineBreakMode="WordWrap"
+                                MaxLines="2"
                                 Text="Auto-confirm market sell transactions"
-                                VerticalTextAlignment="Center" />
+                                VerticalOptions="Center" />
 
                             <Switch
                                 x:Name="AutoConfirmSwitch"
-                                HorizontalOptions="EndAndExpand"
-                                IsToggled="{Binding Path=AppSettings.AutoConfirmMarketTransactions, Mode=OneWay}" />
-                        </StackLayout>
-                    </Frame>
+                                Grid.Column="1"
+                                IsToggled="{Binding Path=AppSettings.AutoConfirmMarketTransactions}"
+                                VerticalOptions="Center" />
+                        </Grid>
+                    </effectsView:SfEffectsView>
+                </Border>
 
-                    <Frame
-                        xct:TouchEffect.Command="{Binding Path=SettingsClickedCommand}"
-                        xct:TouchEffect.CommandParameter="{Binding Source={x:Reference IntervalEntry}}"
-                        xct:TouchEffect.NativeAnimation="True"
-                        CornerRadius="20"
-                        HasShadow="True">
-
-                        <StackLayout Orientation="Horizontal">
+                <Border>
+                    <effectsView:SfEffectsView TouchUpCommand="{Binding SettingsClickedCommand}" TouchUpCommandParameter="{Binding Source={x:Reference IntervalEntry}}">
+                        <Grid Margin="15" ColumnDefinitions="*,Auto">
                             <Label
-                                FontSize="Small"
-                                HorizontalOptions="Start"
-                                Text="Seconds between checking for trade confirmations"
-                                VerticalOptions="Center"
-                                VerticalTextAlignment="Center" />
+                                Grid.Column="0"
+                                LineBreakMode="WordWrap"
+                                MaxLines="2"
+                                Text="Seconds between checking confirmations"
+                                VerticalOptions="Center" />
 
                             <Entry
                                 x:Name="IntervalEntry"
-                                Margin="0,0,5,0"
+                                Grid.Column="1"
                                 CursorPosition="2"
-                                HorizontalOptions="EndAndExpand"
                                 Keyboard="Numeric"
                                 MaxLength="2"
-                                Text="{Binding Path=AppSettings.PeriodicCheckingInterval}">
+                                Text="{Binding Path=AppSettings.PeriodicCheckingInterval}"
+                                VerticalOptions="Center">
 
                                 <Entry.Behaviors>
-                                    <xct:UserStoppedTypingBehavior Command="{Binding Path=StoppedTypingCommand}" />
+                                    <toolkit:UserStoppedTypingBehavior Command="{Binding StoppedTypingCommand}" ShouldDismissKeyboardAutomatically="True" />
                                 </Entry.Behaviors>
-                            </Entry>
-                        </StackLayout>
-                    </Frame>
-                </StackLayout>
-            </StackLayout>
 
-            <StackLayout>
-                <Label FontSize="18" Text="{Binding CurrentVersion, StringFormat='Current version: {0}'}" />
-                <Button Command="{Binding CheckForUpdatesCommand}" Text="check for updates" />
-            </StackLayout>
-        </StackLayout>
-    </ContentPage.Content>
+                            </Entry>
+                        </Grid>
+                    </effectsView:SfEffectsView>
+                </Border>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Spacing="5">
+            <Label Text="{Binding CurrentVersion, StringFormat='Current version: {0}'}" />
+            <Button Command="{Binding CheckForUpdatesCommand}" Text="Check for updates" />
+        </VerticalStackLayout>
+    </VerticalStackLayout>
 </ContentPage>

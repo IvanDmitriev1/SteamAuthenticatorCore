@@ -1,112 +1,79 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="SteamAuthenticatorCore.Mobile.Pages.ConfirmationsPage"
-    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:effects="http://xamarin.com/schemas/2020/toolkit"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="clr-namespace:SteamAuthenticatorCore.Mobile.Controls"
+    xmlns:effectsView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
     xmlns:models="clr-namespace:SteamAuthCore.Models;assembly=SteamAuthCore"
-    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
-    xmlns:views="clr-namespace:SteamAuthenticatorCore.Mobile.Views;assembly=SteamAuthenticatorCore.Mobile"
+    xmlns:viewModels1="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
     x:Name="Page"
-    Title="Confirmations page"
-    Padding="10,10,10,0"
-    d:BindingContext="{d:DesignInstance viewModels:ConfirmationViewModel,
-                                        IsDesignTimeCreatable=False}"
-    BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor},
-                                      Light={StaticResource LightBackgroundColor}}"
-    Shell.NavBarHasShadow="True"
-    Shell.TabBarIsVisible="False"
-    mc:Ignorable="d">
+    Title="ConfirmationsPage"
+    x:DataType="viewModels1:ConfirmationViewModel"
+    Shell.TabBarIsVisible="False">
 
     <Shell.TitleView>
-        <views:MyTitleView
+        <controls:MyTitleView
             CloseCommand="{Binding Path=HideCountTitleViewCommand}"
             IsCloseButtonVisible="False"
             IsContentVisible="{Binding Path=IsCountTitleViewVisible}"
-            TitleName="Confirmations page">
-            <views:MyTitleView.Content>
-                <Label FontSize="Large" Text="{Binding Path=SelectedItems.Count}" />
-            </views:MyTitleView.Content>
-        </views:MyTitleView>
+            TitleName="Confirmations">
+
+            <Label FontSize="Large" Text="{Binding Path=SelectedItems.Count}" />
+        </controls:MyTitleView>
     </Shell.TitleView>
 
-    <ContentPage.Content>
-        <Grid RowDefinitions="*, Auto">
-            <RefreshView
-                Grid.Row="0"
-                Command="{Binding Path=RefreshConfirmationsCommand}"
-                IsRefreshing="{Binding Path=IsRefreshing}">
+    <Grid RowDefinitions="*, Auto">
+        <RefreshView
+            Grid.Row="0"
+            Command="{Binding Path=RefreshConfirmationsCommand}"
+            IsRefreshing="{Binding Path=IsRefreshing}">
 
-                <CollectionView ItemsSource="{Binding Path=Account.Confirmations}">
-                    <CollectionView.EmptyView>
-                        <StackLayout>
-                            <Label
-                                Margin="0,10,0,0"
-                                FontSize="Large"
-                                HorizontalOptions="Center"
-                                Text="Nothing to confirm" />
-                        </StackLayout>
-                    </CollectionView.EmptyView>
+            <CollectionView ItemsSource="{Binding Path=Account.Confirmations}">
 
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:ConfirmationModel">
-                            <StackLayout Margin="0,0,0,5">
-                                <Frame
-                                    Padding="20,15"
-                                    effects:TouchEffect.Command="{Binding Source={x:Reference Page}, Path=BindingContext.ElementTouchCommand}"
-                                    effects:TouchEffect.CommandParameter="{Binding Source={RelativeSource Self}}"
-                                    effects:TouchEffect.NativeAnimation="True"
-                                    CornerRadius="20">
-                                    <StackLayout Orientation="Horizontal">
-                                        <StackLayout HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand">
-                                            <Label Text="{Binding Path=ItemName, Mode=OneTime}" />
-                                            <Label Text="{Binding Path=Description, Mode=OneTime}" />
-                                            <Label Text="{Binding Path=Time, Mode=OneTime}" />
-                                        </StackLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ConfirmationModel">
+                        <Border Margin="0,0,0,5">
+                            <effectsView:SfEffectsView TouchUpCommand="{Binding Source={x:Reference Page}, Path=BindingContext.ElementTouchCommand}" TouchUpCommandParameter="{Binding Source={RelativeSource Mode=Self}}">
+                                <StackLayout Margin="20,15" Orientation="Horizontal">
+                                    <VerticalStackLayout HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand">
+                                        <Label Text="{Binding Path=ItemName, Mode=OneTime}" />
+                                        <Label Text="{Binding Path=Description, Mode=OneTime}" />
+                                        <Label Text="{Binding Path=Time, Mode=OneTime}" />
+                                    </VerticalStackLayout>
 
-                                        <Image
-                                            Margin="0,0,13,0"
-                                            Aspect="AspectFit"
-                                            HorizontalOptions="End"
-                                            Scale="4"
-                                            Source="{Binding Path=BitMapImage, Mode=OneTime}"
-                                            VerticalOptions="CenterAndExpand" />
-                                    </StackLayout>
-                                </Frame>
-                            </StackLayout>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </RefreshView>
+                                    <Image
+                                        HeightRequest="50"
+                                        HorizontalOptions="End"
+                                        Source="{Binding Path=BitMapImage, Mode=OneTime}"
+                                        VerticalOptions="CenterAndExpand" />
+                                </StackLayout>
+                            </effectsView:SfEffectsView>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
 
-            <Grid Grid.Row="1" Margin="18,10,18,30">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+        <Grid Grid.Row="1" Margin="18,30,18,30">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-                <Button
-                    Grid.Column="0"
-                    Margin="0,0,10,0"
-                    effects:TouchEffect.NativeAnimation="True"
-                    Command="{Binding Path=ConfirmSelectedCommand, Mode=OneTime}"
-                    CornerRadius="20"
-                    FontSize="Medium"
-                    HorizontalOptions="FillAndExpand"
-                    Text="Confirm" />
+            <Button
+                Grid.Column="0"
+                Margin="0,0,10,0"
+                Command="{Binding Path=ConfirmSelectedCommand, Mode=OneTime}"
+                HorizontalOptions="FillAndExpand"
+                Text="Confirm" />
 
-                <Button
-                    Grid.Column="1"
-                    Margin="10,0,0,0"
-                    effects:TouchEffect.NativeAnimation="True"
-                    Command="{Binding Path=CancelSelectedCommand, Mode=OneTime}"
-                    CornerRadius="20"
-                    FontSize="Medium"
-                    HorizontalOptions="FillAndExpand"
-                    Text="Cancel" />
-            </Grid>
+            <Button
+                Grid.Column="1"
+                Margin="10,0,0,0"
+                Command="{Binding Path=CancelSelectedCommand, Mode=OneTime}"
+                HorizontalOptions="FillAndExpand"
+                Text="Cancel" />
         </Grid>
-    </ContentPage.Content>
+    </Grid>
 </ContentPage>

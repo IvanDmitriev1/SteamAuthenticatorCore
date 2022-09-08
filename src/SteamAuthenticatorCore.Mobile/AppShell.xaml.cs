@@ -1,16 +1,14 @@
 ﻿using SteamAuthenticatorCore.Mobile.Pages;
-using Xamarin.Forms;
 
-namespace SteamAuthenticatorCore.Mobile
+namespace SteamAuthenticatorCore.Mobile;
+
+public partial class AppShell : Shell
 {
-    public partial class AppShell : Xamarin.Forms.Shell
+    public AppShell()
     {
-        public AppShell()
-        {
-            InitializeComponent();
+        InitializeComponent();
 
-            Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
-            Routing.RegisterRoute(nameof(ConfirmationsPage), typeof(ConfirmationsPage));
-        }
+        Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
+        Routing.RegisterRoute(nameof(ConfirmationsPage), typeof(ConfirmationsPage));
     }
 }
