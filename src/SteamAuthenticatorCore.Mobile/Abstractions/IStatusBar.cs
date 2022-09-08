@@ -1,6 +1,6 @@
 ﻿namespace SteamAuthenticatorCore.Mobile.Abstractions;
 
-public interface IEnvironment
+public interface IStatusBar
 {
     void SetStatusBarColor(Color color, bool darkStatusBarTint);
     void SetStatusBarColorBasedOnAppTheme();

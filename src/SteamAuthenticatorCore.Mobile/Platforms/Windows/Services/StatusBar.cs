@@ -2,7 +2,7 @@
 
 namespace SteamAuthenticatorCore.Mobile.Services;
 
-public class PlatformEnvironment : IEnvironment
+public class StatusBar : IStatusBar
 {
     public void SetStatusBarColor(Color color, bool darkStatusBarTint) => throw new NotImplementedException();
     public void SetStatusBarColorBasedOnAppTheme() => throw new NotImplementedException();

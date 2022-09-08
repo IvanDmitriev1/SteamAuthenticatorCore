@@ -1,7 +1,5 @@
 ﻿using CommunityToolkit.Maui;
-using SteamAuthCore.Extensions;
 using SteamAuthenticatorCore.Mobile.Extensions;
-using SteamAuthenticatorCore.Shared.Extensions;
 using Syncfusion.Maui.Core.Hosting;
 
 namespace SteamAuthenticatorCore.Mobile;
@@ -13,6 +11,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .AddAllServices()
             .ConfigureSyncfusionCore()
             .UseMauiCommunityToolkit()
             .UseSentry(options =>
@@ -26,10 +25,6 @@ public static class MauiProgram
             {
                 fonts.AddFont("MaterialIcons-Regular.ttf", "Material");
             });
-
-        builder.Services.AddSteamAuthCoreServices();
-        builder.Services.AddSharedServices();
-        builder.Services.AddAllServices();
 
         return builder.Build();
     }

@@ -7,7 +7,7 @@ using Platform = Microsoft.Maui.ApplicationModel.Platform;
 
 namespace SteamAuthenticatorCore.Mobile.Services;
 
-public class PlatformEnvironment : IEnvironment
+public class StatusBar : IStatusBar
 {
     public void SetStatusBarColor(Color color, bool darkStatusBarTint)
     {

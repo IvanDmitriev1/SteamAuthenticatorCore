@@ -7,11 +7,11 @@ namespace SteamAuthenticatorCore.Mobile;
 
 public partial class App : Application
 {
-    public App(IEnvironment environment, AppSettings appSettings, IPlatformImplementations platformImplementations, AccountsFileServiceResolver accountsFileServiceResolver, IUpdateService updateService)
+    public App(IStatusBar statusBar, AppSettings appSettings, IPlatformImplementations platformImplementations, AccountsFileServiceResolver accountsFileServiceResolver, IUpdateService updateService)
     {
         InitializeComponent();
 
-        _environment = environment;
+        _statusBar = statusBar;
         _appSettings = appSettings;
         _platformImplementations = platformImplementations;
         _accountsFileServiceResolver = accountsFileServiceResolver;
@@ -21,7 +21,7 @@ public partial class App : Application
         Shell.Current.Navigating += CurrentOnNavigating;
     }
 
-    private readonly IEnvironment _environment;
+    private readonly IStatusBar _statusBar;
     private readonly AppSettings _appSettings;
     private readonly IPlatformImplementations _platformImplementations;
     private readonly AccountsFileServiceResolver _accountsFileServiceResolver;
@@ -52,7 +52,7 @@ public partial class App : Application
 
     private void OnRequestedThemeChanged(object? sender, AppThemeChangedEventArgs e)
     {
-        _environment.SetStatusBarColorBasedOnAppTheme();
+        _statusBar.SetStatusBarColorBasedOnAppTheme();
     }
 
     private static void CurrentOnNavigating(object? sender, ShellNavigatingEventArgs e)

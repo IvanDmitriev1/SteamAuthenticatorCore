@@ -6,12 +6,12 @@ namespace SteamAuthenticatorCore.Mobile.Services;
 
 public class PlatformImplementations : IPlatformImplementations
 {
-    public PlatformImplementations(IEnvironment environment)
+    public PlatformImplementations(IStatusBar statusBar)
     {
-        _environment = environment;
+        _statusBar = statusBar;
     }
 
-    private readonly IEnvironment _environment;
+    private readonly IStatusBar _statusBar;
 
     public object CreateImage(string imageSource)
     {
@@ -47,6 +47,6 @@ public class PlatformImplementations : IPlatformImplementations
             _ => throw new ArgumentOutOfRangeException(nameof(theme), theme, null)
         };
 
-        _environment.SetStatusBarColorBasedOnAppTheme();
+        _statusBar.SetStatusBarColorBasedOnAppTheme();
     }
 }
