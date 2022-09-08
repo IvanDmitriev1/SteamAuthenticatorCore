@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace SteamAuthenticatorCore.MobileMaui.Controls;
+namespace SteamMobileAuthenticator.Controls;
 
 public class MyTitleView : ContentView
 {

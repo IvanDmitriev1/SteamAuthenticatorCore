@@ -1,9 +1,10 @@
-﻿using SteamAuthenticatorCore.MobileMaui.Abstractions;
+﻿using SteamAuthenticatorCore.MobileMaui;
+using SteamAuthenticatorCore.MobileMaui.Abstractions;
 using SteamAuthenticatorCore.MobileMaui.Pages;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
 
-namespace SteamAuthenticatorCore.MobileMaui;
+namespace SteamMobileAuthenticator;
 
 public partial class App : Application
 {

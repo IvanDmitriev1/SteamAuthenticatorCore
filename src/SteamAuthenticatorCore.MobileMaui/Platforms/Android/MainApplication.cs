@@ -1,11 +1,10 @@
 ﻿using Android.App;
 using Android.Runtime;
-using Java.Net;
 
 [assembly: UsesPermission(Android.Manifest.Permission.Vibrate)]
 [assembly: UsesPermission(Android.Manifest.Permission.RequestInstallPackages)]
 
-namespace SteamAuthenticatorCore.MobileMaui;
+namespace SteamMobileAuthenticator;
 
 [Application]
 public class MainApplication : MauiApplication

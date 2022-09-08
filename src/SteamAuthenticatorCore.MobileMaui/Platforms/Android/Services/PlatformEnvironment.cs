@@ -5,7 +5,7 @@ using Microsoft.Maui.Controls.Compatibility.Platform.Android;
 using SteamAuthenticatorCore.MobileMaui.Abstractions;
 using Platform = Microsoft.Maui.ApplicationModel.Platform;
 
-namespace SteamAuthenticatorCore.MobileMaui.Services;
+namespace SteamMobileAuthenticator.Services;
 
 public class PlatformEnvironment : IEnvironment
 {

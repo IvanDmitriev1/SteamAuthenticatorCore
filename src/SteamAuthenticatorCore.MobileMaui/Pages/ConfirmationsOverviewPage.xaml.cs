@@ -1,4 +1,5 @@
 using SteamAuthenticatorCore.MobileMaui.ViewModels;
+using ConfirmationsOverviewViewModel = SteamMobileAuthenticator.ViewModels.ConfirmationsOverviewViewModel;
 
 namespace SteamAuthenticatorCore.MobileMaui.Pages;
 

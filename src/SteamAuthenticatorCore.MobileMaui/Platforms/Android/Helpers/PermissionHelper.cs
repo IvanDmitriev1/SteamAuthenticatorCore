@@ -1,6 +1,6 @@
 ﻿using Android.Content.PM;
 
-namespace SteamAuthenticatorCore.MobileMaui.Platforms.Android.Helpers;
+namespace SteamMobileAuthenticator.Platforms.Android.Helpers;
 
 internal static class PermissionHelper
 {

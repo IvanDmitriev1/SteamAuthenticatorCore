@@ -2,7 +2,7 @@
 using File = Java.IO.File;
 using Uri = Android.Net.Uri;
 
-namespace SteamAuthenticatorCore.MobileMaui.Platforms.Android.Extensions;
+namespace SteamMobileAuthenticator.Platforms.Android.Extensions;
 
 internal static class FileProviderExtensions
 {

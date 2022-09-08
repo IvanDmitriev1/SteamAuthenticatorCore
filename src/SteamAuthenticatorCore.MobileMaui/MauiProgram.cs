@@ -4,7 +4,7 @@ using SteamAuthenticatorCore.MobileMaui.Extensions;
 using SteamAuthenticatorCore.Shared.Extensions;
 using Syncfusion.Maui.Core.Hosting;
 
-namespace SteamAuthenticatorCore.MobileMaui;
+namespace SteamMobileAuthenticator;
 
 public static class MauiProgram
 {

@@ -3,13 +3,13 @@
     x:Class="SteamAuthenticatorCore.MobileMaui.Pages.TokenPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:controls="clr-namespace:SteamAuthenticatorCore.MobileMaui.Controls"
+    xmlns:controls="clr-namespace:SteamMobileAuthenticator.Controls"
     xmlns:effectsView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
     xmlns:models="clr-namespace:SteamAuthCore.Models;assembly=SteamAuthCore"
-    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.MobileMaui.ViewModels"
+    xmlns:viewModels1="clr-namespace:SteamMobileAuthenticator.ViewModels"
     x:Name="Page"
     Title="Token"
-    x:DataType="viewModels:TokenViewModel">
+    x:DataType="viewModels1:TokenViewModel">
 
     <Shell.TitleView>
         <controls:MyTitleView

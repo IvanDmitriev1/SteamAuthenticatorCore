@@ -5,7 +5,7 @@ using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
 
-namespace SteamAuthenticatorCore.MobileMaui.ViewModels;
+namespace SteamMobileAuthenticator.ViewModels;
 
 public partial class LoginViewModel : ObservableObject, IRecipient<UpdateAccountInLoginPageMessage>
 {

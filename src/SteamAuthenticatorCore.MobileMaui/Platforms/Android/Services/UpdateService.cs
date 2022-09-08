@@ -2,16 +2,16 @@
 using Android.App;
 using Android.Content;
 using CommunityToolkit.Maui.Alerts;
-using SteamAuthenticatorCore.MobileMaui.Platforms.Android.BroadcastReceivers;
-using SteamAuthenticatorCore.MobileMaui.Platforms.Android.Extensions;
-using SteamAuthenticatorCore.MobileMaui.Platforms.Android.Helpers;
+using SteamMobileAuthenticator.Platforms.Android.BroadcastReceivers;
+using SteamMobileAuthenticator.Platforms.Android.Extensions;
+using SteamMobileAuthenticator.Platforms.Android.Helpers;
 using SteamAuthenticatorCore.Shared.Models;
 using SteamAuthenticatorCore.Shared.Services;
 using Application = Microsoft.Maui.Controls.Application;
 using Environment = Android.OS.Environment;
 using Uri = Android.Net.Uri;
 
-namespace SteamAuthenticatorCore.MobileMaui.Services;
+namespace SteamMobileAuthenticator.Services;
 
 public class UpdateService : UpdateServiceBase
 {

@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Models;
-using SteamAuthenticatorCore.Shared;
-using CommunityToolkit.Mvvm.Input;
 
-namespace SteamAuthenticatorCore.MobileMaui.ViewModels;
+namespace SteamMobileAuthenticator.ViewModels;
 
 public partial class SettingsViewModel : ObservableObject
 {

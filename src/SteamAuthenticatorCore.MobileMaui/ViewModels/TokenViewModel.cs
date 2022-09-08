@@ -11,7 +11,7 @@ using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
 using SteamAuthenticatorCore.Shared.ViewModel;
 
-namespace SteamAuthenticatorCore.MobileMaui.ViewModels;
+namespace SteamMobileAuthenticator.ViewModels;
 
 public partial class TokenViewModel : TokenViewModelBase, IDisposable
 {

@@ -1,4 +1,5 @@
 using SteamAuthenticatorCore.MobileMaui.ViewModels;
+using LoginViewModel = SteamMobileAuthenticator.ViewModels.LoginViewModel;
 
 namespace SteamAuthenticatorCore.MobileMaui.Pages;
 

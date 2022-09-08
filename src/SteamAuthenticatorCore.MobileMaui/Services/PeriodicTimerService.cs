@@ -1,6 +1,6 @@
 ﻿using SteamAuthenticatorCore.Shared.Abstractions;
 
-namespace SteamAuthenticatorCore.MobileMaui.Services;
+namespace SteamMobileAuthenticator.Services;
 
 internal class PeriodicTimerService : IPlatformTimer
 {

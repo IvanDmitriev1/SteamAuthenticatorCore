@@ -2,7 +2,7 @@
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Models;
 
-namespace SteamAuthenticatorCore.MobileMaui.Services;
+namespace SteamMobileAuthenticator.Services;
 
 public class PlatformImplementations : IPlatformImplementations
 {

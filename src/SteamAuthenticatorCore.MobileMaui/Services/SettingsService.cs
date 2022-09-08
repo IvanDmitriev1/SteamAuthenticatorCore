@@ -1,8 +1,8 @@
-﻿using SteamAuthenticatorCore.Shared;
-using System.Reflection;
+﻿using System.Reflection;
+using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
 
-namespace SteamAuthenticatorCore.MobileMaui.Services;
+namespace SteamMobileAuthenticator.Services;
 
 public class SettingsService : ISettingsService
 {

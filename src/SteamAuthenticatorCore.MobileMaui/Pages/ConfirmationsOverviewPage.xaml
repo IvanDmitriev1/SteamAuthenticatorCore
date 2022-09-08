@@ -5,12 +5,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:abstractions="clr-namespace:SteamAuthenticatorCore.Shared.Abstractions;assembly=SteamAuthenticatorCore.Shared"
     xmlns:behaviors="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-    xmlns:controls="clr-namespace:SteamAuthenticatorCore.MobileMaui.Controls"
+    xmlns:controls="clr-namespace:SteamMobileAuthenticator.Controls"
     xmlns:effectsView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
-    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.MobileMaui.ViewModels"
+    xmlns:viewModels1="clr-namespace:SteamMobileAuthenticator.ViewModels"
     x:Name="Page"
     Title="Confirmations overview"
-    x:DataType="viewModels:ConfirmationsOverviewViewModel">
+    x:DataType="viewModels1:ConfirmationsOverviewViewModel">
 
     <Shell.TitleView>
         <controls:MyTitleView TitleName="Confirmations" />

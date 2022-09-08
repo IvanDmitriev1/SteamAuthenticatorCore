@@ -2,7 +2,7 @@
 using Android.Content;
 using CommunityToolkit.Maui.Alerts;
 
-namespace SteamAuthenticatorCore.MobileMaui.Platforms.Android.BroadcastReceivers;
+namespace SteamMobileAuthenticator.Platforms.Android.BroadcastReceivers;
 
 [BroadcastReceiver(Exported = false)]
 [IntentFilter(new string[] { DownloadManager.ActionDownloadComplete })]

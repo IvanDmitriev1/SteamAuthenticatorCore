@@ -3,7 +3,7 @@ using SteamAuthCore.Models;
 using SteamAuthenticatorCore.MobileMaui.Models;
 using SteamAuthenticatorCore.Shared.Abstractions;
 
-namespace SteamAuthenticatorCore.MobileMaui.Services;
+namespace SteamMobileAuthenticator.Services;
 
 internal class ConfirmationViewModelFactory : IConfirmationViewModelFactory
 {

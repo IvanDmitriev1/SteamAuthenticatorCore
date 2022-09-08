@@ -4,7 +4,7 @@ using SteamAuthCore.Models;
 using SteamAuthenticatorCore.MobileMaui.Extensions;
 using SteamAuthenticatorCore.Shared.Abstractions;
 
-namespace SteamAuthenticatorCore.MobileMaui.Services;
+namespace SteamMobileAuthenticator.Services;
 
 internal class SecureStorageService : IAccountsFileService
 {

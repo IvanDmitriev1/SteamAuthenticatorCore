@@ -3,13 +3,13 @@
     x:Class="SteamAuthenticatorCore.MobileMaui.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:controls="clr-namespace:SteamAuthenticatorCore.MobileMaui.Controls"
+    xmlns:controls="clr-namespace:SteamMobileAuthenticator.Controls"
     xmlns:effectsView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
     xmlns:steamMobileAuthenticatorCore1="clr-namespace:SteamAuthenticatorCore.MobileMaui"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.MobileMaui.ViewModels"
+    xmlns:viewModels1="clr-namespace:SteamMobileAuthenticator.ViewModels"
     Title="Settings"
-    x:DataType="viewModels:SettingsViewModel">
+    x:DataType="viewModels1:SettingsViewModel">
 
     <Shell.TitleView>
         <controls:MyTitleView TitleName="Settings" />

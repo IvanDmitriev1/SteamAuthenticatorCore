@@ -5,7 +5,12 @@ using SteamAuthenticatorCore.MobileMaui.ViewModels;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Models;
+using SteamMobileAuthenticator.Services;
 using SteamMobileAuthenticator.ViewModels;
+using ConfirmationsOverviewViewModel = SteamMobileAuthenticator.ViewModels.ConfirmationsOverviewViewModel;
+using LoginViewModel = SteamMobileAuthenticator.ViewModels.LoginViewModel;
+using SettingsViewModel = SteamMobileAuthenticator.ViewModels.SettingsViewModel;
+using TokenViewModel = SteamMobileAuthenticator.ViewModels.TokenViewModel;
 
 namespace SteamAuthenticatorCore.MobileMaui.Extensions;
 

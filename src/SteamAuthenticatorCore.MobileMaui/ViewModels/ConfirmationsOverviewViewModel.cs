@@ -5,7 +5,7 @@ using SteamAuthenticatorCore.MobileMaui.Pages;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
 
-namespace SteamAuthenticatorCore.MobileMaui.ViewModels;
+namespace SteamMobileAuthenticator.ViewModels;
 
 public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
 {
