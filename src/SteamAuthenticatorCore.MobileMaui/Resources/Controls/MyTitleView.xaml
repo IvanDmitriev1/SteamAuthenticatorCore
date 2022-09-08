@@ -22,7 +22,6 @@
                 ColumnDefinitions="Auto, *"
                 IsVisible="{TemplateBinding Path=IsContentVisible}">
                 <Button
-                    x:Name="PART_Button"
                     Margin="0,0,6,0"
                     Padding="0"
                     BackgroundColor="Transparent"

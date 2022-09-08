@@ -97,7 +97,10 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
         var account = (SteamGuardAccount) _longPressView!.BindingContext;
 
         if (await _accountService.RefreshSession(account, CancellationToken.None))
+        {
+            await _accountsFileServiceResolver.Invoke().SaveAccount(account);
             await Application.Current!.MainPage!.DisplayAlert("Refresh session", "Session has been refreshed", "Ok");
+        }
         else
             await Application.Current!.MainPage!.DisplayAlert("Refresh session", "Failed to refresh session", "Ok");
     }

@@ -20,7 +20,7 @@
         <ShellContent
             Title="Confirmations"
             ContentTemplate="{DataTemplate pages:ConfirmationsOverviewPage}"
-            Route="ConfirmationsPage">
+            Route="ConfirmationsOverviewPage">
             <ShellContent.Icon>
                 <x:FontImage FontFamily="Material" Glyph="{x:Static local:MaterialDesignIcons.ConfirmationNum}" />
             </ShellContent.Icon>

@@ -5,6 +5,7 @@ using SteamAuthenticatorCore.MobileMaui.ViewModels;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Models;
+using SteamMobileAuthenticator.ViewModels;
 
 namespace SteamAuthenticatorCore.MobileMaui.Extensions;
 
@@ -38,6 +39,7 @@ internal static class ServiceCollectionExtensions
         services.AddTransient<TokenViewModel>();
         services.AddTransient<LoginViewModel>();
         services.AddTransient<ConfirmationsOverviewViewModel>();
+        services.AddTransient<ConfirmationViewModel>();
     }
 
     private static void AddPages(this IServiceCollection services)

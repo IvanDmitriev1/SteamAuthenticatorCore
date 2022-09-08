@@ -79,13 +79,11 @@
 
         <CollectionView Grid.Row="1" ItemsSource="{Binding Accounts}">
             <CollectionView.EmptyView>
-                <ContentView>
-                    <Label
-                        HorizontalOptions="Center"
-                        HorizontalTextAlignment="Center"
-                        Text="No items to display"
-                        VerticalOptions="Start" />
-                </ContentView>
+                <Label
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    Text="No items to display"
+                    VerticalOptions="Start" />
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>

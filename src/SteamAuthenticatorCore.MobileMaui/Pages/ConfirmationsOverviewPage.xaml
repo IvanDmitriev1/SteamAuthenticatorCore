@@ -24,9 +24,10 @@
         <CollectionView ItemsSource="{Binding Path=ConfirmationService.ConfirmationViewModels}">
             <CollectionView.EmptyView>
                 <Label
-                    FontSize="Medium"
+                    HorizontalOptions="Center"
                     HorizontalTextAlignment="Center"
-                    Text="Nothing to confirm" />
+                    Text="Nothing to confirm"
+                    VerticalOptions="Start" />
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>
@@ -34,14 +35,8 @@
                     <Border Margin="0,0,0,5">
                         <effectsView:SfEffectsView TouchUpCommand="{Binding Source={x:Reference Page}, Path=BindingContext.TouchedCommand}" TouchUpCommandParameter="{Binding}">
                             <Grid Margin="20,15" ColumnDefinitions="*,Auto">
-                                <Label Text="{Binding Account.AccountName, Mode=OneTime}" />
-
-                                <HorizontalStackLayout Margin="0,0,5,0">
-
-                                    <Label Text="Confirmations:" />
-                                    <Label Text="{Binding Path=Confirmations.Count}" />
-
-                                </HorizontalStackLayout>
+                                <Label Grid.Column="0" Text="{Binding Account.AccountName, Mode=OneTime}" />
+                                <Label Grid.Column="1" Text="{Binding Path=Confirmations.Count}" />
                             </Grid>
                         </effectsView:SfEffectsView>
                     </Border>

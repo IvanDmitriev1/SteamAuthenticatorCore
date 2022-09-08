@@ -6,7 +6,8 @@
     xmlns:controls="clr-namespace:SteamAuthenticatorCore.MobileMaui.Controls"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.MobileMaui.ViewModels"
     Title="Login"
-    x:DataType="viewModels:LoginViewModel">
+    x:DataType="viewModels:LoginViewModel"
+    Shell.TabBarIsVisible="False">
 
     <Shell.TitleView>
         <controls:MyTitleView TitleName="Login" />

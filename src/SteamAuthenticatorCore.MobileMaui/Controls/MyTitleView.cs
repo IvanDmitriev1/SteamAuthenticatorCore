@@ -13,6 +13,9 @@ public class MyTitleView : ContentView
     public static readonly BindableProperty CloseCommandProperty = 
         BindableProperty.Create(nameof(CloseCommand), typeof(ICommand), typeof(MyTitleView), null, BindingMode.OneTime);
 
+    public static readonly BindableProperty IsCloseButtonVisibleProperty =
+        BindableProperty.Create(nameof(IsCloseButtonVisible), typeof(bool), typeof(MyTitleView), true);
+
     public string TitleName
     {
         get => (string)GetValue (TitleNameProperty);
@@ -29,5 +32,11 @@ public class MyTitleView : ContentView
     {
         get => (ICommand)GetValue (CloseCommandProperty);
         set => SetValue (CloseCommandProperty, value);
+    }
+
+    public bool IsCloseButtonVisible
+    {
+        get => (bool)GetValue (IsCloseButtonVisibleProperty);
+        set => SetValue (IsCloseButtonVisibleProperty, value);
     }
 }
