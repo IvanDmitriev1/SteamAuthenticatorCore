@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.Content;
 using CommunityToolkit.Maui.Alerts;
+using Microsoft.Extensions.Logging;
 
 namespace SteamAuthenticatorCore.Mobile.Platforms.Android.BroadcastReceivers;
 
@@ -13,13 +14,15 @@ public class DownloadCompleteBroadcastReceiver : BroadcastReceiver
         
     }
 
-    public void RegisterOnSuccessfulCallBack(Action<string> onSuccessful)
+    public void RegisterOnSuccessfulCallBack(ILogger<DownloadCompleteBroadcastReceiver> logger, Action<string> onSuccessful)
     {
+        _logger = logger;
         _onSuccessful = onSuccessful;
         Platform.AppContext.RegisterReceiver(this, new IntentFilter(DownloadManager.ActionDownloadComplete));
     }
 
     private Action<string> _onSuccessful = null!;
+    private ILogger<DownloadCompleteBroadcastReceiver> _logger = null!;
 
     public override void OnReceive(Context? context, Intent? intent)
     {
@@ -44,15 +47,24 @@ public class DownloadCompleteBroadcastReceiver : BroadcastReceiver
 
         if (status == (int) DownloadStatus.Successful)
         {
-            _onSuccessful.Invoke(downloadFilePath);
-
-            Platform.AppContext.UnregisterReceiver(this);
-            Dispose();
+            try
+            {
+                _onSuccessful.Invoke(downloadFilePath);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Exception when invoking  _onSuccessful action");
+            }
+            finally
+            {
+                Platform.AppContext.UnregisterReceiver(this);
+                Dispose();
+            }
         }
         else if (status == (int) DownloadStatus.Failed)
         {
             var code = cursor.GetInt(cursor.GetColumnIndex(DownloadManager.ColumnReason));
-            Toast.Make($"Download filed: {code}").Show();
+            Toast.Make($"Download filed: {code}").Show().ConfigureAwait(false);
 
             Platform.AppContext.UnregisterReceiver(this);
             Dispose();

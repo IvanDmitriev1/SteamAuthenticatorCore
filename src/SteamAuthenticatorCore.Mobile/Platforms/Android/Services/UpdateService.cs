@@ -2,6 +2,7 @@
 using Android.App;
 using Android.Content;
 using CommunityToolkit.Maui.Alerts;
+using Microsoft.Extensions.Logging;
 using SteamAuthenticatorCore.Mobile.Platforms.Android.BroadcastReceivers;
 using SteamAuthenticatorCore.Mobile.Platforms.Android.Extensions;
 using SteamAuthenticatorCore.Mobile.Platforms.Android.Helpers;
@@ -15,9 +16,14 @@ namespace SteamAuthenticatorCore.Mobile.Services;
 
 public class UpdateService : UpdateServiceBase
 {
-    public UpdateService(HttpClient client) : base(client)
+    public UpdateService(HttpClient client, ILoggerFactory loggerFactory) : base(client)
     {
+        _loggerFactory = loggerFactory;
+        _logger = loggerFactory.CreateLogger<UpdateService>();
     }
+
+    private readonly ILogger<UpdateService> _logger;
+    private readonly ILoggerFactory _loggerFactory;
 
     private static readonly string FileName = $"{Platform.AppContext.PackageName}.apk";
     private const string DownloadedFileKey = "DownloadedFilePath";
@@ -39,6 +45,7 @@ public class UpdateService : UpdateServiceBase
         }
         catch (Exception e)
         {
+            _logger.LogError(e, "Failed to fetch update");
             await Application.Current!.MainPage!.DisplayAlert("Updater", "Failed to fetch update", "ok");
             return;
         }
@@ -61,7 +68,7 @@ public class UpdateService : UpdateServiceBase
         }
         catch (Exception e)
         {
-            //
+            _logger.LogError(e, "Failed to start downloading");
         }
     }
 
@@ -80,7 +87,7 @@ public class UpdateService : UpdateServiceBase
             return;
 
         var broadcastReceiver = new DownloadCompleteBroadcastReceiver();
-        broadcastReceiver.RegisterOnSuccessfulCallBack(OnSuccessful);
+        broadcastReceiver.RegisterOnSuccessfulCallBack(_loggerFactory.CreateLogger<DownloadCompleteBroadcastReceiver>(), OnSuccessful);
 
         var manager = DownloadManager.FromContext(Platform.AppContext)!;
         var request = new DownloadManager.Request(Uri.Parse(updateModel.DownloadUrl));

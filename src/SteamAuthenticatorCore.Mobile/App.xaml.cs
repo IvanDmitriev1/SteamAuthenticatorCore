@@ -37,7 +37,7 @@ public partial class App : Application
         await _accountsFileServiceResolver.Invoke().InitializeOrRefreshAccounts().ConfigureAwait(false);
         await _updateService.CheckForUpdateAndDownloadInstall(true).ConfigureAwait(false);
 
-        RequestedThemeChanged += OnRequestedThemeChanged;
+        OnResume();
     }
 
     protected override void OnSleep()
