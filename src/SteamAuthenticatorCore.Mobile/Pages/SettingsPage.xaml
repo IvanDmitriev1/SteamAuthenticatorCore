@@ -169,7 +169,7 @@
                 </Border>
 
                 <Border>
-                    <effectsView:SfEffectsView TouchUpCommand="{Binding SettingsClickedCommand}" TouchUpCommandParameter="{Binding Source={x:Reference IntervalEntry}}">
+                    <effectsView:SfEffectsView TouchUpCommand="{Binding SettingsClickedCommand}">
                         <Grid Margin="15" ColumnDefinitions="*,Auto">
                             <Label
                                 Grid.Column="0"
@@ -178,20 +178,10 @@
                                 Text="Seconds between checking confirmations"
                                 VerticalOptions="Center" />
 
-                            <Entry
-                                x:Name="IntervalEntry"
+                            <Label
                                 Grid.Column="1"
-                                CursorPosition="2"
-                                Keyboard="Numeric"
-                                MaxLength="2"
                                 Text="{Binding Path=AppSettings.PeriodicCheckingInterval}"
-                                VerticalOptions="Center">
-
-                                <Entry.Behaviors>
-                                    <toolkit:UserStoppedTypingBehavior Command="{Binding StoppedTypingCommand}" ShouldDismissKeyboardAutomatically="True" />
-                                </Entry.Behaviors>
-
-                            </Entry>
+                                VerticalOptions="Center" />
                         </Grid>
                     </effectsView:SfEffectsView>
                 </Border>
