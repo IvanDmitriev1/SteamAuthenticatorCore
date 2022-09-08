@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:SteamAuthenticatorCore.Mobile.Controls"
+    xmlns:mobile="clr-namespace:SteamAuthenticatorCore.Mobile">
+
+    <ControlTemplate x:Key="Template" x:DataType="controls:MyTitleView">
+        <Grid>
+            <Label
+                Grid.Row="0"
+                FontAttributes="Bold"
+                FontSize="18"
+                IsVisible="{TemplateBinding Path=IsContentVisible,
+                                            Converter={StaticResource InvertedBoolConverter}}"
+                Opacity="1"
+                Text="{TemplateBinding Path=TitleName}"
+                VerticalTextAlignment="Center" />
+
+            <Grid
+                Padding="0,10,10,10"
+                ColumnDefinitions="Auto, *"
+                IsVisible="{TemplateBinding Path=IsContentVisible}">
+                <Button
+                    Margin="0,0,6,0"
+                    Padding="0"
+                    BackgroundColor="Transparent"
+                    Command="{TemplateBinding Path=CloseCommand}"
+                    FontFamily="Material"
+                    FontSize="35"
+                    HeightRequest="45"
+                    HorizontalOptions="Start"
+                    IsVisible="{TemplateBinding Path=IsCloseButtonVisible}"
+                    Text="{x:Static mobile:MaterialDesignIcons.Close}"
+                    TextColor="{AppThemeBinding Dark={StaticResource DarkTextColor},
+                                                Light={StaticResource LightTextColor}}"
+                    VerticalOptions="Center"
+                    WidthRequest="45" />
+
+                <ScrollView
+                    Grid.Column="1"
+                    Margin="{TemplateBinding Margin}"
+                    HeightRequest="45"
+                    HorizontalOptions="{TemplateBinding HorizontalOptions}"
+                    HorizontalScrollBarVisibility="Never"
+                    Orientation="Horizontal">
+                    <ContentPresenter Content="{TemplateBinding Content, Mode=OneTime}" />
+                </ScrollView>
+            </Grid>
+        </Grid>
+    </ControlTemplate>
+
+    <Style TargetType="controls:MyTitleView">
+        <Setter Property="ControlTemplate" Value="{StaticResource Template}" />
+    </Style>
+
+
+</ResourceDictionary>

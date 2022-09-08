@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleDrive", "src\Dependen
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wpf.Ui", "src\Dependencies\wpfui\src\Wpf.Ui\Wpf.Ui.csproj", "{1ADC87D1-8963-4100-845A-18477824718E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.MobileMaui", "src\SteamAuthenticatorCore.MobileMaui\SteamAuthenticatorCore.MobileMaui.csproj", "{219B7917-15E8-4A12-8144-59E9548407C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.Mobile", "src\SteamAuthenticatorCore.Mobile\SteamAuthenticatorCore.Mobile.csproj", "{219B7917-15E8-4A12-8144-59E9548407C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
