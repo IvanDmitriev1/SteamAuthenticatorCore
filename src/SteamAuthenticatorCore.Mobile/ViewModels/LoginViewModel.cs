@@ -1,13 +1,9 @@
-﻿using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
-using Xamarin.Forms;
-using ObservableObject = CommunityToolkit.Mvvm.ComponentModel.ObservableObject;
-
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
@@ -36,7 +32,6 @@ public partial class LoginViewModel : ObservableObject, IRecipient<UpdateAccount
         IsPasswordBoxEnabled = false;
 
         await _loginService.RefreshLogin(Account, Password);
-        await Shell.Current.GoToAsync("..");
 
         IsPasswordBoxEnabled = true;
     }

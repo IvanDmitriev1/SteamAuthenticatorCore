@@ -1,12 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Models;
-using Xamarin.Essentials;
-using Xamarin.Forms;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
@@ -28,12 +24,12 @@ public partial class SettingsViewModel : ObservableObject
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-    private readonly IUpdateService _updateService;
 
+    private readonly IUpdateService _updateService;
+    private string _themeSelection;
+    
     public AppSettings AppSettings { get; }
     public string CurrentVersion { get; }
-
-    private string _themeSelection;
 
     public string ThemeSelection
     {
@@ -42,21 +38,33 @@ public partial class SettingsViewModel : ObservableObject
         {
             _themeSelection = value;
             AppSettings.Theme = Enum.Parse<Theme>(value);
-            OnPropertyChanged(nameof(ThemeSelection));
+            OnPropertyChanged();
         }
     }
 
     [RelayCommand]
-    private void OnSettingsClicked(object obj)
+    private void ChangeAutoConfirmation()
     {
-        switch (obj)
+        AppSettings.AutoConfirmMarketTransactions = !AppSettings.AutoConfirmMarketTransactions;
+    }
+
+    [RelayCommand]
+    private async Task ChangeCheckingIntervalPrompt()
+    {
+        try
         {
-            case Switch:
-                AppSettings.AutoConfirmMarketTransactions = !AppSettings.AutoConfirmMarketTransactions;
+            var value = await Application.Current!.MainPage!.DisplayPromptAsync("Settings", "Seconds between checking confirmations", "Change", "Cancel", string.Empty, 2, Keyboard.Numeric, AppSettings.PeriodicCheckingInterval.ToString());
+            if (!int.TryParse(value, out var result))
                 return;
-            case Entry entry:
-                entry.Focus();
+
+            if (result < 15)
                 return;
+
+            AppSettings.PeriodicCheckingInterval = result;
+        }
+        catch (Exception)
+        {
+            //
         }
     }
 

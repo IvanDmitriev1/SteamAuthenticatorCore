@@ -1,45 +1,50 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using SteamAuthCore.Abstractions;
-using SteamAuthenticatorCore.Mobile.Services.Interfaces;
+﻿using SteamAuthenticatorCore.Mobile.Abstractions;
+using SteamAuthenticatorCore.Mobile.Helpers;
+using SteamAuthenticatorCore.Mobile.Pages;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
-using Xamarin.Essentials;
-using Xamarin.Forms;
 
 namespace SteamAuthenticatorCore.Mobile;
 
 public partial class App : Application
 {
-    public App()
+    public App(IStatusBar statusBar, AppSettings appSettings, IPlatformImplementations platformImplementations, AccountsFileServiceResolver accountsFileServiceResolver, IUpdateService updateService, IConfirmationService confirmationService)
     {
         InitializeComponent();
+
+        _statusBar = statusBar;
+        _appSettings = appSettings;
+        _platformImplementations = platformImplementations;
+        _accountsFileServiceResolver = accountsFileServiceResolver;
+        _updateService = updateService;
+        _confirmationService = confirmationService;
+
         MainPage = new AppShell();
-
-        _environment = Startup.ServiceProvider.GetRequiredService<IEnvironment>();
-        
-        var settings = Startup.ServiceProvider.GetRequiredService<AppSettings>();
-        settings.LoadSettings();
-
-        var platformImplementations = Startup.ServiceProvider.GetRequiredService<IPlatformImplementations>();
-        platformImplementations.SetTheme(settings.Theme);
+        Shell.Current.Navigating += CurrentOnNavigating;
     }
 
-    private readonly IEnvironment _environment;
+    private readonly IStatusBar _statusBar;
+    private readonly AppSettings _appSettings;
+    private readonly IPlatformImplementations _platformImplementations;
+    private readonly AccountsFileServiceResolver _accountsFileServiceResolver;
+    private readonly IUpdateService _updateService;
+    private readonly IConfirmationService _confirmationService;
 
     protected async override void OnStart()
     {
         VersionTracking.Track();
 
-        await Startup.ServiceProvider.GetRequiredService<ITimeAligner>().AlignTimeAsync();
+        _appSettings.LoadSettings();
+        _platformImplementations.SetTheme(_appSettings.Theme);
 
-        var accountsFileServiceResolver = Startup.ServiceProvider.GetRequiredService<AccountsFileServiceResolver>();
-        await accountsFileServiceResolver.Invoke().InitializeOrRefreshAccounts();
+        ColorsCollection.Add("SecondBackgroundSelectionColor", "SecondLightBackgroundSelectionColor", "SecondDarkBackgroundSelectionColor");
+        ColorsCollection.Add("SecondBackgroundColor", "SecondLightBackgroundColor", "SecondDarkBackground");
 
-        var confirmationBase = Startup.ServiceProvider.GetRequiredService<IConfirmationService>();
-        confirmationBase.Initialize();
+        await _accountsFileServiceResolver.Invoke().InitializeOrRefreshAccounts().ConfigureAwait(false);
+        await _updateService.CheckForUpdateAndDownloadInstall(true).ConfigureAwait(false);
+        _confirmationService.Initialize();
 
-        var updateService = Startup.ServiceProvider.GetRequiredService<IUpdateService>();
-        await updateService.CheckForUpdateAndDownloadInstall(true);
+        OnResume();
     }
 
     protected override void OnSleep()
@@ -52,16 +57,22 @@ public partial class App : Application
         RequestedThemeChanged += OnRequestedThemeChanged;
     }
 
-    private void OnRequestedThemeChanged(object sender, AppThemeChangedEventArgs e)
+    private void OnRequestedThemeChanged(object? sender, AppThemeChangedEventArgs e)
     {
-        ApplyStatusBarColor();
+        _statusBar.SetStatusBarColorBasedOnAppTheme();
     }
 
-    private void ApplyStatusBarColor()
+    private static void CurrentOnNavigating(object? sender, ShellNavigatingEventArgs e)
     {
-        if (Application.Current.RequestedTheme == OSAppTheme.Dark)
-            _environment.SetStatusBarColor((Color) Application.Current.Resources["SecondDarkBackground"], false);
-        else
-            _environment.SetStatusBarColor((Color) Application.Current.Resources["SecondLightBackgroundColor"], true);
+        if (e.Target.Location.OriginalString != string.Empty)
+            return;
+
+        if (e.Current.Location.OriginalString.Contains(nameof(TokenPage)))
+            return;
+
+        e.Cancel();
+
+        var shell = (Shell)sender!;
+        shell.GoToAsync($"//{nameof(TokenPage)}");
     }
 }

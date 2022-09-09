@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using SteamAuthCore.Abstractions;
+﻿using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Mobile.Models;
 using SteamAuthenticatorCore.Shared.Abstractions;

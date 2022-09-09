@@ -1,12 +1,9 @@
-﻿using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthenticatorCore.Mobile.Pages;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
-using Xamarin.Essentials;
-using Xamarin.Forms;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 

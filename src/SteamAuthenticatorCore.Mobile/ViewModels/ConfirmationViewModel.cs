@@ -1,6 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Threading;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -9,18 +7,16 @@ using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Mobile.Extensions;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
-using Xamarin.Essentials;
-using Xamarin.Forms;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
-internal partial class ConfirmationViewModel : ObservableObject, IRecipient<UpdateAccountConfirmationPageMessage>
+public partial class ConfirmationViewModel : ObservableObject, IRecipient<UpdateAccountConfirmationPageMessage>, IDisposable
 {
     public ConfirmationViewModel(IMessenger messenger, ISteamGuardAccountService accountService)
     {
         _accountService = accountService;
         messenger.Register(this);
-        SelectedItems = new ObservableCollection<(Frame, ConfirmationModel)>();
+        SelectedItems = new ObservableCollection<(VisualElement, ConfirmationModel)>();
     }
 
     private readonly ISteamGuardAccountService _accountService;
@@ -34,36 +30,32 @@ internal partial class ConfirmationViewModel : ObservableObject, IRecipient<Upda
     [ObservableProperty]
     private bool _isCountTitleViewVisible;
 
-    public ObservableCollection<(Frame, ConfirmationModel)> SelectedItems { get; }
+    public ObservableCollection<(VisualElement, ConfirmationModel)> SelectedItems { get; }
 
     public void Receive(UpdateAccountConfirmationPageMessage message)
     {
         Account = message.Value;
     }
 
-    [RelayCommand]
-    private async Task HideCountTitleView()
+    public void Dispose()
     {
-        var tasks = new Task[SelectedItems.Count];
-
-        for (var i = 0; i < SelectedItems.Count; i++)
-        {
-            var frame = SelectedItems[i].Item1;
-            tasks[i] = frame.BackgroundColorTo((Color) Application.Current.Resources[
-                Application.Current.RequestedTheme == OSAppTheme.Light
-                    ? "SecondLightBackgroundColor"
-                    : "SecondDarkBackground"], 500);
-        }
-
-        IsCountTitleViewVisible = false;
-        await Task.WhenAll(tasks);
         SelectedItems.Clear();
     }
 
     [RelayCommand]
-    private Task OnElementTouch(Frame frame)
+    private async Task HideCountTitleView()
     {
-        var item = (frame, (ConfirmationModel) frame.BindingContext);
+        SelectedItems.Clear();
+        IsCountTitleViewVisible = false;
+
+        if (_account.Confirmations.Count == 0)
+            await Shell.Current.GoToAsync("..");
+    }
+
+    [RelayCommand]
+    private async Task OnElementTouch(VisualElement view)
+    {
+        var item = (view, (ConfirmationModel) view.BindingContext);
 
         if (SelectedItems.Contains(item))
         {
@@ -72,19 +64,14 @@ internal partial class ConfirmationViewModel : ObservableObject, IRecipient<Upda
             if (SelectedItems.Count == 0)
                 IsCountTitleViewVisible = false;
 
-            return frame.BackgroundColorTo((Color) Application.Current.Resources[
-                Application.Current.RequestedTheme == OSAppTheme.Light
-                    ? "SecondLightBackgroundColor"
-                    : "SecondDarkBackground"], 500);
+            await view.ChangeBackgroundColorToWithColorsCollection("SecondBackgroundColor");
+            return;
         }
 
         SelectedItems.Add(item);
         IsCountTitleViewVisible = true;
 
-        return frame.BackgroundColorTo((Color) Application.Current.Resources[
-            Application.Current.RequestedTheme == OSAppTheme.Light
-                ? "SecondLightBackgroundSelectionColor"
-                : "SecondDarkBackgroundSelectionColor"], 500);
+        await view.ChangeBackgroundColorToWithColorsCollection("SecondBackgroundSelectionColor");
     }
 
     [RelayCommand]
@@ -98,8 +85,6 @@ internal partial class ConfirmationViewModel : ObservableObject, IRecipient<Upda
         {
             //
         }
-
-        
 
         await _account.CheckConfirmations();
         IsRefreshing = false;
