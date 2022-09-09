@@ -73,18 +73,16 @@ internal class ConfirmationService : IConfirmationService, IDisposable
                 if (!settings.AutoConfirmMarketTransactions)
                     break;
 
-                await _timer.StopAsync().ConfigureAwait(false);
-                _timer.StartOrRestart(TimeSpan.FromSeconds(settings.PeriodicCheckingInterval), TradeAutoConfirmationTimerOnTick);
+                await _timer.StartOrRestart(TimeSpan.FromSeconds(settings.PeriodicCheckingInterval), TradeAutoConfirmationTimerOnTick).ConfigureAwait(false);
                 break;
             case nameof(settings.AutoConfirmMarketTransactions):
                 switch (settings.AutoConfirmMarketTransactions)
                 {
                     case true:
-                        await _timer.StopAsync();
-                        _timer.StartOrRestart(TimeSpan.FromSeconds(settings.PeriodicCheckingInterval), TradeAutoConfirmationTimerOnTick);
+                        await _timer.StartOrRestart(TimeSpan.FromSeconds(settings.PeriodicCheckingInterval), TradeAutoConfirmationTimerOnTick).ConfigureAwait(false);
                         break;
                     case false:
-                        await _timer.StopAsync();
+                        await _timer.DisposeAsync().ConfigureAwait(false);
                         break;
                 }
                 break;

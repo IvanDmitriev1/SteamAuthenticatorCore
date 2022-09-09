@@ -7,13 +7,15 @@ namespace SteamAuthenticatorCore.Shared.Services;
 
 public class BackgroundTaskService : ITimer
 {
-    private PeriodicTimer? _periodicTimer;
-    private CancellationTokenSource? _cts;
     private Task? _timerTask;
-    private Func<CancellationToken, ValueTask>? _func;
+    private PeriodicTimer _periodicTimer = null!;
+    private CancellationTokenSource _cts = null!;
+    private Func<CancellationToken, ValueTask> _func = null!;
 
-    public void StartOrRestart(TimeSpan timeSpan, Func<CancellationToken, ValueTask> func)
+    public async ValueTask StartOrRestart(TimeSpan timeSpan, Func<CancellationToken, ValueTask> func)
     {
+        await DisposeAsync().ConfigureAwait(false);
+
         _periodicTimer = new PeriodicTimer(timeSpan);
         _func = func;
         _cts = new CancellationTokenSource();
@@ -21,29 +23,24 @@ public class BackgroundTaskService : ITimer
         _timerTask = DoWordAsync();
     }
 
-    public async ValueTask StopAsync()
+    public async ValueTask DisposeAsync()
     {
         if (_timerTask is null)
             return;
 
-        _cts!.Cancel();
+        _cts.Cancel();
         await _timerTask.ConfigureAwait(false);
-        _cts!.Dispose();
-        _periodicTimer!.Dispose();
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await StopAsync().ConfigureAwait(false);
+        _periodicTimer.Dispose();
+        _cts.Dispose();
     }
 
     private async Task DoWordAsync()
     {
         try
         {
-            while (await _periodicTimer!.WaitForNextTickAsync(_cts!.Token).ConfigureAwait(false))
+            while (await _periodicTimer!.WaitForNextTickAsync(_cts.Token).ConfigureAwait(false))
             {
-                await _func!.Invoke(_cts.Token).ConfigureAwait(false);
+                await _func.Invoke(_cts.Token).ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException)

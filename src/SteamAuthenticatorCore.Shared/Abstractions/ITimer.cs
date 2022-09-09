@@ -6,6 +6,5 @@ namespace SteamAuthenticatorCore.Shared.Abstractions;
 
 public interface ITimer : IAsyncDisposable
 {
-    void StartOrRestart(TimeSpan timeSpan, Func<CancellationToken, ValueTask> func);
-    ValueTask StopAsync();
+    ValueTask StartOrRestart(TimeSpan timeSpan, Func<CancellationToken, ValueTask> func);
 }
