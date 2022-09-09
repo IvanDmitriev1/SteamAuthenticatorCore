@@ -4,7 +4,7 @@ using SteamAuthenticatorCore.Shared.Models;
 
 namespace SteamAuthenticatorCore.Mobile.Services;
 
-public class PlatformImplementations : IPlatformImplementations
+internal class PlatformImplementations : IPlatformImplementations
 {
     public PlatformImplementations(IStatusBar statusBar)
     {

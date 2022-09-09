@@ -1,4 +1,4 @@
-using LoginViewModel = SteamAuthenticatorCore.Mobile.ViewModels.LoginViewModel;
+using SteamAuthenticatorCore.Mobile.ViewModels;
 
 namespace SteamAuthenticatorCore.Mobile.Pages;
 

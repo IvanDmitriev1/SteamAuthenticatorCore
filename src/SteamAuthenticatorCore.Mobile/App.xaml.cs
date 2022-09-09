@@ -1,4 +1,5 @@
 ﻿using SteamAuthenticatorCore.Mobile.Abstractions;
+using SteamAuthenticatorCore.Mobile.Helpers;
 using SteamAuthenticatorCore.Mobile.Pages;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
@@ -33,6 +34,9 @@ public partial class App : Application
 
         _appSettings.LoadSettings();
         _platformImplementations.SetTheme(_appSettings.Theme);
+
+        ColorsCollection.Add("SecondBackgroundSelectionColor", "SecondLightBackgroundSelectionColor", "SecondDarkBackgroundSelectionColor");
+        ColorsCollection.Add("SecondBackgroundColor", "SecondLightBackgroundColor", "SecondDarkBackground");
 
         await _accountsFileServiceResolver.Invoke().InitializeOrRefreshAccounts().ConfigureAwait(false);
         await _updateService.CheckForUpdateAndDownloadInstall(true).ConfigureAwait(false);

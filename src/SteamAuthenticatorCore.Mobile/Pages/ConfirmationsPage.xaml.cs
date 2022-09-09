@@ -1,4 +1,4 @@
-using ConfirmationViewModel = SteamAuthenticatorCore.Mobile.ViewModels.ConfirmationViewModel;
+using SteamAuthenticatorCore.Mobile.ViewModels;
 
 namespace SteamAuthenticatorCore.Mobile.Pages;
 

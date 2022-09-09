@@ -1,11 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
+using SteamAuthenticatorCore.Mobile.Extensions;
 using SteamAuthenticatorCore.Mobile.Pages;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
@@ -44,7 +44,7 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
     private readonly AccountsFileServiceResolver _accountsFileServiceResolver;
     private readonly ISteamGuardAccountService _accountService;
 
-    private View? _longPressView;
+    private VisualElement? _longPressView;
     private bool _pressed;
 
     [ObservableProperty]
@@ -154,19 +154,13 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
     }
 
     [RelayCommand]
-    private async Task OnLongPress(View view)
+    private async Task OnLongPress(VisualElement view)
     {
         await UnselectLongPressFrame();
 
         IsLongPressTitleViewVisible = true;
 
-        var value = Application.Current!.RequestedTheme == AppTheme.Light
-            ? "SecondLightBackgroundSelectionColor"
-            : "SecondDarkBackgroundSelectionColor";
-
-        Application.Current!.Resources.TryGetValue(value, out var color);
-
-        view.BackgroundColor = (Color)color!;
+        await view.ChangeBackgroundColorToWithColorsCollection("SecondBackgroundSelectionColor");
         _longPressView = view;
         _pressed = true;
 
@@ -192,13 +186,7 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
         if (_longPressView is null) 
             return;
 
-        var value = Application.Current!.RequestedTheme == AppTheme.Light
-            ? "SecondLightBackgroundColor"
-            : "SecondDarkBackground";
-
-        Application.Current!.Resources.TryGetValue(value, out var color);
-
-        await _longPressView.BackgroundColorTo((Color)color!, 16, 150);
+        await _longPressView.ChangeBackgroundColorToWithColorsCollection("SecondBackgroundColor"); 
         _longPressView = null;
     }
 }

@@ -1,10 +1,10 @@
 ﻿using System.Collections.ObjectModel;
-using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
+using SteamAuthenticatorCore.Mobile.Extensions;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
 
@@ -16,7 +16,7 @@ public partial class ConfirmationViewModel : ObservableObject, IRecipient<Update
     {
         _accountService = accountService;
         messenger.Register(this);
-        SelectedItems = new ObservableCollection<(View, ConfirmationModel)>();
+        SelectedItems = new ObservableCollection<(VisualElement, ConfirmationModel)>();
     }
 
     private readonly ISteamGuardAccountService _accountService;
@@ -30,7 +30,7 @@ public partial class ConfirmationViewModel : ObservableObject, IRecipient<Update
     [ObservableProperty]
     private bool _isCountTitleViewVisible;
 
-    public ObservableCollection<(View, ConfirmationModel)> SelectedItems { get; }
+    public ObservableCollection<(VisualElement, ConfirmationModel)> SelectedItems { get; }
 
     public void Receive(UpdateAccountConfirmationPageMessage message)
     {
@@ -47,28 +47,22 @@ public partial class ConfirmationViewModel : ObservableObject, IRecipient<Update
     {
         var tasks = new Task[SelectedItems.Count];
 
-        var value = Application.Current!.RequestedTheme == AppTheme.Light
-            ? "SecondLightBackgroundColor"
-            : "SecondDarkBackground";
-
-        Application.Current!.Resources.TryGetValue(value, out var color);
-
         for (var i = 0; i < SelectedItems.Count; i++)
         {
             var view = SelectedItems[i].Item1;
-            tasks[i] = view.BackgroundColorTo((Color)color!, 16, 150);
+            await view.ChangeBackgroundColorToWithColorsCollection("SecondBackgroundColor");
         }
 
+        await Task.WhenAll(tasks);
         SelectedItems.Clear();
         IsCountTitleViewVisible = false;
-        await Task.WhenAll(tasks);
 
         if (_account.Confirmations.Count == 0)
             await Shell.Current.GoToAsync("..");
     }
 
     [RelayCommand]
-    private Task OnElementTouch(View view)
+    private async Task OnElementTouch(VisualElement view)
     {
         var item = (view, (ConfirmationModel) view.BindingContext);
 
@@ -79,25 +73,14 @@ public partial class ConfirmationViewModel : ObservableObject, IRecipient<Update
             if (SelectedItems.Count == 0)
                 IsCountTitleViewVisible = false;
 
-            var value = Application.Current!.RequestedTheme == AppTheme.Light
-                ? "SecondLightBackgroundColor"
-                : "SecondDarkBackground";
-
-            Application.Current!.Resources.TryGetValue(value, out var color);
-
-            return view.BackgroundColorTo((Color)color!, 16, 150);
+            await view.ChangeBackgroundColorToWithColorsCollection("SecondBackgroundColor");
+            return;
         }
 
         SelectedItems.Add(item);
         IsCountTitleViewVisible = true;
 
-        var value2 = Application.Current!.RequestedTheme == AppTheme.Light
-            ? "SecondLightBackgroundSelectionColor"
-            : "SecondDarkBackgroundSelectionColor";
-
-        Application.Current!.Resources.TryGetValue(value2, out var color2);
-
-        return view.BackgroundColorTo((Color)color2!, 16, 150);
+        await view.ChangeBackgroundColorToWithColorsCollection("SecondBackgroundSelectionColor");
     }
 
     [RelayCommand]

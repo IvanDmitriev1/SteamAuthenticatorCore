@@ -1,4 +1,4 @@
-using TokenViewModel = SteamAuthenticatorCore.Mobile.ViewModels.TokenViewModel;
+using SteamAuthenticatorCore.Mobile.ViewModels;
 
 namespace SteamAuthenticatorCore.Mobile.Pages;
 

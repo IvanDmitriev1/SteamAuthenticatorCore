@@ -4,7 +4,7 @@ using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Mobile.Services;
 
-public class SettingsService : ISettingsService
+internal class SettingsService : ISettingsService
 {
     private static readonly PropertyInfo[] PropertyInfos = typeof(AppSettings).GetProperties().SkipWhile(info => info.GetCustomAttribute<IgnoreSetting>() is not null).ToArray();
 
