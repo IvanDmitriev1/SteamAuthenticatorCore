@@ -11,13 +11,12 @@ namespace SteamAuthenticatorCore.Shared.ViewModel;
 
 public abstract partial class TokenViewModelBase : ObservableObject
 {
-    protected TokenViewModelBase(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer)
+    protected TokenViewModelBase(ObservableCollection<SteamGuardAccount> accounts, ITimer timer)
     {
         Accounts = accounts;
         _token = string.Empty;
         
-        platformTimer.Initialize(TimeSpan.FromSeconds(2), OnTimer);
-        platformTimer.Start();
+        timer.StartOrRestart(TimeSpan.FromSeconds(2), OnTimer);
     }
 
     private Int64 _currentSteamChunk;
@@ -41,7 +40,7 @@ public abstract partial class TokenViewModelBase : ObservableObject
     private ValueTask OnTimer(CancellationToken arg)
     {
         if (SelectedAccount is null)
-            return new ValueTask(Task.CompletedTask);
+            return ValueTask.CompletedTask;
         
         var steamTime = ITimeAligner.SteamTime;
         _currentSteamChunk = steamTime / 30L;
@@ -58,6 +57,6 @@ public abstract partial class TokenViewModelBase : ObservableObject
         if (IsMobile)
             TokenProgressBar /= 30;
 
-        return new ValueTask(Task.CompletedTask);
+        return ValueTask.CompletedTask;
     }
 }

@@ -64,7 +64,6 @@ internal static class MauiBuilderExtensions
         services.AddSingleton<IPlatformImplementations, PlatformImplementations>();
         services.AddSingleton<IUpdateService, UpdateService>();
         services.AddSingleton<IConfirmationViewModelFactory, ConfirmationViewModelFactory>();
-        services.AddTransient<IPlatformTimer, PeriodicTimerService>();
         services.AddScoped<SecureStorageService>();
 
         services.AddHttpClient<IUpdateService, UpdateService>();
