@@ -20,7 +20,7 @@
         <behaviors:EventToCommandBehavior Command="{Binding Path=AppearingCommand}" EventName="Appearing" />
     </ContentPage.Behaviors>
 
-    <RefreshView Command="{Binding Path=RefreshCommand}" IsRefreshing="{Binding Path=IsRefreshing}">
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing}">
         <CollectionView ItemsSource="{Binding Path=ConfirmationService.ConfirmationViewModels}">
             <CollectionView.EmptyView>
                 <Label

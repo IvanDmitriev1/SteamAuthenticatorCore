@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0-android</TargetFrameworks>
+		<TargetFrameworks>net6.0-android33</TargetFrameworks>
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net6.0-windows10.0.19041.0</TargetFrameworks>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net6.0-tizen</TargetFrameworks> -->
@@ -31,12 +31,12 @@
 		<!--<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>-->
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0-android33.0|AnyCPU'">
-	  <AndroidPackageFormat>apk</AndroidPackageFormat>
-	  <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
-	  <AndroidEnableMultiDex>False</AndroidEnableMultiDex>
-	  <EnableLLVM>False</EnableLLVM>
-	  <AndroidUseAapt2>True</AndroidUseAapt2>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0-android33|AnyCPU'">
+		<AndroidPackageFormat>apk</AndroidPackageFormat>
+		<AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
+		<AndroidEnableMultiDex>False</AndroidEnableMultiDex>
+		<EnableLLVM>False</EnableLLVM>
+		<AndroidUseAapt2>True</AndroidUseAapt2>
 	</PropertyGroup>
 
 	<ItemGroup>

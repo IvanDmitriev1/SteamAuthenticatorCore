@@ -45,15 +45,6 @@ public partial class ConfirmationViewModel : ObservableObject, IRecipient<Update
     [RelayCommand]
     private async Task HideCountTitleView()
     {
-        var tasks = new Task[SelectedItems.Count];
-
-        for (var i = 0; i < SelectedItems.Count; i++)
-        {
-            var view = SelectedItems[i].Item1;
-            await view.ChangeBackgroundColorToWithColorsCollection("SecondBackgroundColor");
-        }
-
-        await Task.WhenAll(tasks);
         SelectedItems.Clear();
         IsCountTitleViewVisible = false;
 

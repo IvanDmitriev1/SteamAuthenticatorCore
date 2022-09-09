@@ -204,6 +204,7 @@
     </Style>-->
 
     <Style TargetType="RefreshView">
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Dark={StaticResource SecondDarkBackground}, Light={StaticResource SecondLightBackgroundColor}}" />
         <Setter Property="RefreshColor" Value="{StaticResource ActionColor}" />
     </Style>
 
