@@ -8,7 +8,7 @@ namespace SteamAuthenticatorCore.Mobile;
 
 public partial class App : Application
 {
-    public App(IStatusBar statusBar, AppSettings appSettings, IPlatformImplementations platformImplementations, AccountsFileServiceResolver accountsFileServiceResolver, IUpdateService updateService)
+    public App(IStatusBar statusBar, AppSettings appSettings, IPlatformImplementations platformImplementations, AccountsFileServiceResolver accountsFileServiceResolver, IUpdateService updateService, IConfirmationService confirmationService)
     {
         InitializeComponent();
 
@@ -17,6 +17,7 @@ public partial class App : Application
         _platformImplementations = platformImplementations;
         _accountsFileServiceResolver = accountsFileServiceResolver;
         _updateService = updateService;
+        _confirmationService = confirmationService;
 
         MainPage = new AppShell();
         Shell.Current.Navigating += CurrentOnNavigating;
@@ -27,6 +28,7 @@ public partial class App : Application
     private readonly IPlatformImplementations _platformImplementations;
     private readonly AccountsFileServiceResolver _accountsFileServiceResolver;
     private readonly IUpdateService _updateService;
+    private readonly IConfirmationService _confirmationService;
 
     protected async override void OnStart()
     {
@@ -40,6 +42,7 @@ public partial class App : Application
 
         await _accountsFileServiceResolver.Invoke().InitializeOrRefreshAccounts().ConfigureAwait(false);
         await _updateService.CheckForUpdateAndDownloadInstall(true).ConfigureAwait(false);
+        _confirmationService.Initialize();
 
         OnResume();
     }
