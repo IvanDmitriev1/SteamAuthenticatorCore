@@ -26,7 +26,7 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public partial class TokenViewModel : TokenViewModelBase, IDisposable
 {
-    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, TaskBarServiceWrapper taskBarServiceWrapper, IDialogService dialogService, INavigationService navigationService, AppSettings appSettings, IMessenger messenger, AccountsFileServiceResolver accountsFileServiceResolver, ISteamGuardAccountService accountService) : base(accounts, platformTimer)
+    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, ITimer timer, IPlatformImplementations platformImplementations, TaskBarServiceWrapper taskBarServiceWrapper, IDialogService dialogService, INavigationService navigationService, AppSettings appSettings, IMessenger messenger, AccountsFileServiceResolver accountsFileServiceResolver, ISteamGuardAccountService accountService) : base(accounts, timer)
     {
         _platformImplementations = platformImplementations;
         _taskBarServiceWrapper = taskBarServiceWrapper;

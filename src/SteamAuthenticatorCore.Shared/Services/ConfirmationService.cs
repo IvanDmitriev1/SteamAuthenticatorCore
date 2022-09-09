@@ -12,7 +12,7 @@ namespace SteamAuthenticatorCore.Shared.Services;
 
 internal class ConfirmationService : IConfirmationService, IDisposable
 {
-    public ConfirmationService(ObservableCollection<SteamGuardAccount> steamGuardAccounts, AppSettings settings, IPlatformTimer timer, ISteamGuardAccountService accountService, IConfirmationViewModelFactory confirmationViewModelFactory)
+    public ConfirmationService(ObservableCollection<SteamGuardAccount> steamGuardAccounts, AppSettings settings, ITimer timer, ISteamGuardAccountService accountService, IConfirmationViewModelFactory confirmationViewModelFactory)
     {
         ConfirmationViewModels = new ObservableCollection<IConfirmationViewModel>();
 
@@ -25,7 +25,7 @@ internal class ConfirmationService : IConfirmationService, IDisposable
 
     private readonly ObservableCollection<SteamGuardAccount> _steamGuardAccounts;
     private readonly AppSettings _settings;
-    private readonly IPlatformTimer _timer;
+    private readonly ITimer _timer;
     private readonly ISteamGuardAccountService _accountService;
     private readonly IConfirmationViewModelFactory _confirmationViewModelFactory;
 
@@ -43,8 +43,7 @@ internal class ConfirmationService : IConfirmationService, IDisposable
         if (!_settings.AutoConfirmMarketTransactions)
             return;
 
-        _timer.Initialize(TimeSpan.FromSeconds(_settings.PeriodicCheckingInterval), TradeAutoConfirmationTimerOnTick);
-        _timer.Start();
+        _timer.StartOrRestart(TimeSpan.FromSeconds(_settings.PeriodicCheckingInterval), TradeAutoConfirmationTimerOnTick);
     }
     
     public async ValueTask CheckConfirmations()
@@ -62,7 +61,7 @@ internal class ConfirmationService : IConfirmationService, IDisposable
         }
     }
 
-    private void SettingsOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+    private async void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         var settings = (AppSettings) sender!;
         if (!settings.IsInitialized)
@@ -74,18 +73,18 @@ internal class ConfirmationService : IConfirmationService, IDisposable
                 if (!settings.AutoConfirmMarketTransactions)
                     break;
 
-                _timer.Initialize(TimeSpan.FromSeconds(settings.PeriodicCheckingInterval), TradeAutoConfirmationTimerOnTick);
-                _timer.Start();
+                await _timer.StopAsync().ConfigureAwait(false);
+                _timer.StartOrRestart(TimeSpan.FromSeconds(settings.PeriodicCheckingInterval), TradeAutoConfirmationTimerOnTick);
                 break;
             case nameof(settings.AutoConfirmMarketTransactions):
                 switch (settings.AutoConfirmMarketTransactions)
                 {
                     case true:
-                        _timer.Initialize(TimeSpan.FromSeconds(settings.PeriodicCheckingInterval), TradeAutoConfirmationTimerOnTick);
-                        _timer.Start();
+                        await _timer.StopAsync();
+                        _timer.StartOrRestart(TimeSpan.FromSeconds(settings.PeriodicCheckingInterval), TradeAutoConfirmationTimerOnTick);
                         break;
                     case false:
-                        _timer.Stop();
+                        await _timer.StopAsync();
                         break;
                 }
                 break;

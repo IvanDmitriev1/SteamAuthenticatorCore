@@ -89,7 +89,6 @@ public sealed partial class App : Application
                 services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
                 services.AddScoped<LocalDriveAccountsFileService>();
                 services.AddScoped<GoogleDriveAccountsFileService>();
-                services.AddTransient<IPlatformTimer, PeriodicTimerService>();
                 services.AddScoped<IConfirmationViewModelFactory, ConfirmationViewModelFactory>();
                 services.AddScoped<IUpdateService, DesktopUpdateService>();
 
@@ -145,7 +144,7 @@ public sealed partial class App : Application
     {
         _host.StopAsync();
 
-       _serviceScope?.Dispose();
+        _serviceScope?.Dispose();
         _host.Dispose();
     }
 
