@@ -43,14 +43,14 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task OnSettingsClicked(object? obj)
+    private void ChangeAutoConfirmation()
     {
-        if (obj is Switch)
-        {
-            AppSettings.AutoConfirmMarketTransactions = !AppSettings.AutoConfirmMarketTransactions;
-            return;
-        }
+        AppSettings.AutoConfirmMarketTransactions = !AppSettings.AutoConfirmMarketTransactions;
+    }
 
+    [RelayCommand]
+    private async Task ChangeCheckingIntervalPrompt()
+    {
         try
         {
             var value = await Application.Current!.MainPage!.DisplayPromptAsync("Settings", "Seconds between checking confirmations", "Change", "Cancel", string.Empty, 2, Keyboard.Numeric, AppSettings.PeriodicCheckingInterval.ToString());

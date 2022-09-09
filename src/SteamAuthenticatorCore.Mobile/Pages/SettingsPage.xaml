@@ -6,7 +6,6 @@
     xmlns:controls="clr-namespace:SteamAuthenticatorCore.Mobile.Controls"
     xmlns:effectsView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
     xmlns:mobile="clr-namespace:SteamAuthenticatorCore.Mobile"
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
     Title="Settings"
     x:DataType="viewModels:SettingsViewModel">
@@ -146,11 +145,11 @@
         </VerticalStackLayout>
 
         <VerticalStackLayout Spacing="5">
-            <Label Text="Options" />
+            <Label Text="Auto-confirmation options" />
 
             <VerticalStackLayout Spacing="10">
                 <Border>
-                    <effectsView:SfEffectsView TouchUpCommand="{Binding SettingsClickedCommand}" TouchUpCommandParameter="{Binding Source={x:Reference AutoConfirmSwitch}}">
+                    <effectsView:SfEffectsView TouchUpCommand="{Binding ChangeAutoConfirmationCommand}">
                         <Grid Margin="15" ColumnDefinitions="*,Auto">
                             <Label
                                 Grid.Column="0"
@@ -169,7 +168,7 @@
                 </Border>
 
                 <Border>
-                    <effectsView:SfEffectsView TouchUpCommand="{Binding SettingsClickedCommand}">
+                    <effectsView:SfEffectsView TouchUpCommand="{Binding ChangeCheckingIntervalPromptCommand}">
                         <Grid Margin="15" ColumnDefinitions="*,Auto">
                             <Label
                                 Grid.Column="0"
