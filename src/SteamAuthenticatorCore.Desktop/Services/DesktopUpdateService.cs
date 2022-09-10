@@ -95,13 +95,7 @@ internal class DesktopUpdateService : UpdateServiceBase
         }
 
         var currentExeName = AppDomain.CurrentDomain.FriendlyName + ".exe";
-
-        var stringBuilder = new StringBuilder(Assembly.GetExecutingAssembly().Location);
-        stringBuilder[^1] = 'e';
-        stringBuilder[^2] = 'x';
-        stringBuilder[^3] = 'e';
-
-        var currentExePath = stringBuilder.ToString();
+        var currentExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, currentExeName);
 
         var commandLineBuilder = new StringBuilder();
         commandLineBuilder.Append($"taskkill /f /im \"{currentExeName}\"");
