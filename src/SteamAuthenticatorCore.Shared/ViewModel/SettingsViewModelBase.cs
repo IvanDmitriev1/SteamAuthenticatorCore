@@ -7,7 +7,7 @@ namespace SteamAuthenticatorCore.Shared.ViewModel;
 
 public abstract partial class SettingsViewModelBase : ObservableObject
 {
-    public SettingsViewModelBase(AppSettings appSettings, IUpdateService updateService, string currentVersion)
+    protected SettingsViewModelBase(AppSettings appSettings, IUpdateService updateService, string currentVersion)
     {
         _updateService = updateService;
         AppSettings = appSettings;

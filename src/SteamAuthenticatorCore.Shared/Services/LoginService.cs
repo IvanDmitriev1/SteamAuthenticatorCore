@@ -17,16 +17,16 @@ internal sealed class LoginService : ILoginService
     private readonly AccountsFileServiceResolver _accountsFileServiceResolver;
     private readonly IPlatformImplementations _platformImplementations;
 
-    public async Task RefreshLogin(SteamGuardAccount account, string password)
+    public async Task<bool> RefreshLogin(SteamGuardAccount account, string password)
     {
         if (await RefreshSession(new UserLogin(account.AccountName, password), account) is not { } session)
-            return;
+            return false;
 
         account.Session = session;
-        var manifestService = _accountsFileServiceResolver.Invoke();
-        await manifestService.SaveAccount(account);
+        await _accountsFileServiceResolver.Invoke().SaveAccount(account);
 
         await _platformImplementations.DisplayAlert("Login",  "Session successfully refreshed");
+        return true;
     }
 
     private async Task<SessionData?> RefreshSession(UserLogin userLogin, SteamGuardAccount account)
