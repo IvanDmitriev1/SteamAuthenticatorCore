@@ -72,11 +72,8 @@ public abstract partial class TokenViewModelBase : ObservableObject
         _currentSteamChunk = steamTime / 30L;
         var secondsUntilChange = (int)(steamTime - (_currentSteamChunk * 30L));
 
-        if (steamTime != 0)
-        {
-            if (SelectedAccount.GenerateSteamGuardCode() is { } token)
-                Token = token;
-        }
+        if (SelectedAccount.GenerateSteamGuardCode() is { } token)
+            Token = token;
 
         TokenProgressBar = 30 - secondsUntilChange;
 
