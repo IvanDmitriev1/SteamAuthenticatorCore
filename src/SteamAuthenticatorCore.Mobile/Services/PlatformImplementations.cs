@@ -29,9 +29,14 @@ internal class PlatformImplementations : IPlatformImplementations
         await MainThread.InvokeOnMainThreadAsync(method);
     }
 
-    public Task DisplayAlert(string message)
+    public Task DisplayAlert(string title, string message)
     {
-        return Application.Current!.MainPage!.DisplayAlert("Alert", message, "Ok");
+        return Application.Current!.MainPage!.DisplayAlert(title, message, "Ok");
+    }
+
+    public Task<bool> DisplayPrompt(string title, string message, string accept = "Ok", string cancel = "Cancel")
+    {
+        return Application.Current!.MainPage!.DisplayAlert(title, message, accept, cancel);
     }
 
     public void SetTheme(Theme theme)
