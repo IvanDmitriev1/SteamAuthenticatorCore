@@ -64,7 +64,7 @@
                             Icon="Timer24"
                             PageType="{x:Type pages:TokenPage}" />
                         <ui:NavigationItem
-                            Content="Confirmations"
+                            Content="Confirmations overview"
                             Icon="TaskListLtr24"
                             PageType="{x:Type pages:ConfirmationsOverviewPage}" />
                     </ui:NavigationFluent.Items>

@@ -71,12 +71,14 @@ public sealed partial class App : Application
                 services.AddScoped<Container>();
                 services.AddScoped<TokenPage>();
                 services.AddTransient<ConfirmationsOverviewPage>();
+                services.AddTransient<ConfirmationsPage>();
                 services.AddTransient<SettingsPage>();
                 services.AddTransient<LoginPage>();
 
                 services.AddScoped<TokenViewModel>();
                 services.AddScoped<SettingsViewModel>();
                 services.AddScoped<ConfirmationsOverviewViewModel>();
+                services.AddScoped<ConfirmationsViewModel>();
                 services.AddScoped<LoginViewModel>();
 
                 services.AddSingleton<ObservableCollection<SteamGuardAccount>>();
@@ -88,7 +90,6 @@ public sealed partial class App : Application
                 services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
                 services.AddScoped<LocalDriveAccountsFileService>();
                 services.AddScoped<GoogleDriveAccountsFileService>();
-                services.AddScoped<IConfirmationViewModelFactory, ConfirmationViewModelFactory>();
                 services.AddScoped<IUpdateService, DesktopUpdateService>();
 
                 services.AddHttpClient<IUpdateService, DesktopUpdateService>();
