@@ -27,36 +27,30 @@
     </Shell.TitleView>
 
     <Grid RowDefinitions="*, Auto">
-        <RefreshView
-            Grid.Row="0"
-            Command="{Binding Path=RefreshConfirmationsCommand}"
-            IsRefreshing="{Binding Path=IsRefreshing}">
+        <CollectionView ItemsSource="{Binding ConfirmationModel.Confirmations}">
 
-            <CollectionView ItemsSource="{Binding Path=Account.Confirmations}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:ConfirmationModel">
+                    <Border Margin="0,0,0,5">
+                        <effectsView:SfEffectsView TouchUpCommand="{Binding Source={x:Reference Page}, Path=BindingContext.ElementTouchCommand}" TouchUpCommandParameter="{Binding Source={RelativeSource Mode=Self}}">
+                            <StackLayout Margin="20,15" Orientation="Horizontal">
+                                <VerticalStackLayout HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand">
+                                    <Label Text="{Binding Path=ItemName, Mode=OneTime}" />
+                                    <Label Text="{Binding Path=Description, Mode=OneTime}" />
+                                    <Label Text="{Binding Path=Time, Mode=OneTime}" />
+                                </VerticalStackLayout>
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:ConfirmationModel">
-                        <Border Margin="0,0,0,5">
-                            <effectsView:SfEffectsView TouchUpCommand="{Binding Source={x:Reference Page}, Path=BindingContext.ElementTouchCommand}" TouchUpCommandParameter="{Binding Source={RelativeSource Mode=Self}}">
-                                <StackLayout Margin="20,15" Orientation="Horizontal">
-                                    <VerticalStackLayout HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand">
-                                        <Label Text="{Binding Path=ItemName, Mode=OneTime}" />
-                                        <Label Text="{Binding Path=Description, Mode=OneTime}" />
-                                        <Label Text="{Binding Path=Time, Mode=OneTime}" />
-                                    </VerticalStackLayout>
-
-                                    <Image
-                                        HeightRequest="50"
-                                        HorizontalOptions="End"
-                                        Source="{Binding Path=BitMapImage, Mode=OneTime}"
-                                        VerticalOptions="CenterAndExpand" />
-                                </StackLayout>
-                            </effectsView:SfEffectsView>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </RefreshView>
+                                <Image
+                                    HeightRequest="50"
+                                    HorizontalOptions="End"
+                                    Source="{Binding Path=BitMapImage, Mode=OneTime}"
+                                    VerticalOptions="CenterAndExpand" />
+                            </StackLayout>
+                        </effectsView:SfEffectsView>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
         <Grid Grid.Row="1" Margin="18,30,18,30">
             <Grid.ColumnDefinitions>
@@ -67,14 +61,14 @@
             <Button
                 Grid.Column="0"
                 Margin="0,0,10,0"
-                Command="{Binding Path=ConfirmSelectedCommand, Mode=OneTime}"
+                Command="{Binding Path=ConfirmSelectedCommand}"
                 HorizontalOptions="FillAndExpand"
                 Text="Confirm" />
 
             <Button
                 Grid.Column="1"
                 Margin="10,0,0,0"
-                Command="{Binding Path=CancelSelectedCommand, Mode=OneTime}"
+                Command="{Binding Path=CancelSelectedCommand}"
                 HorizontalOptions="FillAndExpand"
                 Text="Cancel" />
         </Grid>

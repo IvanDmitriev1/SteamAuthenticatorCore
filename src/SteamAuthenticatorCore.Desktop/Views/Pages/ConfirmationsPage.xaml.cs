@@ -6,7 +6,7 @@ public partial class ConfirmationsPage
 {
     public ConfirmationsPage(ConfirmationsViewModel viewModel)
     {
-        DataContext = viewModel;
         InitializeComponent();
+        DataContext = viewModel;
     }
 }

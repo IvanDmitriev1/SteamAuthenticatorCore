@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Shared.Abstractions;
@@ -12,14 +13,14 @@ namespace SteamAuthenticatorCore.Shared.Services;
 
 internal class ConfirmationService : IConfirmationService, IDisposable
 {
-    public ConfirmationService(ObservableCollection<SteamGuardAccount> steamGuardAccounts, AppSettings settings, ITimer timer, ISteamGuardAccountService accountService, IConfirmationViewModelFactory confirmationViewModelFactory)
+    public ConfirmationService(ObservableCollection<SteamGuardAccount> steamGuardAccounts, AppSettings settings, ITimer timer, ISteamGuardAccountService accountService, IPlatformImplementations platformImplementations)
     {
-        ConfirmationViewModels = new ObservableCollection<IConfirmationViewModel>();
+        ConfirmationViewModels = new ObservableCollection<Models.ConfirmationModel>();
 
         _steamGuardAccounts = steamGuardAccounts;
         _timer = timer;
         _accountService = accountService;
-        _confirmationViewModelFactory = confirmationViewModelFactory;
+        _platformImplementations = platformImplementations;
         _settings = settings;
     }
 
@@ -27,9 +28,9 @@ internal class ConfirmationService : IConfirmationService, IDisposable
     private readonly AppSettings _settings;
     private readonly ITimer _timer;
     private readonly ISteamGuardAccountService _accountService;
-    private readonly IConfirmationViewModelFactory _confirmationViewModelFactory;
+    private readonly IPlatformImplementations _platformImplementations;
 
-    public ObservableCollection<IConfirmationViewModel> ConfirmationViewModels { get; }
+    public ObservableCollection<Models.ConfirmationModel> ConfirmationViewModels { get; }
 
     public void Dispose()
     {
@@ -57,7 +58,14 @@ internal class ConfirmationService : IConfirmationService, IDisposable
             if (confirmations.Length == 0)
                 continue;
 
-            ConfirmationViewModels.Add(_confirmationViewModelFactory.Create(account, confirmations));
+            var observableCollection = new List<ConfirmationModel>(confirmations.Length);
+            foreach (var confirmation in confirmations)
+            {
+                confirmation.BitMapImage = _platformImplementations.CreateImage(confirmation.ImageSource);
+                observableCollection.Add(confirmation);
+            }
+
+            ConfirmationViewModels.Add(new Models.ConfirmationModel(account, observableCollection));
         }
     }
 
