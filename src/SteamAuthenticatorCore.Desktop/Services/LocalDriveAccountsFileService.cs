@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using SteamAuthCore;
+using Microsoft.Extensions.Logging;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Shared.Abstractions;
 
@@ -12,13 +12,17 @@ namespace SteamAuthenticatorCore.Desktop.Services;
 
 internal class LocalDriveAccountsFileService : IAccountsFileService
 {
-    public LocalDriveAccountsFileService(ObservableCollection<SteamGuardAccount> accounts)
+    public LocalDriveAccountsFileService(ObservableCollection<SteamGuardAccount> accounts, IPlatformImplementations platformImplementations, ILogger<LocalDriveAccountsFileService> logger)
     {
         _accounts = accounts;
+        _platformImplementations = platformImplementations;
+        _logger = logger;
         _maFilesDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SteamAuthenticatorCore.Desktop");
     }
 
     private readonly ObservableCollection<SteamGuardAccount> _accounts;
+    private readonly IPlatformImplementations _platformImplementations;
+    private readonly ILogger<LocalDriveAccountsFileService> _logger;
     private readonly string _maFilesDirectory;
 
     public async ValueTask InitializeOrRefreshAccounts()
@@ -32,12 +36,20 @@ internal class LocalDriveAccountsFileService : IAccountsFileService
             if (!filePath.Contains(IAccountsFileService.AccountFileExtension))
                 continue;
 
-            await using var fileStream = File.OpenRead(filePath);
+            try
+            {
+                await using var fileStream = File.OpenRead(filePath);
 
-            if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(fileStream) is not { } account)
-                continue;
+                if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(fileStream) is not { } account)
+                    continue;
 
-            _accounts.Add(account);
+                _accounts.Add(account);
+            }
+            catch(Exception e)
+            {
+                _logger.LogCritical(e, "Exception when loading accounts");
+                await _platformImplementations.DisplayAlert("Error", $"Failed to load account at {filePath}");
+            }
         }
     }
 
