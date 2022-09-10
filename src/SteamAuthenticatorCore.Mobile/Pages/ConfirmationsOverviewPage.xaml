@@ -1,70 +1,47 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="SteamAuthenticatorCore.Mobile.Pages.ConfirmationsOverviewPage"
-    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:abstractions="clr-namespace:SteamAuthenticatorCore.Shared.Abstractions;assembly=SteamAuthenticatorCore.Shared"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels;assembly=SteamAuthenticatorCore.Mobile"
-    xmlns:views="clr-namespace:SteamAuthenticatorCore.Mobile.Views;assembly=SteamAuthenticatorCore.Mobile"
-    xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+    xmlns:behaviors="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:controls="clr-namespace:SteamAuthenticatorCore.Mobile.Controls"
+    xmlns:effectsView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:models="clr-namespace:SteamAuthenticatorCore.Shared.Models;assembly=SteamAuthenticatorCore.Shared"
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
+    x:Name="Page"
     Title="Confirmations overview"
-    Padding="10,10,10,0"
-    d:BindingContext="{d:DesignInstance viewModels:ConfirmationsOverviewViewModel,
-                                        IsDesignTimeCreatable=False}"
-    BackgroundColor="{AppThemeBinding Dark={StaticResource DarkBackgroundColor},
-                                      Light={StaticResource LightBackgroundColor}}"
-    Shell.NavBarHasShadow="True"
-    mc:Ignorable="d">
+    x:DataType="viewModels:ConfirmationsOverviewViewModel">
 
     <Shell.TitleView>
-        <views:MyTitleView TitleName="Confirmations overview" />
+        <controls:MyTitleView TitleName="Confirmations" />
     </Shell.TitleView>
 
     <ContentPage.Behaviors>
-        <xct:EventToCommandBehavior Command="{Binding Path=AppearingCommand}" EventName="Appearing" />
+        <behaviors:EventToCommandBehavior Command="{Binding Path=AppearingCommand}" EventName="Appearing" />
     </ContentPage.Behaviors>
 
-    <ContentPage.Content>
-        <RefreshView Command="{Binding Path=RefreshCommand}" IsRefreshing="{Binding Path=IsRefreshing}">
-            <CollectionView x:Name="CollectionView" ItemsSource="{Binding Path=ConfirmationService.ConfirmationViewModels}">
-                <CollectionView.EmptyView>
-                    <Label
-                        FontSize="Medium"
-                        HorizontalTextAlignment="Center"
-                        Text="Nothing to confirm" />
-                </CollectionView.EmptyView>
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing}">
+        <CollectionView ItemsSource="{Binding Path=ConfirmationService.ConfirmationViewModels}">
+            <CollectionView.EmptyView>
+                <Label
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    Text="Nothing to confirm"
+                    VerticalOptions="Start" />
+            </CollectionView.EmptyView>
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="abstractions:IConfirmationViewModel">
-                        <StackLayout Margin="0,0,0,5">
-                            <Frame
-                                Padding="20,15"
-                                xct:TouchEffect.Command="{Binding Source={x:Reference CollectionView}, Path=BindingContext.TouchedCommand}"
-                                xct:TouchEffect.CommandParameter="{Binding}"
-                                xct:TouchEffect.NativeAnimation="True"
-                                BorderColor="Transparent"
-                                CornerRadius="20">
-                                <StackLayout Orientation="Horizontal">
-                                    <Label
-                                        FontSize="Medium"
-                                        HorizontalOptions="Start"
-                                        Text="{Binding Account.AccountName, Mode=OneTime}" />
-
-                                    <StackLayout
-                                        Margin="0,0,5,0"
-                                        HorizontalOptions="EndAndExpand"
-                                        Orientation="Horizontal">
-                                        <Label FontSize="Medium" Text="Confirmations:" />
-                                        <Label FontSize="Medium" Text="{Binding Path=Confirmations.Count}" />
-                                    </StackLayout>
-                                </StackLayout>
-                            </Frame>
-                        </StackLayout>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </RefreshView>
-    </ContentPage.Content>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:ConfirmationModel">
+                    <Border Margin="0,0,0,5">
+                        <effectsView:SfEffectsView TouchUpCommand="{Binding Source={x:Reference Page}, Path=BindingContext.TouchedCommand}" TouchUpCommandParameter="{Binding}">
+                            <Grid Margin="20,15" ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0" Text="{Binding Account.AccountName, Mode=OneTime}" />
+                                <Label Grid.Column="1" Text="{Binding Path=Confirmations.Count}" />
+                            </Grid>
+                        </effectsView:SfEffectsView>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </RefreshView>
 </ContentPage>

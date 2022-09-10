@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Sentry;
-using SteamAuthCore;
 using SteamAuthCore.Extensions;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Desktop.Services;
@@ -71,12 +70,14 @@ public sealed partial class App : Application
 
                 services.AddScoped<Container>();
                 services.AddScoped<TokenPage>();
+                services.AddTransient<ConfirmationsOverviewPage>();
                 services.AddTransient<ConfirmationsPage>();
                 services.AddTransient<SettingsPage>();
                 services.AddTransient<LoginPage>();
 
                 services.AddScoped<TokenViewModel>();
                 services.AddScoped<SettingsViewModel>();
+                services.AddScoped<ConfirmationsOverviewViewModel>();
                 services.AddScoped<ConfirmationsViewModel>();
                 services.AddScoped<LoginViewModel>();
 
@@ -89,8 +90,6 @@ public sealed partial class App : Application
                 services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
                 services.AddScoped<LocalDriveAccountsFileService>();
                 services.AddScoped<GoogleDriveAccountsFileService>();
-                services.AddTransient<IPlatformTimer, PeriodicTimerService>();
-                services.AddScoped<IConfirmationViewModelFactory, ConfirmationViewModelFactory>();
                 services.AddScoped<IUpdateService, DesktopUpdateService>();
 
                 services.AddHttpClient<IUpdateService, DesktopUpdateService>();
@@ -139,14 +138,6 @@ public sealed partial class App : Application
             ServiceProvider = _host.Services;
 
         await _host.StartAsync();
-    }
-
-    private void OnExit(object sender, ExitEventArgs e)
-    {
-        _host.StopAsync();
-
-       _serviceScope?.Dispose();
-        _host.Dispose();
     }
 
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

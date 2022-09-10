@@ -1,6 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Threading;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -8,62 +6,41 @@ using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Mobile.Extensions;
 using SteamAuthenticatorCore.Shared.Abstractions;
-using SteamAuthenticatorCore.Shared.Messages;
-using Xamarin.Essentials;
-using Xamarin.Forms;
+using SteamAuthenticatorCore.Shared.ViewModel;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
-internal partial class ConfirmationViewModel : ObservableObject, IRecipient<UpdateAccountConfirmationPageMessage>
+public sealed partial class ConfirmationViewModel : ConfirmationsViewModelBase, IDisposable
 {
-    public ConfirmationViewModel(IMessenger messenger, ISteamGuardAccountService accountService)
+    public ConfirmationViewModel(ISteamGuardAccountService accountService, IPlatformImplementations platformImplementations, IMessenger messenger) : base(accountService, platformImplementations, messenger)
     {
-        _accountService = accountService;
-        messenger.Register(this);
-        SelectedItems = new ObservableCollection<(Frame, ConfirmationModel)>();
+        SelectedItems = new ObservableCollection<(VisualElement, ConfirmationModel)>();
     }
-
-    private readonly ISteamGuardAccountService _accountService;
-
-    [ObservableProperty]
-    private IConfirmationViewModel _account = null!;
-
-    [ObservableProperty]
-    private bool _isRefreshing;
 
     [ObservableProperty]
     private bool _isCountTitleViewVisible;
 
-    public ObservableCollection<(Frame, ConfirmationModel)> SelectedItems { get; }
+    public ObservableCollection<(VisualElement, ConfirmationModel)> SelectedItems { get; }
 
-    public void Receive(UpdateAccountConfirmationPageMessage message)
+    public void Dispose()
     {
-        Account = message.Value;
+        SelectedItems.Clear();
     }
 
     [RelayCommand]
     private async Task HideCountTitleView()
     {
-        var tasks = new Task[SelectedItems.Count];
-
-        for (var i = 0; i < SelectedItems.Count; i++)
-        {
-            var frame = SelectedItems[i].Item1;
-            tasks[i] = frame.BackgroundColorTo((Color) Application.Current.Resources[
-                Application.Current.RequestedTheme == OSAppTheme.Light
-                    ? "SecondLightBackgroundColor"
-                    : "SecondDarkBackground"], 500);
-        }
-
-        IsCountTitleViewVisible = false;
-        await Task.WhenAll(tasks);
         SelectedItems.Clear();
+        IsCountTitleViewVisible = false;
+
+        if (ConfirmationModel.Confirmations.Count == 0)
+            await Shell.Current.GoToAsync("..");
     }
 
     [RelayCommand]
-    private Task OnElementTouch(Frame frame)
+    private async Task OnElementTouch(VisualElement view)
     {
-        var item = (frame, (ConfirmationModel) frame.BindingContext);
+        var item = (view, (ConfirmationModel) view.BindingContext);
 
         if (SelectedItems.Contains(item))
         {
@@ -72,77 +49,27 @@ internal partial class ConfirmationViewModel : ObservableObject, IRecipient<Upda
             if (SelectedItems.Count == 0)
                 IsCountTitleViewVisible = false;
 
-            return frame.BackgroundColorTo((Color) Application.Current.Resources[
-                Application.Current.RequestedTheme == OSAppTheme.Light
-                    ? "SecondLightBackgroundColor"
-                    : "SecondDarkBackground"], 500);
+            await view.ChangeBackgroundColorToWithColorsCollection("SecondBackgroundColor");
+            return;
         }
 
         SelectedItems.Add(item);
         IsCountTitleViewVisible = true;
 
-        return frame.BackgroundColorTo((Color) Application.Current.Resources[
-            Application.Current.RequestedTheme == OSAppTheme.Light
-                ? "SecondLightBackgroundSelectionColor"
-                : "SecondDarkBackgroundSelectionColor"], 500);
+        await view.ChangeBackgroundColorToWithColorsCollection("SecondBackgroundSelectionColor");
     }
 
     [RelayCommand]
-    private async Task RefreshConfirmations()
-    {
-        try
-        {
-            HapticFeedback.Perform(HapticFeedbackType.LongPress);
-        }
-        catch
-        {
-            //
-        }
-
-        
-
-        await _account.CheckConfirmations();
-        IsRefreshing = false;
-    }
+    private async Task ConfirmSelected() => await SendConfirmations(ConfirmationOptions.Allow);
 
     [RelayCommand]
-    private async Task ConfirmSelected()
+    private async Task CancelSelected() => await SendConfirmations(ConfirmationOptions.Deny);
+
+    private async ValueTask SendConfirmations(ConfirmationOptions confirmationOptions)
     {
-        switch (SelectedItems.Count)
-        {
-            case 0:
-                return;
-            case 1:
-                await SendConfirmation(ConfirmationOptions.Allow);
-                break;
-            default:
-                await SendConfirmations(ConfirmationOptions.Allow);
-                break;
-        }
+        if (SelectedItems.Count == 0)
+            return;
 
-        await HideCountTitleView();
-    }
-
-    [RelayCommand]
-    private async Task CancelSelected()
-    {
-        switch (SelectedItems.Count)
-        {
-            case 0:
-                return;
-            case 1:
-                await SendConfirmation(ConfirmationOptions.Deny);
-                break;
-            default:
-                await SendConfirmations(ConfirmationOptions.Deny);
-                break;
-        }
-
-        await HideCountTitleView();
-    }
-
-    private async Task SendConfirmation(ConfirmationOptions confirmation)
-    {
         try
         {
             HapticFeedback.Perform(HapticFeedbackType.Click);
@@ -152,36 +79,19 @@ internal partial class ConfirmationViewModel : ObservableObject, IRecipient<Upda
             //
         }
 
-        var model = SelectedItems[0];
-
-        if (await _accountService.SendConfirmation(Account.Account, model.Item2, confirmation, CancellationToken.None))
+        if (SelectedItems.Count == 1)
         {
-            Account.Confirmations.Remove(model.Item2);
-            SelectedItems.Clear();
+            await SendConfirmation(SelectedItems[0].Item2, confirmationOptions);
         }
-    }
+        else
+        {
+            var items = new ConfirmationModel[SelectedItems.Count];
+            for (var i = 0; i < SelectedItems.Count; i++)
+                items[i] = SelectedItems[i].Item2;
 
-    private async Task SendConfirmations(ConfirmationOptions confirmation)
-    {
-        try
-        {
-            HapticFeedback.Perform(HapticFeedbackType.Click);
-        }
-        catch
-        {
-            //
+            await SendConfirmations(items, confirmationOptions);   
         }
 
-        var items = new ConfirmationModel[SelectedItems.Count];
-        for (var i = 0; i < SelectedItems.Count; i++)
-            items[i] = SelectedItems[i].Item2;
-
-        if (await _accountService.SendConfirmation(Account.Account, items, confirmation, CancellationToken.None))
-        {
-            foreach (var item in items)
-                Account.Confirmations.Remove(item);
-
-            SelectedItems.Clear();
-        }
+        await HideCountTitleView();
     }
 }

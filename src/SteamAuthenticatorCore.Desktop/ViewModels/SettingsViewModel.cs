@@ -1,27 +1,13 @@
 ﻿using System.Reflection;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.Input;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
+using SteamAuthenticatorCore.Shared.ViewModel;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
-public partial class SettingsViewModel
+public class SettingsViewModel : SettingsViewModelBase
 {
-    public SettingsViewModel(AppSettings settings, IUpdateService updateService)
+    public SettingsViewModel(AppSettings appSettings, IUpdateService updateService) : base(appSettings, updateService, Assembly.GetExecutingAssembly().GetName().Version!.ToString())
     {
-        _updateService = updateService;
-        Settings = settings;
-        CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
-    }
-
-    private readonly IUpdateService _updateService;
-    public AppSettings Settings { get; }
-    public string CurrentVersion { get; }
-
-    [RelayCommand]
-    private async Task CheckForUpdates()
-    {
-        await _updateService.CheckForUpdateAndDownloadInstall(false);
     }
 }

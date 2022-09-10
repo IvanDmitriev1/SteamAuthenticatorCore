@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Platform>AnyCPU</Platform>
-    <Version>0.9.6.0</Version>
+    <Version>0.9.7.0</Version>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -23,7 +23,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
-    <PackageReference Include="Sentry.Extensions.Logging" Version="3.20.1" />
+    <PackageReference Include="Sentry.Extensions.Logging" Version="3.21.0" />
   </ItemGroup>
 
   <ItemGroup>

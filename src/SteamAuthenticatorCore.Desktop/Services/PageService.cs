@@ -14,6 +14,6 @@ internal class PageService : IPageService
 
     public FrameworkElement? GetPage(Type pageType)
     {
-        return App.ServiceProvider.GetRequiredService(pageType) as FrameworkElement;
+        return App.ServiceProvider.GetService(pageType) as FrameworkElement;
     }
 }

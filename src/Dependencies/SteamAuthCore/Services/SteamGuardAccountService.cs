@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -27,8 +25,6 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
     private readonly ISteamApi _steamApi;
     private readonly ISteamCommunityApi _steamCommunityApi;
     private static readonly HtmlParser Parser = new();
-    private readonly ArrayPool<UInt64> _uintArrayPool = ArrayPool<UInt64>.Create();
-    private readonly ArrayPool<string> _stringArrayPool = ArrayPool<string>.Create();
 
     public async ValueTask<bool> RefreshSession(SteamGuardAccount account, CancellationToken cancellationToken)
     {
@@ -48,7 +44,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         if (string.IsNullOrEmpty(account.DeviceId))
             throw new ArgumentException("Device ID is not present");
 
-        var builder = new StringBuilder("conf?");
+        var builder = new StringBuilder("conf?", 20);
         builder.Append(GenerateConfirmationQueryParams(account, "conf"));
 
         var query = builder.ToString();
@@ -86,7 +82,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
     {
         var strOption = options.ToString().ToLower();
 
-        var builder = new StringBuilder("ajaxop");
+        var builder = new StringBuilder("ajaxop", 35);
         builder.Append($"?op={strOption}");
         builder.Append('&');
         builder.Append(GenerateConfirmationQueryParams(account, strOption));
@@ -103,7 +99,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
     {
         var strOption = options.ToString().ToLower();
 
-        var builder = new StringBuilder();
+        var builder = new StringBuilder(25);
         builder.Append($"op={strOption}");
         builder.Append('&');
         builder.Append(GenerateConfirmationQueryParams(account, strOption));
@@ -254,7 +250,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         return _steamApi.RemoveAuthenticator(posData);
     }
 
-    private IEnumerable<ConfirmationModel> ParseConfirmationsHtml(string html)
+    private static IEnumerable<ConfirmationModel> ParseConfirmationsHtml(string html)
     {
         if (html.Contains("<div>Nothing to confirm</div>"))
             return Array.Empty<ConfirmationModel>();
@@ -264,9 +260,9 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         return document.GetElementsByClassName("mobileconf_list_entry").Select(GetConfirmationModelFromHtml);
     }
 
-    private ConfirmationModel GetConfirmationModelFromHtml(IElement confirmationElement)
+    private static ConfirmationModel GetConfirmationModelFromHtml(IElement confirmationElement)
     {
-        var attributesValue = _uintArrayPool.Rent(5);
+        Span<UInt64> attributesValue = stackalloc UInt64[5];
 
         for (var i = 2; i <= 5; i++)
         {
@@ -277,25 +273,14 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         var imageSource = ((IHtmlImageElement)confirmationElementContent.QuerySelector("img")!).Source!;
         var children = confirmationElementContent.Children[^1].Children;
 
-        var descriptionArray = _stringArrayPool.Rent(3);
-        for (var i = 0; i < 3; i++)
-        {
-            var description = children[i];
-            descriptionArray[i] = description.TextContent;
-        }
-
-        var model = new ConfirmationModel(attributesValue, imageSource, descriptionArray);
-        _stringArrayPool.Return(descriptionArray, true);
-        _uintArrayPool.Return(attributesValue);
-
-        return model;
+        return new ConfirmationModel(attributesValue, imageSource, children);
     }
 
     private static string GenerateConfirmationQueryParams(SteamGuardAccount account, string tag)
     {
         var time = ITimeAligner.SteamTime;
 
-        var builder = new StringBuilder();
+        var builder = new StringBuilder(40);
         builder.Append($"p={account.DeviceId}");
         builder.Append($"&a={account.Session.SteamId}");
         builder.Append($"&k={GenerateConfirmationHashForTime(time, tag, account.IdentitySecret)}");
@@ -339,10 +324,14 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
 
         try
         {
-            using HMACSHA1 hmacGenerator = new(Convert.FromBase64String(identitySecret));
-            var hashedData = hmacGenerator.ComputeHash(array.ToArray());
-            var encodedData = Convert.ToBase64String(hashedData, Base64FormattingOptions.None);
-            return WebUtility.UrlEncode(encodedData);
+            Span<byte> key = stackalloc byte[20];
+            Convert.TryFromBase64String(identitySecret, key, out _);
+
+            Span<byte> hashedSpan = stackalloc byte[20];
+            HMACSHA1.HashData(key, array, hashedSpan);
+
+            var encodedData = Convert.ToBase64String(hashedSpan);
+            return encodedData;
         }
         catch
         {

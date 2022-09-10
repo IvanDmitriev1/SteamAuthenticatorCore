@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -41,53 +40,47 @@ public class SteamGuardAccount
     #endregion
 
     private static readonly byte[] SteamGuardCodeTranslations = { 50, 51, 52, 53, 54, 55, 56, 57, 66, 67, 68, 70, 71, 72, 74, 75, 77, 78, 80, 81, 82, 84, 86, 87, 88, 89 };
-    private static readonly ArrayPool<byte> ArrayPool = ArrayPool<byte>.Create();
+    private byte[]? _key;
 
     public string? GenerateSteamGuardCode()
     {
         if (string.IsNullOrEmpty(SharedSecret))
             return null;
 
-        var timeArray = ArrayPool.Rent(8);
+        _key ??= Convert.FromBase64String(Regex.Unescape(SharedSecret!));
+        Span<byte> timeArray = stackalloc byte[8];
 
+        var time = ITimeAligner.SteamTime;
+
+        time /= 30L;
+
+        for (int i = 8; i > 0; i--)
+        {
+            timeArray[i - 1] = (byte)time;
+            time >>= 8;
+        }
+
+        Span<byte> hashedSpan = stackalloc byte[20];
+        HMACSHA1.HashData(_key, timeArray, hashedSpan);
+
+        Span<byte> codeArray = stackalloc byte[5];
         try
         {
-            using var hmacGenerator = new HMACSHA1(Convert.FromBase64String(Regex.Unescape(SharedSecret!)));
+            byte b = (byte)(hashedSpan[19] & 0xF);
+            int codePoint = (hashedSpan[b] & 0x7F) << 24 | (hashedSpan[b + 1] & 0xFF) << 16 |
+                            (hashedSpan[b + 2] & 0xFF) << 8 | (hashedSpan[b + 3] & 0xFF);
 
-            var time = ITimeAligner.SteamTime;
-
-            time /= 30L;
-
-            for (int i = 8; i > 0; i--)
+            for (int i = 0; i < 5; ++i)
             {
-                timeArray[i - 1] = (byte)time;
-                time >>= 8;
+                codeArray[i] = SteamGuardCodeTranslations[codePoint % SteamGuardCodeTranslations.Length];
+                codePoint /= SteamGuardCodeTranslations.Length;
             }
-
-            var hashedData= hmacGenerator.ComputeHash(timeArray, 0, 8);
-
-            Span<byte> codeArray = stackalloc byte[5];
-            try
-            {
-                byte b = (byte)(hashedData[19] & 0xF);
-                int codePoint = (hashedData[b] & 0x7F) << 24 | (hashedData[b + 1] & 0xFF) << 16 | (hashedData[b + 2] & 0xFF) << 8 | (hashedData[b + 3] & 0xFF);
-
-                for (int i = 0; i< 5; ++i)
-                {
-                    codeArray[i] = SteamGuardCodeTranslations[codePoint % SteamGuardCodeTranslations.Length];
-                    codePoint /= SteamGuardCodeTranslations.Length;
-                }
-            }
-            catch (Exception)
-            {
-                return null; //Change later, catch-alls are bad!
-            }
-
-            return Encoding.UTF8.GetString(codeArray);
         }
-        finally
+        catch (Exception)
         {
-            ArrayPool.Return(timeArray, true);
+            return null; //Change later, catch-alls are bad!
         }
+
+        return Encoding.UTF8.GetString(codeArray);
     }
 }

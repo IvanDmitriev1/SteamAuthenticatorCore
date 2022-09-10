@@ -1,8 +1,11 @@
-﻿namespace SteamAuthCore.Models;
+﻿using System;
+using AngleSharp.Dom;
+
+namespace SteamAuthCore.Models;
 
 public class ConfirmationModel
 {
-    public ConfirmationModel(in ulong[] attributesValue, string imageSource, in string[] descriptionArray)
+    public ConfirmationModel(in ReadOnlySpan<UInt64> attributesValue, string imageSource, IHtmlCollection<IElement> collection)
     {
         Id = attributesValue[0];
         Key = attributesValue[1];
@@ -17,13 +20,9 @@ public class ConfirmationModel
         };
 
         ImageSource = imageSource;
-
-        var itemName = descriptionArray[0];
-        itemName = descriptionArray[0].Remove(0, itemName.IndexOf('-') + 1);
-
-        ItemName = itemName.Trim();
-        Description = descriptionArray[1].Trim();
-        Time = descriptionArray[2];
+        ItemName = collection[0].TextContent.Remove(0, collection[0].TextContent.IndexOf('-') + 1).Trim();
+        Description = collection[1].TextContent.Trim();
+        Time = collection[2].TextContent;
     }
 
     /// <summary>

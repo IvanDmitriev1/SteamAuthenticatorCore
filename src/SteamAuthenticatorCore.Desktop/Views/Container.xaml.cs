@@ -68,7 +68,7 @@ public partial class Container
                 NavigationFluent.NavigateTo(typeof(TokenPage));
                 break;
             case "confirms":
-                NavigationFluent.NavigateTo(typeof(ConfirmationsPage));
+                NavigationFluent.NavigateTo(typeof(ConfirmationsOverviewPage));
                 break;
             case "settings":
                 NavigationFluent.NavigateTo(typeof(SettingsPage));

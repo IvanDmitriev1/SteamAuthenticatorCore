@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,35 +17,29 @@ using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
 using SteamAuthenticatorCore.Shared.Models;
 using SteamAuthenticatorCore.Shared.ViewModel;
-using Wpf.Ui.Controls.Interfaces;
 using Wpf.Ui.Mvvm.Contracts;
 using Wpf.Ui.TaskBar;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
-public partial class TokenViewModel : TokenViewModelBase, IDisposable
+public sealed partial class TokenViewModel : TokenViewModelBase, IDisposable
 {
-    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, IPlatformTimer platformTimer, IPlatformImplementations platformImplementations, TaskBarServiceWrapper taskBarServiceWrapper, IDialogService dialogService, INavigationService navigationService, AppSettings appSettings, IMessenger messenger, AccountsFileServiceResolver accountsFileServiceResolver, ISteamGuardAccountService accountService) : base(accounts, platformTimer)
+    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, ITimer timer,
+        IPlatformImplementations platformImplementations, ISteamGuardAccountService accountService,
+        AccountsFileServiceResolver accountsFileServiceResolver, AppSettings appSettings,
+        INavigationService navigationService, IMessenger messenger, TaskBarServiceWrapper taskBarServiceWrapper) : base(
+        accounts, timer, platformImplementations, accountService, accountsFileServiceResolver)
     {
-        _platformImplementations = platformImplementations;
-        _taskBarServiceWrapper = taskBarServiceWrapper;
-        _dialogService = dialogService;
-        _navigationService = navigationService;
         _appSettings = appSettings;
+        _navigationService = navigationService;
         _messenger = messenger;
-        _accountsFileServiceResolver = accountsFileServiceResolver;
-        _accountService = accountService;
+        _taskBarServiceWrapper = taskBarServiceWrapper;
     }
 
-    private readonly IPlatformImplementations _platformImplementations;
-    private readonly TaskBarServiceWrapper _taskBarServiceWrapper;
-    private readonly IDialogService _dialogService;
-    private readonly INavigationService _navigationService;
     private readonly AppSettings _appSettings;
+    private readonly INavigationService _navigationService;
     private readonly IMessenger _messenger;
-    private readonly AccountsFileServiceResolver _accountsFileServiceResolver;
-    private readonly ISteamGuardAccountService _accountService;
-
+    private readonly TaskBarServiceWrapper _taskBarServiceWrapper;
     private StackPanel? _stackPanel;
 
     public void Dispose()
@@ -81,7 +74,7 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
         if (fileDialog.ShowDialog() == false)
             return;
 
-        var accountsService = _accountsFileServiceResolver.Invoke();
+        var accountsService = AccountsFileServiceResolver.Invoke();
 
         foreach (var filePath in fileDialog.FileNames)
         {
@@ -91,24 +84,32 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
     }
 
     [RelayCommand]
-    private async Task ForceRefreshSession()
+    private Task ForceRefreshSession()
     {
         if (SelectedAccount is null)
-            return;
+            return Task.CompletedTask;
 
-        if (await _accountService.RefreshSession(SelectedAccount, CancellationToken.None))
-        {
-            await _platformImplementations.DisplayAlert("Your session has been refreshed.");
-            return;
-        }
-
-        await _platformImplementations.DisplayAlert("Failed to refresh your session.\nTry using the \"Login again\" option.");
+        return RefreshAccountsSession(SelectedAccount);
     }
 
     [RelayCommand]
-    private async Task RefreshAccounts(StackPanel stackPanel)
+    private async Task RefreshAccounts()
     {
-        await RefreshAccounts();
+        Token = string.Empty;
+        TokenProgressBar = 0;
+
+        _stackPanel!.Visibility = Visibility.Visible;
+        _taskBarServiceWrapper.SetState(TaskBarProgressState.Indeterminate);
+
+        try
+        {
+            await AccountsFileServiceResolver.Invoke().InitializeOrRefreshAccounts();
+        }
+        finally
+        {
+            _taskBarServiceWrapper.SetState(TaskBarProgressState.None);
+            _stackPanel!.Visibility = Visibility.Hidden;
+        }
     }
 
     [RelayCommand]
@@ -116,13 +117,8 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
     {
         if (_appSettings.AccountsLocation == AccountsLocationModel.GoogleDrive)
         {
-
-            var control = _dialogService.GetDialogControl();
-
-            await control.ShowAndWaitAsync("Alert!",
+            await PlatformImplementations.DisplayAlert("Error",
                 $"Your accounts are stored in the google drive {App.InternalName} folder");
-
-            control.Hide();
             return;
         }
 
@@ -148,16 +144,7 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
         if (SelectedAccount is null)
             return;
 
-        var control = _dialogService.GetDialogControl();
-        var res = await control.ShowAndWaitAsync("Alser", $"Are you sure you want to delete {SelectedAccount.AccountName}?");
-        if (res != IDialogControl.ButtonPressed.Left)
-        {
-            control.Hide();
-            return;
-        }
-
-        control.Hide();
-        await _accountsFileServiceResolver.Invoke().DeleteAccount(SelectedAccount);
+        await DeleteAccount(SelectedAccount);
     }
 
     [RelayCommand]
@@ -207,7 +194,7 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
         if (eventArgs.Data.GetData(DataFormats.FileDrop) is not string[] files)
             return;
 
-        var accountsService = _accountsFileServiceResolver.Invoke();
+        var accountsService = AccountsFileServiceResolver.Invoke();
 
         foreach (var fileName in files)
         {
@@ -222,24 +209,5 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
             return;
 
         await RefreshAccounts();
-    }
-
-    private async ValueTask RefreshAccounts()
-    {
-        Token = string.Empty;
-        TokenProgressBar = 0;
-
-        _stackPanel!.Visibility = Visibility.Visible;
-        _taskBarServiceWrapper.SetState(TaskBarProgressState.Indeterminate);
-
-        try
-        {
-            await _accountsFileServiceResolver.Invoke().InitializeOrRefreshAccounts();
-        }
-        finally
-        {
-            _taskBarServiceWrapper.SetState(TaskBarProgressState.None);
-            _stackPanel!.Visibility = Visibility.Hidden;
-        }
     }
 }

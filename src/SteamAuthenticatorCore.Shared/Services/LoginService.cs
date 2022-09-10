@@ -17,19 +17,16 @@ internal sealed class LoginService : ILoginService
     private readonly AccountsFileServiceResolver _accountsFileServiceResolver;
     private readonly IPlatformImplementations _platformImplementations;
 
-    public async Task RefreshLogin(SteamGuardAccount account, string password)
+    public async Task<bool> RefreshLogin(SteamGuardAccount account, string password)
     {
         if (await RefreshSession(new UserLogin(account.AccountName, password), account) is not { } session)
-        {
-            await _platformImplementations.DisplayAlert("Error logging in: Steam returned \"GeneralFailure\".");
-            return;
-        }
+            return false;
 
         account.Session = session;
-        var manifestService = _accountsFileServiceResolver.Invoke();
-        await manifestService.SaveAccount(account);
+        await _accountsFileServiceResolver.Invoke().SaveAccount(account);
 
-        await _platformImplementations.DisplayAlert("Session successfully refreshed");
+        await _platformImplementations.DisplayAlert("Login",  "Session successfully refreshed");
+        return true;
     }
 
     private async Task<SessionData?> RefreshSession(UserLogin userLogin, SteamGuardAccount account)
@@ -46,18 +43,19 @@ internal sealed class LoginService : ILoginService
                     userLogin.TwoFactorCode = account.GenerateSteamGuardCode();
                     continue;
                 case LoginResult.BadRsa:
-                    await _platformImplementations.DisplayAlert("Error logging in: Steam returned \"BadRSA\".");
+                    await _platformImplementations.DisplayAlert("Login", "Error logging in: Steam returned \"BadRSA\".");
                     return null;
                 case LoginResult.BadCredentials:
-                    await _platformImplementations.DisplayAlert("Error logging in: Username or password was incorrect.");
+                    await _platformImplementations.DisplayAlert("Login", "Error logging in: Username or password was incorrect.");
                     return null;
                 case LoginResult.TooManyFailedLogins:
-                    await _platformImplementations.DisplayAlert("Error logging in: Too many failed logins, try again later.");
+                    await _platformImplementations.DisplayAlert("Login", "Error logging in: Too many failed logins, try again later.");
                     return null;
                 case LoginResult.GeneralFailure:
-                    await _platformImplementations.DisplayAlert("Error logging in: Steam returned \"GeneralFailure\".");
+                    await _platformImplementations.DisplayAlert("Login", "Error logging in: Steam returned \"GeneralFailure\".");
                     return null;
                 default:
+                    await _platformImplementations.DisplayAlert("Login", "Error logging in: Steam returned \"GeneralFailure\".");
                     return null;
             }
         }

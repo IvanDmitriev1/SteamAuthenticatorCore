@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Net.Http;
+using Microsoft.Extensions.DependencyInjection;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Services;
 
@@ -14,7 +15,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISteamGuardAccountService, SteamGuardAccountService>();
 
         services.AddHttpClient<ISteamApi, Services.SteamApi>();
-        services.AddHttpClient<ISteamCommunityApi, SteamCommunityApi>();
+        services.AddHttpClient<ISteamCommunityApi, SteamCommunityApi>().ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
+        {
+            AllowAutoRedirect = false
+        });
 
         return services;
     }
