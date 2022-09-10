@@ -70,13 +70,13 @@ public sealed partial class App : Application
 
                 services.AddScoped<Container>();
                 services.AddScoped<TokenPage>();
-                services.AddTransient<ConfirmationsPage>();
+                services.AddTransient<ConfirmationsOverviewPage>();
                 services.AddTransient<SettingsPage>();
                 services.AddTransient<LoginPage>();
 
                 services.AddScoped<TokenViewModel>();
                 services.AddScoped<SettingsViewModel>();
-                services.AddScoped<ConfirmationsViewModel>();
+                services.AddScoped<ConfirmationsOverviewViewModel>();
                 services.AddScoped<LoginViewModel>();
 
                 services.AddSingleton<ObservableCollection<SteamGuardAccount>>();

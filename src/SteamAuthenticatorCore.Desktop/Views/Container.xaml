@@ -66,7 +66,7 @@
                         <ui:NavigationItem
                             Content="Confirmations"
                             Icon="TaskListLtr24"
-                            PageType="{x:Type pages:ConfirmationsPage}" />
+                            PageType="{x:Type pages:ConfirmationsOverviewPage}" />
                     </ui:NavigationFluent.Items>
                     <ui:NavigationFluent.Footer>
                         <ui:NavigationItem

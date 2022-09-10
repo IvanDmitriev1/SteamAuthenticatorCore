@@ -5,9 +5,9 @@ using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
-public class ConfirmationsViewModel
+public class ConfirmationsOverviewViewModel
 {
-    public ConfirmationsViewModel(IConfirmationService confirmationServiceBase)
+    public ConfirmationsOverviewViewModel(IConfirmationService confirmationServiceBase)
     {
         ConfirmationServiceBase = confirmationServiceBase;
 
