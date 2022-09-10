@@ -25,7 +25,7 @@ public sealed class ConfirmationViewModel : ConfirmationViewModelBase
     private Task Confirm(IList list)
     {
         var confirmations = list.OfType<ConfirmationModel>();
-        return SendConfirmations(confirmations, ConfirmationOptions.Deny);
+        return SendConfirmations(confirmations, ConfirmationOptions.Allow);
     }
 
     private Task Cancel(IList list)

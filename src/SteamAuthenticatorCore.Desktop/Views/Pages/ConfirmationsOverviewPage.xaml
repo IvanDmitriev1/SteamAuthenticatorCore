@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Desktop.ViewModels"
+    x:Name="Page"
     Title="ConfirmationsOverviewPage"
     d:DataContext="{d:DesignInstance viewModels:ConfirmationsOverviewViewModel,
                                      IsDesignTimeCreatable=False}"
@@ -49,7 +50,10 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type abstractions:IConfirmationViewModel}">
-                        <ui:CardControl Header="{Binding Account.AccountName, Mode=OneTime}">
+                        <ui:CardControl
+                            Command="{Binding Source={x:Reference Page}, Path=DataContext.ClickCommand}"
+                            CommandParameter="{Binding}"
+                            Header="{Binding Account.AccountName, Mode=OneTime}">
                             <TextBlock Text="{Binding Confirmations.Count, Mode=OneTime}" />
                         </ui:CardControl>
                     </DataTemplate>
