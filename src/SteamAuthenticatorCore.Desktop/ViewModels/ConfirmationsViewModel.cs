@@ -1,24 +1,33 @@
-﻿using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Collections;
+using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using SteamAuthCore.Abstractions;
+using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Shared.Abstractions;
+using SteamAuthenticatorCore.Shared.ViewModel;
+using ConfirmationModel = SteamAuthCore.Models.ConfirmationModel;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
-public class ConfirmationsViewModel
+public sealed partial class ConfirmationsViewModel : ConfirmationsViewModelBase
 {
-    public ConfirmationsViewModel(IConfirmationService confirmationServiceBase)
+    public ConfirmationsViewModel(ISteamGuardAccountService accountService, IPlatformImplementations platformImplementations, IMessenger messenger) : base(accountService, platformImplementations, messenger)
     {
-        ConfirmationServiceBase = confirmationServiceBase;
-
-        CheckConfirmationsCommand = new AsyncRelayCommand(CheckConfirmations);
     }
 
-    public IConfirmationService ConfirmationServiceBase { get; }
-    public ICommand CheckConfirmationsCommand { get; }
-
-    private async Task CheckConfirmations()
+    [RelayCommand]
+    private Task Confirm(IList list)
     {
-        await ConfirmationServiceBase.CheckConfirmations();
+        var confirmations = list.OfType<ConfirmationModel>();
+        return SendConfirmations(confirmations, ConfirmationOptions.Allow);
+    }
+
+    [RelayCommand]
+    private Task Cancel(IList list)
+    {
+        var confirmations = list.OfType<ConfirmationModel>();
+        return SendConfirmations(confirmations, ConfirmationOptions.Deny);
     }
 }
