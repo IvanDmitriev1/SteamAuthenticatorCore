@@ -32,7 +32,7 @@ public abstract partial class ConfirmationsViewModelBase : ObservableObject, IRe
         ConfirmationModel = message.Value;
     }
 
-    protected async Task SendConfirmation(ConfirmationModel confirmation, ConfirmationOptions command)
+    protected async ValueTask SendConfirmation(ConfirmationModel confirmation, ConfirmationOptions command)
     {
         if (!await _accountService.SendConfirmation(_confirmationModel.Account, confirmation, command, CancellationToken.None))
             return;
@@ -40,7 +40,7 @@ public abstract partial class ConfirmationsViewModelBase : ObservableObject, IRe
         _confirmationModel.Confirmations.Remove(confirmation);
     }
 
-    protected async Task SendConfirmations(IEnumerable<ConfirmationModel> confirmations, ConfirmationOptions command)
+    protected async ValueTask SendConfirmations(IEnumerable<ConfirmationModel> confirmations, ConfirmationOptions command)
     {
         var confirms = confirmations.ToArray();
 

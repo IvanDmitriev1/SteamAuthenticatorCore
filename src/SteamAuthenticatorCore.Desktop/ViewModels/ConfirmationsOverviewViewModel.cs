@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthenticatorCore.Shared.Abstractions;
@@ -16,16 +15,14 @@ public partial class ConfirmationsOverviewViewModel
         _navigationService = navigationService;
         _messenger = messenger;
         ConfirmationServiceBase = confirmationServiceBase;
-
-        CheckConfirmationsCommand = new AsyncRelayCommand(CheckConfirmations);
     }
 
     private readonly INavigationService _navigationService;
     private readonly IMessenger _messenger;
 
     public IConfirmationService ConfirmationServiceBase { get; }
-    public ICommand CheckConfirmationsCommand { get; }
 
+    [RelayCommand]
     private async Task CheckConfirmations()
     {
         await ConfirmationServiceBase.CheckConfirmations();

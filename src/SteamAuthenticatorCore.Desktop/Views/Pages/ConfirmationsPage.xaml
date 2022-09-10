@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="clr-namespace:SteamAuthenticatorCore.Shared.Models;assembly=SteamAuthenticatorCore.Shared"
     xmlns:steamAuthCore="clr-namespace:SteamAuthCore.Models;assembly=SteamAuthCore"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Desktop.ViewModels"
@@ -57,9 +56,9 @@
                                 Grid.Column="0"
                                 Margin="10,0,0,0"
                                 VerticalAlignment="Center">
-                                <TextBlock FontSize="14" Text="{Binding Path=ItemName}" />
-                                <TextBlock FontSize="14" Text="{Binding Path=Description}" />
-                                <TextBlock FontSize="14" Text="{Binding Path=Time}" />
+                                <TextBlock FontSize="14" Text="{Binding Path=ItemName, Mode=OneTime}" />
+                                <TextBlock FontSize="14" Text="{Binding Path=Description, Mode=OneTime}" />
+                                <TextBlock FontSize="14" Text="{Binding Path=Time, Mode=OneTime}" />
                             </StackPanel>
 
                             <Image
@@ -70,7 +69,7 @@
                                 VerticalAlignment="Center"
                                 RenderOptions.BitmapScalingMode="Fant"
                                 RenderOptions.EdgeMode="Aliased"
-                                Source="{Binding Path=ImageSource}" />
+                                Source="{Binding Path=ImageSource, Mode=OneTime}" />
 
                         </Grid>
                     </DataTemplate>
@@ -87,7 +86,7 @@
                     Grid.Column="0"
                     Margin="0,0,2.5,0"
                     HorizontalAlignment="Stretch"
-                    Command="{Binding Source={x:Reference ListBox}, Path=DataContext.ConfirmCommand}"
+                    Command="{Binding ConfirmCommand}"
                     CommandParameter="{Binding ElementName=ListBox, Path=SelectedItems}"
                     Content="Confirm selected" />
                 <ui:Button
@@ -95,7 +94,7 @@
                     Margin="2.5,0,0,0"
                     HorizontalAlignment="Stretch"
                     Appearance="Danger"
-                    Command="{Binding Source={x:Reference ListBox}, Path=DataContext.CancelCommand}"
+                    Command="{Binding CancelCommand}"
                     CommandParameter="{Binding ElementName=ListBox, Path=SelectedItems}"
                     Content="Cancel selected" />
             </Grid>
