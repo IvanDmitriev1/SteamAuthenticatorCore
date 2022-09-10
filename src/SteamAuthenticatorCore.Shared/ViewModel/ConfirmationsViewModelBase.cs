@@ -32,15 +32,12 @@ public abstract partial class ConfirmationsViewModelBase : ObservableObject, IRe
         ConfirmationModel = message.Value;
     }
 
-    private async Task SendConfirmation(ConfirmationModel confirmation, ConfirmationOptions command)
+    protected async Task SendConfirmation(ConfirmationModel confirmation, ConfirmationOptions command)
     {
         if (!await _accountService.SendConfirmation(_confirmationModel.Account, confirmation, command, CancellationToken.None))
             return;
 
-        await _platformImplementations.InvokeMainThread(() =>
-        {
-            _confirmationModel.Confirmations.Remove(confirmation);
-        });
+        _confirmationModel.Confirmations.Remove(confirmation);
     }
 
     protected async Task SendConfirmations(IEnumerable<ConfirmationModel> confirmations, ConfirmationOptions command)
@@ -60,10 +57,7 @@ public abstract partial class ConfirmationsViewModelBase : ObservableObject, IRe
 
         foreach (var confirmation in confirms)
         {
-            await _platformImplementations.InvokeMainThread(() =>
-            {
-                _confirmationModel.Confirmations.Remove(confirmation);
-            });
+            _confirmationModel.Confirmations.Remove(confirmation);
         }
     }
 }

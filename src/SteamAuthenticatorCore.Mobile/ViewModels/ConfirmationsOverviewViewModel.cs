@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthenticatorCore.Mobile.Pages;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
+using SteamAuthenticatorCore.Shared.Models;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
@@ -60,11 +61,11 @@ public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task OnTouched(IConfirmationViewModel account)
+    private async Task OnTouched(ConfirmationModel model)
     {
         _needRefresh = true;
 
         await Shell.Current.GoToAsync($"{nameof(ConfirmationsPage)}");
-        _messenger.Send(new UpdateAccountConfirmationPageMessage(account));
+        _messenger.Send(new UpdateAccountConfirmationPageMessage(model));
     }
 }

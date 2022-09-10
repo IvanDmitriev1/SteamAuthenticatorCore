@@ -63,7 +63,6 @@ internal static class MauiBuilderExtensions
         services.AddSingleton<ISettingsService, SettingsService>();
         services.AddSingleton<IPlatformImplementations, PlatformImplementations>();
         services.AddSingleton<IUpdateService, UpdateService>();
-        services.AddSingleton<IConfirmationViewModelFactory, ConfirmationViewModelFactory>();
         services.AddScoped<SecureStorageService>();
 
         services.AddHttpClient<IUpdateService, UpdateService>();
