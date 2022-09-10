@@ -34,10 +34,9 @@ internal class PlatformImplementations : IPlatformImplementations
         return Application.Current!.MainPage!.DisplayAlert(title, message, "Ok");
     }
 
-    public async Task<bool> DisplayPrompt(string title, string message, string accept = "Ok", string cancel = "Cancel")
+    public Task<bool> DisplayPrompt(string title, string message, string accept = "Ok", string cancel = "Cancel")
     {
-        var result = await Application.Current!.MainPage!.DisplayPromptAsync(title, message, accept, cancel);
-        return false;
+        return Application.Current!.MainPage!.DisplayAlert(title, message, accept, cancel);
     }
 
     public void SetTheme(Theme theme)

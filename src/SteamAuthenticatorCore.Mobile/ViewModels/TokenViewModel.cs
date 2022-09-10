@@ -15,12 +15,9 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public partial class TokenViewModel : TokenViewModelBase, IDisposable
 {
-    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, ITimer timer, IMessenger messenger, AccountsFileServiceResolver accountsFileServiceResolver, ISteamGuardAccountService accountService) : base(accounts, timer)
+    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, ITimer timer, IPlatformImplementations platformImplementations, ISteamGuardAccountService accountService, AccountsFileServiceResolver accountsFileServiceResolver, IMessenger messenger) : base(accounts, timer, platformImplementations, accountService, accountsFileServiceResolver)
     {
         _messenger = messenger;
-        _accountsFileServiceResolver = accountsFileServiceResolver;
-        _accountService = accountService;
-
         Token = "Login token";
         IsMobile = true;
 
@@ -41,8 +38,6 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
     }
 
     private readonly IMessenger _messenger;
-    private readonly AccountsFileServiceResolver _accountsFileServiceResolver;
-    private readonly ISteamGuardAccountService _accountService;
 
     private VisualElement? _longPressView;
     private bool _pressed;
@@ -73,7 +68,7 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
             files = Enumerable.Empty<FileResult>();
         }
 
-        var accountsFileService = _accountsFileServiceResolver.Invoke();
+        var accountsFileService = AccountsFileServiceResolver.Invoke();
 
         foreach (var fileResult in files)
         {
@@ -92,27 +87,17 @@ public partial class TokenViewModel : TokenViewModelBase, IDisposable
     }
 
     [RelayCommand]
-    private async Task ForceRefreshSession()
+    private Task ForceRefreshSession()
     {
         var account = (SteamGuardAccount) _longPressView!.BindingContext;
-
-        if (await _accountService.RefreshSession(account, CancellationToken.None))
-        {
-            await _accountsFileServiceResolver.Invoke().SaveAccount(account);
-            await Application.Current!.MainPage!.DisplayAlert("Refresh session", "Session has been refreshed", "Ok");
-        }
-        else
-            await Application.Current!.MainPage!.DisplayAlert("Refresh session", "Failed to refresh session", "Ok");
+        return RefreshAccountsSession(account);
     }
 
     [RelayCommand]
     private async Task Delete()
     {
-        if (!await Application.Current!.MainPage!.DisplayAlert("Delete account", "Are you sure?", "yes", "no"))
-            return;
-
         var account = (SteamGuardAccount) _longPressView!.BindingContext;
-        await _accountsFileServiceResolver.Invoke().DeleteAccount(account);
+        await DeleteAccount(account);
 
         IsLongPressTitleViewVisible = false;
         await UnselectLongPressFrame();

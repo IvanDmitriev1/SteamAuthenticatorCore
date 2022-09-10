@@ -34,7 +34,9 @@ internal class DesktopImplementations : IPlatformImplementations
     public async Task DisplayAlert(string title, string message)
     {
         var control = _dialog.GetDialogControl();
-        await control.ShowAndWaitAsync(title ,message, true);
+        await control.ShowAndWaitAsync(title ,message);
+
+        control.Hide();
     }
 
     public async Task<bool> DisplayPrompt(string title, string message, string accept = "Ok", string cancel = "Cancel")
@@ -46,8 +48,9 @@ internal class DesktopImplementations : IPlatformImplementations
         control.ButtonLeftName = accept;
         control.ButtonRightName = cancel;
 
-        var result = await control.ShowAndWaitAsync(title ,message, true);
+        var result = await control.ShowAndWaitAsync(title ,message);
 
+        control.Hide();
         control.ButtonLeftName = previousLeftButtonName;
         control.ButtonRightName = previousRightButtonName;
 
