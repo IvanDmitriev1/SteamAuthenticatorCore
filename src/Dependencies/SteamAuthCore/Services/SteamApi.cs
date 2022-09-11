@@ -31,7 +31,7 @@ internal sealed class SteamApi : ISteamApi
         return timeQuery.Response.ServerTime;
     }
 
-    public async ValueTask<RefreshSessionDataInternalResponse?> MobileauthGetwgtoken(string token, CancellationToken cancellationToken)
+    public async ValueTask<RefreshSessionDataInternalResponse?> MobileAuthGetWgToken(string token, CancellationToken cancellationToken)
     {
         var pair = new KeyValuePair<string, string>("access_token", token);
 

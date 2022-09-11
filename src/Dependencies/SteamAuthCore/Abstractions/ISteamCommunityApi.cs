@@ -7,7 +7,7 @@ namespace SteamAuthCore.Abstractions;
 
 internal interface ISteamCommunityApi
 {
-    ValueTask<T> Mobileconf<T>(string query, string cookieString, CancellationToken cancellationToken) where T : class;
+    ValueTask<T> MobileConf<T>(string query, string cookieString, CancellationToken cancellationToken) where T : class;
     ValueTask<SendConfirmationResponse> SendMultipleConfirmations(string query, string cookieString, CancellationToken cancellationToken);
     ValueTask<string> Login(string cookieString);
     ValueTask<RsaResponse?> GetRsaKey(KeyValuePair<string, string>[] content, string cookieString);

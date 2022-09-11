@@ -31,7 +31,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
 
     public async ValueTask<bool> RefreshSession(SteamGuardAccount account, CancellationToken cancellationToken)
     {
-        if (await _steamApi.MobileauthGetwgtoken(account.Session.OAuthToken, cancellationToken).ConfigureAwait(false) is not { } refreshResponse)
+        if (await _steamApi.MobileAuthGetWgToken(account.Session.OAuthToken, cancellationToken).ConfigureAwait(false) is not { } refreshResponse)
             return false;
 
         var token = account.Session.SteamId + "%7C%7C" + refreshResponse.Token;
@@ -66,7 +66,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
 
         var query = builder.ToString();
 
-        var response = await _steamCommunityApi.Mobileconf<ConfirmationDetailsResponse>(query, account.Session.GetCookieString(), cancellationToken).ConfigureAwait(false);
+        var response = await _steamCommunityApi.MobileConf<ConfirmationDetailsResponse>(query, account.Session.GetCookieString(), cancellationToken).ConfigureAwait(false);
         return response.Success;
     }
 
@@ -233,7 +233,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
             builder.Append(GenerateConfirmationQueryParams(account, "conf"));
 
             var html = await _steamCommunityApi
-                .Mobileconf<string>(builder.ToString(), account.Session.GetCookieString(), cancellationToken)
+                .MobileConf<string>(builder.ToString(), account.Session.GetCookieString(), cancellationToken)
                 .ConfigureAwait(false);
 
             if (!html.Contains("Invalid authenticator"))
