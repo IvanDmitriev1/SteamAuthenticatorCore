@@ -34,8 +34,7 @@ public abstract partial class ConfirmationsViewModelBase : ObservableObject, IRe
 
     protected async ValueTask SendConfirmation(ConfirmationModel confirmation, ConfirmationOptions command)
     {
-        if (!await _accountService.SendConfirmation(_confirmationModel.Account, confirmation, command, CancellationToken.None))
-            return;
+        await _accountService.SendConfirmation(_confirmationModel.Account, confirmation, command, CancellationToken.None);
 
         _confirmationModel.Confirmations.Remove(confirmation);
     }

@@ -9,5 +9,5 @@ public interface IConfirmationService
     ObservableCollection<ConfirmationModel> ConfirmationViewModels { get; }
 
     void Initialize();
-    ValueTask CheckConfirmations();
+    Task CheckConfirmations();
 }

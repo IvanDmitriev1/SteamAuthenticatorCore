@@ -20,8 +20,8 @@
 		<ApplicationIdGuid>c9ef8746-7af1-4538-92f2-bf5a2258dbc0</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>0.9.7</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
+		<!--<ApplicationDisplayVersion>0.9.7.0</ApplicationDisplayVersion>-->
+		<!--<ApplicationVersion>1</ApplicationVersion>-->
 
 		<!--<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>-->
 		<!--<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>-->
@@ -64,6 +64,10 @@
 	  <PackageReference Include="CommunityToolkit.Maui" Version="1.2.0" />
 	  <PackageReference Include="Sentry.Maui" Version="3.21.0-preview.3" />
 	  <PackageReference Include="Syncfusion.Maui.Core" Version="20.2.48" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)' == 'Debug'">
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

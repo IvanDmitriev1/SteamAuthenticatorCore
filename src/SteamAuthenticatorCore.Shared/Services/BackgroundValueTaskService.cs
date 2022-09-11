@@ -5,11 +5,11 @@ using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Shared.Services;
 
-internal sealed class BackgroundTaskService : BackgroundTaskServiceBase, ITaskTimer
+internal sealed class BackgroundValueTaskService : BackgroundTaskServiceBase, IValueTaskTimer
 {
-    private Func<CancellationToken, Task> _func = null!;
+    private Func<CancellationToken, ValueTask> _func = null!;
 
-    public async ValueTask StartOrRestart(TimeSpan timeSpan, Func<CancellationToken, Task> func)
+    public async ValueTask StartOrRestart(TimeSpan timeSpan, Func<CancellationToken, ValueTask> func)
     {
         await Initialize(timeSpan).ConfigureAwait(false);
 

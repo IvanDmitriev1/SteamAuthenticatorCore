@@ -11,7 +11,7 @@ namespace SteamAuthenticatorCore.Shared.ViewModel;
 
 public abstract partial class TokenViewModelBase : ObservableObject
 {
-    protected TokenViewModelBase(ObservableCollection<SteamGuardAccount> accounts, ITimer timer, IPlatformImplementations platformImplementations, ISteamGuardAccountService accountService, AccountsFileServiceResolver accountsFileServiceResolver)
+    protected TokenViewModelBase(ObservableCollection<SteamGuardAccount> accounts, IValueTaskTimer valueTaskTimer, IPlatformImplementations platformImplementations, ISteamGuardAccountService accountService, AccountsFileServiceResolver accountsFileServiceResolver)
     {
         PlatformImplementations = platformImplementations;
         AccountService = accountService;
@@ -19,7 +19,7 @@ public abstract partial class TokenViewModelBase : ObservableObject
         Accounts = accounts;
         _token = string.Empty;
         
-        timer.StartOrRestart(TimeSpan.FromSeconds(2), OnTimer);
+        valueTaskTimer.StartOrRestart(TimeSpan.FromSeconds(2), OnTimer);
     }
 
     protected readonly AccountsFileServiceResolver AccountsFileServiceResolver;

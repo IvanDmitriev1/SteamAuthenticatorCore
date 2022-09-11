@@ -15,7 +15,14 @@ internal class PlatformImplementations : IPlatformImplementations
 
     public object CreateImage(string imageSource)
     {
-        return ImageSource.FromUri(new Uri(imageSource, UriKind.Absolute));
+        var image = new UriImageSource
+        {
+            Uri = new Uri(imageSource, UriKind.Absolute),
+            CachingEnabled = true,
+            CacheValidity = TimeSpan.FromDays(1)
+        };
+
+        return image;
     }
 
     public async ValueTask InvokeMainThread(Action method)

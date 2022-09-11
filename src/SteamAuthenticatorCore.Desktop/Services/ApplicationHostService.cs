@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Sentry;
+using Microsoft.Extensions.Logging;
 using SteamAuthCore.Abstractions;
 using SteamAuthenticatorCore.Desktop.Views;
 
@@ -11,12 +11,12 @@ namespace SteamAuthenticatorCore.Desktop.Services;
 
 internal class ApplicationHostService : IHostedService
 {
-    public ApplicationHostService(IHub hub)
+    public ApplicationHostService(ILogger<ApplicationHostService> logger)
     {
-        _hub = hub;
+        _logger = logger;
     }
 
-    private readonly IHub _hub;
+    private readonly ILogger<ApplicationHostService> _logger;
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -29,7 +29,7 @@ internal class ApplicationHostService : IHostedService
         }
         catch (Exception e)
         {
-            App.OnException(e, _hub);
+            App.OnException(e, _logger);
         }
     }
 
@@ -42,7 +42,7 @@ internal class ApplicationHostService : IHostedService
         }
         catch (Exception e)
         {
-            App.OnException(e, _hub);
+            App.OnException(e, _logger);
         }
 
         return Task.CompletedTask;

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using Microsoft.Extensions.Logging;
 using SteamAuthenticatorCore.Mobile.Extensions;
 using Syncfusion.Maui.Core.Hosting;
 
@@ -25,6 +26,15 @@ public static class MauiProgram
             {
                 fonts.AddFont("MaterialIcons-Regular.ttf", "Material");
             });
+
+        builder.Services.AddLogging(loggingBuilder =>
+        {
+#if DEBUG
+            loggingBuilder.AddDebug();
+#else
+            loggingBuilder.AddSentry();
+#endif
+        });
 
         return builder.Build();
     }

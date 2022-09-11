@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Sentry;
+using Microsoft.Extensions.Logging;
 using SteamAuthenticatorCore.Shared.Models;
 using SteamAuthenticatorCore.Shared.Services;
 using Wpf.Ui.Controls.Interfaces;
@@ -15,16 +15,16 @@ namespace SteamAuthenticatorCore.Desktop.Services;
 
 internal class DesktopUpdateService : UpdateServiceBase
 {
-    public DesktopUpdateService(HttpClient client, ISnackbarService snackbarService, IDialogService dialogService, IHub hub) : base(client)
+    public DesktopUpdateService(HttpClient client, ISnackbarService snackbarService, IDialogService dialogService, ILogger<DesktopUpdateService> logger) : base(client)
     {
         _snackbarService = snackbarService;
         _dialogService = dialogService;
-        _hub = hub;
+        _logger = logger;
     }
 
     private readonly ISnackbarService _snackbarService;
     private readonly IDialogService _dialogService;
-    private readonly IHub _hub;
+    private readonly ILogger<DesktopUpdateService> _logger;
 
     public async override ValueTask CheckForUpdateAndDownloadInstall(bool isInBackground)
     {
@@ -44,7 +44,7 @@ internal class DesktopUpdateService : UpdateServiceBase
         }
         catch (Exception e)
         {
-            _hub.CaptureException(e);
+            _logger.LogError(e, "Exception when in {1}", nameof(CheckForUpdate));
 
             if (!isInBackground)
                 await _snackbarService.ShowAsync("Update", "Failed to fetch update");
@@ -78,7 +78,7 @@ internal class DesktopUpdateService : UpdateServiceBase
         }
         catch (Exception e)
         {
-            _hub.CaptureException(e);
+            _logger.LogError(e, "Exception when in {1}", nameof(DownloadAndInstall));
             await _snackbarService.ShowAsync("Update", "Failed to download and install new version");
         }
     }
@@ -95,13 +95,7 @@ internal class DesktopUpdateService : UpdateServiceBase
         }
 
         var currentExeName = AppDomain.CurrentDomain.FriendlyName + ".exe";
-
-        var stringBuilder = new StringBuilder(Assembly.GetExecutingAssembly().Location);
-        stringBuilder[^1] = 'e';
-        stringBuilder[^2] = 'x';
-        stringBuilder[^3] = 'e';
-
-        var currentExePath = stringBuilder.ToString();
+        var currentExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, currentExeName);
 
         var commandLineBuilder = new StringBuilder();
         commandLineBuilder.Append($"taskkill /f /im \"{currentExeName}\"");

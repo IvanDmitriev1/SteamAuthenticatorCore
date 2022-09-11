@@ -1,11 +1,14 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace SteamAuthCore.Models;
+namespace SteamAuthCore.Models.Internal;
 
-public class ConfirmationDetailsResponse
+internal class ConfirmationDetailsResponse
 {
     [JsonPropertyName("success")]
-    public bool Success { get; set; }
+    public bool Success
+    {
+        get; set;
+    }
 
     [JsonPropertyName("html")]
     public string Html { get; set; } = null!;

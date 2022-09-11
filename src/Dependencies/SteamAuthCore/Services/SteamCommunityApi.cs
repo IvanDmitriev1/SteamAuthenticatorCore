@@ -27,7 +27,7 @@ internal sealed class SteamCommunityApi : ISteamCommunityApi
 
     private readonly HttpClient _client;
 
-    public async ValueTask<T> Mobileconf<T>(string query, string cookieString, CancellationToken cancellationToken) where T : class
+    public async ValueTask<T> MobileConf<T>(string query, string cookieString, CancellationToken cancellationToken) where T : class
     {
         var url = ApiEndpoints.Mobileconf + query;
 
@@ -41,7 +41,7 @@ internal sealed class SteamCommunityApi : ISteamCommunityApi
         if (typeof(T) != typeof(string))
             return (await responseMessage.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken).ConfigureAwait(false))!;
 
-        var response = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var response = await responseMessage.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
         return Unsafe.As<T>(response);
     }
 

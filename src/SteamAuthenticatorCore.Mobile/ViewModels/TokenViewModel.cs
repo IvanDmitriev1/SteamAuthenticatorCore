@@ -15,7 +15,7 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public partial class TokenViewModel : TokenViewModelBase, IDisposable
 {
-    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, ITimer timer, IPlatformImplementations platformImplementations, ISteamGuardAccountService accountService, AccountsFileServiceResolver accountsFileServiceResolver, IMessenger messenger) : base(accounts, timer, platformImplementations, accountService, accountsFileServiceResolver)
+    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, IValueTaskTimer valueTaskTimer, IPlatformImplementations platformImplementations, ISteamGuardAccountService accountService, AccountsFileServiceResolver accountsFileServiceResolver, IMessenger messenger) : base(accounts, valueTaskTimer, platformImplementations, accountService, accountsFileServiceResolver)
     {
         _messenger = messenger;
         Token = "Login token";

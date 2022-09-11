@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SteamAuthenticatorCore.Shared.Abstractions;
 
-public interface ITimer : IAsyncDisposable
+public interface IValueTaskTimer : IAsyncDisposable
 {
     ValueTask StartOrRestart(TimeSpan timeSpan, Func<CancellationToken, ValueTask> func);
 }

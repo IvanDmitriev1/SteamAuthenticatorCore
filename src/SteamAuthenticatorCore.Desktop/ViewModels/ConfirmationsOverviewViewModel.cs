@@ -23,10 +23,7 @@ public partial class ConfirmationsOverviewViewModel
     public IConfirmationService ConfirmationServiceBase { get; }
 
     [RelayCommand]
-    private async Task CheckConfirmations()
-    {
-        await ConfirmationServiceBase.CheckConfirmations();
-    }
+    private Task CheckConfirmations() => ConfirmationServiceBase.CheckConfirmations();
 
     [RelayCommand]
     private void OnClick(ConfirmationModel viewModel)

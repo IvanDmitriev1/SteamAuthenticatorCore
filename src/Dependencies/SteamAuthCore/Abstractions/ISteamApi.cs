@@ -12,6 +12,6 @@ internal interface ISteamApi
     /// </summary>
     /// <returns></returns>
     ValueTask<string> GetSteamTime();
-    ValueTask<RefreshSessionDataInternalResponse?> MobileauthGetwgtoken(string token, CancellationToken cancellationToken);
+    ValueTask<RefreshSessionDataInternalResponse?> MobileAuthGetWgToken(string token, CancellationToken cancellationToken);
     Task<bool> RemoveAuthenticator(KeyValuePair<string, string>[] postData);
 }

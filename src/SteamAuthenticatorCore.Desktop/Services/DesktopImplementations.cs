@@ -20,7 +20,13 @@ internal class DesktopImplementations : IPlatformImplementations
 
     public object CreateImage(string imageSource)
     {
-        return new BitmapImage(new Uri(imageSource, UriKind.Absolute));
+        var image = new BitmapImage(new Uri(imageSource, UriKind.Absolute))
+        {
+            CacheOption = BitmapCacheOption.OnDemand,
+            CreateOptions = BitmapCreateOptions.DelayCreation | BitmapCreateOptions.PreservePixelFormat,
+        };
+
+        return image;
     }
 
     public async ValueTask InvokeMainThread(Action method)
