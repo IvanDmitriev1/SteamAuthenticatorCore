@@ -47,13 +47,12 @@ public sealed partial class App : Application
             .ConfigureLogging((context, builder) =>
             {
                 builder.AddConfiguration(context.Configuration);
-                builder.AddDebug();
 
-                builder.AddSentry(options =>
-                {
-                    if (context.HostingEnvironment.IsDevelopment())
-                        options.InitializeSdk = false;
-                });
+#if DEBUG
+                builder.AddDebug();          
+#else
+                builder.AddSentry();
+#endif
             })
             .ConfigureServices(services =>
             {
