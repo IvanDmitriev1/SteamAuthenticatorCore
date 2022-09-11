@@ -18,6 +18,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IConfirmationService, ConfirmationService>();
         services.AddScoped<ILoginService, LoginService>();
 
-        services.AddTransient<ITimer, BackgroundTaskService>();
+        services.AddTransient<ITaskTimer, BackgroundTaskService>();
+        services.AddTransient<IValueTaskTimer, BackgroundValueTaskService>();
     }
 }
