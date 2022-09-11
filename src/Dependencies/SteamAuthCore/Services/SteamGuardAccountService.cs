@@ -16,14 +16,16 @@ namespace SteamAuthCore.Services;
 
 internal class SteamGuardAccountService : ISteamGuardAccountService
 {
-    public SteamGuardAccountService(ISteamApi steamApi, ISteamCommunityApi steamCommunityApi)
+    public SteamGuardAccountService(ISteamApi steamApi, ISteamCommunityApi steamCommunityApi, ITimeAligner timeAligner)
     {
         _steamApi = steamApi;
         _steamCommunityApi = steamCommunityApi;
+        _timeAligner = timeAligner;
     }
 
     private readonly ISteamApi _steamApi;
     private readonly ISteamCommunityApi _steamCommunityApi;
+    private readonly ITimeAligner _timeAligner;
     private static readonly HtmlParser Parser = new();
 
     public async ValueTask<bool> RefreshSession(SteamGuardAccount account, CancellationToken cancellationToken)
@@ -44,36 +46,8 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         if (string.IsNullOrEmpty(account.DeviceId))
             throw new ArgumentException("Device ID is not present");
 
-        var builder = new StringBuilder("conf?", 20);
-        builder.Append(GenerateConfirmationQueryParams(account, "conf"));
-
-        var query = builder.ToString();
-        string html;
-
-        try
-        {
-            html = await _steamCommunityApi.Mobileconf<string>(query, account.Session.GetCookieString(), cancellationToken).ConfigureAwait(false);
-        }
-        catch (WgTokenInvalidException)
-        {
-            if (!await RefreshSession(account, cancellationToken).ConfigureAwait(false))
-            {
-                return Enumerable.Empty<ConfirmationModel>();
-            }
-
-            try
-            {
-                html = await _steamCommunityApi.Mobileconf<string>(query, account.Session.GetCookieString(), cancellationToken).ConfigureAwait(false);
-            }
-            catch (WgTokenInvalidException)
-            {
-                return Enumerable.Empty<ConfirmationModel>();
-            }
-        }
-        catch (WgTokenExpiredException)
-        {
+        if (await SendConfirmationsRequest(account, cancellationToken).ConfigureAwait(false) is not { } html)
             return Enumerable.Empty<ConfirmationModel>();
-        }
 
         return ParseConfirmationsHtml(html);
     }
@@ -248,6 +222,36 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         posData[3] = new KeyValuePair<string, string>("access_token", account.Session.OAuthToken);
 
         return _steamApi.RemoveAuthenticator(posData);
+    }
+
+    private async ValueTask<string?> SendConfirmationsRequest(SteamGuardAccount account, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var builder = new StringBuilder("conf?", 20);
+            builder.Append(GenerateConfirmationQueryParams(account, "conf"));
+
+            var html = await _steamCommunityApi
+                .Mobileconf<string>(builder.ToString(), account.Session.GetCookieString(), cancellationToken)
+                .ConfigureAwait(false);
+
+            if (!html.Contains("Invalid authenticator"))
+                return html;
+
+            await _timeAligner.AlignTimeAsync();
+            return await SendConfirmationsRequest(account, cancellationToken).ConfigureAwait(false);
+        }
+        catch (WgTokenInvalidException)
+        {
+            if (!await RefreshSession(account, cancellationToken).ConfigureAwait(false))
+                return null;
+
+            return await SendConfirmationsRequest(account, cancellationToken).ConfigureAwait(false);
+        }
+        catch (WgTokenExpiredException)
+        {
+            return null;
+        }
     }
 
     private static IEnumerable<ConfirmationModel> ParseConfirmationsHtml(string html)
