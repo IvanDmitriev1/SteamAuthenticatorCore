@@ -55,6 +55,8 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
 
     public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel confirmation, ConfirmationOptions options, CancellationToken cancellationToken)
     {
+        await _timeAligner.AlignTimeAsync().ConfigureAwait(false);
+
         var strOption = options.ToString().ToLower();
 
         var builder = new StringBuilder("ajaxop", 35);
@@ -72,6 +74,8 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
 
     public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, IEnumerable<ConfirmationModel> confirmations, ConfirmationOptions options, CancellationToken cancellationToken)
     {
+        await _timeAligner.AlignTimeAsync().ConfigureAwait(false);
+
         var strOption = options.ToString().ToLower();
 
         var builder = new StringBuilder(25);
