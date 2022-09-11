@@ -9,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Sentry;
 using SteamAuthCore.Extensions;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Desktop.Services;
@@ -32,9 +31,12 @@ public sealed partial class App : Application
     public static IServiceProvider ServiceProvider { get; private set; } = null!;
 
     private IServiceScope? _serviceScope;
+    private ILogger<App> _logger;
 
     public App()
     {
+        Directory.SetCurrentDirectory(AppContext.BaseDirectory);
+
         _host = Host
             .CreateDefaultBuilder()
             .ConfigureHostConfiguration(builder =>
@@ -111,14 +113,14 @@ public sealed partial class App : Application
             })
             .Build();
 
-        Directory.SetCurrentDirectory(AppContext.BaseDirectory);
+        _logger = _host.Services.GetRequiredService<ILogger<App>>();
     }
 
     private readonly IHost _host;
 
-    public static void OnException(Exception exception, IHub hub)
+    public static void OnException(Exception exception, ILogger logger)
     {
-        hub.CaptureException(exception);
+        logger.LogCritical(exception, "Exception occurred");
 
         MessageBox.Show( $"{exception.Message}\n\n{exception.StackTrace}", "Exception occurred", MessageBoxButton.OK, MessageBoxImage.Error);
 
@@ -143,7 +145,6 @@ public sealed partial class App : Application
     {
         e.Handled = true;
 
-        var hub = _host.Services.GetRequiredService<IHub>();
-        OnException(e.Exception, hub);
+        OnException(e.Exception, _logger);
     }
 }

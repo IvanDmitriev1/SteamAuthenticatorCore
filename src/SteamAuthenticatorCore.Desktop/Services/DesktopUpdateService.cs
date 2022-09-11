@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Sentry;
+using Microsoft.Extensions.Logging;
 using SteamAuthenticatorCore.Shared.Models;
 using SteamAuthenticatorCore.Shared.Services;
 using Wpf.Ui.Controls.Interfaces;
@@ -15,16 +15,16 @@ namespace SteamAuthenticatorCore.Desktop.Services;
 
 internal class DesktopUpdateService : UpdateServiceBase
 {
-    public DesktopUpdateService(HttpClient client, ISnackbarService snackbarService, IDialogService dialogService, IHub hub) : base(client)
+    public DesktopUpdateService(HttpClient client, ISnackbarService snackbarService, IDialogService dialogService, ILogger<DesktopUpdateService> logger) : base(client)
     {
         _snackbarService = snackbarService;
         _dialogService = dialogService;
-        _hub = hub;
+        _logger = logger;
     }
 
     private readonly ISnackbarService _snackbarService;
     private readonly IDialogService _dialogService;
-    private readonly IHub _hub;
+    private readonly ILogger<DesktopUpdateService> _logger;
 
     public async override ValueTask CheckForUpdateAndDownloadInstall(bool isInBackground)
     {
@@ -44,7 +44,7 @@ internal class DesktopUpdateService : UpdateServiceBase
         }
         catch (Exception e)
         {
-            _hub.CaptureException(e);
+            _logger.LogError(e, "Exception when in {1}", nameof(CheckForUpdate));
 
             if (!isInBackground)
                 await _snackbarService.ShowAsync("Update", "Failed to fetch update");
@@ -78,7 +78,7 @@ internal class DesktopUpdateService : UpdateServiceBase
         }
         catch (Exception e)
         {
-            _hub.CaptureException(e);
+            _logger.LogError(e, "Exception when in {1}", nameof(DownloadAndInstall));
             await _snackbarService.ShowAsync("Update", "Failed to download and install new version");
         }
     }
