@@ -228,7 +228,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         return _steamApi.RemoveAuthenticator(posData);
     }
 
-    private async ValueTask<string?> SendFetchConfirmationsRequest(SteamGuardAccount account, CancellationToken cancellationToken)
+    private async ValueTask<string?> SendFetchConfirmationsRequest(SteamGuardAccount account, CancellationToken cancellationToken, UInt16 times = 0)
     {
         try
         {
@@ -251,10 +251,15 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         }
         catch (WgTokenInvalidException)
         {
+            if (times > 1)
+                return null;
+
+            await _timeAligner.AlignTimeAsync().ConfigureAwait(false);
+
             if (!await RefreshSession(account, cancellationToken).ConfigureAwait(false))
                 return null;
 
-            return await SendFetchConfirmationsRequest(account, cancellationToken).ConfigureAwait(false);
+            return await SendFetchConfirmationsRequest(account, cancellationToken, ++times).ConfigureAwait(false);
         }
         catch (WgTokenExpiredException)
         {
