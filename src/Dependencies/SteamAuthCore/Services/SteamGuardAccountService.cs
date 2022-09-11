@@ -47,7 +47,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         if (string.IsNullOrEmpty(account.DeviceId))
             throw new ArgumentException("Device ID is not present");
 
-        if (await SendConfirmationsRequest(account, cancellationToken).ConfigureAwait(false) is not { } html)
+        if (await SendFetchConfirmationsRequest(account, cancellationToken).ConfigureAwait(false) is not { } html)
             return Enumerable.Empty<ConfirmationModel>();
 
         return ParseConfirmationsHtml(html);
@@ -56,29 +56,27 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
     public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel confirmation, ConfirmationOptions options, CancellationToken cancellationToken)
     {
         await _timeAligner.AlignTimeAsync().ConfigureAwait(false);
-
         var strOption = options.ToString().ToLower();
 
-        var builder = new StringBuilder("ajaxop", 35);
+        var builder = new StringBuilder(140 + 50);
+        builder.Append("ajaxop");
         builder.Append($"?op={strOption}");
         builder.Append('&');
         builder.Append(GenerateConfirmationQueryParams(account, strOption));
         builder.Append($"&cid={confirmation.Id}");
         builder.Append($"&ck={confirmation.Key}");
 
-        var query = builder.ToString();
-
-        var response = await _steamCommunityApi.MobileConf<ConfirmationDetailsResponse>(query, account.Session.GetCookieString(), cancellationToken).ConfigureAwait(false);
+        var response = await _steamCommunityApi.MobileConf<ConfirmationDetailsResponse>(builder.ToString(), account.Session.GetCookieString(), cancellationToken).ConfigureAwait(false);
         return response.Success;
     }
 
-    public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, IEnumerable<ConfirmationModel> confirmations, ConfirmationOptions options, CancellationToken cancellationToken)
+    public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel[] confirmations, ConfirmationOptions options, CancellationToken cancellationToken)
     {
         await _timeAligner.AlignTimeAsync().ConfigureAwait(false);
-
         var strOption = options.ToString().ToLower();
+        var capacity = 140 + confirmations.Length * (20 + 11 + 7 + 6 + 3);
 
-        var builder = new StringBuilder(25);
+        var builder = new StringBuilder(capacity);
         builder.Append($"op={strOption}");
         builder.Append('&');
         builder.Append(GenerateConfirmationQueryParams(account, strOption));
@@ -229,11 +227,12 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         return _steamApi.RemoveAuthenticator(posData);
     }
 
-    private async ValueTask<string?> SendConfirmationsRequest(SteamGuardAccount account, CancellationToken cancellationToken)
+    private async ValueTask<string?> SendFetchConfirmationsRequest(SteamGuardAccount account, CancellationToken cancellationToken)
     {
         try
         {
-            var builder = new StringBuilder("conf?", 20);
+            var builder = new StringBuilder(140 + 5);
+            builder.Append("conf?");
             builder.Append(GenerateConfirmationQueryParams(account, "conf"));
 
             var html = await _steamCommunityApi
@@ -244,14 +243,14 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
                 return html;
 
             await _timeAligner.AlignTimeAsync();
-            return await SendConfirmationsRequest(account, cancellationToken).ConfigureAwait(false);
+            return await SendFetchConfirmationsRequest(account, cancellationToken).ConfigureAwait(false);
         }
         catch (WgTokenInvalidException)
         {
             if (!await RefreshSession(account, cancellationToken).ConfigureAwait(false))
                 return null;
 
-            return await SendConfirmationsRequest(account, cancellationToken).ConfigureAwait(false);
+            return await SendFetchConfirmationsRequest(account, cancellationToken).ConfigureAwait(false);
         }
         catch (WgTokenExpiredException)
         {
@@ -289,7 +288,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
     {
         var time = ITimeAligner.SteamTime;
 
-        var builder = new StringBuilder(40);
+        var builder = new StringBuilder(140);
         builder.Append($"p={account.DeviceId}");
         builder.Append($"&a={account.Session.SteamId}");
         builder.Append($"&k={GenerateConfirmationHashForTime(time, tag, account.IdentitySecret)}");
