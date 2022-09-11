@@ -251,10 +251,8 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         }
         catch (WgTokenInvalidException)
         {
-            if (times > 1)
+            if (times >= 1)
                 return null;
-
-            await _timeAligner.AlignTimeAsync().ConfigureAwait(false);
 
             if (!await RefreshSession(account, cancellationToken).ConfigureAwait(false))
                 return null;
