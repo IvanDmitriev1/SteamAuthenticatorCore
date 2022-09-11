@@ -11,6 +11,7 @@ using AngleSharp.Html.Parser;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Exceptions;
 using SteamAuthCore.Models;
+using SteamAuthCore.Models.Internal;
 
 namespace SteamAuthCore.Services;
 
