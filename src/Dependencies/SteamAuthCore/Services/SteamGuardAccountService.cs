@@ -50,7 +50,8 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         if (await SendFetchConfirmationsRequest(account, cancellationToken).ConfigureAwait(false) is not { } html)
             return Enumerable.Empty<ConfirmationModel>();
 
-        return ParseConfirmationsHtml(html);
+        using var document = await Parser.ParseDocumentAsync(html, cancellationToken).ConfigureAwait(false);
+        return document.GetElementsByClassName("mobileconf_list_entry").Select(GetConfirmationModelFromHtml);
     }
 
     public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel confirmation, ConfirmationOptions options, CancellationToken cancellationToken)
@@ -239,10 +240,13 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
                 .MobileConf<string>(builder.ToString(), account.Session.GetCookieString(), cancellationToken)
                 .ConfigureAwait(false);
 
+            if (html.Contains("Nothing to confirm"))
+                return null;
+
             if (!html.Contains("Invalid authenticator"))
                 return html;
 
-            await _timeAligner.AlignTimeAsync();
+            await _timeAligner.AlignTimeAsync().ConfigureAwait(false);
             return await SendFetchConfirmationsRequest(account, cancellationToken).ConfigureAwait(false);
         }
         catch (WgTokenInvalidException)
@@ -256,16 +260,6 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         {
             return null;
         }
-    }
-
-    private static IEnumerable<ConfirmationModel> ParseConfirmationsHtml(string html)
-    {
-        if (html.Contains("<div>Nothing to confirm</div>"))
-            return Array.Empty<ConfirmationModel>();
-
-        using var document = Parser.ParseDocument(html);
-
-        return document.GetElementsByClassName("mobileconf_list_entry").Select(GetConfirmationModelFromHtml);
     }
 
     private static ConfirmationModel GetConfirmationModelFromHtml(IElement confirmationElement)
