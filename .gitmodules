@@ -1,3 +1,3 @@
-[submodule "src/Dependencies/wpfui"]
-	path = src/Dependencies/wpfui
+[submodule "src/SteamAuthenticatorCore.Wpf/wpfui"]
+	path = src/SteamAuthenticatorCore.Wpf/wpfui
 	url = https://github.com/IvanDmitriev1/wpfui

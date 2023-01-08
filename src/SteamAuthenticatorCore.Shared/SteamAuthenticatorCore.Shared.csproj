@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Dependencies\SteamAuthCore\SteamAuthCore.csproj" />
+    <ProjectReference Include="..\SteamAuthCore\SteamAuthCore.csproj" />
   </ItemGroup>
 
 </Project>
