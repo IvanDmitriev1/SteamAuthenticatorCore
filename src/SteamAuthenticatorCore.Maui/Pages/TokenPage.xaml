@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
+<controls:BaseContentPage
     x:Class="SteamAuthenticatorCore.Mobile.Pages.TokenPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -8,15 +8,14 @@
     xmlns:models="clr-namespace:SteamAuthCore.Models;assembly=SteamAuthCore"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
     x:Name="Page"
-    Title="Token"
-    x:DataType="viewModels:TokenViewModel">
+    x:DataType="viewModels:TokenViewModel"
+    x:TypeArguments="viewModels:TokenViewModel">
 
     <Shell.TitleView>
         <controls:MyTitleView
             CloseCommand="{Binding HideLongPressTitleViewCommand}"
-            HorizontalOptions="EndAndExpand"
             IsContentVisible="{Binding IsLongPressTitleViewVisible}"
-            TitleName="Token Page">
+            TitleName="Token">
             <HorizontalStackLayout Spacing="10">
                 <Button
                     Padding="5,0"
@@ -104,4 +103,4 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
     </Grid>
-</ContentPage>
+</controls:BaseContentPage>

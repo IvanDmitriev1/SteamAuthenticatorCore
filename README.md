@@ -1,5 +1,5 @@
 [![Language](https://img.shields.io/badge/language-C%23-blue.svg?style=flat-square)](https://github.com/bduj1/SteamDesktopAuthenticatorCore/search?l=c%23)
-[![Requirements](https://img.shields.io/badge/Requirements-.NET%206.0-blue.svg)](https://github.com/dotnet/core/blob/main/release-notes/6.0/supported-os.md)
+[![Requirements](https://img.shields.io/badge/Requirements-.NET%207.0-blue.svg)](https://github.com/dotnet/core/blob/main/release-notes/7.0/supported-os.md)
 
 # This is an implementation of the Steam's mobile authenticator application for windows and Android
 

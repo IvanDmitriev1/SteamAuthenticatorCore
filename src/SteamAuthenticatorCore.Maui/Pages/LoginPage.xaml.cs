@@ -2,11 +2,7 @@ using SteamAuthenticatorCore.Mobile.ViewModels;
 
 namespace SteamAuthenticatorCore.Mobile.Pages;
 
-public partial class LoginPage : ContentPage
+public partial class LoginPage 
 {
-	public LoginPage(LoginViewModel viewModel)
-	{
-		InitializeComponent();
-        BindingContext = viewModel;
-    }
+    public LoginPage(LoginViewModel viewModel) : base(viewModel) => InitializeComponent();
 }

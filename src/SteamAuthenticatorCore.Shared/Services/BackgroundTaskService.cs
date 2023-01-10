@@ -17,7 +17,7 @@ internal sealed class BackgroundTaskService : BackgroundTaskServiceBase, ITaskTi
         TimerTask = DoWordAsync();
     }
 
-    protected async override Task DoWordAsync()
+    protected override async Task DoWordAsync()
     {
         try
         {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
+<controls:BaseContentPage
     x:Class="SteamAuthenticatorCore.Mobile.Pages.LoginPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -7,11 +7,8 @@
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
     Title="Login"
     x:DataType="viewModels:LoginViewModel"
+    x:TypeArguments="viewModels:LoginViewModel"
     Shell.TabBarIsVisible="False">
-
-    <Shell.TitleView>
-        <controls:MyTitleView TitleName="Login" />
-    </Shell.TitleView>
 
     <VerticalStackLayout
         Margin="10"
@@ -39,4 +36,4 @@
         <Button Command="{Binding LoginCommand}" Text="Login" />
 
     </VerticalStackLayout>
-</ContentPage>
+</controls:BaseContentPage>

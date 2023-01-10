@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
+<controls:BaseContentPage
     x:Class="SteamAuthenticatorCore.Mobile.Pages.ConfirmationsOverviewPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -9,12 +9,9 @@
     xmlns:models="clr-namespace:SteamAuthenticatorCore.Shared.Models;assembly=SteamAuthenticatorCore.Shared"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
     x:Name="Page"
-    Title="Confirmations overview"
-    x:DataType="viewModels:ConfirmationsOverviewViewModel">
-
-    <Shell.TitleView>
-        <controls:MyTitleView TitleName="Confirmations" />
-    </Shell.TitleView>
+    Title="Confirmations"
+    x:DataType="viewModels:ConfirmationsOverviewViewModel"
+    x:TypeArguments="viewModels:ConfirmationsOverviewViewModel">
 
     <ContentPage.Behaviors>
         <behaviors:EventToCommandBehavior Command="{Binding Path=AppearingCommand}" EventName="Appearing" />
@@ -44,4 +41,4 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
     </RefreshView>
-</ContentPage>
+</controls:BaseContentPage>

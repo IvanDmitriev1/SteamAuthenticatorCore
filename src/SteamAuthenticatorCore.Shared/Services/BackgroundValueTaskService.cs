@@ -17,7 +17,7 @@ internal sealed class BackgroundValueTaskService : BackgroundTaskServiceBase, IV
         TimerTask = DoWordAsync();
     }
 
-    protected async override Task DoWordAsync()
+    protected override async Task DoWordAsync()
     {
         try
         {

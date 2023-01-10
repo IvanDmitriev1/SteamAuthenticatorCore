@@ -36,6 +36,8 @@ public static class MauiProgram
 #endif
         });
 
+        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("OTEwNTI3QDMyMzAyZTM0MmUzMGNGdGh2NGwzSWt6QVhLSmEzYzdKN3Erc1hLZFhBVEFhM1pPVlZINU5KMWs9");
+
         return builder.Build();
     }
 }

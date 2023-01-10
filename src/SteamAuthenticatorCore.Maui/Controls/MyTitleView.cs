@@ -4,6 +4,16 @@ namespace SteamAuthenticatorCore.Mobile.Controls;
 
 public class MyTitleView : ContentView
 {
+    public MyTitleView()
+    {
+
+    }
+
+    public MyTitleView(string titleName)
+    {
+        TitleName = titleName;
+    }
+
     public static readonly BindableProperty TitleNameProperty =
         BindableProperty.Create(nameof(TitleName), typeof(string), typeof(MyTitleView), string.Empty, BindingMode.OneTime);
 

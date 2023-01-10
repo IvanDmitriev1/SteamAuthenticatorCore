@@ -30,7 +30,7 @@ public partial class App : Application
     private readonly IUpdateService _updateService;
     private readonly IConfirmationService _confirmationService;
 
-    protected async override void OnStart()
+    protected override async void OnStart()
     {
         VersionTracking.Track();
 
