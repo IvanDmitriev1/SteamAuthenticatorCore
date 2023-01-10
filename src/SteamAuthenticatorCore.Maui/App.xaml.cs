@@ -34,7 +34,7 @@ public partial class App : Application
     {
         VersionTracking.Track();
 
-        _appSettings.LoadSettings();
+        _appSettings.Load();
         _platformImplementations.SetTheme(_appSettings.Theme);
 
         ColorsCollection.Add("SecondBackgroundSelectionColor", "SecondLightBackgroundSelectionColor", "SecondDarkBackgroundSelectionColor");

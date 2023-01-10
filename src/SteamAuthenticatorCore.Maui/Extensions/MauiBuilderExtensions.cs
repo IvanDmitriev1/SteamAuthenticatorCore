@@ -59,6 +59,7 @@ internal static class MauiBuilderExtensions
 
     private static void AddServices(this IServiceCollection services)
     {
+        services.AddSingleton<AppSettings, MauiAppSettings>();
         services.AddSingleton<IStatusBar, StatusBar>();
         services.AddSingleton<ISettingsService, SettingsService>();
         services.AddSingleton<IPlatformImplementations, PlatformImplementations>();

@@ -1,19 +1,16 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Models;
 
 namespace SteamAuthenticatorCore.Shared;
 
-public partial class AppSettings : ObservableObject, ISettings
+public abstract partial class AppSettings : AutoSettings
 {
-    public AppSettings(ISettingsService settingsService, IPlatformImplementations platformImplementations)
+    protected AppSettings()
     {
-        _platformImplementations = platformImplementations;
-        SettingsService = settingsService;
-        IsInitialized = false;
+        LoadDefault();
     }
-
-    private readonly IPlatformImplementations _platformImplementations;
 
     [ObservableProperty]
     private AccountsLocationModel _accountsLocation;
@@ -31,45 +28,23 @@ public partial class AppSettings : ObservableObject, ISettings
     private Theme _theme;
 
     [IgnoreSetting]
-    public bool IsInitialized { get; private set; }
-    
-    [IgnoreSetting]
-    public ISettingsService SettingsService { get; }
+    public bool IsLoaded { get; protected set; }
 
-    public void DefaultSettings()
+    protected abstract void Save(string propertyName);
+
+    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+    {
+        base.OnPropertyChanged(e);
+
+        Save(e.PropertyName!);
+    }
+
+    private void LoadDefault()
     {
         AccountsLocation = AccountsLocationModel.LocalDrive;
         FirstRun = true;
         PeriodicCheckingInterval = 15;
         AutoConfirmMarketTransactions = false;
         Theme = Theme.System;
-
-        IsInitialized = true;
-    }
-    
-    public void LoadSettings()
-    {
-        DefaultSettings();
-        SettingsService.LoadSettings(this);
-
-        PropertyChanged += async (sender, args) =>
-        {
-            var settings = (sender as AppSettings)!;
-
-            settings.SettingsService.SaveSetting(args.PropertyName!, settings);
-
-            if (args.PropertyName != nameof(settings.Theme))
-                return;
-
-            await _platformImplementations.InvokeMainThread(() =>
-            {
-                _platformImplementations.SetTheme(settings.Theme);
-            });
-        };
-    }
-
-    public void SaveSettings()
-    {
-        SettingsService.SaveSettings(this);
     }
 }

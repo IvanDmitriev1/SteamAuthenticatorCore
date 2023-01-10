@@ -75,7 +75,7 @@ internal class ConfirmationService : IConfirmationService, IDisposable
     private async void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         var settings = (AppSettings) sender!;
-        if (!settings.IsInitialized)
+        if (!settings.IsLoaded)
             return;
 
         switch (e.PropertyName)

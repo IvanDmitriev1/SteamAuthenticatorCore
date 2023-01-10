@@ -11,7 +11,6 @@ public static class ServiceCollectionExtensions
 {
     public static void AddSharedServices(this IServiceCollection services)
     {
-        services.AddSingleton<AppSettings>();
         services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
         services.AddSingleton<ObservableCollection<SteamGuardAccount>>();
 

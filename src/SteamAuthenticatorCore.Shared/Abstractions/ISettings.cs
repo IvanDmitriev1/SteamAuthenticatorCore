@@ -1,14 +1,12 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace SteamAuthenticatorCore.Shared.Abstractions;
 
-public interface ISettings
+public interface ISettings : INotifyPropertyChanged
 {
-    ISettingsService SettingsService { get; }
-
-    void DefaultSettings();
-    void LoadSettings();
-    void SaveSettings();
+    public void Load();
+    public void Save();
 }
 
 public sealed class IgnoreSetting : Attribute
