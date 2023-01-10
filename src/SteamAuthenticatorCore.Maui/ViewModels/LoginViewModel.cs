@@ -12,7 +12,7 @@ public partial class LoginViewModel : LoginViewModelBase
     }
 
     [RelayCommand]
-    protected async override Task OnLogin()
+    protected override async Task OnLogin()
     {
         IsPasswordBoxEnabled = false;
 

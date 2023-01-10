@@ -17,14 +17,18 @@ public abstract class BaseContentPage : ContentPage
     {
         BindingContext = viewModel;
 
-        Loaded += (_, _) =>
+        Loaded += static (sender, _) =>
         {
-            if (Shell.GetTitleView(this) is null)
-                Shell.SetTitleView(this, new MyTitleView(Title));
+            var page = (ContentPage)sender!;
 
-            if (string.IsNullOrEmpty(Title))
-                Title = GetType().Name;
+            if (Shell.GetTitleView(page) is null)
+                Shell.SetTitleView(page, new MyTitleView(page.Title));
         };
+
+#if DEBUG
+        if (string.IsNullOrEmpty(Title))
+            Title = GetType().Name;
+#endif
     }
 
     protected override void OnAppearing()
