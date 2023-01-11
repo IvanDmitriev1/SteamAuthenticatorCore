@@ -44,7 +44,7 @@ public sealed partial class App : Application
                 var appName = Assembly.GetEntryAssembly()!.GetName().Name;
 
                 var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{appName}.appsettings.json");
-                builder.AddJsonStream(stream);
+                builder.AddJsonStream(stream!);
             })
             .ConfigureLogging((context, builder) =>
             {
@@ -85,9 +85,9 @@ public sealed partial class App : Application
                 services.AddSingleton<ObservableCollection<SteamGuardAccount>>();
 
                 services.AddGoogleDriveApi(Name);
-                services.AddTransient<ISettingsService, DesktopSettingsService>();
                 services.AddSingleton<IPlatformImplementations, DesktopImplementations>();
 
+                services.AddSingleton<AppSettings, WpfAppSettings>();
                 services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
                 services.AddScoped<LocalDriveAccountsFileService>();
                 services.AddScoped<GoogleDriveAccountsFileService>();

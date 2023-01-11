@@ -34,6 +34,9 @@ public abstract partial class AppSettings : AutoSettings
 
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
+        if (!IsLoaded)
+            return;
+
         base.OnPropertyChanged(e);
 
         Save(e.PropertyName!);
