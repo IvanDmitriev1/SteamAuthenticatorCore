@@ -1,35 +1,41 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using SteamAuthenticatorCore.Shared;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using SteamAuthenticatorCore.Shared.Abstractions;
-using SteamAuthenticatorCore.Shared.Models;
-using SteamAuthenticatorCore.Shared.ViewModel;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
-public sealed partial class SettingsViewModel : SettingsViewModelBase
+public sealed partial class SettingsViewModel : ObservableObject
 {
-    public SettingsViewModel(AppSettings appSettings, IUpdateService updateService) : base(appSettings, updateService, VersionTracking.CurrentVersion)
+    public SettingsViewModel(IUpdateService updateService)
     {
+        _updateService = updateService;
+        AppSettings = MauiAppSettings.Current;
+
         _themeSelection = AppSettings.Theme switch
         {
-            Theme.System => "System",
-            Theme.Light => "Light",
-            Theme.Dark => "Dark",
+            AppTheme.Unspecified => "System",
+            AppTheme.Light => "Light",
+            AppTheme.Dark => "Dark",
             _ => throw new ArgumentOutOfRangeException()
         };
     }
 
+    private readonly IUpdateService _updateService;
+
+    public MauiAppSettings AppSettings { get; }
+
+    [ObservableProperty]
     private string _themeSelection;
-    
-    public string ThemeSelection
+
+    partial void OnThemeSelectionChanged(string value)
     {
-        get => _themeSelection;
-        set
+        AppSettings.Theme = value switch
         {
-            _themeSelection = value;
-            AppSettings.Theme = Enum.Parse<Theme>(value);
-            OnPropertyChanged();
-        }
+            "System" => AppTheme.Unspecified,
+            "Light" => AppTheme.Light,
+            "Dark" => AppTheme.Dark,
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 
     [RelayCommand]
@@ -63,5 +69,11 @@ public sealed partial class SettingsViewModel : SettingsViewModelBase
     {
         if (AppSettings.PeriodicCheckingInterval < 15)
             AppSettings.PeriodicCheckingInterval = 15;
+    }
+
+    [RelayCommand]
+    private async Task CheckForUpdates()
+    {
+        await _updateService.CheckForUpdateAndDownloadInstall(false);
     }
 }

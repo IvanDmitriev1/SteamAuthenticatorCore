@@ -3,9 +3,10 @@
     x:Class="SteamAuthenticatorCore.Mobile.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:applicationModel="clr-namespace:Microsoft.Maui.ApplicationModel;assembly=Microsoft.Maui.Essentials"
     xmlns:controls="clr-namespace:SteamAuthenticatorCore.Mobile.Controls"
     xmlns:effectsView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
-    xmlns:mobile="clr-namespace:SteamAuthenticatorCore.Mobile"
+    xmlns:resources="clr-namespace:SteamAuthenticatorCore.Mobile.Resources"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
     Title="Settings"
     x:DataType="viewModels:SettingsViewModel"
@@ -89,7 +90,7 @@
                                     FontSize="21"
                                     HorizontalOptions="Center"
                                     HorizontalTextAlignment="Center"
-                                    Text="{x:Static mobile:MaterialDesignIcons.Settings}" />
+                                    Text="{x:Static resources:MaterialDesignIcons.Settings}" />
                                 <Label
                                     HorizontalOptions="Center"
                                     HorizontalTextAlignment="Center"
@@ -109,7 +110,7 @@
                                     FontSize="21"
                                     HorizontalOptions="Center"
                                     HorizontalTextAlignment="Center"
-                                    Text="{x:Static mobile:MaterialDesignIcons.LightMode}" />
+                                    Text="{x:Static resources:MaterialDesignIcons.LightMode}" />
                                 <Label
                                     HorizontalOptions="Center"
                                     HorizontalTextAlignment="Center"
@@ -129,7 +130,7 @@
                                     FontSize="21"
                                     HorizontalOptions="Center"
                                     HorizontalTextAlignment="Center"
-                                    Text="{x:Static mobile:MaterialDesignIcons.DarkMode}" />
+                                    Text="{x:Static resources:MaterialDesignIcons.DarkMode}" />
                                 <Label
                                     HorizontalOptions="Center"
                                     HorizontalTextAlignment="Center"
@@ -185,7 +186,7 @@
         </VerticalStackLayout>
 
         <VerticalStackLayout Spacing="5">
-            <Label Text="{Binding CurrentVersion, StringFormat='Current version: {0}'}" />
+            <Label Text="{Binding Source={x:Static applicationModel:VersionTracking.CurrentVersion}, StringFormat='Current version: {0}'}" />
             <Button Command="{Binding CheckForUpdatesCommand}" Text="Check for updates" />
         </VerticalStackLayout>
     </VerticalStackLayout>

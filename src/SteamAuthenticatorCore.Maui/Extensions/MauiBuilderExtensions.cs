@@ -1,5 +1,4 @@
 ﻿using SteamAuthCore.Extensions;
-using SteamAuthenticatorCore.Mobile.Abstractions;
 using SteamAuthenticatorCore.Mobile.Pages;
 using SteamAuthenticatorCore.Mobile.Services;
 using SteamAuthenticatorCore.Mobile.ViewModels;
@@ -59,9 +58,7 @@ internal static class MauiBuilderExtensions
 
     private static void AddServices(this IServiceCollection services)
     {
-        services.AddSingleton<AppSettings, MauiAppSettings>();
-        services.AddSingleton<IStatusBar, StatusBar>();
-        services.AddSingleton<ISettingsService, SettingsService>();
+        services.AddSingleton<AppSettings>(MauiAppSettings.Current);
         services.AddSingleton<IPlatformImplementations, PlatformImplementations>();
         services.AddSingleton<IUpdateService, UpdateService>();
         services.AddScoped<SecureStorageService>();

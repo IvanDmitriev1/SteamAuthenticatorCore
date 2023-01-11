@@ -3,7 +3,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:SteamAuthenticatorCore.Mobile.Controls"
-    xmlns:mobile="clr-namespace:SteamAuthenticatorCore.Mobile">
+    xmlns:resources="using:SteamAuthenticatorCore.Mobile.Resources">
 
     <ControlTemplate x:Key="Template" x:DataType="controls:MyTitleView">
         <Grid>
@@ -31,7 +31,7 @@
                     HeightRequest="45"
                     HorizontalOptions="Start"
                     IsVisible="{TemplateBinding Path=IsCloseButtonVisible}"
-                    Text="{x:Static mobile:MaterialDesignIcons.Close}"
+                    Text="{x:Static resources:MaterialDesignIcons.Close}"
                     TextColor="{AppThemeBinding Dark={StaticResource DarkTextColor},
                                                 Light={StaticResource LightTextColor}}"
                     VerticalOptions="Center"
@@ -52,6 +52,5 @@
     <Style TargetType="controls:MyTitleView">
         <Setter Property="ControlTemplate" Value="{StaticResource Template}" />
     </Style>
-
 
 </ResourceDictionary>

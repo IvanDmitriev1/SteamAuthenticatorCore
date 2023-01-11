@@ -7,9 +7,15 @@ namespace SteamAuthenticatorCore.Shared;
 
 public abstract partial class AppSettings : AutoSettings
 {
+    [IgnoreSetting]
+    public static AppSettings Current { get; protected set; } = null!;
+
     protected AppSettings()
     {
-        LoadDefault();
+        AccountsLocation = AccountsLocationModel.LocalDrive;
+        FirstRun = true;
+        PeriodicCheckingInterval = 15;
+        AutoConfirmMarketTransactions = false;
     }
 
     [ObservableProperty]
@@ -24,9 +30,6 @@ public abstract partial class AppSettings : AutoSettings
     [ObservableProperty]
     private bool _autoConfirmMarketTransactions;
 
-    [ObservableProperty]
-    private Theme _theme;
-
     [IgnoreSetting]
     public bool IsLoaded { get; protected set; }
 
@@ -40,14 +43,5 @@ public abstract partial class AppSettings : AutoSettings
         base.OnPropertyChanged(e);
 
         Save(e.PropertyName!);
-    }
-
-    private void LoadDefault()
-    {
-        AccountsLocation = AccountsLocationModel.LocalDrive;
-        FirstRun = true;
-        PeriodicCheckingInterval = 15;
-        AutoConfirmMarketTransactions = false;
-        Theme = Theme.System;
     }
 }

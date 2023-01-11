@@ -1,5 +1,4 @@
-﻿using SteamAuthenticatorCore.Mobile.Abstractions;
-using SteamAuthenticatorCore.Mobile.Helpers;
+﻿using SteamAuthenticatorCore.Mobile.Helpers;
 using SteamAuthenticatorCore.Mobile.Pages;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
@@ -8,13 +7,10 @@ namespace SteamAuthenticatorCore.Mobile;
 
 public partial class App : Application
 {
-    public App(IStatusBar statusBar, AppSettings appSettings, IPlatformImplementations platformImplementations, AccountsFileServiceResolver accountsFileServiceResolver, IUpdateService updateService, IConfirmationService confirmationService)
+    public App(AccountsFileServiceResolver accountsFileServiceResolver, IUpdateService updateService, IConfirmationService confirmationService)
     {
         InitializeComponent();
-
-        _statusBar = statusBar;
-        _appSettings = appSettings;
-        _platformImplementations = platformImplementations;
+        
         _accountsFileServiceResolver = accountsFileServiceResolver;
         _updateService = updateService;
         _confirmationService = confirmationService;
@@ -23,9 +19,6 @@ public partial class App : Application
         Shell.Current.Navigating += CurrentOnNavigating;
     }
 
-    private readonly IStatusBar _statusBar;
-    private readonly AppSettings _appSettings;
-    private readonly IPlatformImplementations _platformImplementations;
     private readonly AccountsFileServiceResolver _accountsFileServiceResolver;
     private readonly IUpdateService _updateService;
     private readonly IConfirmationService _confirmationService;
@@ -33,9 +26,7 @@ public partial class App : Application
     protected override async void OnStart()
     {
         VersionTracking.Track();
-
-        _appSettings.Load();
-        _platformImplementations.SetTheme(_appSettings.Theme);
+        AppSettings.Current.Load();
 
         ColorsCollection.Add("SecondBackgroundSelectionColor", "SecondLightBackgroundSelectionColor", "SecondDarkBackgroundSelectionColor");
         ColorsCollection.Add("SecondBackgroundColor", "SecondLightBackgroundColor", "SecondDarkBackground");
@@ -47,19 +38,19 @@ public partial class App : Application
         OnResume();
     }
 
-    protected override void OnSleep()
-    {
-        RequestedThemeChanged -= OnRequestedThemeChanged;
-    }
-
     protected override void OnResume()
     {
         RequestedThemeChanged += OnRequestedThemeChanged;
     }
 
-    private void OnRequestedThemeChanged(object? sender, AppThemeChangedEventArgs e)
+    protected override void OnSleep()
     {
-        _statusBar.SetStatusBarColorBasedOnAppTheme();
+        RequestedThemeChanged -= OnRequestedThemeChanged;
+    }
+
+    private static void OnRequestedThemeChanged(object? sender, AppThemeChangedEventArgs e)
+    {
+        MauiAppSettings.ChangeStatusBar(e.RequestedTheme);
     }
 
     private static void CurrentOnNavigating(object? sender, ShellNavigatingEventArgs e)
