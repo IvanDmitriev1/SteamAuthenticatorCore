@@ -36,7 +36,7 @@ public partial class Container
 
     private async void NavigationFluentOnLoaded(object sender, RoutedEventArgs e)
     {
-        _appSettings.LoadSettings();
+        _appSettings.Load();
         App.ServiceProvider.GetRequiredService<IConfirmationService>().Initialize();
 
         RootWelcomeGrid.Visibility = Visibility.Hidden;

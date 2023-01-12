@@ -26,7 +26,6 @@ internal class SecureStorageService : IAccountsFileService
             _fileNames.AddRange(GetFileNames());
         }
 
-
         await MainThreadExtensions.InvokeOnMainThread(() =>
         {
             _accounts.Clear();

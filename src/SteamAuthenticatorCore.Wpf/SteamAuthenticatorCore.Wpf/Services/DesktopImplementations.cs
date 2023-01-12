@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using SteamAuthenticatorCore.Shared.Abstractions;
-using SteamAuthenticatorCore.Shared.Models;
 using Wpf.Ui.Controls.Interfaces;
 using Wpf.Ui.Mvvm.Contracts;
 
@@ -61,10 +60,5 @@ internal class DesktopImplementations : IPlatformImplementations
         control.ButtonRightName = previousRightButtonName;
 
         return result == IDialogControl.ButtonPressed.Left;
-    }
-
-    public void SetTheme(Theme theme)
-    {
-        
     }
 }

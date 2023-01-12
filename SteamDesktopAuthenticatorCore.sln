@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.Shared", "src\SteamAuthenticatorCore.Shared\SteamAuthenticatorCore.Shared.csproj", "{671232B5-A884-4367-A69D-58AEF3EB01F7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.Wpf", "src\SteamAuthenticatorCore.Wpf\SteamAuthenticatorCore.Wpf\SteamAuthenticatorCore.Wpf.csproj", "{7E183D01-3B09-4A61-8B64-DCF1CBC7154D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.Desktop", "src\SteamAuthenticatorCore.Wpf\SteamAuthenticatorCore.Wpf\SteamAuthenticatorCore.Desktop.csproj", "{7E183D01-3B09-4A61-8B64-DCF1CBC7154D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthCore", "src\SteamAuthCore\SteamAuthCore.csproj", "{34466B4D-C15C-421A-B0BD-7FAA3B1FF89C}"
 EndProject

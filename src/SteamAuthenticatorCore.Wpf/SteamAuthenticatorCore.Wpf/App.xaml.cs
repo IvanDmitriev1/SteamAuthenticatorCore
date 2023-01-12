@@ -31,7 +31,7 @@ public sealed partial class App : Application
     public static IServiceProvider ServiceProvider { get; private set; } = null!;
 
     private IServiceScope? _serviceScope;
-    private ILogger<App> _logger;
+    private readonly ILogger<App> _logger;
 
     public App()
     {
@@ -44,7 +44,7 @@ public sealed partial class App : Application
                 var appName = Assembly.GetEntryAssembly()!.GetName().Name;
 
                 var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{appName}.appsettings.json");
-                builder.AddJsonStream(stream);
+                builder.AddJsonStream(stream!);
             })
             .ConfigureLogging((context, builder) =>
             {
@@ -85,9 +85,9 @@ public sealed partial class App : Application
                 services.AddSingleton<ObservableCollection<SteamGuardAccount>>();
 
                 services.AddGoogleDriveApi(Name);
-                services.AddTransient<ISettingsService, DesktopSettingsService>();
                 services.AddSingleton<IPlatformImplementations, DesktopImplementations>();
 
+                services.AddSingleton<AppSettings>(WpfAppSettings.Current);
                 services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
                 services.AddScoped<LocalDriveAccountsFileService>();
                 services.AddScoped<GoogleDriveAccountsFileService>();
