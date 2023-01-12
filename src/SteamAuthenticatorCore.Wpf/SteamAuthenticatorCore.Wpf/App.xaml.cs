@@ -31,7 +31,7 @@ public sealed partial class App : Application
     public static IServiceProvider ServiceProvider { get; private set; } = null!;
 
     private IServiceScope? _serviceScope;
-    private ILogger<App> _logger;
+    private readonly ILogger<App> _logger;
 
     public App()
     {
@@ -87,7 +87,7 @@ public sealed partial class App : Application
                 services.AddGoogleDriveApi(Name);
                 services.AddSingleton<IPlatformImplementations, DesktopImplementations>();
 
-                services.AddSingleton<AppSettings, WpfAppSettings>();
+                services.AddSingleton<AppSettings>(WpfAppSettings.Current);
                 services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
                 services.AddScoped<LocalDriveAccountsFileService>();
                 services.AddScoped<GoogleDriveAccountsFileService>();

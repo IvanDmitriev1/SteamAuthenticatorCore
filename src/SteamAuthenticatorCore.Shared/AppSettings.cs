@@ -7,9 +7,6 @@ namespace SteamAuthenticatorCore.Shared;
 
 public abstract partial class AppSettings : AutoSettings
 {
-    [IgnoreSetting]
-    public static AppSettings Current { get; protected set; } = null!;
-
     protected AppSettings()
     {
         AccountsLocation = AccountsLocationModel.LocalDrive;
@@ -17,6 +14,9 @@ public abstract partial class AppSettings : AutoSettings
         PeriodicCheckingInterval = 15;
         AutoConfirmMarketTransactions = false;
     }
+
+    [IgnoreSetting]
+    public static AppSettings Current { get; protected set; } = null!;
 
     [ObservableProperty]
     private AccountsLocationModel _accountsLocation;

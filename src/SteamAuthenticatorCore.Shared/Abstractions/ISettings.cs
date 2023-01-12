@@ -9,6 +9,7 @@ public interface ISettings : INotifyPropertyChanged
     public void Save();
 }
 
+[AttributeUsage(AttributeTargets.Property)]
 public sealed class IgnoreSetting : Attribute
 {
 

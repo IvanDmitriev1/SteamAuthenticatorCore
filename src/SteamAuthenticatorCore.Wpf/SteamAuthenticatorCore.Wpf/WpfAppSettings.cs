@@ -1,13 +1,14 @@
 ﻿using Microsoft.Win32;
 using SteamAuthenticatorCore.Shared;
+using SteamAuthenticatorCore.Shared.Abstractions;
 using System;
 using System.Reflection;
 
-namespace SteamAuthenticatorCore.Desktop.Services;
+namespace SteamAuthenticatorCore.Desktop;
 
 public sealed class WpfAppSettings : AppSettings, IDisposable
 {
-    public WpfAppSettings()
+    private WpfAppSettings()
     {
         var appName = Assembly.GetEntryAssembly()!.GetName().Name!;
 
@@ -16,8 +17,18 @@ public sealed class WpfAppSettings : AppSettings, IDisposable
                           _registrySoftwareKey.CreateSubKey(appName);
     }
 
+    static WpfAppSettings()
+    {
+        var appSettings = new WpfAppSettings();
+        AppSettings.Current = appSettings;
+        Current = appSettings;
+    }
+
     private readonly RegistryKey _registrySoftwareKey;
     private readonly RegistryKey _appRegistryKey;
+
+    [IgnoreSetting]
+    public new static WpfAppSettings Current { get; }
 
     public override void Load()
     {
@@ -35,7 +46,7 @@ public sealed class WpfAppSettings : AppSettings, IDisposable
 
                 try
                 {
-                    propertyValue = propertyInfo.PropertyType.IsEnum ? Enum.Parse(propertyInfo.PropertyType, (string) propertyValue) : Convert.ChangeType(propertyValue, propertyInfo.PropertyType);
+                    propertyValue = propertyInfo.PropertyType.IsEnum ? Enum.Parse(propertyInfo.PropertyType, (string)propertyValue) : Convert.ChangeType(propertyValue, propertyInfo.PropertyType);
                 }
                 catch (Exception)
                 {
