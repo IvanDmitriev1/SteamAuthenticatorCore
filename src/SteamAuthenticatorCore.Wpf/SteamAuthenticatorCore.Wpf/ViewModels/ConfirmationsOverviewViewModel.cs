@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
 using SteamAuthenticatorCore.Shared.Models;
-using Wpf.Ui.Mvvm.Contracts;
+using Wpf.Ui.Contracts;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
@@ -28,7 +28,9 @@ public partial class ConfirmationsOverviewViewModel
     [RelayCommand]
     private void OnClick(ConfirmationModel viewModel)
     {
-        _navigationService.NavigateTo("/accountConfirmations");
-        _messenger.Send(new UpdateAccountConfirmationPageMessage(viewModel));
+        //TODO
+
+        //_navigationService.Navigate("/accountConfirmations");
+        //_messenger.Send(new UpdateAccountConfirmationPageMessage(viewModel));
     }
 }

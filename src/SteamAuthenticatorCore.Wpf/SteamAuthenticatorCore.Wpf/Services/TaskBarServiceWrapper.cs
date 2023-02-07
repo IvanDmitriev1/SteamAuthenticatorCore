@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Interop;
-using Wpf.Ui.Mvvm.Contracts;
+using Wpf.Ui.Contracts;
 using Wpf.Ui.TaskBar;
 
 namespace SteamAuthenticatorCore.Desktop.Services;

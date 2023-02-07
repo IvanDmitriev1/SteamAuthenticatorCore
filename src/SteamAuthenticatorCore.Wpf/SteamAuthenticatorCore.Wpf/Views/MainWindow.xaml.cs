@@ -1,29 +1,31 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
-using Wpf.Ui.Mvvm.Contracts;
+using Wpf.Ui.Appearance;
+using Wpf.Ui.Contracts;
 
 namespace SteamAuthenticatorCore.Desktop.Views;
 
-public partial class Container
+public partial class MainWindow
 {
-    public Container(INavigationService navigationService, IPageService pageService, AppSettings appSettings, ISnackbarService snackbarService, IDialogService dialogService, TaskBarServiceWrapper taskBarServiceWrapper, IUpdateService updateService)
+    public MainWindow(AppSettings appSettings, ISnackbarService snackbarService, TaskBarServiceWrapper taskBarServiceWrapper, IUpdateService updateService, IServiceProvider serviceProvider)
     {
         InitializeComponent();
+
+        Watcher.Watch(this);
 
         _appSettings = appSettings;
         _taskBarServiceWrapper = taskBarServiceWrapper;
         _updateService = updateService;
 
-        navigationService.SetNavigationControl(NavigationFluent);
-        navigationService.SetPageService(pageService);
-
         snackbarService.SetSnackbarControl(RootSnackbar);
-        dialogService.SetDialogControl(RootDialog);
+
+        NavigationFluent.SetServiceProvider(serviceProvider);
 
         NavigationFluent.Loaded += NavigationFluentOnLoaded;
         Unloaded += OnUnloaded;
@@ -39,11 +41,13 @@ public partial class Container
         _appSettings.Load();
         App.ServiceProvider.GetRequiredService<IConfirmationService>().Initialize();
 
-        RootWelcomeGrid.Visibility = Visibility.Hidden;
-        MainContent.Visibility = Visibility.Visible;
+        //RootWelcomeGrid.Visibility = Visibility.Hidden;
+        NavigationFluent.Visibility = Visibility.Visible;
         _taskBarServiceWrapper.SetActiveWindow(this);
 
-        await _updateService.CheckForUpdateAndDownloadInstall(true);
+        NavigationFluent.Navigate(typeof(TokenPage));
+
+        //await _updateService.CheckForUpdateAndDownloadInstall(true);
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -55,12 +59,13 @@ public partial class Container
 
     private void OnSizeChanged(object sender, SizeChangedEventArgs e)
     {
-        NavigationFluent.IsExpanded = !(e.NewSize.Width <= 800);
+        //NavigationFluent.IsExpanded = !(e.NewSize.Width <= 800);
     }
 
     private void MenuItem_OnClick(object sender, RoutedEventArgs e)
     {
-        var menuItem = (MenuItem)sender;
+        //TODo
+        /*var menuItem = (MenuItem)sender;
 
         switch ((string) menuItem.Tag)
         {
@@ -76,6 +81,6 @@ public partial class Container
             case "close":
                 Application.Current.Shutdown();
                 break;
-        }
+        }*/
     }
 }

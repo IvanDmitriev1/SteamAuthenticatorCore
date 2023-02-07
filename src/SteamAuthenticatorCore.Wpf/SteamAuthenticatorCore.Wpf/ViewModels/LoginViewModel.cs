@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.ViewModel;
-using Wpf.Ui.Mvvm.Contracts;
+using Wpf.Ui.Contracts;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
@@ -22,7 +22,7 @@ public partial class LoginViewModel : LoginViewModelBase
         IsPasswordBoxEnabled = false;
 
         if (await LoginService.RefreshLogin(Account, Password))
-            _navigation.NavigateTo("..");
+            _navigation.GoBack();
 
         IsPasswordBoxEnabled = true;
     }

@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SteamAuthenticatorCore.Shared.Models;
 using SteamAuthenticatorCore.Shared.Services;
-using Wpf.Ui.Controls.Interfaces;
-using Wpf.Ui.Mvvm.Contracts;
+using Wpf.Ui.Contracts;
+using Wpf.Ui.Controls;
 
 namespace SteamAuthenticatorCore.Desktop.Services;
 
@@ -60,7 +60,9 @@ internal class DesktopUpdateService : UpdateServiceBase
             return;
         }
 
-        var control = _dialogService.GetDialogControl();
+        //TODO
+
+        /*var control = _dialogService.GetDialogControl();
         control.ButtonLeftName = "Yes";
         control.ButtonRightName = "No";
 
@@ -80,7 +82,7 @@ internal class DesktopUpdateService : UpdateServiceBase
         {
             _logger.LogError(e, "Exception when in {1}", nameof(DownloadAndInstall));
             await _snackbarService.ShowAsync("Update", "Failed to download and install new version");
-        }
+        }*/
     }
 
     public async override Task DownloadAndInstall(CheckForUpdateModel updateModel)

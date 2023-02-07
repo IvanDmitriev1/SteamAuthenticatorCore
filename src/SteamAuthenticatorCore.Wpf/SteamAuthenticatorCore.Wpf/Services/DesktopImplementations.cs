@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using SteamAuthenticatorCore.Shared.Abstractions;
-using Wpf.Ui.Controls.Interfaces;
-using Wpf.Ui.Mvvm.Contracts;
+using Wpf.Ui.Contracts;
+using Wpf.Ui.Controls;
 
 namespace SteamAuthenticatorCore.Desktop.Services;
 
@@ -46,7 +46,7 @@ internal class DesktopImplementations : IPlatformImplementations
 
     public async Task<bool> DisplayPrompt(string title, string message, string accept = "Ok", string cancel = "Cancel")
     {
-        var control = _dialog.GetDialogControl();
+        /*var control = _dialog.GetDialogControl();
         var previousLeftButtonName = control.ButtonLeftName;
         var previousRightButtonName = control.ButtonRightName;
 
@@ -59,6 +59,10 @@ internal class DesktopImplementations : IPlatformImplementations
         control.ButtonLeftName = previousLeftButtonName;
         control.ButtonRightName = previousRightButtonName;
 
-        return result == IDialogControl.ButtonPressed.Left;
+        return result == IDialogControl.ButtonPressed.Left;*/
+
+        //TODO
+
+        return false;
     }
 }

@@ -7,7 +7,7 @@ using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.ViewModel;
-using Wpf.Ui.Mvvm.Contracts;
+using Wpf.Ui.Contracts;
 using ConfirmationModel = SteamAuthCore.Models.ConfirmationModel;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
@@ -28,7 +28,7 @@ public sealed partial class ConfirmationsViewModel : ConfirmationsViewModelBase
         await SendConfirmations(confirmations, ConfirmationOptions.Allow);
 
         if (ConfirmationModel.Confirmations.Count == 0)
-            _navigationService.NavigateTo("..");
+            _navigationService.GoBack();
     }
 
     [RelayCommand]
@@ -38,6 +38,6 @@ public sealed partial class ConfirmationsViewModel : ConfirmationsViewModelBase
         await SendConfirmations(confirmations, ConfirmationOptions.Deny);
 
         if (ConfirmationModel.Confirmations.Count == 0)
-            _navigationService.NavigateTo("..");
+            _navigationService.GoBack();
     }
 }
