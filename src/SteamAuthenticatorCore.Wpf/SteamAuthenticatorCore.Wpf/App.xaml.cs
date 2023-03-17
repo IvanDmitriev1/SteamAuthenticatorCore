@@ -9,18 +9,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SteamAuthCore.Abstractions;
 using SteamAuthCore.Extensions;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.ViewModels;
+using SteamAuthenticatorCore.Desktop.Views;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Extensions;
 using SteamAuthenticatorCore.Shared.Models;
-using Wpf.Ui.Mvvm.Contracts;
-using Wpf.Ui.Mvvm.Services;
-using Container = SteamAuthenticatorCore.Desktop.Views.Container;
 
 namespace SteamAuthenticatorCore.Desktop;
 
@@ -51,25 +50,15 @@ public sealed partial class App : Application
                 builder.AddConfiguration(context.Configuration);
 
 #if DEBUG
-                builder.AddDebug();          
+                builder.AddDebug();
 #else
                 builder.AddSentry();
 #endif
             })
             .ConfigureServices(services =>
             {
-                services.AddHostedService<ApplicationHostService>();
+                services.AddScoped<MainWindow>();
 
-                services.AddSingleton<ISnackbarService, SnackbarService>();
-                services.AddSingleton<IDialogService, DialogService>();
-                services.AddSingleton<IPageService, PageService>();
-                services.AddSingleton<INavigationService, NavigationService>();
-                services.AddSingleton<IDialogService, DialogService>();
-                services.AddSingleton<ITaskBarService, TaskBarService>();
-                services.AddSingleton<IThemeService, ThemeService>();
-                services.AddSingleton<TaskBarServiceWrapper>();
-
-                services.AddScoped<Container>();
                 services.AddScoped<TokenPage>();
                 services.AddTransient<ConfirmationsOverviewPage>();
                 services.AddTransient<ConfirmationsPage>();
@@ -139,6 +128,9 @@ public sealed partial class App : Application
             ServiceProvider = _host.Services;
 
         await _host.StartAsync();
+
+        await ServiceProvider.GetRequiredService<ITimeAligner>().AlignTimeAsync();
+        ServiceProvider.GetRequiredService<MainWindow>().Show();
     }
 
     private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

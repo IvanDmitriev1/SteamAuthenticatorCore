@@ -5,21 +5,20 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
+using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.ViewModel;
-using Wpf.Ui.Mvvm.Contracts;
+using Wpf.Ui.Contracts;
 using ConfirmationModel = SteamAuthCore.Models.ConfirmationModel;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public sealed partial class ConfirmationsViewModel : ConfirmationsViewModelBase
 {
-    public ConfirmationsViewModel(ISteamGuardAccountService accountService, IPlatformImplementations platformImplementations, IMessenger messenger, INavigationService navigationService) : base(accountService, platformImplementations, messenger)
+    public ConfirmationsViewModel(ISteamGuardAccountService accountService, IPlatformImplementations platformImplementations, IMessenger messenger) : base(accountService, platformImplementations, messenger)
     {
-        _navigationService = navigationService;
+        
     }
-
-    private readonly INavigationService _navigationService;
 
     [RelayCommand]
     private async Task Confirm(IList list)
@@ -28,7 +27,7 @@ public sealed partial class ConfirmationsViewModel : ConfirmationsViewModelBase
         await SendConfirmations(confirmations, ConfirmationOptions.Allow);
 
         if (ConfirmationModel.Confirmations.Count == 0)
-            _navigationService.NavigateTo("..");
+            NavigationService.Default.GoBack();
     }
 
     [RelayCommand]
@@ -38,6 +37,6 @@ public sealed partial class ConfirmationsViewModel : ConfirmationsViewModelBase
         await SendConfirmations(confirmations, ConfirmationOptions.Deny);
 
         if (ConfirmationModel.Confirmations.Count == 0)
-            _navigationService.NavigateTo("..");
+            NavigationService.Default.GoBack();
     }
 }
