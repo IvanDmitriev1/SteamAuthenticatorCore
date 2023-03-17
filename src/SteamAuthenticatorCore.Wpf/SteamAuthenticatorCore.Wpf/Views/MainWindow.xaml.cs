@@ -57,7 +57,7 @@ public partial class MainWindow
 
     private void OnSizeChanged(object sender, SizeChangedEventArgs e)
     {
-        NavigationFluent.IsPaneOpen = !(e.NewSize.Width <= 800);
+        NavigationFluent.IsPaneOpen = !(e.NewSize.Width <= 1100);
     }
 
     private void MenuItem_OnClick(object sender, RoutedEventArgs e)
