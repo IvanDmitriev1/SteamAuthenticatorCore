@@ -12,8 +12,10 @@ using Microsoft.Win32;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Desktop.Services;
+using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
+using SteamAuthenticatorCore.Shared.Messages;
 using SteamAuthenticatorCore.Shared.Models;
 using SteamAuthenticatorCore.Shared.ViewModel;
 using Wpf.Ui.Contracts;
@@ -144,10 +146,8 @@ public sealed partial class TokenViewModel : TokenViewModelBase, IDisposable
     [RelayCommand]
     private void LoginAgain(SteamGuardAccount account)
     {
-        //TODO
-
-        /*_navigationService.NavigateTo("/login");
-        _messenger.Send(new UpdateAccountInLoginPageMessage(account));*/
+        NavigationService.Default.NavigateWithHierarchy(typeof(LoginPage));
+        _messenger.Send(new UpdateAccountInLoginPageMessage(account));
     }
 
     [RelayCommand]

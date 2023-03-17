@@ -11,3 +11,8 @@ public static class ThemeService
 {
     public static IThemeService Default { get; } = new Wpf.Ui.Services.ThemeService();
 }
+
+public static class ContentDialogService
+{
+    public static IContentDialogService Default { get; } = new Wpf.Ui.Services.ContentDialogService();
+}

@@ -2,10 +2,12 @@
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using SteamAuthenticatorCore.Desktop.Helpers;
+using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
 
 namespace SteamAuthenticatorCore.Desktop.Views;
 
@@ -21,7 +23,10 @@ public partial class MainWindow
         _updateService = updateService;
 
         SnackbarService.Default.SetSnackbarControl(RootSnackbar);
+        ContentDialogService.Default.SetContentPresenter(RootContentDialogPresenter);
+
         NavigationFluent.SetServiceProvider(App.ServiceProvider);
+        NavigationService.Default.SetNavigationControl(NavigationFluent);
 
         NavigationFluent.Loaded += NavigationFluentOnLoaded;
         Unloaded += OnUnloaded;
@@ -36,7 +41,7 @@ public partial class MainWindow
         _appSettings.Load();
         App.ServiceProvider.GetRequiredService<IConfirmationService>().Initialize();
 
-        //RootWelcomeGrid.Visibility = Visibility.Hidden;
+        RootWelcomeGrid.Visibility = Visibility.Hidden;
         NavigationFluent.Visibility = Visibility.Visible;
         NavigationFluent.Navigate(typeof(TokenPage));
 
@@ -57,23 +62,22 @@ public partial class MainWindow
 
     private void MenuItem_OnClick(object sender, RoutedEventArgs e)
     {
-        //TODo
-        /*var menuItem = (MenuItem)sender;
+        var menuItem = (MenuItem)sender;
 
         switch ((string) menuItem.Tag)
         {
             case "token":
-                NavigationFluent.NavigateTo(typeof(TokenPage));
+                NavigationService.Default.NavigateWithHierarchy(typeof(TokenPage));
                 break;
             case "confirms":
-                NavigationFluent.NavigateTo(typeof(ConfirmationsOverviewPage));
+                NavigationService.Default.NavigateWithHierarchy(typeof(ConfirmationsOverviewPage));
                 break;
             case "settings":
-                NavigationFluent.NavigateTo(typeof(SettingsPage));
+                NavigationService.Default.NavigateWithHierarchy(typeof(SettingsPage));
                 break;
             case "close":
                 Application.Current.Shutdown();
                 break;
-        }*/
+        }
     }
 }
