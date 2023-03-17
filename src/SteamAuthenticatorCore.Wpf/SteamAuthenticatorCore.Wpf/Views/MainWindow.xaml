@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:desktop="clr-namespace:SteamAuthenticatorCore.Desktop"
-    xmlns:helpers="clr-namespace:SteamAuthenticatorCore.Desktop.Helpers"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pages="clr-namespace:SteamAuthenticatorCore.Desktop.Views.Pages"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
@@ -62,6 +61,11 @@
             Title="{x:Static desktop:App.Name}"
             Grid.Row="0"
             MinimizeToTray="True">
+
+            <ui:TitleBar.Icon>
+                <ui:ImageIcon Source="/icon.ico" />
+            </ui:TitleBar.Icon>
+
             <!--  Margin="42,0,0,0"  -->
             <ui:TitleBar.Tray>
                 <ui:NotifyIcon
@@ -73,18 +77,18 @@
                             <ui:MenuItem
                                 Click="MenuItem_OnClick"
                                 Header="Token page"
-                                SymbolIcon="Timer24"
+                                Icon="{ui:SymbolIcon Timer24}"
                                 Tag="token" />
                             <ui:MenuItem
                                 Click="MenuItem_OnClick"
                                 Header="Confirmations page"
-                                SymbolIcon="TaskListLtr24"
+                                Icon="{ui:SymbolIcon TaskListLtr24}"
                                 Tag="confirms" />
                             <Separator />
                             <ui:MenuItem
                                 Click="MenuItem_OnClick"
                                 Header="Settings"
-                                SymbolIcon="Settings24"
+                                Icon="{ui:SymbolIcon Settings24}"
                                 Tag="settings" />
                             <MenuItem
                                 Click="MenuItem_OnClick"
@@ -101,7 +105,7 @@
             Grid.Row="1"
             Padding="15,15,15,10"
             IsBackButtonVisible="Visible"
-            IsPaneToggleVisible="False"
+            IsPaneToggleVisible="True"
             IsPaneVisible="True"
             PaneDisplayMode="Left"
             Visibility="Hidden">
@@ -112,18 +116,18 @@
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem
                     Content="Token"
-                    Icon="{helpers:SymbolIcon Symbol=Timer24}"
+                    Icon="{ui:SymbolIcon Timer24}"
                     TargetPageType="{x:Type pages:TokenPage}" />
                 <ui:NavigationViewItem
                     Content="Confirmations overview"
-                    Icon="{helpers:SymbolIcon Symbol=TaskListLtr24}"
+                    Icon="{ui:SymbolIcon TaskListLtr24}"
                     TargetPageType="{x:Type pages:ConfirmationsOverviewPage}" />
             </ui:NavigationView.MenuItems>
 
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem
                     Content="Settings"
-                    Icon="{helpers:SymbolIcon Symbol=Settings24}"
+                    Icon="{ui:SymbolIcon Settings24}"
                     TargetPageType="{x:Type pages:SettingsPage}" />
             </ui:NavigationView.FooterMenuItems>
 

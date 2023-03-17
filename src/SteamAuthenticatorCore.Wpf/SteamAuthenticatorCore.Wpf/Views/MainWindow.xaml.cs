@@ -1,31 +1,27 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
-using SteamAuthenticatorCore.Desktop.Services;
+using SteamAuthenticatorCore.Desktop.Helpers;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using Wpf.Ui.Appearance;
-using Wpf.Ui.Contracts;
 
 namespace SteamAuthenticatorCore.Desktop.Views;
 
 public partial class MainWindow
 {
-    public MainWindow(AppSettings appSettings, ISnackbarService snackbarService, TaskBarServiceWrapper taskBarServiceWrapper, IUpdateService updateService, IServiceProvider serviceProvider)
+    public MainWindow(AppSettings appSettings, IUpdateService updateService)
     {
         InitializeComponent();
 
         Watcher.Watch(this);
 
         _appSettings = appSettings;
-        _taskBarServiceWrapper = taskBarServiceWrapper;
         _updateService = updateService;
 
-        snackbarService.SetSnackbarControl(RootSnackbar);
-
-        NavigationFluent.SetServiceProvider(serviceProvider);
+        SnackbarService.Default.SetSnackbarControl(RootSnackbar);
+        NavigationFluent.SetServiceProvider(App.ServiceProvider);
 
         NavigationFluent.Loaded += NavigationFluentOnLoaded;
         Unloaded += OnUnloaded;
@@ -33,7 +29,6 @@ public partial class MainWindow
     }
 
     private readonly AppSettings _appSettings;
-    private readonly TaskBarServiceWrapper _taskBarServiceWrapper;
     private readonly IUpdateService _updateService;
 
     private async void NavigationFluentOnLoaded(object sender, RoutedEventArgs e)
@@ -43,8 +38,6 @@ public partial class MainWindow
 
         //RootWelcomeGrid.Visibility = Visibility.Hidden;
         NavigationFluent.Visibility = Visibility.Visible;
-        _taskBarServiceWrapper.SetActiveWindow(this);
-
         NavigationFluent.Navigate(typeof(TokenPage));
 
         //await _updateService.CheckForUpdateAndDownloadInstall(true);
@@ -59,7 +52,7 @@ public partial class MainWindow
 
     private void OnSizeChanged(object sender, SizeChangedEventArgs e)
     {
-        //NavigationFluent.IsExpanded = !(e.NewSize.Width <= 800);
+        NavigationFluent.IsPaneOpen = !(e.NewSize.Width <= 800);
     }
 
     private void MenuItem_OnClick(object sender, RoutedEventArgs e)

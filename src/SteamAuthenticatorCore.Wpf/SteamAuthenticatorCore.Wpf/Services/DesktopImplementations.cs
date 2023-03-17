@@ -10,13 +10,6 @@ namespace SteamAuthenticatorCore.Desktop.Services;
 
 internal class DesktopImplementations : IPlatformImplementations
 {
-    public DesktopImplementations(IDialogService dialog)
-    {
-        _dialog = dialog;
-    }
-
-    private readonly IDialogService _dialog;
-
     public object CreateImage(string imageSource)
     {
         var image = new BitmapImage(new Uri(imageSource, UriKind.Absolute))
@@ -38,10 +31,10 @@ internal class DesktopImplementations : IPlatformImplementations
 
     public async Task DisplayAlert(string title, string message)
     {
-        var control = _dialog.GetDialogControl();
+        /*var control = _dialog.GetDialogControl();
         await control.ShowAndWaitAsync(title ,message);
 
-        control.Hide();
+        control.Hide();*/
     }
 
     public async Task<bool> DisplayPrompt(string title, string message, string accept = "Ok", string cancel = "Cancel")

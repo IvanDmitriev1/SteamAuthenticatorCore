@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Configuration;
@@ -21,9 +20,6 @@ using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Extensions;
 using SteamAuthenticatorCore.Shared.Models;
-using Wpf.Ui.Contracts;
-using Wpf.Ui.Controls.Window;
-using Wpf.Ui.Services;
 
 namespace SteamAuthenticatorCore.Desktop;
 
@@ -61,16 +57,6 @@ public sealed partial class App : Application
             })
             .ConfigureServices(services =>
             {
-                services.AddSingleton<ISnackbarService, SnackbarService>();
-                services.AddSingleton<IDialogService, DialogService>();
-                services.AddSingleton<IPageService, PageService>();
-                services.AddSingleton<INavigationService, NavigationService>();
-                services.AddSingleton<IDialogService, DialogService>();
-                services.AddSingleton<ITaskBarService, TaskBarService>();
-                services.AddSingleton<IThemeService, ThemeService>();
-
-                services.AddSingleton<TaskBarServiceWrapper>();
-
                 services.AddScoped<MainWindow>();
 
                 services.AddScoped<TokenPage>();

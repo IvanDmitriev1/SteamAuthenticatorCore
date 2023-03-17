@@ -14,7 +14,6 @@ using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
-using SteamAuthenticatorCore.Shared.Messages;
 using SteamAuthenticatorCore.Shared.Models;
 using SteamAuthenticatorCore.Shared.ViewModel;
 using Wpf.Ui.Contracts;
@@ -26,20 +25,15 @@ public sealed partial class TokenViewModel : TokenViewModelBase, IDisposable
 {
     public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, IValueTaskTimer valueTaskTimer,
         IPlatformImplementations platformImplementations, ISteamGuardAccountService accountService,
-        AccountsFileServiceResolver accountsFileServiceResolver, AppSettings appSettings,
-        INavigationService navigationService, IMessenger messenger, TaskBarServiceWrapper taskBarServiceWrapper) : base(
+        AccountsFileServiceResolver accountsFileServiceResolver, AppSettings appSettings, IMessenger messenger) : base(
         accounts, valueTaskTimer, platformImplementations, accountService, accountsFileServiceResolver)
     {
         _appSettings = appSettings;
-        _navigationService = navigationService;
         _messenger = messenger;
-        _taskBarServiceWrapper = taskBarServiceWrapper;
     }
 
     private readonly AppSettings _appSettings;
-    private readonly INavigationService _navigationService;
     private readonly IMessenger _messenger;
-    private readonly TaskBarServiceWrapper _taskBarServiceWrapper;
     private StackPanel? _stackPanel;
 
     public void Dispose()
@@ -99,7 +93,7 @@ public sealed partial class TokenViewModel : TokenViewModelBase, IDisposable
         TokenProgressBar = 0;
 
         _stackPanel!.Visibility = Visibility.Visible;
-        _taskBarServiceWrapper.SetState(TaskBarProgressState.Indeterminate);
+        TaskBarService.Default.SetState(TaskBarProgressState.Indeterminate);
 
         try
         {
@@ -107,7 +101,7 @@ public sealed partial class TokenViewModel : TokenViewModelBase, IDisposable
         }
         finally
         {
-            _taskBarServiceWrapper.SetState(TaskBarProgressState.None);
+            TaskBarService.Default.SetState(TaskBarProgressState.None);
             _stackPanel!.Visibility = Visibility.Hidden;
         }
     }

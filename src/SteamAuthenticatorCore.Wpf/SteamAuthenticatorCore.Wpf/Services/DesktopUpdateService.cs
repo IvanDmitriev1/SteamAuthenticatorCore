@@ -6,27 +6,22 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using SteamAuthenticatorCore.Desktop.Helpers;
 using SteamAuthenticatorCore.Shared.Models;
 using SteamAuthenticatorCore.Shared.Services;
-using Wpf.Ui.Contracts;
-using Wpf.Ui.Controls;
 
 namespace SteamAuthenticatorCore.Desktop.Services;
 
 internal class DesktopUpdateService : UpdateServiceBase
 {
-    public DesktopUpdateService(HttpClient client, ISnackbarService snackbarService, IDialogService dialogService, ILogger<DesktopUpdateService> logger) : base(client)
+    public DesktopUpdateService(HttpClient client, ILogger<DesktopUpdateService> logger) : base(client)
     {
-        _snackbarService = snackbarService;
-        _dialogService = dialogService;
         _logger = logger;
     }
 
-    private readonly ISnackbarService _snackbarService;
-    private readonly IDialogService _dialogService;
     private readonly ILogger<DesktopUpdateService> _logger;
 
-    public async override ValueTask CheckForUpdateAndDownloadInstall(bool isInBackground)
+    public override async ValueTask CheckForUpdateAndDownloadInstall(bool isInBackground)
     {
         CheckForUpdateModel? updateModel;
 
@@ -37,7 +32,7 @@ internal class DesktopUpdateService : UpdateServiceBase
             if (updateModel is null)
             {
                 if (!isInBackground)
-                    await _snackbarService.ShowAsync("Update", "Failed to fetch update");
+                    await SnackbarService.Default.ShowAsync("Update", "Failed to fetch update");
 
                 return;
             }
@@ -47,15 +42,15 @@ internal class DesktopUpdateService : UpdateServiceBase
             _logger.LogError(e, "Exception when in {1}", nameof(CheckForUpdate));
 
             if (!isInBackground)
-                await _snackbarService.ShowAsync("Update", "Failed to fetch update");
-            
+                await SnackbarService.Default.ShowAsync("Update", "Failed to fetch update");
+
             return;
         }
 
         if (!updateModel.NeedUpdate)
         {
             if (!isInBackground)
-                await _snackbarService.ShowAsync("Update", "You are using the latest version");
+                await SnackbarService.Default.ShowAsync("Update", "You are using the latest version");
 
             return;
         }
@@ -85,7 +80,7 @@ internal class DesktopUpdateService : UpdateServiceBase
         }*/
     }
 
-    public async override Task DownloadAndInstall(CheckForUpdateModel updateModel)
+    public override async Task DownloadAndInstall(CheckForUpdateModel updateModel)
     {
         const string newFileName = "new.exe";
         var newFilePath = Path.Combine(Directory.GetCurrentDirectory(), newFileName);

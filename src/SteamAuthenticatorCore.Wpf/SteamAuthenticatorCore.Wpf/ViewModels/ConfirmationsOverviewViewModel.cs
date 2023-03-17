@@ -10,14 +10,12 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public partial class ConfirmationsOverviewViewModel
 {
-    public ConfirmationsOverviewViewModel(IConfirmationService confirmationServiceBase, INavigationService navigationService, IMessenger messenger)
+    public ConfirmationsOverviewViewModel(IConfirmationService confirmationServiceBase, IMessenger messenger)
     {
-        _navigationService = navigationService;
         _messenger = messenger;
         ConfirmationServiceBase = confirmationServiceBase;
     }
 
-    private readonly INavigationService _navigationService;
     private readonly IMessenger _messenger;
 
     public IConfirmationService ConfirmationServiceBase { get; }
