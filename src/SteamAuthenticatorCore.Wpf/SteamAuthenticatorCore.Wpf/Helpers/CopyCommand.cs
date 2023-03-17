@@ -17,7 +17,8 @@ internal class CopyCommand : ICommand
 
     public void Execute(object? parameter)
     {
-        if (parameter is not string text) return;
+        if (parameter is not string text)
+            return;
 
         try
         {

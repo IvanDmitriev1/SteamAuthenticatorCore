@@ -1,5 +1,4 @@
 ﻿using System;
-using Wpf.Ui.Contracts;
 using Wpf.Ui.Controls.Navigation;
 
 namespace SteamAuthenticatorCore.Desktop.Services;
