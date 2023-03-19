@@ -7,7 +7,9 @@ using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using Wpf.Ui.Appearance;
+using Wpf.Ui.Common;
 using Wpf.Ui.Controls;
+using Wpf.Ui.Controls.IconElements;
 
 namespace SteamAuthenticatorCore.Desktop.Views;
 
@@ -45,7 +47,10 @@ public partial class MainWindow
         NavigationFluent.Visibility = Visibility.Visible;
         NavigationFluent.Navigate(typeof(TokenPage));
 
-        //await _updateService.CheckForUpdateAndDownloadInstall(true);
+        if (await _updateService.CheckForUpdate() is not { } release)
+            return;
+
+        await RootSnackbar.ShowAsync("Updater", $"A new version available: {release.Name}", new SymbolIcon(SymbolRegular.PhoneUpdate20));
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)

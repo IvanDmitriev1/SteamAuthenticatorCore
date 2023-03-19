@@ -1,55 +1,31 @@
 ﻿using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Net.Http.Json;
 using SteamAuthenticatorCore.Shared.Abstractions;
-using SteamAuthenticatorCore.Shared.Models.GithubApi;
-using SteamAuthenticatorCore.Shared.Models;
+using Octokit;
 
 namespace SteamAuthenticatorCore.Shared.Services;
 
 public abstract class UpdateServiceBase : IUpdateService
 {
-    protected UpdateServiceBase(HttpClient client)
+    protected UpdateServiceBase(Version currentVersion)
     {
-        Client = client;
-        Client.DefaultRequestHeaders.Add("User-Agent", "User");
-        Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-        _repo = "IvanDmitriev1/SteamAuthenticatorCore";
+        CurrentVersion = currentVersion;
+        Client = new GitHubClient(new ProductHeaderValue("User"));
     }
 
-    private readonly string _repo;
-    protected readonly HttpClient Client;
+    protected readonly GitHubClient Client;
+    protected readonly Version CurrentVersion;
 
-    public async ValueTask<CheckForUpdateModel?> CheckForUpdate(string fileContains, Version currentVersion)
+    public async Task<Release?> CheckForUpdate()
     {
-        if (await Client.GetFromJsonAsync<GitHubRequestApiModel>($"https://api.github.com/repos/{_repo}/releases/latest").ConfigureAwait(false) is not { } apiModel)
-            return null;
+        var gitHubClient = new GitHubClient(new ProductHeaderValue("User"));
+        var release = await gitHubClient.Repository.Release.GetLatest("IvanDmitriev1", "SteamAuthenticatorCore");
 
-        var downloadUrl = string.Empty;
-        foreach (var asset in apiModel.Assets)
-        {
-            if (!asset.Name.Contains(fileContains))
-                continue;
+        var version = release.TagName.TrimStart('v');
+        var newVersion = new Version(version);
 
-            downloadUrl = asset.BrowserDownloadUrl;
-            break;
-        }
-
-        Version newVersion = new(apiModel.TagName);
-
-        switch (newVersion.CompareTo(currentVersion))
-        {
-            case 0:
-            case < 0:
-                return new CheckForUpdateModel(downloadUrl, newVersion, false);
-            case > 0:
-                return new CheckForUpdateModel(downloadUrl, newVersion, true);
-        }
+        return newVersion.CompareTo(CurrentVersion) == 0 ? release : null;
     }
 
-    public abstract ValueTask CheckForUpdateAndDownloadInstall(bool isInBackground);
-    public abstract Task DownloadAndInstall(CheckForUpdateModel updateModel);
+    public abstract Task DownloadAndInstall(Release release);
 }
