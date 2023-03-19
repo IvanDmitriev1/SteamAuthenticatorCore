@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SteamAuthenticatorCore.Desktop.Helpers;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
@@ -15,7 +16,7 @@ namespace SteamAuthenticatorCore.Desktop.Views;
 
 public partial class MainWindow
 {
-    public MainWindow(AppSettings appSettings, IUpdateService updateService)
+    public MainWindow(AppSettings appSettings, IUpdateService updateService, ILogger<MainWindow> logger)
     {
         InitializeComponent();
 
@@ -23,6 +24,7 @@ public partial class MainWindow
 
         _appSettings = appSettings;
         _updateService = updateService;
+        _logger = logger;
 
         SnackbarService.Default.SetSnackbarControl(RootSnackbar);
         ContentDialogService.Default.SetContentPresenter(RootContentDialogPresenter);
@@ -37,6 +39,7 @@ public partial class MainWindow
 
     private readonly AppSettings _appSettings;
     private readonly IUpdateService _updateService;
+    private readonly ILogger<MainWindow> _logger;
 
     private async void NavigationFluentOnLoaded(object sender, RoutedEventArgs e)
     {
@@ -47,10 +50,17 @@ public partial class MainWindow
         NavigationFluent.Visibility = Visibility.Visible;
         NavigationFluent.Navigate(typeof(TokenPage));
 
-        if (await _updateService.CheckForUpdate() is not { } release)
-            return;
+        try
+        {
+            if (await _updateService.CheckForUpdate() is not { } release)
+                return;
 
-        await RootSnackbar.ShowAsync("Updater", $"A new version available: {release.Name}", new SymbolIcon(SymbolRegular.PhoneUpdate20));
+            await RootSnackbar.ShowAsync("Updater", $"A new version available: {release.Name}", new SymbolIcon(SymbolRegular.PhoneUpdate20));
+        }
+        catch (Exception exception)
+        {
+            _logger.LogCritical(exception, "Exception after checking for updates");
+        }
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
