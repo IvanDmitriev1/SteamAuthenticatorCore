@@ -59,7 +59,7 @@
                     <TextBlock
                         Grid.Column="0"
                         VerticalAlignment="Center"
-                        Text="{Binding Path=CurrentVersion, StringFormat={} Current version: {0}}" />
+                        Text="{Binding Path=CurrentVersion, StringFormat={}Current version: {0}}" />
 
                     <ui:Button
                         Grid.Column="1"

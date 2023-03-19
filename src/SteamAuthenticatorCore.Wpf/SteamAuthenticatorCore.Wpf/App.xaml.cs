@@ -20,6 +20,7 @@ using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Extensions;
 using SteamAuthenticatorCore.Shared.Models;
+using SteamAuthenticatorCore.Shared.Services;
 
 namespace SteamAuthenticatorCore.Desktop;
 
@@ -81,10 +82,11 @@ public sealed partial class App : Application
                 services.AddScoped<LocalDriveAccountsFileService>();
                 services.AddScoped<GoogleDriveAccountsFileService>();
 
-                services.AddSingleton<IUpdateService, DesktopUpdateService>();
-
                 services.AddSteamAuthCoreServices();
                 services.AddSharedServices();
+
+                services.AddSingleton<IUpdateService, UpdateService>(provider =>
+                    new UpdateService(Assembly.GetExecutingAssembly().GetName().Version!));
 
                 services.AddScoped<AccountsFileServiceResolver>(provider => () =>
                 {
