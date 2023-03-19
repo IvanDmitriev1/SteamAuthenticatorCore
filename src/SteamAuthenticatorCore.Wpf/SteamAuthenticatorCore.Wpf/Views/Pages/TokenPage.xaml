@@ -118,7 +118,7 @@
                     TextWrapping="Wrap" />
             </StackPanel>
 
-            <ListBox
+            <ListView
                 Margin="0,0,0,10"
                 AllowDrop="True"
                 ItemsSource="{Binding Accounts}"
@@ -136,16 +136,16 @@
                     </b:EventTrigger>
                 </b:Interaction.Triggers>
 
-                <ListBox.ItemsPanel>
+                <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <VirtualizingStackPanel />
                     </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
+                </ListView.ItemsPanel>
 
-                <ListBox.ItemTemplate>
+                <ListView.ItemTemplate>
                     <DataTemplate DataType="{x:Type models:SteamGuardAccount}">
-                        <StackPanel HorizontalAlignment="Stretch">
-                            <TextBlock Padding="2.5" Text="{Binding Path=AccountName}" />
+                        <StackPanel Margin="8" HorizontalAlignment="Stretch">
+                            <TextBlock FontSize="14" Text="{Binding Path=AccountName}" />
 
                             <StackPanel.ContextMenu>
                                 <ContextMenu>
@@ -166,8 +166,8 @@
                             </StackPanel.ContextMenu>
                         </StackPanel>
                     </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                </ListView.ItemTemplate>
+            </ListView>
         </Grid>
     </Grid>
 

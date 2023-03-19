@@ -1,0 +1,86 @@
+﻿<ui:ContentDialog
+    x:Class="SteamAuthenticatorCore.Desktop.Dialogs.DownloadUpdateContentDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:SteamAuthenticatorCore.Desktop.Dialogs"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:octokit="clr-namespace:Octokit;assembly=Octokit"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="Update available"
+    d:DataContext="{d:DesignInstance octokit:Release,
+                                     IsDesignTimeCreatable=False}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    CloseButtonText="Cancel"
+    PrimaryButtonText="Update"
+    mc:Ignorable="d">
+
+    <ui:ContentDialog.Resources>
+        <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:DownloadUpdateContentDialog}" />
+    </ui:ContentDialog.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock
+                FontSize="14"
+                FontWeight="SemiBold"
+                LineHeight="20"
+                Text="{Binding Name, StringFormat={}New version: {0}}" />
+
+            <ui:Card Margin="0,5,0,0">
+                <TextBlock FontSize="14" Text="{Binding Body}" />
+            </ui:Card>
+        </StackPanel>
+
+        <Grid
+            x:Name="ListViewGrid"
+            Grid.Row="1"
+            Margin="0,20,0,0"
+            Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock
+                Grid.Row="0"
+                FontSize="14"
+                Text="Select download package:" />
+
+            <ui:Card Grid.Row="1" Margin="0,10,0,0">
+                <ListView x:Name="ListView">
+                    <ListView.ItemTemplate>
+                        <DataTemplate DataType="{x:Type octokit:ReleaseAsset}">
+                            <TextBlock
+                                Margin="10"
+                                FontSize="14"
+                                Text="{Binding Name, Mode=OneTime}" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </ui:Card>
+        </Grid>
+
+        <StackPanel
+            x:Name="ProgressBarSnackPanel"
+            Grid.Row="2"
+            Margin="0,20,0,0"
+            Visibility="Collapsed">
+            <TextBlock FontSize="14" Text="Downloading progress" />
+            <ProgressBar
+                x:Name="ProgressBar"
+                Margin="0,5,0,0"
+                Maximum="100"
+                Minimum="0" />
+        </StackPanel>
+    </Grid>
+</ui:ContentDialog>
