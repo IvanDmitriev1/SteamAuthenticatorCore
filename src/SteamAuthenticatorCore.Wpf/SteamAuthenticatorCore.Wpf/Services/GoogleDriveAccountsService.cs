@@ -27,12 +27,12 @@ internal class GoogleDriveAccountsService : IAccountsService
     private readonly GoogleDriveApi _api;
     private bool _isInitialized;
 
-    public async ValueTask InitializeOrRefresh()
+    public async ValueTask Initialize()
     {
         if (!_isInitialized)
         {
             _isInitialized = true;
-            await Initialize();
+            await InitializeInternal();
         }
 
         if (await _api.GetFiles() is not { } files)
@@ -59,7 +59,7 @@ internal class GoogleDriveAccountsService : IAccountsService
         }
     }
 
-    public IReadOnlyList<SteamGuardAccount> GetAll()
+    public ValueTask<IReadOnlyList<SteamGuardAccount>> GetAll()
     {
         throw new NotImplementedException();
     }
@@ -96,7 +96,7 @@ internal class GoogleDriveAccountsService : IAccountsService
         _accounts.Remove(account);
     }
 
-    private async ValueTask Initialize()
+    private async ValueTask InitializeInternal()
     {
         var appName = Assembly.GetEntryAssembly()!.GetName().Name;
 

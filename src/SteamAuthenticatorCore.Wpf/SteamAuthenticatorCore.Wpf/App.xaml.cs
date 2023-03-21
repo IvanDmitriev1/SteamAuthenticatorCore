@@ -121,7 +121,7 @@ public sealed partial class App : Application
         ServiceProvider = _host.Services;
 
         await ServiceProvider.GetRequiredService<ITimeAligner>().AlignTimeAsync();
-        await ServiceProvider.GetRequiredService<AccountsServiceResolver>().Invoke().InitializeOrRefresh();
+        await ServiceProvider.GetRequiredService<AccountsServiceResolver>().Invoke().Initialize();
 
         ServiceProvider.GetRequiredService<MainWindow>().Show();
     }

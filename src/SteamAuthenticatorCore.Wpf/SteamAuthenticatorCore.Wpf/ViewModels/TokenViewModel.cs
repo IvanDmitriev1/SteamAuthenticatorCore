@@ -27,18 +27,21 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels;
 public sealed partial class TokenViewModel : ObservableRecipient
 {
     public TokenViewModel(ISteamGuardAccountService steamAccountService,
-        AccountsServiceResolver accountsServiceResolver)
+        AccountsServiceResolver accountsServiceResolver, ITimer timer)
     {
         _steamAccountService = steamAccountService;
 
         _accountsService = accountsServiceResolver.Invoke();
         _appSettings = AppSettings.Current;
+
+        timer.StartOrRestart(TimeSpan.FromSeconds(1), OnTimer);
     }
 
     private readonly ISteamGuardAccountService _steamAccountService;
     private readonly IAccountsService _accountsService;
     private readonly AppSettings _appSettings;
     private StackPanel? _stackPanel;
+    private Int64 _currentSteamChunk;
 
     [ObservableProperty]
     private IReadOnlyList<SteamGuardAccount> _accounts = Array.Empty<SteamGuardAccount>();
@@ -85,6 +88,8 @@ public sealed partial class TokenViewModel : ObservableRecipient
             using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             await _accountsService.Save(stream, Path.GetFileName(filePath));
         }
+
+        await RefreshAccounts();
     }
 
     [RelayCommand]
@@ -120,8 +125,7 @@ public sealed partial class TokenViewModel : ObservableRecipient
 
         try
         {
-            await _accountsService.InitializeOrRefresh();
-            Accounts = _accountsService.GetAll();
+            Accounts = await _accountsService.GetAll();
         }
         finally
         {
@@ -169,14 +173,15 @@ public sealed partial class TokenViewModel : ObservableRecipient
         dialog.Title = "Delete account";
         dialog.Content = $"Are you sure what you want to delete {SelectedAccount.AccountName}?";
         dialog.PrimaryButtonText = "Yes";
-        dialog.SecondaryButtonText = "No";
+        dialog.CloseButtonText = "No";
 
-        if (await dialog.ShowAsync() == ContentDialogResult.Primary)
-        {
-            await _accountsService.Delete(SelectedAccount);
-            SelectedAccount = null;
-            Accounts = _accountsService.GetAll();
-        }
+        if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+            return;
+
+        await _accountsService.Delete(SelectedAccount);
+        SelectedAccount = null;
+
+        await RefreshAccounts();
     }
 
     [RelayCommand]
@@ -232,5 +237,20 @@ public sealed partial class TokenViewModel : ObservableRecipient
             await using var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             await _accountsService.Save(stream, Path.GetFileName(fileName));
         }
+    }
+
+    private void OnTimer(CancellationToken obj)
+    {
+        if (SelectedAccount is null)
+            return;
+
+        var steamTime = ITimeAligner.SteamTime;
+        _currentSteamChunk = steamTime / 30L;
+        var secondsUntilChange = (int)(steamTime - _currentSteamChunk * 30L);
+
+        if (SelectedAccount.GenerateSteamGuardCode() is { } token)
+            Token = token;
+
+        TokenProgressBar = 30 - secondsUntilChange;
     }
 }

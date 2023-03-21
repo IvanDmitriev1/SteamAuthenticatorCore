@@ -9,9 +9,9 @@ public interface IAccountsService
 {
     public const string AccountFileExtension = ".maFile";
 
-    ValueTask InitializeOrRefresh();
+    ValueTask Initialize();
 
-    IReadOnlyList<SteamGuardAccount> GetAll();
+    ValueTask<IReadOnlyList<SteamGuardAccount>> GetAll();
 
     ValueTask<bool> Save(Stream stream, string fileName);
     ValueTask Save(SteamGuardAccount account);
