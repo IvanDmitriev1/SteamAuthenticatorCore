@@ -71,6 +71,26 @@ public sealed partial class TokenViewModel : ObservableRecipient
     }
 
     [RelayCommand]
+    private async Task RefreshAccounts()
+    {
+        Token = string.Empty;
+        TokenProgressBar = 0;
+
+        _stackPanel!.Visibility = Visibility.Visible;
+        TaskBarService.Default.SetState(TaskBarProgressState.Indeterminate);
+
+        try
+        {
+            Accounts = await _accountsService.GetAll();
+        }
+        finally
+        {
+            TaskBarService.Default.SetState(TaskBarProgressState.None);
+            _stackPanel!.Visibility = Visibility.Hidden;
+        }
+    }
+
+    [RelayCommand]
     private async Task ImportAccounts()
     {
         OpenFileDialog fileDialog = new()
@@ -83,13 +103,7 @@ public sealed partial class TokenViewModel : ObservableRecipient
         if (fileDialog.ShowDialog() == false)
             return;
 
-        foreach (var filePath in fileDialog.FileNames)
-        {
-            using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            await _accountsService.Save(stream, Path.GetFileName(filePath));
-        }
-
-        await RefreshAccounts();
+        await SaveAccountsFromFilesNames(fileDialog.FileNames);
     }
 
     [RelayCommand]
@@ -112,26 +126,6 @@ public sealed partial class TokenViewModel : ObservableRecipient
         }
 
         await dialog.ShowAsync();
-    }
-
-    [RelayCommand]
-    private async Task RefreshAccounts()
-    {
-        Token = string.Empty;
-        TokenProgressBar = 0;
-
-        _stackPanel!.Visibility = Visibility.Visible;
-        TaskBarService.Default.SetState(TaskBarProgressState.Indeterminate);
-
-        try
-        {
-            Accounts = await _accountsService.GetAll();
-        }
-        finally
-        {
-            TaskBarService.Default.SetState(TaskBarProgressState.None);
-            _stackPanel!.Visibility = Visibility.Hidden;
-        }
     }
 
     [RelayCommand]
@@ -232,11 +226,18 @@ public sealed partial class TokenViewModel : ObservableRecipient
         if (eventArgs.Data.GetData(DataFormats.FileDrop) is not string[] files)
             return;
 
+        await SaveAccountsFromFilesNames(files);
+    }
+
+    private async ValueTask SaveAccountsFromFilesNames(string[] files)
+    {
         foreach (var fileName in files)
         {
-            await using var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            using var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
             await _accountsService.Save(stream, Path.GetFileName(fileName));
         }
+
+        await RefreshAccounts();
     }
 
     private void OnTimer(CancellationToken obj)

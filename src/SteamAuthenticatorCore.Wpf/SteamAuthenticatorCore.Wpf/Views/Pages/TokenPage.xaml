@@ -25,7 +25,7 @@
         </b:EventTrigger>
     </b:Interaction.Triggers>
 
-    <Grid>
+    <Grid x:Name="Grid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -83,7 +83,7 @@
                         ContextMenu="{x:Null}"
                         FontSize="13"
                         IsEnabled="False"
-                        Text="{Binding Token, Mode=OneWay}">
+                        Text="{Binding Token}">
                         <TextBox.Foreground>
                             <SolidColorBrush Color="{DynamicResource TextFillColorPrimary}" />
                         </TextBox.Foreground>
@@ -95,14 +95,14 @@
                         VerticalContentAlignment="Center"
                         Appearance="Primary"
                         Command="{StaticResource CopyCommand}"
-                        CommandParameter="{Binding Token, Mode=OneWay}"
+                        CommandParameter="{Binding Token}"
                         Content="Copy" />
                 </Grid>
 
                 <ProgressBar
                     Margin="0,5,0,0"
                     Maximum="30"
-                    Value="{Binding TokenProgressBar, Mode=OneWay}" />
+                    Value="{Binding TokenProgressBar}" />
 
             </StackPanel>
         </ui:Card>
@@ -148,23 +148,23 @@
                         <StackPanel Margin="8" HorizontalAlignment="Stretch">
                             <TextBlock FontSize="14" Text="{Binding Path=AccountName}" />
 
-                            <!--<StackPanel.ContextMenu>
+                            <StackPanel.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem
-                                        Command="{Binding Source={x:Reference Page}, Path=DataContext.LoginAgainCommand}"
+                                        Command="{Binding Source={x:Reference Grid}, Path=DataContext.LoginAgainCommand}"
                                         CommandParameter="{Binding}"
                                         Header="Login again" />
                                     <MenuItem
-                                        Command="{Binding Source={x:Reference Page}, Path=DataContext.ForceRefreshSessionCommand}"
+                                        Command="{Binding Source={x:Reference Grid}, Path=DataContext.ForceRefreshSessionCommand}"
                                         CommandParameter="{Binding}"
                                         Header="Force refresh session" />
                                     <Separator />
                                     <MenuItem
-                                        Command="{Binding Source={x:Reference Page}, Path=DataContext.DeleteAccountCommand}"
+                                        Command="{Binding Source={x:Reference Grid}, Path=DataContext.DeleteAccountCommand}"
                                         CommandParameter="{Binding}"
                                         Header="Delete from list" />
                                 </ContextMenu>
-                            </StackPanel.ContextMenu>-->
+                            </StackPanel.ContextMenu>
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
