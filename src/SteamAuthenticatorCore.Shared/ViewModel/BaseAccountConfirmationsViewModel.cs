@@ -11,32 +11,35 @@ using SteamAuthenticatorCore.Shared.Models;
 
 namespace SteamAuthenticatorCore.Shared.ViewModel;
 
-public abstract partial class ConfirmationsViewModelBase : ObservableRecipient, IRecipient<UpdateAccountConfirmationPageMessage>
+public abstract partial class BaseAccountConfirmationsViewModel : ObservableRecipient, IRecipient<UpdateAccountConfirmationPageMessage>
 {
-    protected ConfirmationsViewModelBase(ISteamGuardAccountService accountService)
+    protected BaseAccountConfirmationsViewModel(ISteamGuardAccountService accountService)
     {
         _accountService = accountService;
+
+        Messenger.RegisterAll(this);
     }
 
     private readonly ISteamGuardAccountService _accountService;
 
     [ObservableProperty]
-    private SteamGuardAccountConfirmationsModel? _steamGuardAccountConfirmationsModel;
+    private SteamGuardAccountConfirmationsModel? _model;
 
-    [ObservableProperty]
-    private string _pageTitle = string.Empty;
+    protected override void OnActivated()
+    {
+        
+    }
 
     public void Receive(UpdateAccountConfirmationPageMessage message)
     {
-        SteamGuardAccountConfirmationsModel = message.Value;
-        PageTitle = $"{SteamGuardAccountConfirmationsModel.Account.AccountName} confirmations";
+        Model = message.Value;
     }
 
     protected async ValueTask SendConfirmation(ConfirmationModel confirmation, ConfirmationOptions command)
     {
-        await _accountService.SendConfirmation(_steamGuardAccountConfirmationsModel.Account, confirmation, command, CancellationToken.None);
+        await _accountService.SendConfirmation(Model!.Account, confirmation, command, CancellationToken.None);
 
-        _steamGuardAccountConfirmationsModel.Confirmations.Remove(confirmation);
+        Model.Confirmations.Remove(confirmation);
     }
 
     protected async ValueTask SendConfirmations(IEnumerable<ConfirmationModel> confirmations, ConfirmationOptions command)
@@ -52,11 +55,11 @@ public abstract partial class ConfirmationsViewModelBase : ObservableRecipient, 
                 return;
         }
 
-        await _accountService.SendConfirmation(_steamGuardAccountConfirmationsModel.Account, confirms, command, CancellationToken.None);
+        await _accountService.SendConfirmation(Model!.Account, confirms, command, CancellationToken.None);
 
         foreach (var confirmation in confirms)
         {
-            _steamGuardAccountConfirmationsModel.Confirmations.Remove(confirmation);
+            Model.Confirmations.Remove(confirmation);
         }
     }
 }

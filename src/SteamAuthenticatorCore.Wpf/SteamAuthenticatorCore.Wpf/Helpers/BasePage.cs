@@ -14,8 +14,6 @@ public abstract class BasePage<T> : Page where T : ObservableRecipient
         ViewModel = _asyncServiceScope.ServiceProvider.GetRequiredService<T>();
         DataContext = ViewModel;
 
-        ViewModel.IsActive = true;
-
         Loaded += static (sender, _) =>
         {
             var self = (BasePage<T>)sender;
@@ -35,7 +33,9 @@ public abstract class BasePage<T> : Page where T : ObservableRecipient
 
     public virtual void OnLoaded()
     {
-        Debug.WriteLine($"{GetType()} Loaded");
+        ViewModel.IsActive = true;
+
+        Debug.WriteLine($"Loaded: {GetType()}");
     }
 
     public virtual async void OnUnloaded()
@@ -44,6 +44,6 @@ public abstract class BasePage<T> : Page where T : ObservableRecipient
 
         await _asyncServiceScope.DisposeAsync();
 
-        Debug.WriteLine($"{GetType()} UnLoaded");
+        Debug.WriteLine($"UnLoaded: {GetType()}");
     }
 }

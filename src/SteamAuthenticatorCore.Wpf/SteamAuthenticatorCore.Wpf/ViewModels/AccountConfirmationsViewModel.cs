@@ -9,7 +9,7 @@ using SteamAuthenticatorCore.Shared.ViewModel;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
-public sealed partial class AccountConfirmationsViewModel : ConfirmationsViewModelBase
+public sealed partial class AccountConfirmationsViewModel : BaseAccountConfirmationsViewModel
 {
     public AccountConfirmationsViewModel(ISteamGuardAccountService accountService) : base(accountService)
     {
@@ -19,26 +19,26 @@ public sealed partial class AccountConfirmationsViewModel : ConfirmationsViewMod
     [RelayCommand]
     private async Task Confirm(IList list)
     {
-        if (SteamGuardAccountConfirmationsModel is null)
+        if (Model is null)
             return;
 
         var confirmations = list.OfType<ConfirmationModel>();
         await SendConfirmations(confirmations, ConfirmationOptions.Allow);
 
-        if (SteamGuardAccountConfirmationsModel.Confirmations.Count == 0)
+        if (Model.Confirmations.Count == 0)
             NavigationService.Default.GoBack();
     }
 
     [RelayCommand]
     private async Task Cancel(IList list)
     {
-        if (SteamGuardAccountConfirmationsModel is null)
+        if (Model is null)
             return;
 
         var confirmations = list.OfType<ConfirmationModel>();
         await SendConfirmations(confirmations, ConfirmationOptions.Deny);
 
-        if (SteamGuardAccountConfirmationsModel.Confirmations.Count == 0)
+        if (Model.Confirmations.Count == 0)
             NavigationService.Default.GoBack();
     }
 }
