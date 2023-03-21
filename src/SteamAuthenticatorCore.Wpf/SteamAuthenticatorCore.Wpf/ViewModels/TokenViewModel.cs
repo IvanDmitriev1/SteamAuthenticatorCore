@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,6 +24,7 @@ using SteamAuthenticatorCore.Shared.Models;
 using Wpf.Ui.Controls.ContentDialogControl;
 using Wpf.Ui.Controls.Navigation;
 using Wpf.Ui.TaskBar;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
@@ -43,9 +46,20 @@ public sealed partial class TokenViewModel : ObservableRecipient
     private readonly AppSettings _appSettings;
     private StackPanel? _stackPanel;
     private Int64 _currentSteamChunk;
-
-    [ObservableProperty]
     private IReadOnlyList<SteamGuardAccount> _accounts = Array.Empty<SteamGuardAccount>();
+    private string _searchBoxText = string.Empty;
+
+    public string SearchBoxText
+    {
+        get => _searchBoxText;
+        set
+        {
+            SetProperty(ref _searchBoxText, value);
+            UpdateSearchResults(value);
+        }
+    }
+
+    public ObservableCollection<SteamGuardAccount> FilteredAccounts { get; } = new();
 
     [ObservableProperty]
     private string _token = string.Empty;
@@ -56,11 +70,11 @@ public sealed partial class TokenViewModel : ObservableRecipient
     [ObservableProperty]
     private SteamGuardAccount? _selectedAccount;
 
-    protected override void OnActivated()
+    protected override async void OnActivated()
     {
         base.OnActivated();
 
-        _timer.StartOrRestart(TimeSpan.FromSeconds(1), OnTimer);
+        await _timer.StartOrRestart(TimeSpan.FromSeconds(1), OnTimer);
     }
 
     protected override void OnDeactivated()
@@ -70,12 +84,14 @@ public sealed partial class TokenViewModel : ObservableRecipient
         _stackPanel = null;
     }
 
+    #region RelayCommands
+
     [RelayCommand]
-    private Task PageLoaded(StackPanel stackPanel)
+    private async Task PageLoaded(StackPanel stackPanel)
     {
         _stackPanel = stackPanel;
 
-        return RefreshAccounts();
+        await RefreshAccounts();
     }
 
     [RelayCommand]
@@ -90,7 +106,8 @@ public sealed partial class TokenViewModel : ObservableRecipient
         try
         {
             await _accountsService.Initialize();
-            Accounts = await _accountsService.GetAll();
+            _accounts = await _accountsService.GetAll();
+            UpdateSearchResults(string.Empty);
         }
         finally
         {
@@ -236,6 +253,39 @@ public sealed partial class TokenViewModel : ObservableRecipient
             return;
 
         await SaveAccountsFromFilesNames(files);
+    }
+
+    #endregion
+
+    private void UpdateSearchResults(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            FilteredAccounts.Clear();
+
+            foreach (var account in _accounts)
+                FilteredAccounts.Add(account);
+
+            return;
+        }
+
+        var suitableItems = new List<SteamGuardAccount>();
+        var splitText = text.ToLower().Split(' ');
+
+        foreach (var account in _accounts)
+        {
+            var itemText = account.AccountName;
+
+            var found = splitText.All(key=> itemText.ToLower().Contains(key));
+
+            if (found)
+                suitableItems.Add(account);
+        }
+
+        FilteredAccounts.Clear();
+
+        foreach (var account in suitableItems)
+            FilteredAccounts.Add(account);
     }
 
     private async ValueTask SaveAccountsFromFilesNames(string[] files)
