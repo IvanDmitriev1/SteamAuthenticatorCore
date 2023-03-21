@@ -1,12 +1,9 @@
-﻿using SteamAuthenticatorCore.Desktop.ViewModels;
-
-namespace SteamAuthenticatorCore.Desktop.Views.Pages;
+﻿namespace SteamAuthenticatorCore.Desktop.Views.Pages;
 
 public partial class TokenPage
 {
-    public TokenPage(TokenViewModel viewModel)
+    public TokenPage()
     {
-        DataContext = viewModel;
         InitializeComponent();
     }
 }

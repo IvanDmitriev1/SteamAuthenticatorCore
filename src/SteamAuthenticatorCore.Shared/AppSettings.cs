@@ -9,7 +9,7 @@ public abstract partial class AppSettings : AutoSettings
 {
     protected AppSettings()
     {
-        AccountsLocation = AccountsLocationModel.LocalDrive;
+        AccountsLocation = AccountsLocation.LocalDrive;
         FirstRun = true;
         PeriodicCheckingInterval = 15;
         AutoConfirmMarketTransactions = false;
@@ -19,7 +19,7 @@ public abstract partial class AppSettings : AutoSettings
     public static AppSettings Current { get; protected set; } = null!;
 
     [ObservableProperty]
-    private AccountsLocationModel _accountsLocation;
+    private AccountsLocation _accountsLocation;
     
     [ObservableProperty]
     private bool _firstRun;

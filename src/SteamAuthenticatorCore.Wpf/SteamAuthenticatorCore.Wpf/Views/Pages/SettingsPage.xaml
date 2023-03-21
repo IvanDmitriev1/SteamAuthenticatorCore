@@ -33,7 +33,7 @@
                 <ui:CardControl Header=".maFiles location">
                     <ComboBox
                         MinWidth="105"
-                        ItemsSource="{helpers:EnumBindingSource {x:Type models:AccountsLocationModel}}"
+                        ItemsSource="{helpers:EnumBindingSource {x:Type models:AccountsLocation}}"
                         SelectedValue="{Binding Path=AccountsLocation}" />
                 </ui:CardControl>
 

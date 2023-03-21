@@ -4,7 +4,7 @@ using System;
 
 namespace SteamAuthenticatorCore.Shared.Services;
 
-internal abstract class BackgroundTaskServiceBase : IAsyncDisposable
+internal abstract class BaseBackgroundService : IAsyncDisposable
 {
     protected CancellationTokenSource Cts = null!;
     protected PeriodicTimer PeriodicTimer = null!;

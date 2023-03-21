@@ -5,7 +5,7 @@ using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Shared.Services;
 
-internal sealed class BackgroundValueTaskService : BackgroundTaskServiceBase, IValueTaskTimer
+internal sealed class BackgroundValueTaskService : BaseBackgroundService, IValueTaskTimer
 {
     private Func<CancellationToken, ValueTask> _func = null!;
 
@@ -21,7 +21,7 @@ internal sealed class BackgroundValueTaskService : BackgroundTaskServiceBase, IV
     {
         try
         {
-            while (await PeriodicTimer!.WaitForNextTickAsync(Cts.Token).ConfigureAwait(false))
+            while (await PeriodicTimer.WaitForNextTickAsync(Cts.Token).ConfigureAwait(false))
             {
                 await _func.Invoke(Cts.Token).ConfigureAwait(false);
             }

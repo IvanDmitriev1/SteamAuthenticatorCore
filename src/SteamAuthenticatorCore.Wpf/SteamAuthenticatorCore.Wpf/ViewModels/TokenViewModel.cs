@@ -1,60 +1,70 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Win32;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
+using SteamAuthenticatorCore.Desktop.Helpers;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
 using SteamAuthenticatorCore.Shared.Models;
-using SteamAuthenticatorCore.Shared.ViewModel;
-using Wpf.Ui.Contracts;
+using Wpf.Ui.Controls.ContentDialogControl;
 using Wpf.Ui.TaskBar;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
-public sealed partial class TokenViewModel : TokenViewModelBase, IDisposable
+public sealed partial class TokenViewModel : ObservableRecipient
 {
-    public TokenViewModel(ObservableCollection<SteamGuardAccount> accounts, IValueTaskTimer valueTaskTimer,
-        IPlatformImplementations platformImplementations, ISteamGuardAccountService accountService,
-        AccountsFileServiceResolver accountsFileServiceResolver, AppSettings appSettings, IMessenger messenger) : base(
-        accounts, valueTaskTimer, platformImplementations, accountService, accountsFileServiceResolver)
+    public TokenViewModel(ISteamGuardAccountService steamAccountService,
+        AccountsServiceResolver accountsServiceResolver)
     {
-        _appSettings = appSettings;
-        _messenger = messenger;
+        _steamAccountService = steamAccountService;
+
+        _accountsService = accountsServiceResolver.Invoke();
+        _appSettings = AppSettings.Current;
     }
 
+    private readonly ISteamGuardAccountService _steamAccountService;
+    private readonly IAccountsService _accountsService;
     private readonly AppSettings _appSettings;
-    private readonly IMessenger _messenger;
     private StackPanel? _stackPanel;
 
-    public void Dispose()
+    [ObservableProperty]
+    private IReadOnlyList<SteamGuardAccount> _accounts = Array.Empty<SteamGuardAccount>();
+
+    [ObservableProperty]
+    private string _token = string.Empty;
+
+    [ObservableProperty]
+    private double _tokenProgressBar;
+
+    [ObservableProperty]
+    private SteamGuardAccount? _selectedAccount;
+
+    protected override void OnDeactivated()
     {
-        _appSettings.PropertyChanged -= AppSettingsOnPropertyChanged;
+        base.OnDeactivated();
+
         _stackPanel = null;
     }
 
     [RelayCommand]
-    private async void PageLoaded(StackPanel stackPanel)
+    private Task PageLoaded(StackPanel stackPanel)
     {
-        if (_stackPanel is not null)
-            return;
-
         _stackPanel = stackPanel;
 
-        await RefreshAccounts();
-
-        _appSettings.PropertyChanged += AppSettingsOnPropertyChanged;
+        return RefreshAccounts();
     }
 
     [RelayCommand]
@@ -64,28 +74,39 @@ public sealed partial class TokenViewModel : TokenViewModelBase, IDisposable
         {
             Multiselect = true,
             CheckFileExists = true,
-            Filter = $"mafile| *{IAccountsFileService.AccountFileExtension}"
+            Filter = $"mafile| *{IAccountsService.AccountFileExtension}"
         };
 
         if (fileDialog.ShowDialog() == false)
             return;
 
-        var accountsService = AccountsFileServiceResolver.Invoke();
-
         foreach (var filePath in fileDialog.FileNames)
         {
-            await using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            await accountsService.SaveAccount(stream, Path.GetFileName(filePath));
+            using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            await _accountsService.Save(stream, Path.GetFileName(filePath));
         }
     }
 
     [RelayCommand]
-    private Task ForceRefreshSession()
+    private async Task ForceRefreshSession()
     {
         if (SelectedAccount is null)
-            return Task.CompletedTask;
+            return;
 
-        return RefreshAccountsSession(SelectedAccount);
+        var dialog = ContentDialogService.Default.CreateDialog();
+        dialog.Title = "Refresh session";
+
+        if (!await _steamAccountService.RefreshSession(SelectedAccount, CancellationToken.None))
+        {
+            dialog.Content = "Failed to refresh session";
+        }
+        else
+        {
+            await _accountsService.Save(SelectedAccount);
+            dialog.Content = "Session has been refreshed";   
+        }
+
+        await dialog.ShowAsync();
     }
 
     [RelayCommand]
@@ -99,7 +120,8 @@ public sealed partial class TokenViewModel : TokenViewModelBase, IDisposable
 
         try
         {
-            await AccountsFileServiceResolver.Invoke().InitializeOrRefreshAccounts();
+            await _accountsService.InitializeOrRefresh();
+            Accounts = _accountsService.GetAll();
         }
         finally
         {
@@ -109,12 +131,15 @@ public sealed partial class TokenViewModel : TokenViewModelBase, IDisposable
     }
 
     [RelayCommand]
-    private async Task ShowAccountFilesFolder()
+    private async void ShowAccountFilesFolder()
     {
-        if (_appSettings.AccountsLocation == AccountsLocationModel.GoogleDrive)
+        if (_appSettings.AccountsLocation == AccountsLocation.GoogleDrive)
         {
-            await PlatformImplementations.DisplayAlert("Error",
-                $"Your accounts are stored in the google drive {App.InternalName} folder");
+            var dialog = ContentDialogService.Default.CreateDialog();
+            dialog.Title = "Error";
+            dialog.Content = $"Your accounts are stored in the google drive {App.InternalName} folder";
+
+            await dialog.ShowAsync();
             return;
         }
 
@@ -140,14 +165,25 @@ public sealed partial class TokenViewModel : TokenViewModelBase, IDisposable
         if (SelectedAccount is null)
             return;
 
-        await DeleteAccount(SelectedAccount);
+        var dialog = ContentDialogService.Default.CreateDialog();
+        dialog.Title = "Delete account";
+        dialog.Content = $"Are you sure what you want to delete {SelectedAccount.AccountName}?";
+        dialog.PrimaryButtonText = "Yes";
+        dialog.SecondaryButtonText = "No";
+
+        if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+        {
+            await _accountsService.Delete(SelectedAccount);
+            SelectedAccount = null;
+            Accounts = _accountsService.GetAll();
+        }
     }
 
     [RelayCommand]
     private void LoginAgain(SteamGuardAccount account)
     {
         NavigationService.Default.NavigateWithHierarchy(typeof(LoginPage));
-        _messenger.Send(new UpdateAccountInLoginPageMessage(account));
+        Messenger.Send(new UpdateAccountInLoginPageMessage(account));
     }
 
     [RelayCommand]
@@ -170,7 +206,8 @@ public sealed partial class TokenViewModel : TokenViewModelBase, IDisposable
                 return;
             }
 
-            if (extension.Contains(IAccountsFileService.AccountFileExtension)) continue;
+            if (extension.Contains(IAccountsService.AccountFileExtension))
+                continue;
 
             eventArgs.Effects = DragDropEffects.None;
             eventArgs.Handled = true;
@@ -190,20 +227,10 @@ public sealed partial class TokenViewModel : TokenViewModelBase, IDisposable
         if (eventArgs.Data.GetData(DataFormats.FileDrop) is not string[] files)
             return;
 
-        var accountsService = AccountsFileServiceResolver.Invoke();
-
         foreach (var fileName in files)
         {
             await using var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            await accountsService.SaveAccount(stream, Path.GetFileName(fileName));
+            await _accountsService.Save(stream, Path.GetFileName(fileName));
         }
-    }
-
-    private async void AppSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName != nameof(AppSettings.AccountsLocation))
-            return;
-
-        await RefreshAccounts();
     }
 }

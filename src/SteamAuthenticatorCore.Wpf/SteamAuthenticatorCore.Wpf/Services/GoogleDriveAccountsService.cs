@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
@@ -14,9 +15,9 @@ using GoogleFile = Google.Apis.Drive.v3.Data.File;
 
 namespace SteamAuthenticatorCore.Desktop.Services;
 
-internal class GoogleDriveAccountsFileService : IAccountsFileService
+internal class GoogleDriveAccountsService : IAccountsService
 {
-    public GoogleDriveAccountsFileService(ObservableCollection<SteamGuardAccount> accounts, GoogleDriveApi api)
+    public GoogleDriveAccountsService(ObservableCollection<SteamGuardAccount> accounts, GoogleDriveApi api)
     {
         _accounts = accounts;
         _api = api;
@@ -26,7 +27,7 @@ internal class GoogleDriveAccountsFileService : IAccountsFileService
     private readonly GoogleDriveApi _api;
     private bool _isInitialized;
 
-    public async ValueTask InitializeOrRefreshAccounts()
+    public async ValueTask InitializeOrRefresh()
     {
         if (!_isInitialized)
         {
@@ -43,7 +44,7 @@ internal class GoogleDriveAccountsFileService : IAccountsFileService
         {
             try
             {
-                if (!file.Name.Contains(IAccountsFileService.AccountFileExtension))
+                if (!file.Name.Contains(IAccountsService.AccountFileExtension))
                     continue;
 
                 if (await ApiDownload<SteamGuardAccount>(file.Id) is not { } account)
@@ -58,7 +59,12 @@ internal class GoogleDriveAccountsFileService : IAccountsFileService
         }
     }
 
-    public async ValueTask<bool> SaveAccount(Stream stream, string fileName)
+    public ValueTask<ObservableCollection<SteamGuardAccount>> GetAll()
+    {
+        throw new NotImplementedException();
+    }
+
+    public async ValueTask<bool> Save(Stream stream, string fileName)
     {
         if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(stream) is not { } account)
             return false;
@@ -70,7 +76,7 @@ internal class GoogleDriveAccountsFileService : IAccountsFileService
         return true;
     }
 
-    public async ValueTask SaveAccount(SteamGuardAccount account)
+    public async ValueTask Save(SteamGuardAccount account)
     {
         if (await FindMaFileInGoogleDrive(account) is not { } file)
             return;
@@ -81,13 +87,13 @@ internal class GoogleDriveAccountsFileService : IAccountsFileService
         await _api.UploadFile(file, stream);
     }
 
-    public async ValueTask DeleteAccount(SteamGuardAccount accountToRemove)
+    public async ValueTask Delete(SteamGuardAccount account)
     {
-        if (await FindMaFileInGoogleDrive(accountToRemove) is not { } file)
+        if (await FindMaFileInGoogleDrive(account) is not { } file)
             return;
 
         await _api.DeleteFile(file.Id);
-        _accounts.Remove(accountToRemove);
+        _accounts.Remove(account);
     }
 
     private async ValueTask Initialize()
@@ -116,7 +122,7 @@ internal class GoogleDriveAccountsFileService : IAccountsFileService
         {
             await Parallel.ForEachAsync(files, cts.Token, async (file, token) =>
             {
-                if (!file.Name.Contains(IAccountsFileService.AccountFileExtension))
+                if (!file.Name.Contains(IAccountsService.AccountFileExtension))
                     return;
 
                 if (await ApiDownload<SteamGuardAccount>(file.Id).ConfigureAwait(false) is not { } account)

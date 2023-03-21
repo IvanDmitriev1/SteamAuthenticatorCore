@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json;
@@ -10,22 +11,23 @@ using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Desktop.Services;
 
-internal class LocalDriveAccountsFileService : IAccountsFileService
+internal class LocalDriveAccountsService : IAccountsService
 {
-    public LocalDriveAccountsFileService(ObservableCollection<SteamGuardAccount> accounts, IPlatformImplementations platformImplementations, ILogger<LocalDriveAccountsFileService> logger)
+    public LocalDriveAccountsService(IPlatformImplementations platformImplementations, ILogger<LocalDriveAccountsService> logger)
     {
-        _accounts = accounts;
+        _accounts = new List<SteamGuardAccount>();
+
         _platformImplementations = platformImplementations;
         _logger = logger;
         _maFilesDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SteamAuthenticatorCore.Desktop");
     }
 
-    private readonly ObservableCollection<SteamGuardAccount> _accounts;
+    private readonly List<SteamGuardAccount> _accounts;
     private readonly IPlatformImplementations _platformImplementations;
-    private readonly ILogger<LocalDriveAccountsFileService> _logger;
+    private readonly ILogger<LocalDriveAccountsService> _logger;
     private readonly string _maFilesDirectory;
 
-    public async ValueTask InitializeOrRefreshAccounts()
+    public async ValueTask InitializeOrRefresh()
     {
         CreateDirectory();
 
@@ -33,7 +35,7 @@ internal class LocalDriveAccountsFileService : IAccountsFileService
 
         foreach (var filePath in Directory.GetFiles(_maFilesDirectory))
         {
-            if (!filePath.Contains(IAccountsFileService.AccountFileExtension))
+            if (!filePath.Contains(IAccountsService.AccountFileExtension))
                 continue;
 
             try
@@ -53,12 +55,17 @@ internal class LocalDriveAccountsFileService : IAccountsFileService
         }
     }
 
-    public async ValueTask<bool> SaveAccount(Stream stream, string fileName)
+    public IReadOnlyList<SteamGuardAccount> GetAll()
+    {
+        return _accounts;
+    }
+
+    public async ValueTask<bool> Save(Stream stream, string fileName)
     {
         if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(stream) is not { } account)
             return false;
 
-        var newFileName = Path.ChangeExtension(Path.GetFileNameWithoutExtension(fileName), IAccountsFileService.AccountFileExtension);
+        var newFileName = Path.ChangeExtension(Path.GetFileNameWithoutExtension(fileName), IAccountsService.AccountFileExtension);
         var newFilePath = Path.Combine(_maFilesDirectory, newFileName);
 
         stream.Seek(0, SeekOrigin.Begin);
@@ -70,7 +77,7 @@ internal class LocalDriveAccountsFileService : IAccountsFileService
         return true;
     }
 
-    public async ValueTask SaveAccount(SteamGuardAccount account)
+    public async ValueTask Save(SteamGuardAccount account)
     {
         if (await FindAccountInDirectory(account) is not { } filePath)
             return;
@@ -81,13 +88,13 @@ internal class LocalDriveAccountsFileService : IAccountsFileService
         await streamWriter.WriteAsync(json);
     }
 
-    public async ValueTask DeleteAccount(SteamGuardAccount accountToRemove)
+    public async ValueTask Delete(SteamGuardAccount account)
     {
-        if (await FindAccountInDirectory(accountToRemove) is not { } filePath)
+        if (await FindAccountInDirectory(account) is not { } filePath)
             return;
 
         File.Delete(filePath);
-        _accounts.Remove(accountToRemove);
+        _accounts.Remove(account);
     }
 
     private void CreateDirectory()
@@ -105,7 +112,7 @@ internal class LocalDriveAccountsFileService : IAccountsFileService
         {
             await Parallel.ForEachAsync(Directory.GetFiles(_maFilesDirectory), cts.Token, async (filePath, token) =>
             {
-                if (!filePath.Contains(IAccountsFileService.AccountFileExtension))
+                if (!filePath.Contains(IAccountsService.AccountFileExtension))
                     return;
 
                 await using var fileStream = File.OpenRead(filePath);
