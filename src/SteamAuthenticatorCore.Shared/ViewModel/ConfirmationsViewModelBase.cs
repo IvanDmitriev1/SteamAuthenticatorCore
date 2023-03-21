@@ -25,18 +25,18 @@ public abstract partial class ConfirmationsViewModelBase : ObservableObject, IRe
     private readonly IPlatformImplementations _platformImplementations;
 
     [ObservableProperty]
-    private Models.ConfirmationModel _confirmationModel = null!;
+    private Models.SteamGuardAccountConfirmationsModel _steamGuardAccountConfirmationsModel = null!;
 
     public void Receive(UpdateAccountConfirmationPageMessage message)
     {
-        ConfirmationModel = message.Value;
+        SteamGuardAccountConfirmationsModel = message.Value;
     }
 
     protected async ValueTask SendConfirmation(ConfirmationModel confirmation, ConfirmationOptions command)
     {
-        await _accountService.SendConfirmation(_confirmationModel.Account, confirmation, command, CancellationToken.None);
+        await _accountService.SendConfirmation(_steamGuardAccountConfirmationsModel.Account, confirmation, command, CancellationToken.None);
 
-        _confirmationModel.Confirmations.Remove(confirmation);
+        _steamGuardAccountConfirmationsModel.Confirmations.Remove(confirmation);
     }
 
     protected async ValueTask SendConfirmations(IEnumerable<ConfirmationModel> confirmations, ConfirmationOptions command)
@@ -52,11 +52,11 @@ public abstract partial class ConfirmationsViewModelBase : ObservableObject, IRe
                 return;
         }
 
-        await _accountService.SendConfirmation(_confirmationModel.Account, confirms, command, CancellationToken.None);
+        await _accountService.SendConfirmation(_steamGuardAccountConfirmationsModel.Account, confirms, command, CancellationToken.None);
 
         foreach (var confirmation in confirms)
         {
-            _confirmationModel.Confirmations.Remove(confirmation);
+            _steamGuardAccountConfirmationsModel.Confirmations.Remove(confirmation);
         }
     }
 }

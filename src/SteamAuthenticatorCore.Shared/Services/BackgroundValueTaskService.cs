@@ -9,9 +9,9 @@ internal sealed class BackgroundValueTaskService : BaseBackgroundService, IValue
 {
     private Func<CancellationToken, ValueTask> _func = null!;
 
-    public async ValueTask StartOrRestart(TimeSpan timeSpan, Func<CancellationToken, ValueTask> func)
+    public async Task StartOrRestart(TimeSpan timeSpan, Func<CancellationToken, ValueTask> func)
     {
-        await Initialize(timeSpan).ConfigureAwait(false);
+        await Initialize(timeSpan);
 
         _func = func;
         TimerTask = DoWordAsync();

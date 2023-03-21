@@ -28,12 +28,12 @@
                 Margin="1,0,0,15"
                 HorizontalAlignment="Center"
                 FontSize="18"
-                Text="{Binding Path=ConfirmationModel.Account.AccountName}" />
+                Text="{Binding Path=SteamGuardAccountConfirmationsModel.Account.AccountName}" />
 
             <ListBox
                 x:Name="ListBox"
                 Grid.Row="1"
-                ItemsSource="{Binding Path=ConfirmationModel.Confirmations}"
+                ItemsSource="{Binding Path=SteamGuardAccountConfirmationsModel.Confirmations}"
                 SelectionMode="Extended"
                 VirtualizingPanel.IsContainerVirtualizable="True"
                 VirtualizingPanel.IsVirtualizing="True"

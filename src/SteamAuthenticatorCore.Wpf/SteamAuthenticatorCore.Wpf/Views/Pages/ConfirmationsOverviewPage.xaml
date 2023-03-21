@@ -44,7 +44,7 @@
 
             <ItemsControl
                 VerticalAlignment="Top"
-                ItemsSource="{Binding Path=ConfirmationServiceBase.ConfirmationViewModels}"
+                ItemsSource="{Binding Path=ConfirmationServiceBase.Confirmations}"
                 ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                 ScrollViewer.VerticalScrollBarVisibility="Hidden"
                 VirtualizingStackPanel.IsVirtualizing="True"
@@ -57,7 +57,7 @@
                 </ItemsControl.ItemsPanel>
 
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type models:ConfirmationModel}">
+                    <DataTemplate DataType="{x:Type models:SteamGuardAccountConfirmationsModel}">
                         <ui:CardControl
                             Margin="0,0,0,5"
                             Command="{Binding Source={x:Reference Page}, Path=DataContext.ClickCommand}"

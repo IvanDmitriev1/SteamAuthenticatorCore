@@ -6,8 +6,8 @@ namespace SteamAuthenticatorCore.Shared.Abstractions;
 
 public interface IConfirmationService
 {
-    ObservableCollection<ConfirmationModel> ConfirmationViewModels { get; }
+    ObservableCollection<SteamGuardAccountConfirmationsModel> Confirmations { get; }
 
-    void Initialize();
+    Task Initialize();
     Task CheckConfirmations();
 }

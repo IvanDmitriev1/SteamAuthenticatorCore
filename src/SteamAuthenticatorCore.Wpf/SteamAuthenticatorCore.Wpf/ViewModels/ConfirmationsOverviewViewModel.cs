@@ -24,7 +24,7 @@ public partial class ConfirmationsOverviewViewModel
     private Task CheckConfirmations() => ConfirmationServiceBase.CheckConfirmations();
 
     [RelayCommand]
-    private void OnClick(ConfirmationModel viewModel)
+    private void OnClick(SteamGuardAccountConfirmationsModel viewModel)
     {
         //TODO
 

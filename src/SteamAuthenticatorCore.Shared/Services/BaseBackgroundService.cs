@@ -29,5 +29,10 @@ internal abstract class BaseBackgroundService : IAsyncDisposable
         Cts = new CancellationTokenSource();
     }
 
+    public async Task Stop()
+    {
+        await DisposeAsync().ConfigureAwait(false);
+    }
+
     protected abstract Task DoWordAsync();
 }

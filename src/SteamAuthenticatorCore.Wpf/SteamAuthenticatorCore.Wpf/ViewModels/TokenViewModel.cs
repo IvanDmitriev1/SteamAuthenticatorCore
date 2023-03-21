@@ -43,7 +43,6 @@ public sealed partial class TokenViewModel : ObservableRecipient
     private readonly AppSettings _appSettings;
     private StackPanel? _stackPanel;
     private Int64 _currentSteamChunk;
-    private bool _isRefreshAccounts;
 
     [ObservableProperty]
     private IReadOnlyList<SteamGuardAccount> _accounts = Array.Empty<SteamGuardAccount>();
@@ -61,7 +60,6 @@ public sealed partial class TokenViewModel : ObservableRecipient
     {
         base.OnActivated();
 
-        NavigationService.Default.GetNavigationView().Navigating += OnNavigating;
         _timer.StartOrRestart(TimeSpan.FromSeconds(1), OnTimer);
     }
 
@@ -70,7 +68,6 @@ public sealed partial class TokenViewModel : ObservableRecipient
         base.OnDeactivated();
 
         _stackPanel = null;
-        NavigationService.Default.GetNavigationView().Navigating -= OnNavigating;
     }
 
     [RelayCommand]
@@ -92,8 +89,6 @@ public sealed partial class TokenViewModel : ObservableRecipient
 
         try
         {
-            _isRefreshAccounts = true;
-
             await _accountsService.Initialize();
             Accounts = await _accountsService.GetAll();
         }
@@ -101,8 +96,6 @@ public sealed partial class TokenViewModel : ObservableRecipient
         {
             TaskBarService.Default.SetState(TaskBarProgressState.None);
             _stackPanel!.Visibility = Visibility.Hidden;
-
-            _isRefreshAccounts = false;
         }
     }
 
@@ -254,15 +247,6 @@ public sealed partial class TokenViewModel : ObservableRecipient
         }
 
         await RefreshAccounts();
-    }
-
-    private void OnNavigating(NavigationView sender, NavigatingCancelEventArgs args)
-    {
-        if (!_isRefreshAccounts)
-            return;
-
-        args.Cancel = true;
-        args.Handled = true;
     }
 
     private void OnTimer(CancellationToken obj)

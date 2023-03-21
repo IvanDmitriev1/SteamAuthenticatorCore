@@ -26,7 +26,7 @@ public sealed partial class ConfirmationsViewModel : ConfirmationsViewModelBase
         var confirmations = list.OfType<ConfirmationModel>();
         await SendConfirmations(confirmations, ConfirmationOptions.Allow);
 
-        if (ConfirmationModel.Confirmations.Count == 0)
+        if (SteamGuardAccountConfirmationsModel.Confirmations.Count == 0)
             NavigationService.Default.GoBack();
     }
 
@@ -36,7 +36,7 @@ public sealed partial class ConfirmationsViewModel : ConfirmationsViewModelBase
         var confirmations = list.OfType<ConfirmationModel>();
         await SendConfirmations(confirmations, ConfirmationOptions.Deny);
 
-        if (ConfirmationModel.Confirmations.Count == 0)
+        if (SteamGuardAccountConfirmationsModel.Confirmations.Count == 0)
             NavigationService.Default.GoBack();
     }
 }

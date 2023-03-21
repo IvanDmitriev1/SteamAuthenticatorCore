@@ -6,15 +6,18 @@ namespace SteamAuthenticatorCore.Shared.Abstractions;
 
 public interface ITimer
 {
-    ValueTask StartOrRestart(TimeSpan timeSpan, Action<CancellationToken> func);
+    Task StartOrRestart(TimeSpan timeSpan, Action<CancellationToken> func);
+    Task Stop();
 }
 
 public interface IValueTaskTimer : IAsyncDisposable
 {
-    ValueTask StartOrRestart(TimeSpan timeSpan, Func<CancellationToken, ValueTask> func);
+    Task StartOrRestart(TimeSpan timeSpan, Func<CancellationToken, ValueTask> func);
+    Task Stop();
 }
 
 public interface ITaskTimer : IAsyncDisposable
 {
-    ValueTask StartOrRestart(TimeSpan timeSpan, Func<CancellationToken, Task> func);
+    Task StartOrRestart(TimeSpan timeSpan, Func<CancellationToken, Task> func);
+    Task Stop();
 }

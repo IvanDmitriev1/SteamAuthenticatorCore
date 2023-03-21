@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SteamAuthCore.Abstractions;
 using SteamAuthenticatorCore.Desktop.Helpers;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.Views.Pages;
@@ -16,13 +18,12 @@ namespace SteamAuthenticatorCore.Desktop.Views;
 
 public partial class MainWindow
 {
-    public MainWindow(AppSettings appSettings, IUpdateService updateService, ILogger<MainWindow> logger)
+    public MainWindow(IUpdateService updateService, ILogger<MainWindow> logger)
     {
         InitializeComponent();
 
         Watcher.Watch(this);
 
-        _appSettings = appSettings;
         _updateService = updateService;
         _logger = logger;
 
@@ -33,18 +34,15 @@ public partial class MainWindow
         NavigationService.Default.SetNavigationControl(NavigationFluent);
 
         NavigationFluent.Loaded += NavigationFluentOnLoaded;
-        Unloaded += OnUnloaded;
         SizeChanged += OnSizeChanged;
     }
 
-    private readonly AppSettings _appSettings;
     private readonly IUpdateService _updateService;
     private readonly ILogger<MainWindow> _logger;
 
     private async void NavigationFluentOnLoaded(object sender, RoutedEventArgs e)
     {
-        _appSettings.Load();
-        App.ServiceProvider.GetRequiredService<IConfirmationService>().Initialize();
+        await InitializeDependencies();
 
         RootWelcomeGrid.Visibility = Visibility.Hidden;
         NavigationFluent.Visibility = Visibility.Visible;
@@ -61,13 +59,6 @@ public partial class MainWindow
         {
             _logger.LogCritical(exception, "Exception after checking for updates");
         }
-    }
-
-    private void OnUnloaded(object sender, RoutedEventArgs e)
-    {
-        NavigationFluent.Loaded -= NavigationFluentOnLoaded;
-        Unloaded -= OnUnloaded;
-        SizeChanged -= OnSizeChanged;
     }
 
     private void OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -94,5 +85,14 @@ public partial class MainWindow
                 Application.Current.Shutdown();
                 break;
         }
+    }
+
+    private static async Task InitializeDependencies()
+    {
+        AppSettings.Current.Load();
+
+        await App.ServiceProvider.GetRequiredService<ITimeAligner>().AlignTimeAsync();
+        await App.ServiceProvider.GetRequiredService<AccountsServiceResolver>().Invoke().Initialize();
+        await App.ServiceProvider.GetRequiredService<IConfirmationService>().Initialize();
     }
 }
