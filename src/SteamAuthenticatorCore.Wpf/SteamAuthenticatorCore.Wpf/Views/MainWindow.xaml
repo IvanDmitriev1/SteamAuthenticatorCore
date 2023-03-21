@@ -39,12 +39,12 @@
                         <ContextMenu>
                             <ui:MenuItem
                                 Click="MenuItem_OnClick"
-                                Header="Token page"
+                                Header="Token"
                                 Icon="{ui:SymbolIcon Timer24}"
                                 Tag="token" />
                             <ui:MenuItem
                                 Click="MenuItem_OnClick"
-                                Header="Confirmations page"
+                                Header="Confirmations"
                                 Icon="{ui:SymbolIcon TaskListLtr24}"
                                 Tag="confirms" />
                             <Separator />
@@ -95,7 +95,7 @@
                     Icon="{ui:SymbolIcon Timer24}"
                     TargetPageType="{x:Type pages:TokenPage}" />
                 <ui:NavigationViewItem
-                    Content="Confirmations overview"
+                    Content="Confirmations"
                     Icon="{ui:SymbolIcon TaskListLtr24}"
                     TargetPageType="{x:Type pages:ConfirmationsOverviewPage}" />
             </ui:NavigationView.MenuItems>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Wpf.Ui.Controls.Navigation;
 
 namespace SteamAuthenticatorCore.Desktop.Services;
@@ -12,6 +13,12 @@ public sealed class NavigationService
     public void SetNavigationControl(INavigationView navigation)
     {
         _navigationView = navigation;
+    }
+
+    public INavigationView GetNavigationView()
+    {
+        Debug.Assert(_navigationView != null, nameof(_navigationView) + " != null");
+        return _navigationView;
     }
 
     public void Navigate(Type pageType)

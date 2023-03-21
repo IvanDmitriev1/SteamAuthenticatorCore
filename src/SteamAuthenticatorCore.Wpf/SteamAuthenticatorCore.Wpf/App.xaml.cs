@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
-using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Extensions;
-using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.ViewModels;
 using SteamAuthenticatorCore.Desktop.Views;
@@ -30,7 +27,6 @@ public sealed partial class App : Application
     public const string Name = "Steam desktop authenticator core";
     public static IServiceProvider ServiceProvider { get; private set; } = null!;
 
-    private IServiceScope? _serviceScope;
     private readonly ILogger<App> _logger;
 
     public App()
@@ -58,29 +54,26 @@ public sealed partial class App : Application
             })
             .ConfigureServices(services =>
             {
-                services.AddSingleton<ObservableCollection<SteamGuardAccount>>();
-                services.AddScoped<MainWindow>();
+                services.AddSingleton<MainWindow>();
 
-                services.AddScoped<TokenPage>();
+                services.AddTransient<TokenPage>();
                 services.AddTransient<ConfirmationsOverviewPage>();
-                services.AddTransient<ConfirmationsPage>();
+                services.AddTransient<AccountConfirmations>();
                 services.AddTransient<SettingsPage>();
                 services.AddTransient<LoginPage>();
 
-                services.AddScoped<TokenViewModel>();
-                services.AddScoped<SettingsViewModel>();
-                services.AddScoped<ConfirmationsOverviewViewModel>();
-                services.AddScoped<ConfirmationsViewModel>();
-                services.AddScoped<LoginViewModel>();
+                services.AddTransient<TokenViewModel>();
+                services.AddTransient<SettingsViewModel>();
+                services.AddTransient<ConfirmationsOverviewViewModel>();
+                services.AddTransient<AccountConfirmationsViewModel>();
+                services.AddTransient<LoginViewModel>();
 
-                services.AddGoogleDriveApi(Name);
                 services.AddSingleton<IPlatformImplementations, DesktopImplementations>();
 
                 services.AddSingleton<AppSettings>(WpfAppSettings.Current);
-                services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
 
-                services.AddScoped<LocalDriveAccountsFileService>();
-                services.AddScoped<GoogleDriveAccountsFileService>();
+                services.AddScoped<LocalDriveAccountsService>();
+                services.AddScoped<GoogleDriveAccountsService>();
 
                 services.AddSteamAuthCoreServices();
                 services.AddSharedServices();
@@ -88,15 +81,16 @@ public sealed partial class App : Application
                 services.AddSingleton<IUpdateService, UpdateService>(provider =>
                     new UpdateService(Assembly.GetExecutingAssembly().GetName().Version!));
 
-                services.AddScoped<AccountsFileServiceResolver>(provider => () =>
+                services.AddSingleton<AccountsServiceResolver>(static provider => () =>
                 {
-                    var appSettings = provider.GetRequiredService<AppSettings>();
+                    var appSettings = AppSettings.Current;
+
                     return appSettings.AccountsLocation switch
                     {
-                        AccountsLocationModel.LocalDrive =>
-                            provider.GetRequiredService<LocalDriveAccountsFileService>(),
-                        AccountsLocationModel.GoogleDrive =>
-                            provider.GetRequiredService<GoogleDriveAccountsFileService>(),
+                        AccountsLocation.LocalDrive =>
+                            provider.GetRequiredService<LocalDriveAccountsService>(),
+                        AccountsLocation.GoogleDrive =>
+                            provider.GetRequiredService<GoogleDriveAccountsService>(),
                         _ => throw new ArgumentOutOfRangeException()
                     };
                 });
@@ -118,19 +112,10 @@ public sealed partial class App : Application
     }
 
     private async void OnStartup(object sender, StartupEventArgs e)
-    {
-        var environment = _host.Services.GetRequiredService<IHostEnvironment>();
-        if (environment.IsDevelopment())
-        {
-            _serviceScope = _host.Services.CreateScope();
-            ServiceProvider = _serviceScope.ServiceProvider;
-        }
-        else
-            ServiceProvider = _host.Services;
-
+    { 
         await _host.StartAsync();
+        ServiceProvider = _host.Services;
 
-        await ServiceProvider.GetRequiredService<ITimeAligner>().AlignTimeAsync();
         ServiceProvider.GetRequiredService<MainWindow>().Show();
     }
 

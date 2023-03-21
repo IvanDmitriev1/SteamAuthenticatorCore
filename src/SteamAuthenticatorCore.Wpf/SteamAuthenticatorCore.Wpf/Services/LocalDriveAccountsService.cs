@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SteamAuthCore.Models;
@@ -10,30 +9,37 @@ using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Desktop.Services;
 
-internal class LocalDriveAccountsFileService : IAccountsFileService
+internal class LocalDriveAccountsService : IAccountsService
 {
-    public LocalDriveAccountsFileService(ObservableCollection<SteamGuardAccount> accounts, IPlatformImplementations platformImplementations, ILogger<LocalDriveAccountsFileService> logger)
+    public LocalDriveAccountsService(IPlatformImplementations platformImplementations, ILogger<LocalDriveAccountsService> logger)
     {
-        _accounts = accounts;
+        _accounts = new List<SteamGuardAccount>();
+
         _platformImplementations = platformImplementations;
         _logger = logger;
         _maFilesDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SteamAuthenticatorCore.Desktop");
     }
 
-    private readonly ObservableCollection<SteamGuardAccount> _accounts;
+    private readonly List<SteamGuardAccount> _accounts;
     private readonly IPlatformImplementations _platformImplementations;
-    private readonly ILogger<LocalDriveAccountsFileService> _logger;
+    private readonly ILogger<LocalDriveAccountsService> _logger;
     private readonly string _maFilesDirectory;
+    private bool _isInitialized = false;
 
-    public async ValueTask InitializeOrRefreshAccounts()
+    public async Task Initialize()
     {
+        if (_isInitialized)
+            return;
+
+        _isInitialized = true;
+
         CreateDirectory();
 
         _accounts.Clear();
 
         foreach (var filePath in Directory.GetFiles(_maFilesDirectory))
         {
-            if (!filePath.Contains(IAccountsFileService.AccountFileExtension))
+            if (!filePath.Contains(IAccountsService.AccountFileExtension))
                 continue;
 
             try
@@ -53,26 +59,32 @@ internal class LocalDriveAccountsFileService : IAccountsFileService
         }
     }
 
-    public async ValueTask<bool> SaveAccount(Stream stream, string fileName)
+    public ValueTask<IReadOnlyList<SteamGuardAccount>> GetAll()
+    {
+        IReadOnlyList<SteamGuardAccount> wrapper = _accounts.AsReadOnly();
+
+        return ValueTask.FromResult(wrapper);
+    }
+
+    public async ValueTask<bool> Save(Stream stream, string fileName)
     {
         if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(stream) is not { } account)
             return false;
 
-        var newFileName = Path.ChangeExtension(Path.GetFileNameWithoutExtension(fileName), IAccountsFileService.AccountFileExtension);
+        var newFileName = Path.ChangeExtension(Path.GetFileNameWithoutExtension(fileName), IAccountsService.AccountFileExtension);
         var newFilePath = Path.Combine(_maFilesDirectory, newFileName);
 
         stream.Seek(0, SeekOrigin.Begin);
         await using var newFileStream = File.OpenWrite(newFilePath);
         await stream.CopyToAsync(newFileStream);
 
-
         _accounts.Add(account);
         return true;
     }
 
-    public async ValueTask SaveAccount(SteamGuardAccount account)
+    public async ValueTask Save(SteamGuardAccount account)
     {
-        if (await FindAccountInDirectory(account) is not { } filePath)
+        if (FindAccountInDirectory(account) is not { } filePath)
             return;
 
         var json = JsonSerializer.Serialize(account);
@@ -81,13 +93,15 @@ internal class LocalDriveAccountsFileService : IAccountsFileService
         await streamWriter.WriteAsync(json);
     }
 
-    public async ValueTask DeleteAccount(SteamGuardAccount accountToRemove)
+    public ValueTask Delete(SteamGuardAccount account)
     {
-        if (await FindAccountInDirectory(accountToRemove) is not { } filePath)
-            return;
+        if (FindAccountInDirectory(account) is not { } filePath)
+            return ValueTask.CompletedTask;
 
         File.Delete(filePath);
-        _accounts.Remove(accountToRemove);
+        _accounts.Remove(account);
+
+        return ValueTask.CompletedTask;
     }
 
     private void CreateDirectory()
@@ -96,7 +110,28 @@ internal class LocalDriveAccountsFileService : IAccountsFileService
             Directory.CreateDirectory(_maFilesDirectory);
     }
 
-    private async ValueTask<string?> FindAccountInDirectory(SteamGuardAccount accountToFind)
+    private string? FindAccountInDirectory(SteamGuardAccount accountToFind)
+    {
+        foreach (var filePath in Directory.GetFiles(_maFilesDirectory))
+        {
+            if (!filePath.Contains(IAccountsService.AccountFileExtension))
+                continue;
+
+            using var fileStream = File.OpenRead(filePath);
+
+            if (JsonSerializer.Deserialize<SteamGuardAccount>(fileStream) is not { } account)
+                continue;
+
+            if (account.Secret1 != accountToFind.Secret1 || account.AccountName != accountToFind.AccountName)
+                continue;
+
+            return filePath;
+        }
+
+        return null;
+    }
+
+    /*private async ValueTask<string?> FindAccountInDirectoryAsync(SteamGuardAccount accountToFind)
     {
         var cts = new CancellationTokenSource();
         string? foundedFilePath = null;
@@ -105,7 +140,7 @@ internal class LocalDriveAccountsFileService : IAccountsFileService
         {
             await Parallel.ForEachAsync(Directory.GetFiles(_maFilesDirectory), cts.Token, async (filePath, token) =>
             {
-                if (!filePath.Contains(IAccountsFileService.AccountFileExtension))
+                if (!filePath.Contains(IAccountsService.AccountFileExtension))
                     return;
 
                 await using var fileStream = File.OpenRead(filePath);
@@ -125,5 +160,5 @@ internal class LocalDriveAccountsFileService : IAccountsFileService
         }
 
         return foundedFilePath;
-    }
+    }*/
 }

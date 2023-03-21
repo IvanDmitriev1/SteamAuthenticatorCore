@@ -5,38 +5,41 @@ using System.Threading.Tasks;
 using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SteamAuthCore.Abstractions;
-using SteamAuthenticatorCore.Shared.Abstractions;
 using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthenticatorCore.Shared.Messages;
+using SteamAuthenticatorCore.Shared.Models;
 
 namespace SteamAuthenticatorCore.Shared.ViewModel;
 
-public abstract partial class ConfirmationsViewModelBase : ObservableObject, IRecipient<UpdateAccountConfirmationPageMessage>
+public abstract partial class BaseAccountConfirmationsViewModel : ObservableRecipient, IRecipient<UpdateAccountConfirmationPageMessage>
 {
-    protected ConfirmationsViewModelBase(ISteamGuardAccountService accountService, IPlatformImplementations platformImplementations, IMessenger messenger)
+    protected BaseAccountConfirmationsViewModel(ISteamGuardAccountService accountService)
     {
         _accountService = accountService;
-        _platformImplementations = platformImplementations;
 
-        messenger.Register(this);
+        Messenger.RegisterAll(this);
     }
 
     private readonly ISteamGuardAccountService _accountService;
-    private readonly IPlatformImplementations _platformImplementations;
 
     [ObservableProperty]
-    private Models.ConfirmationModel _confirmationModel = null!;
+    private SteamGuardAccountConfirmationsModel? _model;
+
+    protected override void OnActivated()
+    {
+        
+    }
 
     public void Receive(UpdateAccountConfirmationPageMessage message)
     {
-        ConfirmationModel = message.Value;
+        Model = message.Value;
     }
 
     protected async ValueTask SendConfirmation(ConfirmationModel confirmation, ConfirmationOptions command)
     {
-        await _accountService.SendConfirmation(_confirmationModel.Account, confirmation, command, CancellationToken.None);
+        await _accountService.SendConfirmation(Model!.Account, confirmation, command, CancellationToken.None);
 
-        _confirmationModel.Confirmations.Remove(confirmation);
+        Model.Confirmations.Remove(confirmation);
     }
 
     protected async ValueTask SendConfirmations(IEnumerable<ConfirmationModel> confirmations, ConfirmationOptions command)
@@ -52,11 +55,11 @@ public abstract partial class ConfirmationsViewModelBase : ObservableObject, IRe
                 return;
         }
 
-        await _accountService.SendConfirmation(_confirmationModel.Account, confirms, command, CancellationToken.None);
+        await _accountService.SendConfirmation(Model!.Account, confirms, command, CancellationToken.None);
 
         foreach (var confirmation in confirms)
         {
-            _confirmationModel.Confirmations.Remove(confirmation);
+            Model.Confirmations.Remove(confirmation);
         }
     }
 }

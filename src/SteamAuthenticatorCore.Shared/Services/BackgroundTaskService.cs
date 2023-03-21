@@ -5,13 +5,13 @@ using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Shared.Services;
 
-internal sealed class BackgroundTaskService : BackgroundTaskServiceBase, ITaskTimer
+internal sealed class BackgroundTaskService : BaseBackgroundService, ITaskTimer
 {
     private Func<CancellationToken, Task> _func = null!;
 
-    public async ValueTask StartOrRestart(TimeSpan timeSpan, Func<CancellationToken, Task> func)
+    public async Task StartOrRestart(TimeSpan timeSpan, Func<CancellationToken, Task> func)
     {
-        await Initialize(timeSpan).ConfigureAwait(false);
+        await Initialize(timeSpan);
 
         _func = func;
         TimerTask = DoWordAsync();
@@ -21,7 +21,7 @@ internal sealed class BackgroundTaskService : BackgroundTaskServiceBase, ITaskTi
     {
         try
         {
-            while (await PeriodicTimer!.WaitForNextTickAsync(Cts.Token).ConfigureAwait(false))
+            while (await PeriodicTimer.WaitForNextTickAsync(Cts.Token).ConfigureAwait(false))
             {
                 await _func.Invoke(Cts.Token).ConfigureAwait(false);
             }
@@ -31,3 +31,4 @@ internal sealed class BackgroundTaskService : BackgroundTaskServiceBase, ITaskTi
         }
     }
 }
+

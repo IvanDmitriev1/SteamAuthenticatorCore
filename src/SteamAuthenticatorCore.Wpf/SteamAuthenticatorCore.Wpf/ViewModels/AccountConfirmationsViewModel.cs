@@ -2,20 +2,16 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthCore.Abstractions;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Desktop.Services;
-using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.ViewModel;
-using Wpf.Ui.Contracts;
-using ConfirmationModel = SteamAuthCore.Models.ConfirmationModel;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
-public sealed partial class ConfirmationsViewModel : ConfirmationsViewModelBase
+public sealed partial class AccountConfirmationsViewModel : BaseAccountConfirmationsViewModel
 {
-    public ConfirmationsViewModel(ISteamGuardAccountService accountService, IPlatformImplementations platformImplementations, IMessenger messenger) : base(accountService, platformImplementations, messenger)
+    public AccountConfirmationsViewModel(ISteamGuardAccountService accountService) : base(accountService)
     {
         
     }
@@ -23,20 +19,26 @@ public sealed partial class ConfirmationsViewModel : ConfirmationsViewModelBase
     [RelayCommand]
     private async Task Confirm(IList list)
     {
+        if (Model is null)
+            return;
+
         var confirmations = list.OfType<ConfirmationModel>();
         await SendConfirmations(confirmations, ConfirmationOptions.Allow);
 
-        if (ConfirmationModel.Confirmations.Count == 0)
+        if (Model.Confirmations.Count == 0)
             NavigationService.Default.GoBack();
     }
 
     [RelayCommand]
     private async Task Cancel(IList list)
     {
+        if (Model is null)
+            return;
+
         var confirmations = list.OfType<ConfirmationModel>();
         await SendConfirmations(confirmations, ConfirmationOptions.Deny);
 
-        if (ConfirmationModel.Confirmations.Count == 0)
+        if (Model.Confirmations.Count == 0)
             NavigationService.Default.GoBack();
     }
 }

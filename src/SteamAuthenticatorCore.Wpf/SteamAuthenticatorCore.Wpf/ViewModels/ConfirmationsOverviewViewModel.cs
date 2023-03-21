@@ -1,34 +1,41 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using SteamAuthenticatorCore.Desktop.Services;
+using SteamAuthenticatorCore.Desktop.Views.Pages;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
 using SteamAuthenticatorCore.Shared.Models;
-using Wpf.Ui.Contracts;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
-public partial class ConfirmationsOverviewViewModel
+public partial class ConfirmationsOverviewViewModel : ObservableObject
 {
     public ConfirmationsOverviewViewModel(IConfirmationService confirmationServiceBase, IMessenger messenger)
     {
         _messenger = messenger;
-        ConfirmationServiceBase = confirmationServiceBase;
+        _confirmationServiceBase = confirmationServiceBase;
     }
 
     private readonly IMessenger _messenger;
+    private readonly IConfirmationService _confirmationServiceBase;
 
-    public IConfirmationService ConfirmationServiceBase { get; }
+    [ObservableProperty]
+    private ObservableCollection<SteamGuardAccountConfirmationsModel> _confirmations = new();
 
     [RelayCommand]
-    private Task CheckConfirmations() => ConfirmationServiceBase.CheckConfirmations();
-
-    [RelayCommand]
-    private void OnClick(ConfirmationModel viewModel)
+    private async Task CheckConfirmations()
     {
-        //TODO
+        var confirmations = await _confirmationServiceBase.CheckConfirmationFromAllAccounts();
+        Confirmations = new ObservableCollection<SteamGuardAccountConfirmationsModel>(confirmations);
+    }
 
-        //_navigationService.Navigate("/accountConfirmations");
-        //_messenger.Send(new UpdateAccountConfirmationPageMessage(viewModel));
+    [RelayCommand]
+    private void OnClick(SteamGuardAccountConfirmationsModel viewModel)
+    {
+        NavigationService.Default.NavigateWithHierarchy(typeof(AccountConfirmations));
+        _messenger.Send(new UpdateAccountConfirmationPageMessage(viewModel));
     }
 }

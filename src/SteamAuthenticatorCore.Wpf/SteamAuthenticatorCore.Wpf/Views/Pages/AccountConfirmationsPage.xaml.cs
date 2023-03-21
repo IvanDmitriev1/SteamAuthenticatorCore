@@ -1,8 +1,8 @@
 ﻿namespace SteamAuthenticatorCore.Desktop.Views.Pages;
 
-public partial class TokenPage
+public partial class AccountConfirmations
 {
-    public TokenPage()
+    public AccountConfirmations()
     {
         InitializeComponent();
     }

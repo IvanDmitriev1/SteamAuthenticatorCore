@@ -1,15 +1,15 @@
-﻿using System;
+﻿using SteamAuthenticatorCore.Shared.Abstractions;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Shared.Services;
 
-internal sealed class BackgroundValueTaskService : BaseBackgroundService, IValueTaskTimer
+internal class BackgroundService : BaseBackgroundService, ITimer
 {
-    private Func<CancellationToken, ValueTask> _func = null!;
+    private Action<CancellationToken> _func = null!;
 
-    public async Task StartOrRestart(TimeSpan timeSpan, Func<CancellationToken, ValueTask> func)
+    public async Task StartOrRestart(TimeSpan timeSpan, Action<CancellationToken> func)
     {
         await Initialize(timeSpan);
 
@@ -23,7 +23,7 @@ internal sealed class BackgroundValueTaskService : BaseBackgroundService, IValue
         {
             while (await PeriodicTimer.WaitForNextTickAsync(Cts.Token).ConfigureAwait(false))
             {
-                await _func.Invoke(Cts.Token).ConfigureAwait(false);
+                _func.Invoke(Cts.Token);
             }
         }
         catch (OperationCanceledException)
