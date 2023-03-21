@@ -9,7 +9,6 @@
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Desktop.ViewModels"
     x:Name="Page"
-    Title="ConfirmationsOverviewPage"
     d:DataContext="{d:DesignInstance viewModels:ConfirmationsOverviewViewModel,
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
@@ -44,7 +43,7 @@
 
             <ItemsControl
                 VerticalAlignment="Top"
-                ItemsSource="{Binding Path=ConfirmationServiceBase.Confirmations}"
+                ItemsSource="{Binding Path=Confirmations}"
                 ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                 ScrollViewer.VerticalScrollBarVisibility="Hidden"
                 VirtualizingStackPanel.IsVirtualizing="True"

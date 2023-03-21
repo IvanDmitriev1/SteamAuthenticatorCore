@@ -14,6 +14,8 @@ public abstract class BasePage<T> : Page where T : ObservableRecipient
         ViewModel = _asyncServiceScope.ServiceProvider.GetRequiredService<T>();
         DataContext = ViewModel;
 
+        ViewModel.IsActive = true;
+
         Loaded += static (sender, _) =>
         {
             var self = (BasePage<T>)sender;
@@ -33,8 +35,6 @@ public abstract class BasePage<T> : Page where T : ObservableRecipient
 
     public virtual void OnLoaded()
     {
-        ViewModel.IsActive = true;
-
         Debug.WriteLine($"{GetType()} Loaded");
     }
 

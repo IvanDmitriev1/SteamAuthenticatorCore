@@ -5,31 +5,31 @@ using System.Threading.Tasks;
 using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SteamAuthCore.Abstractions;
-using SteamAuthenticatorCore.Shared.Abstractions;
 using CommunityToolkit.Mvvm.Messaging;
 using SteamAuthenticatorCore.Shared.Messages;
+using SteamAuthenticatorCore.Shared.Models;
 
 namespace SteamAuthenticatorCore.Shared.ViewModel;
 
-public abstract partial class ConfirmationsViewModelBase : ObservableObject, IRecipient<UpdateAccountConfirmationPageMessage>
+public abstract partial class ConfirmationsViewModelBase : ObservableRecipient, IRecipient<UpdateAccountConfirmationPageMessage>
 {
-    protected ConfirmationsViewModelBase(ISteamGuardAccountService accountService, IPlatformImplementations platformImplementations, IMessenger messenger)
+    protected ConfirmationsViewModelBase(ISteamGuardAccountService accountService)
     {
         _accountService = accountService;
-        _platformImplementations = platformImplementations;
-
-        messenger.Register(this);
     }
 
     private readonly ISteamGuardAccountService _accountService;
-    private readonly IPlatformImplementations _platformImplementations;
 
     [ObservableProperty]
-    private Models.SteamGuardAccountConfirmationsModel _steamGuardAccountConfirmationsModel = null!;
+    private SteamGuardAccountConfirmationsModel? _steamGuardAccountConfirmationsModel;
+
+    [ObservableProperty]
+    private string _pageTitle = string.Empty;
 
     public void Receive(UpdateAccountConfirmationPageMessage message)
     {
         SteamGuardAccountConfirmationsModel = message.Value;
+        PageTitle = $"{SteamGuardAccountConfirmationsModel.Account.AccountName} confirmations";
     }
 
     protected async ValueTask SendConfirmation(ConfirmationModel confirmation, ConfirmationOptions command)

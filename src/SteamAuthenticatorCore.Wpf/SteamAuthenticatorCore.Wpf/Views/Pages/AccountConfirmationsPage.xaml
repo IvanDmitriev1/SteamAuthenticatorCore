@@ -1,0 +1,110 @@
+﻿<helpers:BasePage
+    x:Class="SteamAuthenticatorCore.Desktop.Views.Pages.AccountConfirmations"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="clr-namespace:SteamAuthenticatorCore.Desktop.Helpers"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:steamAuthCore="clr-namespace:SteamAuthCore.Models;assembly=SteamAuthCore"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Desktop.ViewModels"
+    Title="AccountConfirmations"
+    d:DataContext="{d:DesignInstance viewModels:AccountConfirmationsViewModel,
+                                     IsDesignTimeCreatable=False}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    ui:NavigationView.HeaderContent="Account confirmation"
+    x:TypeArguments="viewModels:AccountConfirmationsViewModel"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    mc:Ignorable="d">
+
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock
+                Grid.Row="0"
+                Margin="1,0,0,15"
+                HorizontalAlignment="Center"
+                FontSize="18"
+                Text="{Binding Path=SteamGuardAccountConfirmationsModel.Account.AccountName}" />
+
+            <ui:Card Grid.Row="1">
+                <ListBox
+                    x:Name="ListBox"
+                    ItemsSource="{Binding Path=SteamGuardAccountConfirmationsModel.Confirmations}"
+                    SelectionMode="Extended"
+                    VirtualizingPanel.IsContainerVirtualizable="True"
+                    VirtualizingPanel.IsVirtualizing="True"
+                    VirtualizingPanel.VirtualizationMode="Recycling">
+
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type steamAuthCore:ConfirmationModel}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel
+                                    Grid.Column="0"
+                                    Margin="10,0,0,0"
+                                    VerticalAlignment="Center">
+                                    <TextBlock FontSize="14" Text="{Binding Path=ItemName, Mode=OneTime}" />
+                                    <TextBlock FontSize="14" Text="{Binding Path=Description, Mode=OneTime}" />
+                                    <TextBlock FontSize="14" Text="{Binding Path=Time, Mode=OneTime}" />
+                                </StackPanel>
+
+                                <Image
+                                    Grid.Column="1"
+                                    Width="50"
+                                    Height="50"
+                                    Margin="0,0,10,0"
+                                    VerticalAlignment="Center"
+                                    RenderOptions.BitmapScalingMode="Fant"
+                                    RenderOptions.EdgeMode="Aliased"
+                                    Source="{Binding Path=ImageSource, Mode=OneTime}" />
+
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </ui:Card>
+
+            <Grid Grid.Row="2" Margin="0,10,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Button
+                    Grid.Column="0"
+                    Margin="0,0,2.5,0"
+                    HorizontalAlignment="Stretch"
+                    Command="{Binding ConfirmCommand}"
+                    CommandParameter="{Binding ElementName=ListBox, Path=SelectedItems}"
+                    Content="Confirm selected" />
+                <ui:Button
+                    Grid.Column="1"
+                    Margin="2.5,0,0,0"
+                    HorizontalAlignment="Stretch"
+                    Appearance="Danger"
+                    Command="{Binding CancelCommand}"
+                    CommandParameter="{Binding ElementName=ListBox, Path=SelectedItems}"
+                    Content="Cancel selected" />
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+
+
+</helpers:BasePage>

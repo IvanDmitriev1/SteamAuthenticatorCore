@@ -58,14 +58,14 @@ public sealed partial class App : Application
 
                 services.AddTransient<TokenPage>();
                 services.AddTransient<ConfirmationsOverviewPage>();
-                services.AddTransient<ConfirmationsPage>();
+                services.AddTransient<AccountConfirmations>();
                 services.AddTransient<SettingsPage>();
                 services.AddTransient<LoginPage>();
 
                 services.AddTransient<TokenViewModel>();
                 services.AddTransient<SettingsViewModel>();
                 services.AddTransient<ConfirmationsOverviewViewModel>();
-                services.AddTransient<ConfirmationsViewModel>();
+                services.AddTransient<AccountConfirmationsViewModel>();
                 services.AddTransient<LoginViewModel>();
 
                 services.AddSingleton<IPlatformImplementations, DesktopImplementations>();
