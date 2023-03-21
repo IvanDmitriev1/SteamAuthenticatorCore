@@ -145,10 +145,10 @@
 
                 <ListView.ItemTemplate>
                     <DataTemplate DataType="{x:Type models:SteamGuardAccount}">
-                        <StackPanel Margin="8" HorizontalAlignment="Stretch">
+                        <Border Padding="8">
                             <TextBlock FontSize="14" Text="{Binding Path=AccountName}" />
 
-                            <StackPanel.ContextMenu>
+                            <Border.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem
                                         Command="{Binding Source={x:Reference Grid}, Path=DataContext.LoginAgainCommand}"
@@ -164,8 +164,8 @@
                                         CommandParameter="{Binding}"
                                         Header="Delete from list" />
                                 </ContextMenu>
-                            </StackPanel.ContextMenu>
-                        </StackPanel>
+                            </Border.ContextMenu>
+                        </Border>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

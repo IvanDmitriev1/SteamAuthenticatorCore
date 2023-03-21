@@ -20,6 +20,7 @@ using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
 using SteamAuthenticatorCore.Shared.Models;
 using Wpf.Ui.Controls.ContentDialogControl;
+using Wpf.Ui.Controls.Navigation;
 using Wpf.Ui.TaskBar;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
@@ -30,18 +31,19 @@ public sealed partial class TokenViewModel : ObservableRecipient
         AccountsServiceResolver accountsServiceResolver, ITimer timer)
     {
         _steamAccountService = steamAccountService;
+        _timer = timer;
 
         _accountsService = accountsServiceResolver.Invoke();
         _appSettings = AppSettings.Current;
-
-        timer.StartOrRestart(TimeSpan.FromSeconds(1), OnTimer);
     }
 
     private readonly ISteamGuardAccountService _steamAccountService;
+    private readonly ITimer _timer;
     private readonly IAccountsService _accountsService;
     private readonly AppSettings _appSettings;
     private StackPanel? _stackPanel;
     private Int64 _currentSteamChunk;
+    private bool _isRefreshAccounts;
 
     [ObservableProperty]
     private IReadOnlyList<SteamGuardAccount> _accounts = Array.Empty<SteamGuardAccount>();
@@ -55,11 +57,20 @@ public sealed partial class TokenViewModel : ObservableRecipient
     [ObservableProperty]
     private SteamGuardAccount? _selectedAccount;
 
+    protected override void OnActivated()
+    {
+        base.OnActivated();
+
+        NavigationService.Default.GetNavigationView().Navigating += OnNavigating;
+        _timer.StartOrRestart(TimeSpan.FromSeconds(1), OnTimer);
+    }
+
     protected override void OnDeactivated()
     {
         base.OnDeactivated();
 
         _stackPanel = null;
+        NavigationService.Default.GetNavigationView().Navigating -= OnNavigating;
     }
 
     [RelayCommand]
@@ -81,12 +92,17 @@ public sealed partial class TokenViewModel : ObservableRecipient
 
         try
         {
+            _isRefreshAccounts = true;
+
+            await _accountsService.Initialize();
             Accounts = await _accountsService.GetAll();
         }
         finally
         {
             TaskBarService.Default.SetState(TaskBarProgressState.None);
             _stackPanel!.Visibility = Visibility.Hidden;
+
+            _isRefreshAccounts = false;
         }
     }
 
@@ -238,6 +254,15 @@ public sealed partial class TokenViewModel : ObservableRecipient
         }
 
         await RefreshAccounts();
+    }
+
+    private void OnNavigating(NavigationView sender, NavigatingCancelEventArgs args)
+    {
+        if (!_isRefreshAccounts)
+            return;
+
+        args.Cancel = true;
+        args.Handled = true;
     }
 
     private void OnTimer(CancellationToken obj)

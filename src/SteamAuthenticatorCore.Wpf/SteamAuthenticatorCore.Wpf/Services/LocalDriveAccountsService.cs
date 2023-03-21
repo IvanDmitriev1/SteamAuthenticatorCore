@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Shared.Abstractions;
 
@@ -27,9 +24,15 @@ internal class LocalDriveAccountsService : IAccountsService
     private readonly IPlatformImplementations _platformImplementations;
     private readonly ILogger<LocalDriveAccountsService> _logger;
     private readonly string _maFilesDirectory;
+    private bool _isInitialized = false;
 
-    public async ValueTask Initialize()
+    public async Task Initialize()
     {
+        if (_isInitialized)
+            return;
+
+        _isInitialized = true;
+
         CreateDirectory();
 
         _accounts.Clear();

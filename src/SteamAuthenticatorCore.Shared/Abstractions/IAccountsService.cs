@@ -9,7 +9,7 @@ public interface IAccountsService
 {
     public const string AccountFileExtension = ".maFile";
 
-    ValueTask Initialize();
+    Task Initialize();
 
     ValueTask<IReadOnlyList<SteamGuardAccount>> GetAll();
 

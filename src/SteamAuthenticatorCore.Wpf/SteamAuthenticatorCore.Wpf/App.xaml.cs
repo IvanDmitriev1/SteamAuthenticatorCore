@@ -72,7 +72,6 @@ public sealed partial class App : Application
                 services.AddTransient<ConfirmationsViewModel>();
                 services.AddTransient<LoginViewModel>();
 
-                services.AddGoogleDriveApi(Name);
                 services.AddSingleton<IPlatformImplementations, DesktopImplementations>();
 
                 services.AddSingleton<AppSettings>(WpfAppSettings.Current);
@@ -121,7 +120,6 @@ public sealed partial class App : Application
         ServiceProvider = _host.Services;
 
         await ServiceProvider.GetRequiredService<ITimeAligner>().AlignTimeAsync();
-        await ServiceProvider.GetRequiredService<AccountsServiceResolver>().Invoke().Initialize();
 
         ServiceProvider.GetRequiredService<MainWindow>().Show();
     }
