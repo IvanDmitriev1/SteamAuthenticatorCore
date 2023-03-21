@@ -58,7 +58,6 @@ public sealed partial class App : Application
             })
             .ConfigureServices(services =>
             {
-                services.AddSingleton<ObservableCollection<SteamGuardAccount>>();
                 services.AddSingleton<MainWindow>();
 
                 services.AddTransient<TokenPage>();
@@ -77,7 +76,6 @@ public sealed partial class App : Application
                 services.AddSingleton<IPlatformImplementations, DesktopImplementations>();
 
                 services.AddSingleton<AppSettings>(WpfAppSettings.Current);
-                services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
 
                 services.AddScoped<LocalDriveAccountsService>();
                 services.AddScoped<GoogleDriveAccountsService>();

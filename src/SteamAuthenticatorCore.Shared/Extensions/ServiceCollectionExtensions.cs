@@ -14,10 +14,11 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
         services.AddSingleton<ObservableCollection<SteamGuardAccount>>();
 
-        services.AddScoped<IConfirmationService, ConfirmationService>();
-        services.AddScoped<ILoginService, LoginService>();
+        services.AddSingleton<IConfirmationService, ConfirmationService>();
+        services.AddSingleton<ILoginService, LoginService>();
 
         services.AddTransient<ITaskTimer, BackgroundTaskService>();
         services.AddTransient<IValueTaskTimer, BackgroundValueTaskService>();
+        services.AddTransient<ITimer, BackgroundService>();
     }
 }

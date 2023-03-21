@@ -59,7 +59,7 @@ internal class GoogleDriveAccountsService : IAccountsService
         }
     }
 
-    public ValueTask<ObservableCollection<SteamGuardAccount>> GetAll()
+    public IReadOnlyList<SteamGuardAccount> GetAll()
     {
         throw new NotImplementedException();
     }
