@@ -89,7 +89,7 @@ public partial class MainWindow
 
     private static async Task InitializeDependencies()
     {
-        AppSettings.Current.Load();
+        WpfAppSettings.Current.Load();
 
         await App.ServiceProvider.GetRequiredService<ITimeAligner>().AlignTimeAsync();
         await App.ServiceProvider.GetRequiredService<AccountsServiceResolver>().Invoke().Initialize();

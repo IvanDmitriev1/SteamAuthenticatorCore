@@ -44,6 +44,7 @@
 
                 <ui:CardControl Header="Seconds between checking for confirmations">
                     <ui:NumberBox
+                        MaxDecimalPlaces="0"
                         Maximum="100"
                         Minimum="15"
                         Value="{Binding Path=PeriodicCheckingInterval, Mode=TwoWay, Converter={StaticResource DoubleToIntConverter}}" />
