@@ -38,6 +38,8 @@ public static class MauiProgram
 
         Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("OTEwNTI3QDMyMzAyZTM0MmUzMGNGdGh2NGwzSWt6QVhLSmEzYzdKN3Erc1hLZFhBVEFhM1pPVlZINU5KMWs9");
 
+        var mauiAppSettings = MauiAppSettings.Current;
+
         return builder.Build();
     }
 }

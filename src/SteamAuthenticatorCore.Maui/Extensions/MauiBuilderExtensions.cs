@@ -6,6 +6,7 @@ using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Extensions;
 using SteamAuthenticatorCore.Shared.Models;
+using SteamAuthenticatorCore.Shared.Services;
 
 namespace SteamAuthenticatorCore.Mobile.Extensions;
 
@@ -22,15 +23,17 @@ internal static class MauiBuilderExtensions
         services.AddServices();
         services.AddPages();
 
-        services.AddSingleton<AccountsFileServiceResolver>(provider => () =>
+        services.AddSingleton<AccountsServiceResolver>(static provider => () =>
         {
-            var appSettings = provider.GetRequiredService<AppSettings>();
+            var appSettings = AppSettings.Current;
+
             return appSettings.AccountsLocation switch
             {
-                AccountsLocationModel.LocalDrive => provider
-                    .GetRequiredService<SecureStorageService>(),
-                AccountsLocationModel.GoogleDrive => 
+                AccountsLocation.LocalDrive => provider
+                    .GetRequiredService<SqLiteLocalStorageService>(),
+                AccountsLocation.GoogleDrive => 
                     throw new NotImplementedException(),
+
                 _ => throw new ArgumentOutOfRangeException()
             };
         });
@@ -42,8 +45,9 @@ internal static class MauiBuilderExtensions
     {
         services.AddTransient<SettingsViewModel>();
         services.AddTransient<TokenViewModel>();
-        services.AddTransient<LoginViewModel>();
         services.AddTransient<ConfirmationsOverviewViewModel>();
+
+        services.AddTransient<LoginViewModel>();
         services.AddTransient<ConfirmationViewModel>();
     }
 
@@ -58,11 +62,9 @@ internal static class MauiBuilderExtensions
 
     private static void AddServices(this IServiceCollection services)
     {
-        services.AddSingleton<AppSettings>(MauiAppSettings.Current);
         services.AddSingleton<IPlatformImplementations, PlatformImplementations>();
-        services.AddSingleton<IUpdateService, UpdateService>();
-        services.AddScoped<SecureStorageService>();
-
-        services.AddHttpClient<IUpdateService, UpdateService>();
+        services.AddSingleton<IAccountsService, SqLiteLocalStorageService>();
+        services.AddSingleton<IUpdateService, UpdateService>(_ =>
+            new UpdateService(Version.Parse(VersionTracking.CurrentVersion)));
     }
 }

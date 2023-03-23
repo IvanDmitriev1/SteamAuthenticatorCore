@@ -9,9 +9,9 @@
     xmlns:viewModels1="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
     x:Name="Page"
     Title="Confirmations"
-    x:DataType="viewModels1:ConfirmationViewModel"
     x:TypeArguments="viewModels1:ConfirmationViewModel"
     Shell.TabBarIsVisible="False">
+    <!--  x:DataType="viewModels1:ConfirmationViewModel"  -->
 
     <Shell.TitleView>
         <controls:MyTitleView

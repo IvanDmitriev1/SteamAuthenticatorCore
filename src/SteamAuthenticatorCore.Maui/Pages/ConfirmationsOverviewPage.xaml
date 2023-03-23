@@ -10,8 +10,8 @@
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
     x:Name="Page"
     Title="Confirmations"
-    x:DataType="viewModels:ConfirmationsOverviewViewModel"
     x:TypeArguments="viewModels:ConfirmationsOverviewViewModel">
+    <!--  x:DataType="viewModels:ConfirmationsOverviewViewModel"  -->
 
     <ContentPage.Behaviors>
         <behaviors:EventToCommandBehavior Command="{Binding Path=AppearingCommand}" EventName="Appearing" />
@@ -28,7 +28,7 @@
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:ConfirmationModel">
+                <DataTemplate x:DataType="models:SteamGuardAccountConfirmationsModel">
                     <Border Margin="0,0,0,5">
                         <effectsView:SfEffectsView TouchUpCommand="{Binding Source={x:Reference Page}, Path=BindingContext.TouchedCommand}" TouchUpCommandParameter="{Binding}">
                             <Grid Margin="20,15" ColumnDefinitions="*,Auto">

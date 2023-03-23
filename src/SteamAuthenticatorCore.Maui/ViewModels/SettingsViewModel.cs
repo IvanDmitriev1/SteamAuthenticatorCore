@@ -4,7 +4,7 @@ using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
-public sealed partial class SettingsViewModel : ObservableObject
+public sealed partial class SettingsViewModel : ObservableRecipient
 {
     public SettingsViewModel(IUpdateService updateService)
     {
@@ -74,6 +74,6 @@ public sealed partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private async Task CheckForUpdates()
     {
-        await _updateService.CheckForUpdateAndDownloadInstall(false);
+        //await _updateService.CheckForUpdateAndDownloadInstall(false);
     }
 }
