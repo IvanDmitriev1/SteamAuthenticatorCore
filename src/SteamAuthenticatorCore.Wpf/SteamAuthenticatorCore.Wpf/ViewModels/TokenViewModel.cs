@@ -147,7 +147,7 @@ public sealed partial class TokenViewModel : ObservableRecipient
         }
         else
         {
-            await _accountsService.Save(SelectedAccount);
+            await _accountsService.Update(SelectedAccount);
             dialog.Content = "Session has been refreshed";   
         }
 

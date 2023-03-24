@@ -24,6 +24,8 @@ public partial class App : Application
         VersionTracking.Track();
         MauiAppSettings.Current.Load();
 
+        await _accountsFileServiceResolver.Invoke().Initialize();
+
         OnResume();
     }
 

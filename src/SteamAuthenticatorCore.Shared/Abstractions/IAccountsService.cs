@@ -12,6 +12,6 @@ public interface IAccountsService
     Task Initialize();
     ValueTask<IReadOnlyList<SteamGuardAccount>> GetAll();
     ValueTask<bool> Save(Stream stream, string fileName);
-    ValueTask Save(SteamGuardAccount account);
+    ValueTask Update(SteamGuardAccount account);
     ValueTask Delete(SteamGuardAccount account);
 }

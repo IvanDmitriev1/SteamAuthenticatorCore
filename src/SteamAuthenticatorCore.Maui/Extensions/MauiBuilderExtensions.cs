@@ -63,8 +63,9 @@ internal static class MauiBuilderExtensions
     private static void AddServices(this IServiceCollection services)
     {
         services.AddSingleton<IPlatformImplementations, PlatformImplementations>();
-        services.AddSingleton<IAccountsService, SqLiteLocalStorageService>();
         services.AddSingleton<IUpdateService, UpdateService>(_ =>
             new UpdateService(Version.Parse(VersionTracking.CurrentVersion)));
+
+        services.AddSingleton<SqLiteLocalStorageService>();
     }
 }

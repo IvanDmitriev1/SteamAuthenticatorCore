@@ -23,7 +23,7 @@ internal sealed class LoginService : ILoginService
             return false;
 
         account.Session = session;
-        await _accountsServiceResolver.Invoke().Save(account);
+        await _accountsServiceResolver.Invoke().Update(account);
 
         await _platformImplementations.DisplayAlert("Login",  "Session successfully refreshed");
         return true;
