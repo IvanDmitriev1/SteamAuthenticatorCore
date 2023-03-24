@@ -40,7 +40,7 @@
                 <ScrollView
                     Grid.Column="1"
                     HeightRequest="45"
-                    HorizontalOptions="{TemplateBinding HorizontalOptions}"
+                    HorizontalOptions="End"
                     HorizontalScrollBarVisibility="Never"
                     Orientation="Horizontal">
                     <ContentPresenter Content="{TemplateBinding Content}" />

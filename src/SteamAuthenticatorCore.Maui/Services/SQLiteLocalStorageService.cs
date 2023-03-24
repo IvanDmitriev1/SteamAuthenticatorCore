@@ -9,9 +9,9 @@ namespace SteamAuthenticatorCore.Mobile.Services;
 
 internal class SqLiteLocalStorageService : IAccountsService
 {
-    private bool _isInitialized;
-    private SQLiteAsyncConnection? _connection;
     private readonly SemaphoreSlim _semaphoreSlim = new(0);
+    private SQLiteAsyncConnection? _connection;
+    private bool _isInitialized;
 
     public async Task Initialize()
     {
@@ -40,7 +40,7 @@ internal class SqLiteLocalStorageService : IAccountsService
         for (var i = 0; i < dtoArray.Length; i++)
         {
             var dto = dtoArray[i];
-            var sessionDto = await _connection.GetAsync<SessionDataDto>(dto.SessionId).ConfigureAwait(false);
+            var sessionDto = await _connection!.GetAsync<SessionDataDto>(dto.SessionId).ConfigureAwait(false);
 
             accounts[i] = dto.MapFromDto(sessionDto);
         }
@@ -50,24 +50,48 @@ internal class SqLiteLocalStorageService : IAccountsService
 
     public async ValueTask<bool> Save(Stream stream, string fileName)
     {
+        if (_connection is null)
+            await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
+
         if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(stream).ConfigureAwait(false) is not { } account)
             return false;
 
         var sessionId = await _connection!.InsertAsync(account.Session.MapToDto()).ConfigureAwait(false);
         var accountDto = account.MapToDto(sessionId);
 
-        await _connection.InsertAsync(accountDto).ConfigureAwait(false);
+        await _connection!.InsertAsync(accountDto).ConfigureAwait(false);
 
         return true;
     }
 
-    public ValueTask Update(SteamGuardAccount account)
+    public async ValueTask Update(SteamGuardAccount account)
     {
-        throw new NotImplementedException();
+        if (_connection is null)
+            await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
+
+        var dto = await _connection!.Table<SteamGuardAccountDto>().FirstOrDefaultAsync(dto =>
+            dto.SharedSecret == account.SharedSecret && dto.IdentitySecret == account.IdentitySecret);
+
+        if (dto is null)
+            return;
+
+        var newDto = account.MapToDto(dto.SessionId);
+        newDto.Id = dto.Id;
+
+        var result = await _connection.UpdateAsync(newDto);
     }
 
-    public ValueTask Delete(SteamGuardAccount account)
+    public async ValueTask Delete(SteamGuardAccount account)
     {
-        throw new NotImplementedException();
+        if (_connection is null)
+            await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
+
+        var dto = await _connection!.Table<SteamGuardAccountDto>().FirstOrDefaultAsync(dto =>
+            dto.SharedSecret == account.SharedSecret && dto.IdentitySecret == account.IdentitySecret);
+
+        if (dto is null)
+            return;
+
+        var result = await _connection.DeleteAsync<SteamGuardAccountDto>(dto.Id);
     }
 }

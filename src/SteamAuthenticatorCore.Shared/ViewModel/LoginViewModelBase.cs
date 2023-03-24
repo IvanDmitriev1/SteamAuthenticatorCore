@@ -9,10 +9,9 @@ namespace SteamAuthenticatorCore.Shared.ViewModel;
 
 public abstract partial class LoginViewModelBase : ObservableRecipient, IRecipient<UpdateAccountInLoginPageMessage>
 {
-    protected LoginViewModelBase(ILoginService loginService, IMessenger messenger)
+    protected LoginViewModelBase(ILoginService loginService)
     {
         LoginService = loginService;
-        messenger.Register(this);
     }
 
     protected readonly ILoginService LoginService;

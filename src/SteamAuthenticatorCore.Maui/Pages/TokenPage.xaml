@@ -8,8 +8,8 @@
     xmlns:models="clr-namespace:SteamAuthCore.Models;assembly=SteamAuthCore"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
     x:Name="Page"
+    x:DataType="viewModels:TokenViewModel"
     x:TypeArguments="viewModels:TokenViewModel">
-    <!--  x:DataType="viewModels:TokenViewModel"  -->
 
     <Shell.TitleView>
         <controls:MyTitleView
