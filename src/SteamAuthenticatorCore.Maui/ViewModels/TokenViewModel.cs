@@ -7,6 +7,7 @@ using SteamAuthCore.Models;
 using SteamAuthenticatorCore.Mobile.Pages;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
+using System.Collections.ObjectModel;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
@@ -23,13 +24,13 @@ public partial class TokenViewModel : ObservableRecipient
     private readonly ISteamGuardAccountService _steamGuardAccountService;
     private readonly ITimer _timer;
     private readonly IAccountsService _accountsService;
+    private IReadOnlyList<SteamGuardAccount> _accounts = Array.Empty<SteamGuardAccount>();
 
     private Int64 _currentSteamChunk;
     private VisualElement? _longPressView;
     private bool _pressed;
 
-    [ObservableProperty]
-    private IReadOnlyList<SteamGuardAccount> _accounts = Array.Empty<SteamGuardAccount>();
+    public ObservableCollection<SteamGuardAccount> FilteredAccounts { get; } = new();
 
     [ObservableProperty]
     private string _token;
@@ -43,12 +44,17 @@ public partial class TokenViewModel : ObservableRecipient
     [ObservableProperty]
     private double _tokenProgressBar;
 
+    [ObservableProperty]
+    private string _searchBoxText = string.Empty;
+
     protected override async void OnActivated()
     {
         base.OnActivated();
 
-        Accounts = await _accountsService.GetAll().ConfigureAwait(false);
-        await _timer.StartOrRestart(TimeSpan.FromSeconds(1), OnTimer);
+        await RefreshAccounts().ConfigureAwait(false);
+        await _timer.StartOrRestart(TimeSpan.FromSeconds(1), OnTimer).ConfigureAwait(false);
+
+        Shell.Current.Navigating += ShellOnNavigating;
     }
 
     protected override void OnDeactivated()
@@ -56,6 +62,7 @@ public partial class TokenViewModel : ObservableRecipient
         base.OnDeactivated();
 
         _longPressView = null;
+        Shell.Current.Navigating -= ShellOnNavigating;
     }
 
     #region Commands
@@ -70,7 +77,7 @@ public partial class TokenViewModel : ObservableRecipient
             files = await FilePicker.PickMultipleAsync(new PickOptions()
             {
                 PickerTitle = "Select maFile"
-            }).ConfigureAwait(false);
+            }).ConfigureAwait(false) ?? Array.Empty<FileResult>();
         }
         catch
         {
@@ -83,7 +90,7 @@ public partial class TokenViewModel : ObservableRecipient
             await _accountsService.Save(stream, fileResult.FileName).ConfigureAwait(false);
         }
 
-        Accounts = await _accountsService.GetAll().ConfigureAwait(false);
+        await RefreshAccounts().ConfigureAwait(false);
     }
 
     [RelayCommand]
@@ -115,7 +122,7 @@ public partial class TokenViewModel : ObservableRecipient
     {
         var account = (SteamGuardAccount) _longPressView!.BindingContext;
 
-        if (!await Application.Current!.MainPage!.DisplayAlert("Delete account", $"Are you sure what you want to delete {account.AccountName}?", "Yes", "No"))
+        if (!await Microsoft.Maui.Controls.Application.Current!.MainPage!.DisplayAlert("Delete account", $"Are you sure what you want to delete {account.AccountName}?", "Yes", "No"))
             return;
 
         await _accountsService.Delete(account);
@@ -123,7 +130,7 @@ public partial class TokenViewModel : ObservableRecipient
         IsLongPressTitleViewVisible = false;
         await UnselectLongPressFrame();
 
-        Accounts = await _accountsService.GetAll();
+        await RefreshAccounts().ConfigureAwait(false);
     }
 
     [RelayCommand]
@@ -214,5 +221,58 @@ public partial class TokenViewModel : ObservableRecipient
 
         TokenProgressBar = 30 - secondsUntilChange;
         TokenProgressBar /= 30;
+    }
+
+    private async ValueTask RefreshAccounts()
+    {
+        _accounts = await _accountsService.GetAll().ConfigureAwait(false);
+        OnSearchBoxTextChanged(null, SearchBoxText);
+    }
+
+    partial void OnSearchBoxTextChanged(string? oldValue, string newValue)
+    {
+        if (string.IsNullOrWhiteSpace(newValue))
+        {
+            FilteredAccounts.Clear();
+
+            foreach (var account in _accounts)
+                FilteredAccounts.Add(account);
+
+            return;
+        }
+
+        var suitableItems = new List<SteamGuardAccount>();
+        var splitText = newValue.ToLower().Split(' ');
+
+        foreach (var account in _accounts)
+        {
+            var itemText = account.AccountName;
+
+            var found = splitText.All(key=> itemText.ToLower().Contains(key));
+
+            if (found)
+                suitableItems.Add(account);
+        }
+
+        FilteredAccounts.Clear();
+
+        foreach (var account in suitableItems)
+            FilteredAccounts.Add(account);
+    }
+
+    private async void ShellOnNavigating(object? sender, ShellNavigatingEventArgs e)
+    {
+        if (e.Current.Location.OriginalString.Length != nameof(TokenPage).Length + 2)
+            return;
+
+        if (IsLongPressTitleViewVisible && e.Target.Location.OriginalString.Contains(nameof(LoginPage)))
+            return;
+
+        if (!IsLongPressTitleViewVisible)
+            return;
+
+        e.Cancel();
+
+        await HideLongPressTitleView().ConfigureAwait(false);
     }
 }

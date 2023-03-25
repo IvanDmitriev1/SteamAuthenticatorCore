@@ -9,8 +9,8 @@ namespace SteamAuthenticatorCore.Mobile.Services;
 
 internal class SqLiteLocalStorageService : IAccountsService
 {
-    private readonly SemaphoreSlim _semaphoreSlim = new(0);
-    private SQLiteAsyncConnection? _connection;
+    private readonly List<SteamGuardAccount> _accounts = new();
+    private SQLiteAsyncConnection _connection = null!;
     private bool _isInitialized;
 
     public async Task Initialize()
@@ -25,51 +25,50 @@ internal class SqLiteLocalStorageService : IAccountsService
 
         _connection = new SQLiteAsyncConnection(databasePath, flags);
         var result = await _connection.CreateTablesAsync<SessionDataDto, SteamGuardAccountDto>().ConfigureAwait(false);
-
-        _semaphoreSlim.Release();
     }
 
     public async ValueTask<IReadOnlyList<SteamGuardAccount>> GetAll()
     {
-        if (_connection is null)
-            await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
+        if (!_isInitialized)
+            await Initialize();
 
-        var dtoArray = await _connection!.Table<SteamGuardAccountDto>().ToArrayAsync().ConfigureAwait(false);
-        var accounts = new SteamGuardAccount[dtoArray.Length];
+        if (_accounts.Any())
+            return _accounts.AsReadOnly();
 
-        for (var i = 0; i < dtoArray.Length; i++)
+        var dtoArray = await _connection.Table<SteamGuardAccountDto>().ToArrayAsync().ConfigureAwait(false);
+
+        foreach (var dto in dtoArray)
         {
-            var dto = dtoArray[i];
-            var sessionDto = await _connection!.GetAsync<SessionDataDto>(dto.SessionId).ConfigureAwait(false);
-
-            accounts[i] = dto.MapFromDto(sessionDto);
+            var sessionDto = await _connection.GetAsync<SessionDataDto>(dto.SessionId).ConfigureAwait(false);
+            _accounts.Add(dto.MapFromDto(sessionDto));
         }
 
-        return accounts;
+        return _accounts.AsReadOnly();
     }
 
     public async ValueTask<bool> Save(Stream stream, string fileName)
     {
-        if (_connection is null)
-            await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
+        if (!_isInitialized)
+            await Initialize();
 
         if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(stream).ConfigureAwait(false) is not { } account)
             return false;
 
-        var sessionId = await _connection!.InsertAsync(account.Session.MapToDto()).ConfigureAwait(false);
+        var sessionId = await _connection.InsertAsync(account.Session.MapToDto()).ConfigureAwait(false);
         var accountDto = account.MapToDto(sessionId);
 
-        await _connection!.InsertAsync(accountDto).ConfigureAwait(false);
+        await _connection.InsertAsync(accountDto).ConfigureAwait(false);
+        _accounts.Add(account);
 
         return true;
     }
 
     public async ValueTask Update(SteamGuardAccount account)
     {
-        if (_connection is null)
-            await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
+        if (!_isInitialized)
+            await Initialize();
 
-        var dto = await _connection!.Table<SteamGuardAccountDto>().FirstOrDefaultAsync(dto =>
+        var dto = await _connection.Table<SteamGuardAccountDto>().FirstOrDefaultAsync(dto =>
             dto.SharedSecret == account.SharedSecret && dto.IdentitySecret == account.IdentitySecret);
 
         if (dto is null)
@@ -83,15 +82,16 @@ internal class SqLiteLocalStorageService : IAccountsService
 
     public async ValueTask Delete(SteamGuardAccount account)
     {
-        if (_connection is null)
-            await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
+        if (!_isInitialized)
+            await Initialize();
 
-        var dto = await _connection!.Table<SteamGuardAccountDto>().FirstOrDefaultAsync(dto =>
+        var dto = await _connection.Table<SteamGuardAccountDto>().FirstOrDefaultAsync(dto =>
             dto.SharedSecret == account.SharedSecret && dto.IdentitySecret == account.IdentitySecret);
 
         if (dto is null)
             return;
 
         var result = await _connection.DeleteAsync<SteamGuardAccountDto>(dto.Id);
+        _accounts.Remove(account);
     }
 }
