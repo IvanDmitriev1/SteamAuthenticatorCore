@@ -25,6 +25,7 @@ public partial class App : Application
         MauiAppSettings.Current.Load();
 
         await _accountsFileServiceResolver.Invoke().Initialize().ConfigureAwait(false);
+        await _confirmationService.Initialize().ConfigureAwait(false);
 
         OnResume();
     }
