@@ -16,14 +16,14 @@
 		<ApplicationTitle>SteamMobileAuthenticator</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.SteamAuthenticatorCore.Android</ApplicationId>
+		<ApplicationId>com.companyname.SteamAuthenticatorCore</ApplicationId>
 		<ApplicationIdGuid>c9ef8746-7af1-4538-92f2-bf5a2258dbc0</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<!--<ApplicationDisplayVersion>0.9.7.0</ApplicationDisplayVersion>-->
-		<!--<ApplicationVersion>1</ApplicationVersion>-->
+		<ApplicationDisplayVersion>0.9.8.0</ApplicationDisplayVersion>
+		<ApplicationVersion>1</ApplicationVersion>
 
-		<!--<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>-->
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
 		<!--<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>-->
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
 		<!--<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
@@ -31,12 +31,11 @@
 		<!--<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>-->
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0-android33|AnyCPU'">
-		<AndroidPackageFormat>apk</AndroidPackageFormat>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0-android|AnyCPU'">
+	  <AndroidUseAapt2>True</AndroidUseAapt2>
+	  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+	  <AndroidPackageFormat>apk</AndroidPackageFormat>
 		<AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
-		<AndroidEnableMultiDex>False</AndroidEnableMultiDex>
-		<EnableLLVM>False</EnableLLVM>
-		<AndroidUseAapt2>True</AndroidUseAapt2>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -57,9 +56,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="CommunityToolkit.Maui" Version="3.1.0" />
-	  <PackageReference Include="Sentry.Maui" Version="3.21.0-preview.3" />
-	  <PackageReference Include="Syncfusion.Maui.Core" Version="20.4.43" />
+	  <PackageReference Include="CommunityToolkit.Maui" Version="5.0.0" />
+	  <PackageReference Include="Sentry.Maui" Version="3.29.1" />
+	  <PackageReference Include="Syncfusion.Maui.Core" Version="21.1.35" />
 	  <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
 	  <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.4" />
 	</ItemGroup>
