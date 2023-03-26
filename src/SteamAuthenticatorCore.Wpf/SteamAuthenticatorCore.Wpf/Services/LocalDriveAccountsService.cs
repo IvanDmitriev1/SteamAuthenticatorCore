@@ -82,7 +82,7 @@ internal class LocalDriveAccountsService : IAccountsService
         return true;
     }
 
-    public async ValueTask Save(SteamGuardAccount account)
+    public async ValueTask Update(SteamGuardAccount account)
     {
         if (FindAccountInDirectory(account) is not { } filePath)
             return;

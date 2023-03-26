@@ -37,7 +37,7 @@ internal class ConfirmationService : IConfirmationService, IDisposable
         if (!AppSettings.Current.AutoConfirmMarketTransactions)
             return;
 
-        await _taskTimer.StartOrRestart(TimeSpan.FromSeconds(AppSettings.Current.PeriodicCheckingInterval), TradeAutoConfirmationTimerOnTick);
+        await _taskTimer.StartOrRestart(TimeSpan.FromSeconds(AppSettings.Current.PeriodicCheckingInterval), TradeAutoConfirmationTimerOnTick).ConfigureAwait(false);
     }
 
     public void Dispose()

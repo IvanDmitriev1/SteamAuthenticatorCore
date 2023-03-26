@@ -7,7 +7,7 @@ namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public partial class LoginViewModel : LoginViewModelBase
 {
-    public LoginViewModel(ILoginService loginService, IMessenger messenger) : base(loginService, messenger)
+    public LoginViewModel(ILoginService loginService) : base(loginService)
     {
     }
 

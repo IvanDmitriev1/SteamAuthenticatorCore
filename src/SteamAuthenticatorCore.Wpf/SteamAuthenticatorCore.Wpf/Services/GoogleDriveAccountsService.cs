@@ -83,7 +83,7 @@ internal class GoogleDriveAccountsService : IAccountsService
         return true;
     }
 
-    public async ValueTask Save(SteamGuardAccount account)
+    public async ValueTask Update(SteamGuardAccount account)
     {
         if (await FindMaFileInGoogleDrive(account).ConfigureAwait(false) is not { } file)
             return;

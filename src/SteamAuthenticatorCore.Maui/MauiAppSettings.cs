@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Maui.Core;
-using CommunityToolkit.Maui.Core.Platform;
+﻿using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SteamAuthenticatorCore.Shared;
 using SteamAuthenticatorCore.Shared.Abstractions;
@@ -50,26 +49,15 @@ public sealed partial class MauiAppSettings : AppSettings
     {
         var propertyInfo = PropertiesDictionary[propertyName];
         Preferences.Set(propertyInfo.Name, propertyInfo.GetValue(this)!.ToString());
+    }
 
-        if (nameof(Theme) != propertyName)
+    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+    {
+        base.OnPropertyChanged(e);
+
+        if (e.PropertyName != nameof(Theme))
             return;
 
         Application.Current!.UserAppTheme = Theme;
-    }
-
-    public static void ChangeStatusBar(AppTheme theme)
-    {
-        if (theme == AppTheme.Dark)
-        {
-            Application.Current!.Resources.TryGetValue("SecondDarkBackground", out var color);
-            StatusBar.SetColor((Color)color!);
-            StatusBar.SetStyle(StatusBarStyle.LightContent);
-        }
-        else
-        {
-            Application.Current!.Resources.TryGetValue("SecondLightBackgroundColor", out var color);
-            StatusBar.SetColor((Color)color!);
-            StatusBar.SetStyle(StatusBarStyle.DarkContent);
-        }
     }
 }

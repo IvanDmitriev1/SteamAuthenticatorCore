@@ -1,39 +1,39 @@
 ﻿using System.Diagnostics;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace SteamAuthenticatorCore.Mobile.Controls;
 
-public abstract class BaseContentPage<TViewModel> : BaseContentPage
+public abstract class BaseContentPage<TViewModel> : ContentPage where TViewModel : ObservableRecipient
 {
-    protected BaseContentPage(TViewModel viewModel) : base(viewModel)
+    protected BaseContentPage(TViewModel viewModel)
     {
-    }
-
-    public new TViewModel BindingContext => (TViewModel)base.BindingContext;
-}
-
-public abstract class BaseContentPage : ContentPage
-{
-    protected BaseContentPage(object? viewModel = null)
-    {
-        BindingContext = viewModel;
+        base.BindingContext = viewModel;
 
         Loaded += static (sender, _) =>
         {
-            var page = (ContentPage)sender!;
-
-            if (Shell.GetTitleView(page) is null)
-                Shell.SetTitleView(page, new MyTitleView(page.Title));
+            var self = (BaseContentPage<TViewModel>)sender!;
+            self.OnLoaded();
         };
 
 #if DEBUG
-        if (string.IsNullOrEmpty(Title))
+        if (string.IsNullOrWhiteSpace(Title))
             Title = GetType().Name;
 #endif
+    }
+
+    public new TViewModel BindingContext => (TViewModel)base.BindingContext;
+
+    protected virtual void OnLoaded()
+    {
+        if (Shell.GetTitleView(this) is null)
+            Shell.SetTitleView(this, new MyTitleView(Title));
     }
 
     protected override void OnAppearing()
     {
         base.OnAppearing();
+
+        BindingContext.IsActive = true;
 
         Debug.WriteLine($"OnAppearing: {Title}");
     }
@@ -41,6 +41,8 @@ public abstract class BaseContentPage : ContentPage
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
+
+        BindingContext.IsActive = false;
 
         Debug.WriteLine($"OnDisappearing: {Title}");
     }

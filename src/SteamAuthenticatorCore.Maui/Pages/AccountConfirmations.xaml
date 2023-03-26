@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <controls:BaseContentPage
-    x:Class="SteamAuthenticatorCore.Mobile.Pages.ConfirmationsPage"
+    x:Class="SteamAuthenticatorCore.Mobile.Pages.AccountConfirmationsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:SteamAuthenticatorCore.Mobile.Controls"
@@ -9,9 +9,9 @@
     xmlns:viewModels1="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
     x:Name="Page"
     Title="Confirmations"
-    x:DataType="viewModels1:ConfirmationViewModel"
-    x:TypeArguments="viewModels1:ConfirmationViewModel"
+    x:TypeArguments="viewModels1:AccountConfirmationsViewModel"
     Shell.TabBarIsVisible="False">
+    <!--  x:DataType="viewModels1:ConfirmationViewModel"  -->
 
     <Shell.TitleView>
         <controls:MyTitleView

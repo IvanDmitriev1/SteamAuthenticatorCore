@@ -135,7 +135,7 @@
                 <ui:TextBox
                     Grid.Row="0"
                     PlaceholderText="Search..."
-                    Text="{Binding SearchBoxText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    Text="{Binding SearchBoxText, UpdateSourceTrigger=PropertyChanged}" />
 
                 <ListView
                     Grid.Row="1"

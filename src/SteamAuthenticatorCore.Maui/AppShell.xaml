@@ -3,12 +3,14 @@
     x:Class="SteamAuthenticatorCore.Mobile.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:behaviors="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:core="clr-namespace:CommunityToolkit.Maui.Core;assembly=CommunityToolkit.Maui.Core"
     xmlns:pages="clr-namespace:SteamAuthenticatorCore.Mobile.Pages"
     xmlns:resources="clr-namespace:SteamAuthenticatorCore.Mobile.Resources"
     FlyoutBehavior="Disabled">
 
     <!--<Shell.Behaviors>
-        <mct:StatusBarBehavior StatusBarColor="{AppThemeBinding Light={StaticResource SecondLightBackgroundColor}, Dark={StaticResource SecondDarkBackground}}" StatusBarStyle="{AppThemeBinding Light={x:Static core:StatusBarStyle.DarkContent}, Dark={x:Static core:StatusBarStyle.LightContent}}" />
+        <behaviors:StatusBarBehavior StatusBarColor="{AppThemeBinding Light={StaticResource SecondLightBackgroundColor}, Dark={StaticResource SecondDarkBackground}}" StatusBarStyle="{AppThemeBinding Light={x:Static core:StatusBarStyle.DarkContent}, Dark={x:Static core:StatusBarStyle.LightContent}}" />
     </Shell.Behaviors>-->
 
     <TabBar>

@@ -8,64 +8,52 @@ using SteamAuthenticatorCore.Shared.Models;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
-public sealed partial class ConfirmationsOverviewViewModel : ObservableObject
+public sealed partial class ConfirmationsOverviewViewModel : ObservableRecipient
 {
-    public ConfirmationsOverviewViewModel(IConfirmationService confirmationService, IMessenger messenger)
+    public ConfirmationsOverviewViewModel(IConfirmationService confirmationServiceBase)
     {
-        _messenger = messenger;
-        ConfirmationService = confirmationService;
+        _confirmationServiceBase = confirmationServiceBase;
     }
 
-    private readonly IMessenger _messenger;
-    private bool _needRefresh;
+    private readonly IConfirmationService _confirmationServiceBase;
+
+    [ObservableProperty]
+    private IReadOnlyList<SteamGuardAccountConfirmationsModel> _confirmations = Array.Empty<SteamGuardAccountConfirmationsModel>();
 
     [ObservableProperty]
     private bool _isRefreshing;
 
-    public IConfirmationService ConfirmationService { get; }
-
-    [RelayCommand]
-    private void OnAppearing()
+    protected override async void OnActivated()
     {
-        if (_needRefresh)
-        {
-            _needRefresh = false;
-            IsRefreshing = true;
-        }
+        base.OnActivated();
 
-        if (ConfirmationService.ConfirmationViewModels.Count > 0)
-            return;
-
-        _needRefresh = true;
-        IsRefreshing = true;
-        _needRefresh = false;
+        await Refresh().ConfigureAwait(false);
     }
 
     [RelayCommand]
     private async Task Refresh()
     {
-        if (!_needRefresh)
+        try
         {
-            try
-            {
-                HapticFeedback.Perform(HapticFeedbackType.LongPress);
-            }
-            catch
-            {
-                //
-            }
+            HapticFeedback.Perform(HapticFeedbackType.LongPress);
+        }
+        catch
+        {
+            //
         }
 
-        await ConfirmationService.CheckConfirmations();
+        Confirmations = await _confirmationServiceBase.CheckConfirmationFromAllAccounts().ConfigureAwait(false);
+
         IsRefreshing = false;
     }
 
     [RelayCommand]
-    private async Task OnTouched(ConfirmationModel model)
+    private async Task OnTouched(SteamGuardAccountConfirmationsModel model)
     {
-        _needRefresh = true;
+        await Shell.Current.GoToAsync($"{nameof(AccountConfirmationsPage)}");
 
-        await Shell.Current.GoToAsync($"{nameof(ConfirmationsPage)}");
-        _messenger.Send(new UpdateAccountConfirmationPageMessage(model));
+        Messenger.Send(new UpdateAccountConfirmationPageMessage(model));
+
+        await Refresh();
     }
 }

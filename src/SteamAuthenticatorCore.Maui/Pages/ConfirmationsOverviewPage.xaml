@@ -3,7 +3,6 @@
     x:Class="SteamAuthenticatorCore.Mobile.Pages.ConfirmationsOverviewPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:behaviors="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:controls="clr-namespace:SteamAuthenticatorCore.Mobile.Controls"
     xmlns:effectsView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
     xmlns:models="clr-namespace:SteamAuthenticatorCore.Shared.Models;assembly=SteamAuthenticatorCore.Shared"
@@ -13,12 +12,8 @@
     x:DataType="viewModels:ConfirmationsOverviewViewModel"
     x:TypeArguments="viewModels:ConfirmationsOverviewViewModel">
 
-    <ContentPage.Behaviors>
-        <behaviors:EventToCommandBehavior Command="{Binding Path=AppearingCommand}" EventName="Appearing" />
-    </ContentPage.Behaviors>
-
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing}">
-        <CollectionView ItemsSource="{Binding Path=ConfirmationService.ConfirmationViewModels}">
+        <CollectionView ItemsSource="{Binding Confirmations}">
             <CollectionView.EmptyView>
                 <Label
                     HorizontalOptions="Center"
@@ -28,7 +23,7 @@
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:ConfirmationModel">
+                <DataTemplate x:DataType="models:SteamGuardAccountConfirmationsModel">
                     <Border Margin="0,0,0,5">
                         <effectsView:SfEffectsView TouchUpCommand="{Binding Source={x:Reference Page}, Path=BindingContext.TouchedCommand}" TouchUpCommandParameter="{Binding}">
                             <Grid Margin="20,15" ColumnDefinitions="*,Auto">

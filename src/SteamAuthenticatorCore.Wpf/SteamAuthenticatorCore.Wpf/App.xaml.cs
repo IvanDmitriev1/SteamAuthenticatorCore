@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using SteamAuthCore.Abstractions;
 using SteamAuthCore.Extensions;
 using SteamAuthenticatorCore.Desktop.Services;
 using SteamAuthenticatorCore.Desktop.ViewModels;
@@ -57,23 +56,22 @@ public sealed partial class App : Application
                 services.AddSingleton<MainWindow>();
 
                 services.AddTransient<TokenPage>();
-                services.AddTransient<ConfirmationsOverviewPage>();
-                services.AddTransient<AccountConfirmations>();
                 services.AddTransient<SettingsPage>();
+                services.AddTransient<ConfirmationsOverviewPage>();
+
+                services.AddTransient<AccountConfirmations>();
                 services.AddTransient<LoginPage>();
 
                 services.AddTransient<TokenViewModel>();
                 services.AddTransient<SettingsViewModel>();
                 services.AddTransient<ConfirmationsOverviewViewModel>();
-                services.AddTransient<AccountConfirmationsViewModel>();
-                services.AddTransient<LoginViewModel>();
+
+                services.AddSingleton<AccountConfirmationsViewModel>();
+                services.AddSingleton<LoginViewModel>();
 
                 services.AddSingleton<IPlatformImplementations, DesktopImplementations>();
-
-                services.AddSingleton<AppSettings>(WpfAppSettings.Current);
-
-                services.AddScoped<LocalDriveAccountsService>();
-                services.AddScoped<GoogleDriveAccountsService>();
+                services.AddSingleton<LocalDriveAccountsService>();
+                services.AddSingleton<GoogleDriveAccountsService>();
 
                 services.AddSteamAuthCoreServices();
                 services.AddSharedServices();

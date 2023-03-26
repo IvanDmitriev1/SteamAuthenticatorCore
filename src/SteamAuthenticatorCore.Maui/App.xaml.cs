@@ -1,39 +1,31 @@
-﻿using SteamAuthenticatorCore.Mobile.Helpers;
-using SteamAuthenticatorCore.Mobile.Pages;
-using SteamAuthenticatorCore.Shared;
+﻿using SteamAuthenticatorCore.Mobile.Pages;
 using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Mobile;
 
 public partial class App : Application
 {
-    public App(AccountsFileServiceResolver accountsFileServiceResolver, IUpdateService updateService, IConfirmationService confirmationService)
+    public App(AccountsServiceResolver accountsFileServiceResolver, IConfirmationService confirmationService)
     {
         InitializeComponent();
-        
+
         _accountsFileServiceResolver = accountsFileServiceResolver;
-        _updateService = updateService;
         _confirmationService = confirmationService;
 
         MainPage = new AppShell();
         Shell.Current.Navigating += CurrentOnNavigating;
     }
 
-    private readonly AccountsFileServiceResolver _accountsFileServiceResolver;
-    private readonly IUpdateService _updateService;
+    private readonly AccountsServiceResolver _accountsFileServiceResolver;
     private readonly IConfirmationService _confirmationService;
 
     protected override async void OnStart()
     {
         VersionTracking.Track();
-        AppSettings.Current.Load();
+        MauiAppSettings.Current.Load();
 
-        ColorsCollection.Add("SecondBackgroundSelectionColor", "SecondLightBackgroundSelectionColor", "SecondDarkBackgroundSelectionColor");
-        ColorsCollection.Add("SecondBackgroundColor", "SecondLightBackgroundColor", "SecondDarkBackground");
-
-        await _accountsFileServiceResolver.Invoke().InitializeOrRefreshAccounts().ConfigureAwait(false);
-        await _updateService.CheckForUpdateAndDownloadInstall(true).ConfigureAwait(false);
-        _confirmationService.Initialize();
+        await _accountsFileServiceResolver.Invoke().Initialize().ConfigureAwait(false);
+        await _confirmationService.Initialize().ConfigureAwait(false);
 
         OnResume();
     }
@@ -50,7 +42,7 @@ public partial class App : Application
 
     private static void OnRequestedThemeChanged(object? sender, AppThemeChangedEventArgs e)
     {
-        MauiAppSettings.ChangeStatusBar(e.RequestedTheme);
+        
     }
 
     private static void CurrentOnNavigating(object? sender, ShellNavigatingEventArgs e)

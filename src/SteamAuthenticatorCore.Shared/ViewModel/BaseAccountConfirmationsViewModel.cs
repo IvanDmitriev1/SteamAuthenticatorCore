@@ -46,16 +46,16 @@ public abstract partial class BaseAccountConfirmationsViewModel : ObservableReci
     {
         var confirms = confirmations.ToArray();
 
-        switch (confirms.Length)
+        if (confirms.Length == 0)
+            return;
+
+        if (confirms.Length == 1)
         {
-            case 0:
-                return;
-            case 1:
-                await SendConfirmation(confirms[0], command);
-                return;
+            await SendConfirmation(confirms[0], command).ConfigureAwait(false);
+            return;
         }
 
-        await _accountService.SendConfirmation(Model!.Account, confirms, command, CancellationToken.None);
+        await _accountService.SendConfirmation(Model!.Account, confirms, command, CancellationToken.None).ConfigureAwait(false);
 
         foreach (var confirmation in confirms)
         {
