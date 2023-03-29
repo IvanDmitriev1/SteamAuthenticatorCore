@@ -9,9 +9,9 @@
     xmlns:viewModels1="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
     x:Name="Page"
     Title="Confirmations"
+    x:DataType="viewModels1:AccountConfirmationsViewModel"
     x:TypeArguments="viewModels1:AccountConfirmationsViewModel"
     Shell.TabBarIsVisible="False">
-    <!--  x:DataType="viewModels1:ConfirmationViewModel"  -->
 
     <Shell.TitleView>
         <controls:MyTitleView
@@ -28,7 +28,7 @@
     </Shell.TitleView>
 
     <Grid RowDefinitions="*, Auto">
-        <CollectionView ItemsSource="{Binding ConfirmationModel.Confirmations}">
+        <CollectionView ItemsSource="{Binding Model.Confirmations}">
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:ConfirmationModel">

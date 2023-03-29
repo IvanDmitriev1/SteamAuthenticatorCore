@@ -23,11 +23,18 @@ public sealed partial class ConfirmationsOverviewViewModel : ObservableRecipient
     [ObservableProperty]
     private bool _isRefreshing;
 
-    protected override async void OnActivated()
+    protected override void OnActivated()
     {
         base.OnActivated();
 
-        await Refresh().ConfigureAwait(false);
+        IsRefreshing = true;
+    }
+
+    protected override void OnDeactivated()
+    {
+        base.OnDeactivated();
+
+        Confirmations = Array.Empty<SteamGuardAccountConfirmationsModel>();
     }
 
     [RelayCommand]

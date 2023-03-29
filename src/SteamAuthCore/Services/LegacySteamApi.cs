@@ -10,9 +10,9 @@ using SteamAuthCore.Models.Internal;
 
 namespace SteamAuthCore.Services;
 
-internal sealed class SteamApi : ISteamApi
+internal sealed class LegacySteamApi : ILegacySteamApi
 {
-    public SteamApi(HttpClient client)
+    public LegacySteamApi(HttpClient client)
     {
         _client = client;
 
@@ -22,7 +22,7 @@ internal sealed class SteamApi : ISteamApi
 
     private readonly HttpClient _client;
 
-    public async ValueTask<string> GetSteamTime()
+    public async ValueTask<string> GetServerTime()
     {
         using var responseMessage = await _client.PostAsJsonAsync(ApiEndpoints.TwoFactorTimeQuery, "steamid=0").ConfigureAwait(false);
         responseMessage.EnsureSuccessStatusCode();

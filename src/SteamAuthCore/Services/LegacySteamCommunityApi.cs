@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,9 +13,9 @@ using SteamAuthCore.Models.Internal;
 
 namespace SteamAuthCore.Services;
 
-internal sealed class SteamCommunityApi : ISteamCommunityApi
+internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
 {
-    public SteamCommunityApi(HttpClient client)
+    public LegacySteamCommunityApi(HttpClient client)
     {
         _client = client;
 
@@ -27,7 +26,7 @@ internal sealed class SteamCommunityApi : ISteamCommunityApi
 
     private readonly HttpClient _client;
 
-    public async ValueTask<T> MobileConf<T>(string query, string cookieString, CancellationToken cancellationToken) where T : class
+    public async ValueTask<string> MobileConf(string query, string cookieString, CancellationToken cancellationToken)
     {
         var url = ApiEndpoints.Mobileconf + query;
 
@@ -38,11 +37,8 @@ internal sealed class SteamCommunityApi : ISteamCommunityApi
         if (!responseMessage.IsSuccessStatusCode)
             throw new WgTokenInvalidException();
 
-        if (typeof(T) != typeof(string))
-            return (await responseMessage.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken).ConfigureAwait(false))!;
-
         var response = await responseMessage.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-        return Unsafe.As<T>(response);
+        return response;
     }
 
     public async ValueTask<SendConfirmationResponse> SendMultipleConfirmations(string query, string cookieString, CancellationToken cancellationToken)
