@@ -37,7 +37,7 @@ public abstract partial class BaseAccountConfirmationsViewModel : ObservableReci
 
     protected async ValueTask SendConfirmations(IEnumerable<ConfirmationModel> confirmations, ConfirmationOptions command)
     {
-        var confirms = confirmations.ToArray();
+        var confirms = confirmations as ConfirmationModel[] ?? confirmations.ToArray();
 
         if (confirms.Length == 0)
             return;
