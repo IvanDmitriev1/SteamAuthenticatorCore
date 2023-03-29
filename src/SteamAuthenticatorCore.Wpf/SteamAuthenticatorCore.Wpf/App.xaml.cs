@@ -73,7 +73,7 @@ public sealed partial class App : Application
                 services.AddSingleton<LocalDriveAccountsService>();
                 services.AddSingleton<GoogleDriveAccountsService>();
 
-                services.AddSteamAuthCoreServices();
+                services.AddSteamAuthCoreServices(false);
                 services.AddSharedServices();
 
                 services.AddSingleton<IUpdateService, UpdateService>(provider =>

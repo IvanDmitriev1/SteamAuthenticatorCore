@@ -7,18 +7,24 @@ namespace SteamAuthCore.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddSteamAuthCoreServices(this IServiceCollection services)
+    public static IServiceCollection AddSteamAuthCoreServices(this IServiceCollection services, bool isMobile)
     {
-        services.AddScoped<ILegacySteamApi, Services.LegacySteamApi>();
-        services.AddScoped<ILegacySteamCommunityApi, LegacySteamCommunityApi>();
-        services.AddScoped<ITimeAligner, TimeAligner>();
-        services.AddScoped<ISteamGuardAccountService, LegacySteamGuardAccountService>();
+        services.AddSingleton<ITimeAligner, TimeAligner>();
+        services.AddSingleton<ILegacySteamApi, LegacySteamApi>();
+        services.AddSingleton<ILegacySteamCommunityApi, LegacySteamCommunityApi>();
 
-        services.AddHttpClient<ILegacySteamApi, Services.LegacySteamApi>();
-        services.AddHttpClient<ILegacySteamCommunityApi, LegacySteamCommunityApi>().ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
-        {
-            AllowAutoRedirect = false
-        });
+        services.AddSingleton<LegacySteamGuardAccountService>();
+        services.AddSingleton<UltraLegacySteamGuardAccountService>();
+
+        if (isMobile)
+            services.AddSingleton<ISteamGuardAccountService>(provider =>
+                provider.GetRequiredService<UltraLegacySteamGuardAccountService>());
+        else
+            services.AddSingleton<ISteamGuardAccountService>(provider =>
+                provider.GetRequiredService<LegacySteamGuardAccountService>());
+
+        services.AddHttpClient<ILegacySteamApi, LegacySteamApi>();
+        services.AddHttpClient<ILegacySteamCommunityApi, LegacySteamCommunityApi>();
 
         return services;
     }

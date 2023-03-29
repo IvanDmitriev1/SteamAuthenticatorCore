@@ -18,17 +18,15 @@ namespace SteamAuthCore.Services;
 
 internal class LegacySteamGuardAccountService : ISteamGuardAccountService
 {
-    public LegacySteamGuardAccountService(ILegacySteamApi legacySteamApi, ILegacySteamCommunityApi legacySteamCommunityApi, ITimeAligner timeAligner)
+    public LegacySteamGuardAccountService(ILegacySteamApi legacySteamApi, ILegacySteamCommunityApi legacySteamCommunityApi)
     {
         _legacySteamApi = legacySteamApi;
         _legacySteamCommunityApi = legacySteamCommunityApi;
-        _timeAligner = timeAligner;
     }
 
     private readonly ILegacySteamApi _legacySteamApi;
     private readonly ILegacySteamCommunityApi _legacySteamCommunityApi;
-    private readonly ITimeAligner _timeAligner;
-    private static readonly HtmlParser Parser = new();
+    internal static readonly HtmlParser Parser = new();
 
     public async ValueTask<bool> RefreshSession(SteamGuardAccount account, CancellationToken cancellationToken)
     {
@@ -57,7 +55,6 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
 
     public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel confirmation, ConfirmationOptions options, CancellationToken cancellationToken)
     {
-        await _timeAligner.AlignTimeAsync().ConfigureAwait(false);
         var strOption = options.ToString().ToLower();
 
         var builder = new StringBuilder(140 + 50);
@@ -76,7 +73,6 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
 
     public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel[] confirmations, ConfirmationOptions options, CancellationToken cancellationToken)
     {
-        await _timeAligner.AlignTimeAsync().ConfigureAwait(false);
         var strOption = options.ToString().ToLower();
         var capacity = 140 + confirmations.Length * (20 + 11 + 7 + 6 + 3);
 
@@ -249,11 +245,12 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
             if (!html.Contains("Invalid authenticator"))
                 return html;
 
-            await _timeAligner.AlignTimeAsync().ConfigureAwait(false);
             return await SendFetchConfirmationsRequest(account, cancellationToken).ConfigureAwait(false);
         }
         catch (WgTokenInvalidException)
         {
+            await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
+
             if (times >= 1)
                 return null;
 
@@ -268,7 +265,7 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
         }
     }
 
-    private static ConfirmationModel GetConfirmationModelFromHtml(IElement confirmationElement)
+    internal static ConfirmationModel GetConfirmationModelFromHtml(IElement confirmationElement)
     {
         Span<UInt64> attributesValue = stackalloc UInt64[5];
 
@@ -284,7 +281,7 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
         return new ConfirmationModel(attributesValue, imageSource, children);
     }
 
-    private static string GenerateConfirmationQueryParams(SteamGuardAccount account, string tag)
+    internal static string GenerateConfirmationQueryParams(SteamGuardAccount account, string tag)
     {
         var time = ITimeAligner.SteamTime;
 

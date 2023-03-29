@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Net;
+using System.Text;
 
 namespace SteamAuthCore.Models;
 
@@ -32,5 +34,31 @@ public class SessionData
         builder.Append($"sessionid={SessionId};");
 
         return builder.ToString();
+    }
+
+    public CookieContainer GetCookieContainer()
+    {
+        CookieContainer cookies = new();
+
+        cookies.Add(new Cookie("mobileClientVersion", "0 (2.1.3)", "/", ".steamcommunity.com"));
+        cookies.Add(new Cookie("mobileClient", "android", "/", ".steamcommunity.com"));
+
+        cookies.Add(new Cookie("steamid", SteamId.ToString(), "/", ".steamcommunity.com"));
+        cookies.Add(new Cookie("steamLogin", SteamLogin, "/", ".steamcommunity.com")
+        {
+            HttpOnly = true
+        });
+
+        cookies.Add(new Cookie("steamLoginSecure", SteamLoginSecure, "/", ".steamcommunity.com")
+        {
+            HttpOnly = true,
+            Secure = true
+        });
+
+        cookies.Add(new Cookie("Steam_Language", "english", "/", ".steamcommunity.com"));
+        cookies.Add(new Cookie("dob", "", "/", ".steamcommunity.com"));
+        cookies.Add(new Cookie("sessionid", SessionId, "/", ".steamcommunity.com"));
+
+        return cookies;
     }
 }
