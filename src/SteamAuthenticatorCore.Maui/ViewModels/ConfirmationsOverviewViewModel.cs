@@ -23,13 +23,6 @@ public sealed partial class ConfirmationsOverviewViewModel : ObservableRecipient
     [ObservableProperty]
     private bool _isRefreshing;
 
-    protected override void OnActivated()
-    {
-        base.OnActivated();
-
-        IsRefreshing = true;
-    }
-
     protected override void OnDeactivated()
     {
         base.OnDeactivated();

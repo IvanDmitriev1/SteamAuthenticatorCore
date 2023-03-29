@@ -1,6 +1,7 @@
 ﻿using Foundation;
 
-namespace SteamAuthenticatorCore.MobileMaui;
+namespace SteamAuthenticatorCore.Mobile;
+
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
 {

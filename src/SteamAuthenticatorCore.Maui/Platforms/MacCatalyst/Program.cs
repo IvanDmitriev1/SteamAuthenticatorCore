@@ -1,7 +1,8 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace SteamAuthenticatorCore.MobileMaui;
+namespace SteamAuthenticatorCore.Mobile;
+
 public class Program
 {
     // This is the main entry point of the application.

@@ -249,10 +249,10 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
         }
         catch (WgTokenInvalidException)
         {
-            await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
-
             if (times >= 1)
                 return null;
+
+            await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
 
             if (!await RefreshSession(account, cancellationToken).ConfigureAwait(false))
                 return null;

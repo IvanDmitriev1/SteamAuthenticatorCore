@@ -76,7 +76,11 @@ public partial class TokenViewModel : ObservableRecipient
         {
             files = await FilePicker.PickMultipleAsync(new PickOptions()
             {
-                PickerTitle = "Select maFile"
+                PickerTitle = "Select maFile",
+                /*FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>()
+                {
+                    { DevicePlatform.Android, new[] { "application/octet-stream", } },
+                })*/
             }).ConfigureAwait(false) ?? Array.Empty<FileResult>();
         }
         catch
