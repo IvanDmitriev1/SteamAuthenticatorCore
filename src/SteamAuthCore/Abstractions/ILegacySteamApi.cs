@@ -5,13 +5,9 @@ using SteamAuthCore.Models.Internal;
 
 namespace SteamAuthCore.Abstractions;
 
-internal interface ISteamApi
+internal interface ILegacySteamApi
 {
-    /// <summary>
-    /// Returns server time
-    /// </summary>
-    /// <returns></returns>
-    ValueTask<string> GetSteamTime();
+    ValueTask<string> GetServerTime();
     ValueTask<RefreshSessionDataInternalResponse?> MobileAuthGetWgToken(string token, CancellationToken cancellationToken);
     Task<bool> RemoveAuthenticator(KeyValuePair<string, string>[] postData);
 }

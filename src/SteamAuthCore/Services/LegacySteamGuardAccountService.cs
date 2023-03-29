@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using AngleSharp.Dom;
@@ -15,23 +16,23 @@ using SteamAuthCore.Models.Internal;
 
 namespace SteamAuthCore.Services;
 
-internal class SteamGuardAccountService : ISteamGuardAccountService
+internal class LegacySteamGuardAccountService : ISteamGuardAccountService
 {
-    public SteamGuardAccountService(ISteamApi steamApi, ISteamCommunityApi steamCommunityApi, ITimeAligner timeAligner)
+    public LegacySteamGuardAccountService(ILegacySteamApi legacySteamApi, ILegacySteamCommunityApi legacySteamCommunityApi, ITimeAligner timeAligner)
     {
-        _steamApi = steamApi;
-        _steamCommunityApi = steamCommunityApi;
+        _legacySteamApi = legacySteamApi;
+        _legacySteamCommunityApi = legacySteamCommunityApi;
         _timeAligner = timeAligner;
     }
 
-    private readonly ISteamApi _steamApi;
-    private readonly ISteamCommunityApi _steamCommunityApi;
+    private readonly ILegacySteamApi _legacySteamApi;
+    private readonly ILegacySteamCommunityApi _legacySteamCommunityApi;
     private readonly ITimeAligner _timeAligner;
     private static readonly HtmlParser Parser = new();
 
     public async ValueTask<bool> RefreshSession(SteamGuardAccount account, CancellationToken cancellationToken)
     {
-        if (await _steamApi.MobileAuthGetWgToken(account.Session.OAuthToken, cancellationToken).ConfigureAwait(false) is not { } refreshResponse)
+        if (await _legacySteamApi.MobileAuthGetWgToken(account.Session.OAuthToken, cancellationToken).ConfigureAwait(false) is not { } refreshResponse)
             return false;
 
         var token = account.Session.SteamId + "%7C%7C" + refreshResponse.Token;
@@ -67,8 +68,10 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         builder.Append($"&cid={confirmation.Id}");
         builder.Append($"&ck={confirmation.Key}");
 
-        var response = await _steamCommunityApi.MobileConf<ConfirmationDetailsResponse>(builder.ToString(), account.Session.GetCookieString(), cancellationToken).ConfigureAwait(false);
-        return response.Success;
+        var response = await _legacySteamCommunityApi.MobileConf(builder.ToString(), account.Session.GetCookieString(), cancellationToken).ConfigureAwait(false);
+        var confirmationDetailsResponse = JsonSerializer.Deserialize<ConfirmationDetailsResponse>(response);
+
+        return confirmationDetailsResponse?.Success == true;
     }
 
     public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel[] confirmations, ConfirmationOptions options, CancellationToken cancellationToken)
@@ -88,7 +91,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
             builder.Append($"&ck[]={confirmation.Key}");
         }
 
-        var response = await _steamCommunityApi.SendMultipleConfirmations(builder.ToString(), account.Session.GetCookieString(), cancellationToken).ConfigureAwait(false);
+        var response = await _legacySteamCommunityApi.SendMultipleConfirmations(builder.ToString(), account.Session.GetCookieString(), cancellationToken).ConfigureAwait(false);
         return response.Success;
     }
 
@@ -96,7 +99,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
     {
         if (string.IsNullOrEmpty(loginData.SessionId))
         {
-            loginData.SessionId = await _steamCommunityApi.Login(LoginData.DefaultCookies);
+            loginData.SessionId = await _legacySteamCommunityApi.Login(LoginData.DefaultCookies);
 
             var cookieBuilder = new StringBuilder();
             cookieBuilder.Append($"sessionid={loginData.SessionId};");
@@ -110,7 +113,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         getRsaKeyContent[1] = new KeyValuePair<string, string>("username", loginData.Username);
 
         
-        if (await _steamCommunityApi.GetRsaKey(getRsaKeyContent, loginData.CookieString) is not { } rsaResponse)
+        if (await _legacySteamCommunityApi.GetRsaKey(getRsaKeyContent, loginData.CookieString) is not { } rsaResponse)
         {
             loginData.Result = LoginResult.GeneralFailure;
             return loginData.Result;
@@ -152,7 +155,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         doLoginPostData[11] = new KeyValuePair<string, string>("oauth_client_id", "DE45CD61");
         doLoginPostData[12] = new KeyValuePair<string, string>("oauth_scope", "read_profile write_profile read_client write_client");
 
-        if (await _steamCommunityApi.DoLogin(doLoginPostData, loginData.CookieString) is not { } loginResponse)
+        if (await _legacySteamCommunityApi.DoLogin(doLoginPostData, loginData.CookieString) is not { } loginResponse)
         {
             loginData.Result = LoginResult.GeneralFailure;
             return loginData.Result;   
@@ -225,7 +228,7 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
         posData[2] = new KeyValuePair<string, string>("revocation_code", account.RevocationCode);
         posData[3] = new KeyValuePair<string, string>("access_token", account.Session.OAuthToken);
 
-        return _steamApi.RemoveAuthenticator(posData);
+        return _legacySteamApi.RemoveAuthenticator(posData);
     }
 
     private async ValueTask<string?> SendFetchConfirmationsRequest(SteamGuardAccount account, CancellationToken cancellationToken, UInt16 times = 0)
@@ -236,8 +239,8 @@ internal class SteamGuardAccountService : ISteamGuardAccountService
             builder.Append("conf?");
             builder.Append(GenerateConfirmationQueryParams(account, "conf"));
 
-            var html = await _steamCommunityApi
-                .MobileConf<string>(builder.ToString(), account.Session.GetCookieString(), cancellationToken)
+            var html = await _legacySteamCommunityApi
+                .MobileConf(builder.ToString(), account.Session.GetCookieString(), cancellationToken)
                 .ConfigureAwait(false);
 
             if (html.Contains("Nothing to confirm"))

@@ -9,13 +9,13 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddSteamAuthCoreServices(this IServiceCollection services)
     {
-        services.AddScoped<ISteamApi, Services.SteamApi>();
-        services.AddScoped<ISteamCommunityApi, SteamCommunityApi>();
+        services.AddScoped<ILegacySteamApi, Services.LegacySteamApi>();
+        services.AddScoped<ILegacySteamCommunityApi, LegacySteamCommunityApi>();
         services.AddScoped<ITimeAligner, TimeAligner>();
-        services.AddScoped<ISteamGuardAccountService, SteamGuardAccountService>();
+        services.AddScoped<ISteamGuardAccountService, LegacySteamGuardAccountService>();
 
-        services.AddHttpClient<ISteamApi, Services.SteamApi>();
-        services.AddHttpClient<ISteamCommunityApi, SteamCommunityApi>().ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
+        services.AddHttpClient<ILegacySteamApi, Services.LegacySteamApi>();
+        services.AddHttpClient<ILegacySteamCommunityApi, LegacySteamCommunityApi>().ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
         {
             AllowAutoRedirect = false
         });

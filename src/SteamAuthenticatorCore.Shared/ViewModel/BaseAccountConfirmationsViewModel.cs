@@ -35,13 +35,6 @@ public abstract partial class BaseAccountConfirmationsViewModel : ObservableReci
         Model = message.Value;
     }
 
-    protected async ValueTask SendConfirmation(ConfirmationModel confirmation, ConfirmationOptions command)
-    {
-        await _accountService.SendConfirmation(Model!.Account, confirmation, command, CancellationToken.None);
-
-        Model.Confirmations.Remove(confirmation);
-    }
-
     protected async ValueTask SendConfirmations(IEnumerable<ConfirmationModel> confirmations, ConfirmationOptions command)
     {
         var confirms = confirmations.ToArray();
@@ -51,15 +44,15 @@ public abstract partial class BaseAccountConfirmationsViewModel : ObservableReci
 
         if (confirms.Length == 1)
         {
-            await SendConfirmation(confirms[0], command).ConfigureAwait(false);
+            if (await _accountService.SendConfirmation(Model!.Account, confirms[0], command, CancellationToken.None))
+                Model.Confirmations.Remove(confirms[0]);
+
             return;
         }
 
-        await _accountService.SendConfirmation(Model!.Account, confirms, command, CancellationToken.None).ConfigureAwait(false);
+        if (!await _accountService.SendConfirmation(Model!.Account, confirms, command, CancellationToken.None))
+            return;
 
-        foreach (var confirmation in confirms)
-        {
-            Model.Confirmations.Remove(confirmation);
-        }
+        Model.Confirmations.Clear();
     }
 }

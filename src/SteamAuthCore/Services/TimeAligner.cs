@@ -6,16 +6,16 @@ namespace SteamAuthCore.Services;
 
 internal class TimeAligner : ITimeAligner
 {
-    public TimeAligner(ISteamApi steamApi)
+    public TimeAligner(ILegacySteamApi legacySteamApi)
     {
-        _steamApi = steamApi;
+        _legacySteamApi = legacySteamApi;
     }
 
-    private readonly ISteamApi _steamApi;
+    private readonly ILegacySteamApi _legacySteamApi;
 
     public async ValueTask AlignTimeAsync()
     {
-        var time = await _steamApi.GetSteamTime().ConfigureAwait(false);
+        var time = await _legacySteamApi.GetServerTime().ConfigureAwait(false);
         ITimeAligner.TimeDifference = Int64.Parse(time) - ITimeAligner.GetSystemUnixTime();
     }
 }

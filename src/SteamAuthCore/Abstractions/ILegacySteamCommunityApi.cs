@@ -5,9 +5,9 @@ using SteamAuthCore.Models.Internal;
 
 namespace SteamAuthCore.Abstractions;
 
-internal interface ISteamCommunityApi
+internal interface ILegacySteamCommunityApi
 {
-    ValueTask<T> MobileConf<T>(string query, string cookieString, CancellationToken cancellationToken) where T : class;
+    ValueTask<string> MobileConf(string query, string cookieString, CancellationToken cancellationToken);
     ValueTask<SendConfirmationResponse> SendMultipleConfirmations(string query, string cookieString, CancellationToken cancellationToken);
     ValueTask<string> Login(string cookieString);
     ValueTask<RsaResponse?> GetRsaKey(KeyValuePair<string, string>[] content, string cookieString);
