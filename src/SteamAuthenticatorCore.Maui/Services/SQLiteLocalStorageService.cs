@@ -51,16 +51,23 @@ internal class SqLiteLocalStorageService : IAccountsService
         if (!_isInitialized)
             await Initialize();
 
-        if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(stream).ConfigureAwait(false) is not { } account)
+        try
+        {
+            if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(stream).ConfigureAwait(false) is not { } account)
+                return false;
+
+            var sessionId = await _connection.InsertAsync(account.Session.MapToDto()).ConfigureAwait(false);
+            var accountDto = account.MapToDto(sessionId);
+
+            await _connection.InsertAsync(accountDto).ConfigureAwait(false);
+            _accounts.Add(account);
+
+            return true;
+        }
+        catch
+        {
             return false;
-
-        var sessionId = await _connection.InsertAsync(account.Session.MapToDto()).ConfigureAwait(false);
-        var accountDto = account.MapToDto(sessionId);
-
-        await _connection.InsertAsync(accountDto).ConfigureAwait(false);
-        _accounts.Add(account);
-
-        return true;
+        }
     }
 
     public async ValueTask Update(SteamGuardAccount account)

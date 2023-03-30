@@ -21,7 +21,6 @@ public partial class App : Application
 
     protected override async void OnStart()
     {
-        VersionTracking.Track();
         MauiAppSettings.Current.Load();
 
         await _accountsFileServiceResolver.Invoke().Initialize().ConfigureAwait(false);
