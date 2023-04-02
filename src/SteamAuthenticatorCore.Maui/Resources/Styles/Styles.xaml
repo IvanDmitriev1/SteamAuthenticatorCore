@@ -45,7 +45,7 @@
 
     <Style TargetType="Border">
         <Setter Property="BackgroundColor" Value="{DynamicResource Surface5}" />
-        <Setter Property="Stroke" Value="Transparent" />
+        <Setter Property="Stroke" Value="{DynamicResource OutlineBrush}" />
         <Setter Property="StrokeThickness" Value="0" />
         <Setter Property="StrokeShape">
             <Setter.Value>
@@ -58,6 +58,10 @@
         <Setter Property="FontSize" Value="18" />
         <Setter Property="TextColor" Value="{DynamicResource OnSurface}" />
         <Setter Property="PlaceholderColor" Value="{DynamicResource OnSurface}" />
+    </Style>
+
+    <Style TargetType="BoxView">
+        <Setter Property="Color" Value="{DynamicResource Primary}" />
     </Style>
 
     <Style TargetType="Switch">
@@ -92,7 +96,7 @@
         <Setter Property="Shell.TabBarBackgroundColor" Value="{DynamicResource Surface2}" />
         <Setter Property="Shell.TabBarForegroundColor" Value="{DynamicResource OnSurface}" />
         <Setter Property="Shell.TabBarTitleColor" Value="{DynamicResource OnSurface}" />
-        <Setter Property="Shell.TabBarUnselectedColor" Value="{StaticResource OnSurfaceVariant}" />
+        <Setter Property="Shell.TabBarUnselectedColor" Value="{DynamicResource OnSurfaceVariant}" />
     </Style>
 
     <!--<Style TargetType="ActivityIndicator">

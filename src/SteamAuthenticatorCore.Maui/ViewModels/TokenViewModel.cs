@@ -132,7 +132,7 @@ public partial class TokenViewModel : ObservableRecipient
         await _accountsService.Delete(account);
 
         IsLongPressTitleViewVisible = false;
-        await UnselectLongPressFrame();
+        UnselectLongPressFrame();
 
         await RefreshAccounts().ConfigureAwait(false);
     }
@@ -145,7 +145,7 @@ public partial class TokenViewModel : ObservableRecipient
 
         try
         {
-            HapticFeedback.Perform(HapticFeedbackType.LongPress);
+            HapticFeedback.Perform(HapticFeedbackType.Click);
         }
         catch
         {
@@ -158,28 +158,27 @@ public partial class TokenViewModel : ObservableRecipient
     }
 
     [RelayCommand]
-    private Task OnPress(SteamGuardAccount account)
+    private void OnPress(SteamGuardAccount account)
     {
         if (_pressed)
         {
             _pressed = false;
-            return Task.CompletedTask;
+            return;
         }
 
         SelectedAccount = account;
         IsLongPressTitleViewVisible = false;
-        return UnselectLongPressFrame();
+        UnselectLongPressFrame();
     }
 
     [RelayCommand]
-    private async Task OnLongPress(VisualElement view)
+    private void OnLongPress(VisualElement view)
     {
-        await UnselectLongPressFrame();
+        UnselectLongPressFrame();
 
         IsLongPressTitleViewVisible = true;
 
-        //await view.ChangeBackgroundColorToWithColorsCollection("SecondBackgroundSelectionColor");
-
+        view.Opacity = 0.65;
         _longPressView = view;
         _pressed = true;
 
@@ -194,20 +193,20 @@ public partial class TokenViewModel : ObservableRecipient
     }
 
     [RelayCommand]
-    private Task HideLongPressTitleView()
+    private void HideLongPressTitleView()
     {
         IsLongPressTitleViewVisible = false;
-        return UnselectLongPressFrame();
+        UnselectLongPressFrame();
     }
 
     #endregion
 
-    private async Task UnselectLongPressFrame()
+    private void UnselectLongPressFrame()
     {
         if (_longPressView is null) 
             return;
 
-        //await _longPressView.ChangeBackgroundColorToWithColorsCollection("SecondBackgroundColor"); 
+        _longPressView.Opacity = 1;
         _longPressView = null;
     }
 
@@ -277,6 +276,6 @@ public partial class TokenViewModel : ObservableRecipient
 
         e.Cancel();
 
-        await HideLongPressTitleView().ConfigureAwait(false);
+        HideLongPressTitleView();
     }
 }

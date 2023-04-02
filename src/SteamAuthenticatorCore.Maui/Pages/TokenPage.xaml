@@ -43,23 +43,18 @@
             <Button Command="{Binding ImportCommand}" Text="Import" />
 
             <effectsView:SfEffectsView
-                LongPressedCommand="{Binding CopyCommand}"
-                LongPressedCommandParameter="{Binding Token}"
+                TouchDownCommand="{Binding CopyCommand}"
+                TouchDownCommandParameter="{Binding Token}"
                 TouchDownEffects="None"
                 TouchUpEffects="None">
                 <Border Padding="15,5">
-                    <VerticalStackLayout Spacing="4">
+                    <VerticalStackLayout Margin="0,5,0,5" Spacing="4">
                         <Label HorizontalOptions="Center" Text="{Binding Token}" />
 
-                        <BoxView
-                            Margin="0,0,0,5"
-                            CornerRadius="15"
-                            HeightRequest="1.5" />
+                        <ProgressBar Progress="{Binding TokenProgressBar}" />
                     </VerticalStackLayout>
                 </Border>
             </effectsView:SfEffectsView>
-
-            <ProgressBar Progress="{Binding Path=TokenProgressBar}" />
 
             <Grid Margin="0,10,0,0">
                 <Grid.ColumnDefinitions>
