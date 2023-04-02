@@ -30,16 +30,16 @@
                             Fill="White"
                             HeightRequest="16"
                             HorizontalOptions="Center"
-                            Stroke="{StaticResource ActionColor}"
                             VerticalOptions="Center"
                             WidthRequest="16" />
+                        <!--  Stroke="{StaticResource ActionColor}"  -->
                         <Ellipse
                             x:Name="check"
-                            Fill="{StaticResource ActionColor}"
                             HeightRequest="8"
                             HorizontalOptions="Center"
                             VerticalOptions="Center"
                             WidthRequest="8" />
+                        <!--  Fill="{StaticResource ActionColor}"  -->
                     </Grid>
 
                     <ContentPresenter />
@@ -49,13 +49,13 @@
                         <VisualStateGroup x:Name="CheckedStates">
                             <VisualState x:Name="Checked">
                                 <VisualState.Setters>
-                                    <Setter Property="Stroke" Value="{StaticResource ActionColor}" />
+                                    <!--<Setter Property="Stroke" Value="{StaticResource ActionColor}" />-->
                                     <Setter TargetName="check" Property="Opacity" Value="1" />
                                 </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Unchecked">
                                 <VisualState.Setters>
-                                    <Setter Property="Stroke" Value="#F3F2F1" />
+                                    <!--<Setter Property="Stroke" Value="#F3F2F1" />-->
                                     <Setter TargetName="check" Property="Opacity" Value="0" />
                                 </VisualState.Setters>
                             </VisualState>

@@ -18,17 +18,23 @@
             TitleName="Token">
             <HorizontalStackLayout Spacing="10">
                 <Button
-                    Padding="5,0"
+                    Padding="15,0"
+                    BackgroundColor="{DynamicResource SecondaryContainer}"
                     Command="{Binding LoginCommand}"
-                    Text="Login again" />
+                    Text="Login again"
+                    TextColor="{DynamicResource OnSecondaryContainer}" />
                 <Button
-                    Padding="5,0"
+                    Padding="15,0"
+                    BackgroundColor="{DynamicResource SecondaryContainer}"
                     Command="{Binding ForceRefreshSessionCommand}"
-                    Text="Refresh session" />
+                    Text="Refresh session"
+                    TextColor="{DynamicResource OnSecondaryContainer}" />
                 <Button
-                    Padding="5,0"
+                    Padding="15,0"
+                    BackgroundColor="{DynamicResource SecondaryContainer}"
                     Command="{Binding DeleteCommand}"
-                    Text="Delete" />
+                    Text="Delete"
+                    TextColor="{DynamicResource OnSecondaryContainer}" />
             </HorizontalStackLayout>
         </controls:MyTitleView>
     </Shell.TitleView>
@@ -65,12 +71,12 @@
 
                 <Label
                     Grid.Column="0"
-                    FontSize="Header"
+                    FontSize="22"
                     Text="Selected Account:" />
 
                 <Label
                     Grid.Column="1"
-                    FontSize="Header"
+                    FontSize="22"
                     Text="{Binding SelectedAccount.AccountName}" />
             </Grid>
 
@@ -96,16 +102,13 @@
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:SteamGuardAccount">
-                    <Border x:Name="Border" Margin="0,0,0,5">
+                    <Border x:Name="Border" Margin="0,0,0,7">
                         <effectsView:SfEffectsView
                             LongPressedCommand="{Binding Source={x:Reference Page}, Path=BindingContext.LongPressCommand}"
                             LongPressedCommandParameter="{x:Reference Border}"
                             TouchUpCommand="{Binding Source={x:Reference Page}, Path=BindingContext.PressCommand}"
                             TouchUpCommandParameter="{Binding}">
-                            <Label
-                                Margin="15"
-                                FontSize="Medium"
-                                Text="{Binding AccountName, Mode=OneTime}" />
+                            <Label Margin="18" Text="{Binding AccountName, Mode=OneTime}" />
                         </effectsView:SfEffectsView>
                     </Border>
                 </DataTemplate>

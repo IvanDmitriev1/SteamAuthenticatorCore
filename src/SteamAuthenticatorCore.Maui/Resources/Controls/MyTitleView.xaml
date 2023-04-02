@@ -10,7 +10,7 @@
             <Label
                 Grid.Row="0"
                 FontAttributes="Bold"
-                FontSize="18"
+                FontSize="24"
                 IsVisible="{TemplateBinding Path=IsContentVisible,
                                             Converter={StaticResource InvertedBoolConverter}}"
                 Opacity="1"
@@ -23,8 +23,8 @@
                 IsVisible="{TemplateBinding Path=IsContentVisible}">
                 <Button
                     Margin="0,0,6,0"
-                    Padding="0"
-                    BackgroundColor="Transparent"
+                    Padding="25,0"
+                    BackgroundColor="{DynamicResource PrimaryContainer}"
                     Command="{TemplateBinding Path=CloseCommand}"
                     FontFamily="Material"
                     FontSize="35"
@@ -32,10 +32,7 @@
                     HorizontalOptions="Start"
                     IsVisible="{TemplateBinding Path=IsCloseButtonVisible}"
                     Text="{x:Static resources:MaterialDesignIcons.Close}"
-                    TextColor="{AppThemeBinding Dark={StaticResource DarkTextColor},
-                                                Light={StaticResource LightTextColor}}"
-                    VerticalOptions="Center"
-                    WidthRequest="45" />
+                    TextColor="{DynamicResource OnPrimaryContainer}" />
 
                 <ScrollView
                     Grid.Column="1"
