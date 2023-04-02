@@ -13,15 +13,16 @@
     x:TypeArguments="viewModels:SettingsViewModel">
 
     <ContentPage.Resources>
-        <ControlTemplate x:Key="RadioButtonTemplate">
+        <ControlTemplate x:Key="RadioButtonTemplate" x:DataType="RadioButton">
             <Border
+                BackgroundColor="Transparent"
                 HeightRequest="100"
                 StrokeShape="RoundRectangle 8"
-                StrokeThickness="1"
+                StrokeThickness="2"
                 WidthRequest="100">
                 <Grid WidthRequest="100">
                     <Grid
-                        Margin="0,5,5,0"
+                        Margin="0,5,7,0"
                         HeightRequest="18"
                         HorizontalOptions="End"
                         VerticalOptions="Start"
@@ -30,32 +31,32 @@
                             Fill="White"
                             HeightRequest="16"
                             HorizontalOptions="Center"
+                            Stroke="{DynamicResource OnSurfaceVariantBrush}"
                             VerticalOptions="Center"
                             WidthRequest="16" />
-                        <!--  Stroke="{StaticResource ActionColor}"  -->
+
                         <Ellipse
                             x:Name="check"
+                            Fill="{DynamicResource PrimaryBrush}"
                             HeightRequest="8"
                             HorizontalOptions="Center"
                             VerticalOptions="Center"
                             WidthRequest="8" />
-                        <!--  Fill="{StaticResource ActionColor}"  -->
                     </Grid>
-
-                    <ContentPresenter />
+                    <ContentPresenter Content="{TemplateBinding Content}" />
                 </Grid>
                 <VisualStateManager.VisualStateGroups>
                     <VisualStateGroupList>
                         <VisualStateGroup x:Name="CheckedStates">
                             <VisualState x:Name="Checked">
                                 <VisualState.Setters>
-                                    <!--<Setter Property="Stroke" Value="{StaticResource ActionColor}" />-->
+                                    <Setter Property="Stroke" Value="{DynamicResource OnPrimaryContainerBrush}" />
                                     <Setter TargetName="check" Property="Opacity" Value="1" />
                                 </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Unchecked">
                                 <VisualState.Setters>
-                                    <!--<Setter Property="Stroke" Value="#F3F2F1" />-->
+                                    <Setter Property="Stroke" Value="{DynamicResource OnSurfaceVariantBrush}" />
                                     <Setter TargetName="check" Property="Opacity" Value="0" />
                                 </VisualState.Setters>
                             </VisualState>
@@ -64,22 +65,21 @@
                 </VisualStateManager.VisualStateGroups>
             </Border>
         </ControlTemplate>
-
-        <Style TargetType="RadioButton">
-            <Setter Property="ControlTemplate" Value="{StaticResource RadioButtonTemplate}" />
-        </Style>
     </ContentPage.Resources>
 
     <VerticalStackLayout Spacing="20">
         <VerticalStackLayout Spacing="5">
-            <Label Text="Theme" />
+            <Label FontSize="20" Text="Theme" />
 
             <Border Padding="15">
                 <Grid
                     ColumnDefinitions="*,*,*"
                     RadioButtonGroup.GroupName="Themes"
                     RadioButtonGroup.SelectedValue="{Binding Path=ThemeSelection}">
-                    <RadioButton Grid.Column="0" Value="System">
+                    <RadioButton
+                        Grid.Column="0"
+                        ControlTemplate="{StaticResource RadioButtonTemplate}"
+                        Value="System">
                         <RadioButton.Content>
                             <VerticalStackLayout
                                 HorizontalOptions="Center"
@@ -87,7 +87,7 @@
                                 VerticalOptions="Center">
                                 <Label
                                     FontFamily="Material"
-                                    FontSize="21"
+                                    FontSize="35"
                                     HorizontalOptions="Center"
                                     HorizontalTextAlignment="Center"
                                     Text="{x:Static resources:MaterialDesignIcons.Settings}" />
@@ -99,7 +99,10 @@
                         </RadioButton.Content>
                     </RadioButton>
 
-                    <RadioButton Grid.Column="1" Value="Light">
+                    <RadioButton
+                        Grid.Column="1"
+                        ControlTemplate="{StaticResource RadioButtonTemplate}"
+                        Value="Light">
                         <RadioButton.Content>
                             <VerticalStackLayout
                                 HorizontalOptions="Center"
@@ -107,7 +110,7 @@
                                 VerticalOptions="Center">
                                 <Label
                                     FontFamily="Material"
-                                    FontSize="21"
+                                    FontSize="35"
                                     HorizontalOptions="Center"
                                     HorizontalTextAlignment="Center"
                                     Text="{x:Static resources:MaterialDesignIcons.LightMode}" />
@@ -119,7 +122,10 @@
                         </RadioButton.Content>
                     </RadioButton>
 
-                    <RadioButton Grid.Column="2" Value="Dark">
+                    <RadioButton
+                        Grid.Column="2"
+                        ControlTemplate="{StaticResource RadioButtonTemplate}"
+                        Value="Dark">
                         <RadioButton.Content>
                             <VerticalStackLayout
                                 HorizontalOptions="Center"
@@ -127,7 +133,7 @@
                                 VerticalOptions="Center">
                                 <Label
                                     FontFamily="Material"
-                                    FontSize="21"
+                                    FontSize="35"
                                     HorizontalOptions="Center"
                                     HorizontalTextAlignment="Center"
                                     Text="{x:Static resources:MaterialDesignIcons.DarkMode}" />
@@ -143,7 +149,7 @@
         </VerticalStackLayout>
 
         <VerticalStackLayout Spacing="5">
-            <Label Text="Auto-confirmation options" />
+            <Label FontSize="20" Text="Auto-confirmation options" />
 
             <VerticalStackLayout Spacing="10">
                 <Border>
@@ -185,8 +191,8 @@
             </VerticalStackLayout>
         </VerticalStackLayout>
 
-        <VerticalStackLayout Spacing="5">
-            <Label Text="{Binding Source={x:Static applicationModel:VersionTracking.CurrentVersion}, StringFormat='Current version: {0}'}" />
+        <VerticalStackLayout Spacing="10">
+            <Label FontSize="20" Text="{Binding Source={x:Static applicationModel:VersionTracking.CurrentVersion}, StringFormat='Current version: {0}'}" />
             <Button Command="{Binding CheckForUpdatesCommand}" Text="Check for updates" />
         </VerticalStackLayout>
     </VerticalStackLayout>

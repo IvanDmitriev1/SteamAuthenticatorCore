@@ -8,14 +8,12 @@
     xmlns:models="clr-namespace:SteamAuthCore.Models;assembly=SteamAuthCore"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
     x:Name="Page"
+    Title="Token"
     x:DataType="viewModels:TokenViewModel"
     x:TypeArguments="viewModels:TokenViewModel">
 
     <Shell.TitleView>
-        <controls:MyTitleView
-            CloseCommand="{Binding HideLongPressTitleViewCommand}"
-            IsContentVisible="{Binding IsLongPressTitleViewVisible}"
-            TitleName="Token">
+        <controls:MyTitleView CloseCommand="{Binding HideLongPressTitleViewCommand}" IsContentVisible="{Binding IsLongPressTitleViewVisible}">
             <HorizontalStackLayout Spacing="10">
                 <Button
                     Padding="15,0"
@@ -71,12 +69,12 @@
 
                 <Label
                     Grid.Column="0"
-                    FontSize="22"
+                    FontSize="20"
                     Text="Selected Account:" />
 
                 <Label
                     Grid.Column="1"
-                    FontSize="22"
+                    FontSize="20"
                     Text="{Binding SelectedAccount.AccountName}" />
             </Grid>
 
