@@ -18,8 +18,10 @@ public partial class TokenViewModel : ObservableRecipient
         _steamGuardAccountService = steamGuardAccountService;
         _timer = timer;
         _accountsService = accountsFileServiceResolver.Invoke();
-        _token = "Token";
+        _token = TokenPlaceHolder;
     }
+
+    private const string TokenPlaceHolder = "Token";
 
     private readonly ISteamGuardAccountService _steamGuardAccountService;
     private readonly ITimer _timer;
@@ -61,7 +63,7 @@ public partial class TokenViewModel : ObservableRecipient
     {
         base.OnDeactivated();
 
-        _longPressView = null;
+        HideLongPressTitleView();
         Shell.Current.Navigating -= ShellOnNavigating;
     }
 
@@ -101,7 +103,7 @@ public partial class TokenViewModel : ObservableRecipient
     private async Task Login()
     {
         var account = (SteamGuardAccount) _longPressView!.BindingContext;
-
+        
         await Shell.Current.GoToAsync($"{nameof(LoginPage)}");
 
         Messenger.Send(new UpdateAccountInLoginPageMessage(account));
@@ -126,21 +128,19 @@ public partial class TokenViewModel : ObservableRecipient
     {
         var account = (SteamGuardAccount) _longPressView!.BindingContext;
 
-        if (!await Microsoft.Maui.Controls.Application.Current!.MainPage!.DisplayAlert("Delete account", $"Are you sure what you want to delete {account.AccountName}?", "Yes", "No"))
+        if (!await Application.Current!.MainPage!.DisplayAlert("Delete account", $"Are you sure what you want to delete {account.AccountName}?", "Yes", "No"))
             return;
 
         await _accountsService.Delete(account);
+        HideLongPressTitleView();
 
-        IsLongPressTitleViewVisible = false;
-        UnselectLongPressFrame();
-
-        await RefreshAccounts().ConfigureAwait(false);
+        await RefreshAccounts();
     }
 
     [RelayCommand]
     private async Task Copy(string token)
     {
-        if (string.IsNullOrWhiteSpace(token) || token == "Token")
+        if (string.IsNullOrWhiteSpace(token) || token == TokenPlaceHolder)
             return;
 
         try
@@ -152,9 +152,10 @@ public partial class TokenViewModel : ObservableRecipient
             //
         }
 
-        await Clipboard.SetTextAsync(Token).ConfigureAwait(false);
+        await Clipboard.SetTextAsync(Token);
+
         var toast = Toast.Make("Copied");
-        await toast.Show().ConfigureAwait(false);
+        await toast.Show();
     }
 
     [RelayCommand]
@@ -167,14 +168,13 @@ public partial class TokenViewModel : ObservableRecipient
         }
 
         SelectedAccount = account;
-        IsLongPressTitleViewVisible = false;
-        UnselectLongPressFrame();
+        HideLongPressTitleView();
     }
 
     [RelayCommand]
     private void OnLongPress(VisualElement view)
     {
-        UnselectLongPressFrame();
+        HideLongPressTitleView();
 
         IsLongPressTitleViewVisible = true;
 
@@ -195,20 +195,15 @@ public partial class TokenViewModel : ObservableRecipient
     [RelayCommand]
     private void HideLongPressTitleView()
     {
-        IsLongPressTitleViewVisible = false;
-        UnselectLongPressFrame();
-    }
-
-    #endregion
-
-    private void UnselectLongPressFrame()
-    {
         if (_longPressView is null) 
             return;
 
+        IsLongPressTitleViewVisible = false;
         _longPressView.Opacity = 1;
         _longPressView = null;
     }
+
+    #endregion
 
     private void OnTimer(CancellationToken obj)
     {
@@ -228,7 +223,7 @@ public partial class TokenViewModel : ObservableRecipient
 
     private async ValueTask RefreshAccounts()
     {
-        _accounts = await _accountsService.GetAll().ConfigureAwait(false);
+        _accounts = await _accountsService.GetAll();
         OnSearchBoxTextChanged(null, SearchBoxText);
     }
 
@@ -263,7 +258,7 @@ public partial class TokenViewModel : ObservableRecipient
             FilteredAccounts.Add(account);
     }
 
-    private async void ShellOnNavigating(object? sender, ShellNavigatingEventArgs e)
+    private void ShellOnNavigating(object? sender, ShellNavigatingEventArgs e)
     {
         if (e.Current.Location.OriginalString.Length != nameof(TokenPage).Length + 2)
             return;
