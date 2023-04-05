@@ -8,27 +8,31 @@
     xmlns:models="clr-namespace:SteamAuthCore.Models;assembly=SteamAuthCore"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
     x:Name="Page"
+    Title="Token"
     x:DataType="viewModels:TokenViewModel"
     x:TypeArguments="viewModels:TokenViewModel">
 
     <Shell.TitleView>
-        <controls:MyTitleView
-            CloseCommand="{Binding HideLongPressTitleViewCommand}"
-            IsContentVisible="{Binding IsLongPressTitleViewVisible}"
-            TitleName="Token">
+        <controls:MyTitleView CloseCommand="{Binding HideLongPressTitleViewCommand}" IsContentVisible="{Binding IsLongPressTitleViewVisible}">
             <HorizontalStackLayout Spacing="10">
                 <Button
-                    Padding="5,0"
+                    Padding="15,0"
+                    BackgroundColor="{DynamicResource SecondaryContainer}"
                     Command="{Binding LoginCommand}"
-                    Text="Login again" />
+                    Text="Login again"
+                    TextColor="{DynamicResource OnSecondaryContainer}" />
                 <Button
-                    Padding="5,0"
+                    Padding="15,0"
+                    BackgroundColor="{DynamicResource SecondaryContainer}"
                     Command="{Binding ForceRefreshSessionCommand}"
-                    Text="Refresh session" />
+                    Text="Refresh session"
+                    TextColor="{DynamicResource OnSecondaryContainer}" />
                 <Button
-                    Padding="5,0"
+                    Padding="15,0"
+                    BackgroundColor="{DynamicResource SecondaryContainer}"
                     Command="{Binding DeleteCommand}"
-                    Text="Delete" />
+                    Text="Delete"
+                    TextColor="{DynamicResource OnSecondaryContainer}" />
             </HorizontalStackLayout>
         </controls:MyTitleView>
     </Shell.TitleView>
@@ -39,23 +43,18 @@
             <Button Command="{Binding ImportCommand}" Text="Import" />
 
             <effectsView:SfEffectsView
-                LongPressedCommand="{Binding CopyCommand}"
-                LongPressedCommandParameter="{Binding Token}"
+                TouchDownCommand="{Binding CopyCommand}"
+                TouchDownCommandParameter="{Binding Token}"
                 TouchDownEffects="None"
                 TouchUpEffects="None">
                 <Border Padding="15,5">
-                    <VerticalStackLayout Spacing="4">
+                    <VerticalStackLayout Margin="0,5,0,5" Spacing="4">
                         <Label HorizontalOptions="Center" Text="{Binding Token}" />
 
-                        <BoxView
-                            Margin="0,0,0,5"
-                            CornerRadius="15"
-                            HeightRequest="1.5" />
+                        <ProgressBar Progress="{Binding TokenProgressBar}" />
                     </VerticalStackLayout>
                 </Border>
             </effectsView:SfEffectsView>
-
-            <ProgressBar Progress="{Binding Path=TokenProgressBar}" />
 
             <Grid Margin="0,10,0,0">
                 <Grid.ColumnDefinitions>
@@ -65,12 +64,12 @@
 
                 <Label
                     Grid.Column="0"
-                    FontSize="Header"
+                    FontSize="20"
                     Text="Selected Account:" />
 
                 <Label
                     Grid.Column="1"
-                    FontSize="Header"
+                    FontSize="20"
                     Text="{Binding SelectedAccount.AccountName}" />
             </Grid>
 
@@ -96,16 +95,13 @@
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:SteamGuardAccount">
-                    <Border x:Name="Border" Margin="0,0,0,5">
+                    <Border x:Name="Border" Margin="0,0,0,7">
                         <effectsView:SfEffectsView
                             LongPressedCommand="{Binding Source={x:Reference Page}, Path=BindingContext.LongPressCommand}"
                             LongPressedCommandParameter="{x:Reference Border}"
                             TouchUpCommand="{Binding Source={x:Reference Page}, Path=BindingContext.PressCommand}"
                             TouchUpCommandParameter="{Binding}">
-                            <Label
-                                Margin="15"
-                                FontSize="Medium"
-                                Text="{Binding AccountName, Mode=OneTime}" />
+                            <Label Margin="18" Text="{Binding AccountName, Mode=OneTime}" />
                         </effectsView:SfEffectsView>
                     </Border>
                 </DataTemplate>

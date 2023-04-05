@@ -25,8 +25,14 @@ public abstract class BaseContentPage<TViewModel> : ContentPage where TViewModel
 
     protected virtual void OnLoaded()
     {
-        if (Shell.GetTitleView(this) is null)
+        if (Shell.GetTitleView(this) is not MyTitleView titleView)
+        {
             Shell.SetTitleView(this, new MyTitleView(Title));
+        }
+        else
+        {
+            titleView.TitleName = Title;
+        }
     }
 
     protected override void OnAppearing()
