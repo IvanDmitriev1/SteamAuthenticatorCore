@@ -9,5 +9,5 @@ The Windows version has Google Drive for storing files in the cloud
 
 📷 Screenshots
 
-![Windows](https://user-images.githubusercontent.com/42055372/189479727-d4dc9ecf-280b-4f37-9cbe-a75ec60b492a.png)
-![Android](https://user-images.githubusercontent.com/42055372/189479641-e1c9694e-6bb3-474f-99ef-c6c1342dfd64.jpg)
+![Windows](https://user-images.githubusercontent.com/42055372/230119772-98b52186-7527-4408-a6bf-255894f7213a.jpg)
+![Android](https://user-images.githubusercontent.com/42055372/230119703-45b1c703-bb48-4923-b737-c4aa0f6805f7.jpg)
