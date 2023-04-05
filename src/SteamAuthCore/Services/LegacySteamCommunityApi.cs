@@ -33,11 +33,11 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
         using var message = new HttpRequestMessage(HttpMethod.Get, url);
         message.Headers.Add("Cookie", cookieString);
 
-        using var responseMessage = await _client.SendAsync(message, cancellationToken).ConfigureAwait(false);
+        using var responseMessage = await _client.SendAsync(message, cancellationToken);
         if (!responseMessage.IsSuccessStatusCode)
             throw new WgTokenInvalidException();
 
-        var response = await responseMessage.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+        var response = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
         return response;
     }
 
@@ -47,8 +47,8 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
         message.Content = new StringContent(query, Encoding.UTF8, "application/x-www-form-urlencoded");
         message.Headers.Add("Cookie", cookieString);
 
-        using var responseMessage = await _client.SendAsync(message, cancellationToken).ConfigureAwait(false);
-        return (await responseMessage.Content.ReadFromJsonAsync<SendConfirmationResponse>(cancellationToken: cancellationToken).ConfigureAwait(false))!;
+        using var responseMessage = await _client.SendAsync(message, cancellationToken);
+        return (await responseMessage.Content.ReadFromJsonAsync<SendConfirmationResponse>(cancellationToken: cancellationToken))!;
     }
 
     public async ValueTask<string> Login(string cookieString)
@@ -58,7 +58,7 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
         message.Headers.Add("Cookie", cookieString);
         message.Headers.Add("X-Requested-With", "com.valvesoftware.android.steam.community");
 
-        using var responseMessage = await _client.SendAsync(message).ConfigureAwait(false);
+        using var responseMessage = await _client.SendAsync(message);
         responseMessage.EnsureSuccessStatusCode();
 
         try
@@ -81,11 +81,11 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
         message.Headers.Add("Cookie", cookieString);
         message.Content = new FormUrlEncodedContent(content);
 
-        using var responseMessage = await _client.SendAsync(message).ConfigureAwait(false);
+        using var responseMessage = await _client.SendAsync(message);
         if (!responseMessage.IsSuccessStatusCode)
             return null;
 
-        return await responseMessage.Content.ReadFromJsonAsync<RsaResponse>().ConfigureAwait(false);
+        return await responseMessage.Content.ReadFromJsonAsync<RsaResponse>();
     }
 
     public async ValueTask<LoginResponse?> DoLogin(KeyValuePair<string, string>[] content, string cookieString)
@@ -95,10 +95,10 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
         message.Headers.Add("Cookie", cookieString);
         message.Content = new FormUrlEncodedContent(content);
 
-        using var responseMessage = await _client.SendAsync(message).ConfigureAwait(false);
+        using var responseMessage = await _client.SendAsync(message);
         if (!responseMessage.IsSuccessStatusCode)
             return null;
 
-        return await responseMessage.Content.ReadFromJsonAsync<LoginResponse>().ConfigureAwait(false);
+        return await responseMessage.Content.ReadFromJsonAsync<LoginResponse>();
     }
 }

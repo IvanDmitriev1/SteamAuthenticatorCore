@@ -30,7 +30,7 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
 
     public async ValueTask<bool> RefreshSession(SteamGuardAccount account, CancellationToken cancellationToken)
     {
-        if (await _legacySteamApi.MobileAuthGetWgToken(account.Session.OAuthToken, cancellationToken).ConfigureAwait(false) is not { } refreshResponse)
+        if (await _legacySteamApi.MobileAuthGetWgToken(account.Session.OAuthToken, cancellationToken) is not { } refreshResponse)
             return false;
 
         var token = account.Session.SteamId + "%7C%7C" + refreshResponse.Token;
@@ -46,10 +46,10 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
         if (string.IsNullOrEmpty(account.DeviceId))
             throw new ArgumentException("Device ID is not present");
 
-        if (await SendFetchConfirmationsRequest(account, cancellationToken).ConfigureAwait(false) is not { } html)
+        if (await SendFetchConfirmationsRequest(account, cancellationToken) is not { } html)
             return Enumerable.Empty<ConfirmationModel>();
 
-        using var document = await Parser.ParseDocumentAsync(html, cancellationToken).ConfigureAwait(false);
+        using var document = await Parser.ParseDocumentAsync(html, cancellationToken);
         return document.GetElementsByClassName("mobileconf_list_entry").Select(GetConfirmationModelFromHtml);
     }
 
@@ -65,7 +65,7 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
         builder.Append($"&cid={confirmation.Id}");
         builder.Append($"&ck={confirmation.Key}");
 
-        var response = await _legacySteamCommunityApi.MobileConf(builder.ToString(), account.Session.GetCookieString(), cancellationToken).ConfigureAwait(false);
+        var response = await _legacySteamCommunityApi.MobileConf(builder.ToString(), account.Session.GetCookieString(), cancellationToken);
         var confirmationDetailsResponse = JsonSerializer.Deserialize<ConfirmationDetailsResponse>(response);
 
         return confirmationDetailsResponse?.Success == true;
@@ -87,7 +87,7 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
             builder.Append($"&ck[]={confirmation.Key}");
         }
 
-        var response = await _legacySteamCommunityApi.SendMultipleConfirmations(builder.ToString(), account.Session.GetCookieString(), cancellationToken).ConfigureAwait(false);
+        var response = await _legacySteamCommunityApi.SendMultipleConfirmations(builder.ToString(), account.Session.GetCookieString(), cancellationToken);
         return response.Success;
     }
 
@@ -245,7 +245,7 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
             if (!html.Contains("Invalid authenticator"))
                 return html;
 
-            return await SendFetchConfirmationsRequest(account, cancellationToken).ConfigureAwait(false);
+            return await SendFetchConfirmationsRequest(account, cancellationToken);
         }
         catch (WgTokenInvalidException)
         {
@@ -254,10 +254,10 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
 
             await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
 
-            if (!await RefreshSession(account, cancellationToken).ConfigureAwait(false))
+            if (!await RefreshSession(account, cancellationToken))
                 return null;
 
-            return await SendFetchConfirmationsRequest(account, cancellationToken, ++times).ConfigureAwait(false);
+            return await SendFetchConfirmationsRequest(account, cancellationToken, ++times);
         }
         catch (WgTokenExpiredException)
         {

@@ -3,8 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Services;
 
-[assembly: Fody.ConfigureAwait(false)]
-
 namespace SteamAuthenticatorCore.Shared.Extensions;
 
 public static class ServiceCollectionExtensions

@@ -24,9 +24,9 @@ internal sealed class LegacySteamApi : ILegacySteamApi
 
     public async ValueTask<string> GetServerTime()
     {
-        using var responseMessage = await _client.PostAsJsonAsync(ApiEndpoints.TwoFactorTimeQuery, "steamid=0").ConfigureAwait(false);
+        using var responseMessage = await _client.PostAsJsonAsync(ApiEndpoints.TwoFactorTimeQuery, "steamid=0");
         responseMessage.EnsureSuccessStatusCode();
-        var timeQuery = (await responseMessage.Content.ReadFromJsonAsync<TimeQuery>().ConfigureAwait(false))!;
+        var timeQuery = (await responseMessage.Content.ReadFromJsonAsync<TimeQuery>())!;
         
         return timeQuery.Response.ServerTime;
     }
@@ -38,11 +38,11 @@ internal sealed class LegacySteamApi : ILegacySteamApi
         using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.MobileauthGetwgtoken);
         message.Content = new FormUrlEncodedContent(new[] {pair});
 
-        using var responseMessage = await _client.SendAsync(message, cancellationToken).ConfigureAwait(false);
+        using var responseMessage = await _client.SendAsync(message, cancellationToken);
         if (!responseMessage.IsSuccessStatusCode)
             return null;
 
-        var response = await responseMessage.Content.ReadFromJsonAsync<RefreshSessionDataResponse>(cancellationToken: cancellationToken).ConfigureAwait(false);
+        var response = await responseMessage.Content.ReadFromJsonAsync<RefreshSessionDataResponse>(cancellationToken: cancellationToken);
         return response!.Response;
     }
 
@@ -52,10 +52,10 @@ internal sealed class LegacySteamApi : ILegacySteamApi
         message.Headers.Referrer = new Uri(ApiEndpoints.MobileLoginRequestRefer);
         message.Content = new FormUrlEncodedContent(postData);
 
-        using var responseMessage = await _client.SendAsync(message).ConfigureAwait(false);
+        using var responseMessage = await _client.SendAsync(message);
         if (!responseMessage.IsSuccessStatusCode)
             return false;
 
-        return await responseMessage.Content.ReadFromJsonAsync<RemoveAuthenticatorResponse>().ConfigureAwait(false) is not {Response.Success: true};
+        return await responseMessage.Content.ReadFromJsonAsync<RemoveAuthenticatorResponse>() is not {Response.Success: true};
     }
 }

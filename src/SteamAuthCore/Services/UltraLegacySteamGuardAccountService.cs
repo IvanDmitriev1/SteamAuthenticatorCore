@@ -22,7 +22,7 @@ internal class UltraLegacySteamGuardAccountService : ISteamGuardAccountService
 
     public async ValueTask<bool> RefreshSession(SteamGuardAccount account, CancellationToken cancellationToken)
     {
-        return await _steamGuardAccountService.RefreshSession(account, cancellationToken).ConfigureAwait(false);
+        return await _steamGuardAccountService.RefreshSession(account, cancellationToken);
     }
 
     public async ValueTask<IEnumerable<ConfirmationModel>> FetchConfirmations(SteamGuardAccount account, CancellationToken cancellationToken)
@@ -30,21 +30,21 @@ internal class UltraLegacySteamGuardAccountService : ISteamGuardAccountService
         if (string.IsNullOrEmpty(account.DeviceId))
             throw new ArgumentException("Device ID is not present");
 
-        if (await SendFetchConfirmationsRequest(account, cancellationToken).ConfigureAwait(false) is not { } html)
+        if (await SendFetchConfirmationsRequest(account, cancellationToken) is not { } html)
             return Enumerable.Empty<ConfirmationModel>();
 
-        using var document = await LegacySteamGuardAccountService.Parser.ParseDocumentAsync(html, cancellationToken).ConfigureAwait(false);
+        using var document = await LegacySteamGuardAccountService.Parser.ParseDocumentAsync(html, cancellationToken);
         return document.GetElementsByClassName("mobileconf_list_entry").Select(LegacySteamGuardAccountService.GetConfirmationModelFromHtml);
     }
 
     public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel confirmation, ConfirmationOptions options, CancellationToken cancellationToken)
     {
-        return await _steamGuardAccountService.SendConfirmation(account, confirmation, options, cancellationToken).ConfigureAwait(false);
+        return await _steamGuardAccountService.SendConfirmation(account, confirmation, options, cancellationToken);
     }
 
     public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel[] confirmations, ConfirmationOptions options, CancellationToken cancellationToken)
     {
-        return await _steamGuardAccountService.SendConfirmation(account, confirmations, options, cancellationToken).ConfigureAwait(false);
+        return await _steamGuardAccountService.SendConfirmation(account, confirmations, options, cancellationToken);
     }
 
     public Task<LoginResult> Login(LoginData loginData)
@@ -79,7 +79,7 @@ internal class UltraLegacySteamGuardAccountService : ISteamGuardAccountService
             if (!html.Contains("Invalid authenticator"))
                 return html;
 
-            return await SendFetchConfirmationsRequest(account, cancellationToken).ConfigureAwait(false);
+            return await SendFetchConfirmationsRequest(account, cancellationToken);
         }
         catch (WgTokenInvalidException)
         {
@@ -88,10 +88,10 @@ internal class UltraLegacySteamGuardAccountService : ISteamGuardAccountService
             if (times >= 1)
                 return null;
 
-            if (!await RefreshSession(account, cancellationToken).ConfigureAwait(false))
+            if (!await RefreshSession(account, cancellationToken))
                 return null;
 
-            return await SendFetchConfirmationsRequest(account, cancellationToken, ++times).ConfigureAwait(false);
+            return await SendFetchConfirmationsRequest(account, cancellationToken, ++times);
         }
         catch (WgTokenExpiredException)
         {

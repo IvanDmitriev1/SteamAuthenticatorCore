@@ -15,7 +15,7 @@ internal class TimeAligner : ITimeAligner
 
     public async ValueTask AlignTimeAsync()
     {
-        var time = await _legacySteamApi.GetServerTime().ConfigureAwait(false);
+        var time = await _legacySteamApi.GetServerTime();
         ITimeAligner.TimeDifference = Int64.Parse(time) - ITimeAligner.GetSystemUnixTime();
     }
 }
