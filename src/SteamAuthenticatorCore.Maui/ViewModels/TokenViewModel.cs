@@ -11,20 +11,21 @@ using System.Collections.ObjectModel;
 
 namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
-public partial class TokenViewModel : ObservableRecipient
+public sealed partial class TokenViewModel : ObservableRecipient, IAsyncDisposable
 {
-    public TokenViewModel(AccountsServiceResolver accountsFileServiceResolver, ISteamGuardAccountService steamGuardAccountService, ITimer timer)
+    public TokenViewModel(AccountsServiceResolver accountsFileServiceResolver, ISteamGuardAccountService steamGuardAccountService, IBackgroundTimerFactory backgroundTimerFactory)
     {
         _steamGuardAccountService = steamGuardAccountService;
-        _timer = timer;
         _accountsService = accountsFileServiceResolver.Invoke();
         _token = TokenPlaceHolder;
+
+        _backgroundTimer = backgroundTimerFactory.StartNewTimer(TimeSpan.FromSeconds(1), OnTimer);
     }
 
     private const string TokenPlaceHolder = "Token";
 
     private readonly ISteamGuardAccountService _steamGuardAccountService;
-    private readonly ITimer _timer;
+    private readonly IBackgroundTimer _backgroundTimer;
     private readonly IAccountsService _accountsService;
     private IReadOnlyList<SteamGuardAccount> _accounts = Array.Empty<SteamGuardAccount>();
 
@@ -54,7 +55,6 @@ public partial class TokenViewModel : ObservableRecipient
         base.OnActivated();
 
         await RefreshAccounts().ConfigureAwait(false);
-        await _timer.StartOrRestart(TimeSpan.FromSeconds(1), OnTimer).ConfigureAwait(false);
 
         Shell.Current.Navigating += ShellOnNavigating;
     }
@@ -65,6 +65,11 @@ public partial class TokenViewModel : ObservableRecipient
 
         HideLongPressTitleView();
         Shell.Current.Navigating -= ShellOnNavigating;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _backgroundTimer.DisposeAsync().ConfigureAwait(false);
     }
 
     #region Commands

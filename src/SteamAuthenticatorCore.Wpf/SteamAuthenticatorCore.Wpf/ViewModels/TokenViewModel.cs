@@ -22,26 +22,24 @@ using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Messages;
 using SteamAuthenticatorCore.Shared.Models;
 using Wpf.Ui.Controls.ContentDialogControl;
-using Wpf.Ui.Controls.Navigation;
 using Wpf.Ui.TaskBar;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
-public sealed partial class TokenViewModel : ObservableRecipient
+public sealed partial class TokenViewModel : ObservableRecipient, IAsyncDisposable
 {
     public TokenViewModel(ISteamGuardAccountService steamAccountService,
-        AccountsServiceResolver accountsServiceResolver, ITimer timer)
+        AccountsServiceResolver accountsServiceResolver, IBackgroundTimerFactory backgroundTimerFactory)
     {
         _steamAccountService = steamAccountService;
-        _timer = timer;
-
         _accountsService = accountsServiceResolver.Invoke();
         _appSettings = AppSettings.Current;
+
+        _backgroundTimer = backgroundTimerFactory.StartNewTimer(TimeSpan.FromSeconds(1), OnTimer);
     }
 
     private readonly ISteamGuardAccountService _steamAccountService;
-    private readonly ITimer _timer;
+    private readonly IBackgroundTimer _backgroundTimer;
     private readonly IAccountsService _accountsService;
     private readonly AppSettings _appSettings;
     private StackPanel? _stackPanel;
@@ -70,18 +68,16 @@ public sealed partial class TokenViewModel : ObservableRecipient
     [ObservableProperty]
     private SteamGuardAccount? _selectedAccount;
 
-    protected override async void OnActivated()
-    {
-        base.OnActivated();
-
-        await _timer.StartOrRestart(TimeSpan.FromSeconds(1), OnTimer);
-    }
-
     protected override void OnDeactivated()
     {
         base.OnDeactivated();
 
         _stackPanel = null;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _backgroundTimer.DisposeAsync().ConfigureAwait(false);
     }
 
     #region RelayCommands

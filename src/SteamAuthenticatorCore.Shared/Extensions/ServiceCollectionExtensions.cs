@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using SteamAuthenticatorCore.Shared.Abstractions;
 using SteamAuthenticatorCore.Shared.Services;
 
+[assembly: Fody.ConfigureAwait(false)]
+
 namespace SteamAuthenticatorCore.Shared.Extensions;
 
 public static class ServiceCollectionExtensions
@@ -14,8 +16,6 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IConfirmationService, ConfirmationService>();
         services.AddSingleton<ILoginService, LoginService>();
 
-        services.AddTransient<ITaskTimer, BackgroundTaskService>();
-        services.AddTransient<IValueTaskTimer, BackgroundValueTaskService>();
-        services.AddTransient<ITimer, BackgroundService>();
+        services.AddSingleton(BackgroundTimerFactory.Default);
     }
 }
