@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:Popup
+    x:Class="SteamAuthenticatorCore.Maui.Popups.UpdatePopup"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:octokit="clr-namespace:Octokit;assembly=Octokit"
+    xmlns:views="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    x:DataType="octokit:Release"
+    Closed="UpdatePopup_OnClosed"
+    Color="Transparent">
+
+    <Border BackgroundColor="{DynamicResource Surface}" WidthRequest="350">
+        <Grid Padding="24" Grid.RowDefinitions="Auto, *, Auto, Auto">
+            <Label
+                Grid.Row="0"
+                FontAttributes="Bold"
+                FontSize="24"
+                HorizontalOptions="Center"
+                Text="Update available"
+                TextColor="{DynamicResource OnSurfaceVariant}"
+                VerticalOptions="Center" />
+
+            <ScrollView Grid.Row="1" Margin="0,15">
+                <Label LineBreakMode="WordWrap" Text="{Binding Body}" />
+            </ScrollView>
+
+            <ProgressBar
+                x:Name="ProgressBar"
+                Grid.Row="2"
+                IsVisible="False" />
+
+            <HorizontalStackLayout
+                Grid.Row="3"
+                Margin="0,15,0,0"
+                HorizontalOptions="End">
+                <Button
+                    x:Name="UpdateButton"
+                    BackgroundColor="{DynamicResource PrimaryContainer}"
+                    Clicked="OnUpdateClicked"
+                    FontSize="20"
+                    Text="Update"
+                    TextColor="{DynamicResource OnPrimaryContainer}" />
+
+                <Button
+                    Margin="10,0,0,0"
+                    BackgroundColor="{DynamicResource SecondaryContainer}"
+                    Clicked="OnCancelClicked"
+                    FontSize="20"
+                    Text="Cancel"
+                    TextColor="{DynamicResource OnSecondaryContainer}" />
+            </HorizontalStackLayout>
+        </Grid>
+    </Border>
+</views:Popup>

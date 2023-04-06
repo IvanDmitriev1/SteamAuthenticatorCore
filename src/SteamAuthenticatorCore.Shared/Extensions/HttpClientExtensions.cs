@@ -1,8 +1,6 @@
-﻿using System.IO;
-using System.Net.Http;
-using System.Threading;
+﻿using System.Net.Http;
 
-namespace SteamAuthenticatorCore.Desktop.Helpers;
+namespace SteamAuthenticatorCore.Shared.Extensions;
 
 public static class HttpClientExtensions
 {

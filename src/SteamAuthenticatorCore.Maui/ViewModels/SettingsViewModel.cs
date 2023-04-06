@@ -1,4 +1,7 @@
-﻿namespace SteamAuthenticatorCore.Maui.ViewModels;
+﻿using CommunityToolkit.Maui.Views;
+using SteamAuthenticatorCore.Maui.Popups;
+
+namespace SteamAuthenticatorCore.Maui.ViewModels;
 
 public sealed partial class SettingsViewModel : ObservableRecipient
 {
@@ -70,6 +73,20 @@ public sealed partial class SettingsViewModel : ObservableRecipient
     [RelayCommand]
     private async Task CheckForUpdates()
     {
-        //await _updateService.CheckForUpdateAndDownloadInstall(false);
+        try
+        {
+            if (await _updateService.CheckForUpdate() is not { } release)
+            {
+                await Snackbar.Make("You are using the latest version").Show();
+                return;
+            }
+
+            var updatePopup = new UpdatePopup(release);
+            await Shell.Current.CurrentPage.ShowPopupAsync(updatePopup);
+        }
+        catch
+        {
+            //
+        }
     }
 }
