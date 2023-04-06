@@ -1,17 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 using Octokit;
-using SteamAuthenticatorCore.Desktop.Helpers;
-using SteamAuthenticatorCore.Shared.Extensions;
-using Wpf.Ui.Controls.ContentDialogControl;
 using FileMode = System.IO.FileMode;
 
 namespace SteamAuthenticatorCore.Desktop.Dialogs;

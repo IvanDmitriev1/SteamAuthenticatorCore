@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using System.Windows.Controls;
-using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace SteamAuthenticatorCore.Desktop.Helpers;
 

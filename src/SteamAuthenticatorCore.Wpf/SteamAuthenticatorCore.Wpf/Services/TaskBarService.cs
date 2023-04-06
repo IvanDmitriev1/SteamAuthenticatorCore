@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using Wpf.Ui.TaskBar;
+﻿using Wpf.Ui.TaskBar;
 
 namespace SteamAuthenticatorCore.Desktop.Services;
 

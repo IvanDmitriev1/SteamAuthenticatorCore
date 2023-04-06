@@ -1,15 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
-using SteamAuthenticatorCore.Desktop.Services;
-using SteamAuthenticatorCore.Desktop.Views.Pages;
-using SteamAuthenticatorCore.Shared.Abstractions;
-using SteamAuthenticatorCore.Shared.Messages;
-using SteamAuthenticatorCore.Shared.Models;
-
-namespace SteamAuthenticatorCore.Desktop.ViewModels;
+﻿namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public partial class ConfirmationsOverviewViewModel : ObservableObject
 {

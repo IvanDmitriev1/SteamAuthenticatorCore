@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
-using System.Threading.Tasks;
-using SteamAuthCore.Models;
-using SteamAuthenticatorCore.Shared.Abstractions;
 using GoogleFile = Google.Apis.Drive.v3.Data.File;
 
 namespace SteamAuthenticatorCore.Desktop.Services;

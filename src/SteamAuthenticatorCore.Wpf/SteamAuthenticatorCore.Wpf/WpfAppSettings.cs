@@ -1,7 +1,4 @@
 ﻿using Microsoft.Win32;
-using SteamAuthenticatorCore.Shared;
-using SteamAuthenticatorCore.Shared.Abstractions;
-using System;
 using System.Reflection;
 
 namespace SteamAuthenticatorCore.Desktop;

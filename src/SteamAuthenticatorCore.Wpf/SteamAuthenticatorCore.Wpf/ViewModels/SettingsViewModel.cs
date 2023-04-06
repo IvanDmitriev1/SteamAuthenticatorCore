@@ -1,18 +1,5 @@
-﻿using System;
-using System.ComponentModel;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using SteamAuthenticatorCore.Shared;
-using SteamAuthenticatorCore.Shared.Abstractions;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Octokit;
-using SteamAuthenticatorCore.Desktop.Helpers;
-using Wpf.Ui.Common;
-using Wpf.Ui.Controls.IconElements;
-using SteamAuthenticatorCore.Desktop.Dialogs;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 

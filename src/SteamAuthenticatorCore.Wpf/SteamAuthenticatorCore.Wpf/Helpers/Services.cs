@@ -1,6 +1,4 @@
-﻿using Wpf.Ui.Contracts;
-
-namespace SteamAuthenticatorCore.Desktop.Helpers;
+﻿namespace SteamAuthenticatorCore.Desktop.Helpers;
 
 public static class SnackbarService
 {

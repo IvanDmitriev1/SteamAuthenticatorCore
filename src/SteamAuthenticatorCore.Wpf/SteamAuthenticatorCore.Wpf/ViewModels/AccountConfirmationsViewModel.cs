@@ -1,13 +1,4 @@
-﻿using System.Collections;
-using System.Linq;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.Input;
-using SteamAuthCore.Abstractions;
-using SteamAuthCore.Models;
-using SteamAuthenticatorCore.Desktop.Services;
-using SteamAuthenticatorCore.Shared.ViewModel;
-
-namespace SteamAuthenticatorCore.Desktop.ViewModels;
+﻿namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public sealed partial class AccountConfirmationsViewModel : BaseAccountConfirmationsViewModel
 {

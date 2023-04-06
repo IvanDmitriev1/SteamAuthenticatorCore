@@ -1,10 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media.Imaging;
-using SteamAuthenticatorCore.Shared.Abstractions;
-using Wpf.Ui.Contracts;
-using Wpf.Ui.Controls;
+﻿using System.Windows.Media.Imaging;
 
 namespace SteamAuthenticatorCore.Desktop.Services;
 

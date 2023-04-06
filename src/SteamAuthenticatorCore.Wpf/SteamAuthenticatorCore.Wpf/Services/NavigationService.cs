@@ -1,8 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using Wpf.Ui.Controls.Navigation;
-
-namespace SteamAuthenticatorCore.Desktop.Services;
+﻿namespace SteamAuthenticatorCore.Desktop.Services;
 
 public sealed class NavigationService
 {

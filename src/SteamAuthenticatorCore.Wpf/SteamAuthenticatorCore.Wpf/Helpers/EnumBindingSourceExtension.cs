@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SteamAuthenticatorCore.Desktop.Helpers;
+﻿namespace SteamAuthenticatorCore.Desktop.Helpers;
 
 internal class EnumBindingSourceExtension : System.Windows.Markup.MarkupExtension
 {

@@ -1,18 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Windows;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using SteamAuthCore.Abstractions;
-using SteamAuthenticatorCore.Desktop.Helpers;
-using SteamAuthenticatorCore.Desktop.Services;
-using SteamAuthenticatorCore.Desktop.Views.Pages;
-using SteamAuthenticatorCore.Shared;
-using SteamAuthenticatorCore.Shared.Abstractions;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Wpf.Ui.Appearance;
-using Wpf.Ui.Common;
-using Wpf.Ui.Controls;
-using Wpf.Ui.Controls.IconElements;
+using MenuItem = Wpf.Ui.Controls.MenuItem;
 
 namespace SteamAuthenticatorCore.Desktop.Views;
 
