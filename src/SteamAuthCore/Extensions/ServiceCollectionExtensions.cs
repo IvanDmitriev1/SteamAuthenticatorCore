@@ -1,7 +1,4 @@
-﻿using System.Net.Http;
-using Microsoft.Extensions.DependencyInjection;
-using SteamAuthCore.Abstractions;
-using SteamAuthCore.Services;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace SteamAuthCore.Extensions;
 

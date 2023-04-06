@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text;
-
-namespace SteamAuthCore.Models;
+﻿namespace SteamAuthCore.Models;
 
 public class LoginData
 {

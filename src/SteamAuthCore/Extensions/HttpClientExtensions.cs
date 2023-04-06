@@ -1,7 +1,4 @@
-﻿using System.Net.Http.Headers;
-using System.Net.Http;
-
-namespace SteamAuthCore.Extensions;
+﻿namespace SteamAuthCore.Extensions;
 
 internal static class HttpClientExtensions
 {

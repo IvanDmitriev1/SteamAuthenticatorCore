@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using SteamAuthCore.Models.Internal;
-
-namespace SteamAuthCore.Abstractions;
+﻿namespace SteamAuthCore.Abstractions;
 
 internal interface ILegacySteamCommunityApi
 {

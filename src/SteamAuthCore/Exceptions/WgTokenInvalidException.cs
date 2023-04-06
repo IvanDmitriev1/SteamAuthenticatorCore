@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SteamAuthCore.Exceptions;
+﻿namespace SteamAuthCore.Exceptions;
 
 public sealed class WgTokenInvalidException : Exception
 {

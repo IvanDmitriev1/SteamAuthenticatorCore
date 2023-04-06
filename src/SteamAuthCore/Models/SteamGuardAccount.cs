@@ -1,11 +1,4 @@
-﻿using System;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
-using SteamAuthCore.Abstractions;
-
-namespace SteamAuthCore.Models;
+﻿namespace SteamAuthCore.Models;
 
 public class SteamGuardAccount
 {

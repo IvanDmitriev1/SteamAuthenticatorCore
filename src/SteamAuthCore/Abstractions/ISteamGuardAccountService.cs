@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using SteamAuthCore.Models;
-
-namespace SteamAuthCore.Abstractions;
+﻿namespace SteamAuthCore.Abstractions;
 
 public interface ISteamGuardAccountService
 {

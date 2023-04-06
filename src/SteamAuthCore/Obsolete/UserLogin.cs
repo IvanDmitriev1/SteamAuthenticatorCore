@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.Net;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using SteamAuthCore.Abstractions;
-using SteamAuthCore.Models;
-using SteamAuthCore.Models.Internal;
-
-namespace SteamAuthCore.Obsolete;
+﻿namespace SteamAuthCore.Obsolete;
 
 public class UserLogin
 {

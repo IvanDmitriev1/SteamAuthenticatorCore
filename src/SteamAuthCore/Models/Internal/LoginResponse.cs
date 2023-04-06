@@ -1,7 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-
-namespace SteamAuthCore.Models.Internal;
+﻿namespace SteamAuthCore.Models.Internal;
 internal class LoginResponse
 {
     [JsonPropertyName("success")]

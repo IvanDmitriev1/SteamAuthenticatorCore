@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using SteamAuthCore.Abstractions;
-
-namespace SteamAuthCore.Services;
+﻿namespace SteamAuthCore.Services;
 
 internal class TimeAligner : ITimeAligner
 {

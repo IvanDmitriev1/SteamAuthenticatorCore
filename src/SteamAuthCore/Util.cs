@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SteamAuthCore;
+﻿namespace SteamAuthCore;
 
 internal static class Util
 {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace SteamAuthCore.Abstractions;
+﻿namespace SteamAuthCore.Abstractions;
 
 /// <summary>
 /// Class to help align system time with the Steam server time. Not super advanced; probably not taking some things into account that it should.

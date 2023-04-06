@@ -1,8 +1,4 @@
-﻿using System.Diagnostics;
-using System.Net;
-using System.Text;
-
-namespace SteamAuthCore.Models;
+﻿namespace SteamAuthCore.Models;
 
 public class SessionData
 {

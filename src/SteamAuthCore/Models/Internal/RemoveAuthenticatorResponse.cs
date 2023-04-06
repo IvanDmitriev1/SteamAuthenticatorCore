@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace SteamAuthCore.Models.Internal;
+﻿namespace SteamAuthCore.Models.Internal;
 
 internal class RemoveAuthenticatorResponse
 {

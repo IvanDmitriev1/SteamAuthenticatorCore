@@ -1,17 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using SteamAuthCore.Abstractions;
-using SteamAuthCore.Exceptions;
-using SteamAuthCore.Extensions;
-using SteamAuthCore.Models.Internal;
-
-namespace SteamAuthCore.Services;
+﻿namespace SteamAuthCore.Services;
 
 internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
 {

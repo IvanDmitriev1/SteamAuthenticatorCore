@@ -1,18 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using AngleSharp.Dom;
+﻿using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
-using SteamAuthCore.Abstractions;
-using SteamAuthCore.Exceptions;
-using SteamAuthCore.Models;
-using SteamAuthCore.Models.Internal;
 
 namespace SteamAuthCore.Services;
 
