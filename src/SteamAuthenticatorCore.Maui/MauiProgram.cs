@@ -1,8 +1,5 @@
-﻿using CommunityToolkit.Maui;
-using MaterialColorUtilities.Maui;
+﻿using MaterialColorUtilities.Maui;
 using Microsoft.Extensions.Logging;
-using SteamAuthenticatorCore.Mobile.Extensions;
-using SteamAuthenticatorCore.Mobile.Resources;
 using Syncfusion.Maui.Core.Hosting;
 
 namespace SteamAuthenticatorCore.Mobile;

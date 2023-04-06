@@ -1,14 +1,4 @@
-﻿using SteamAuthCore.Extensions;
-using SteamAuthenticatorCore.Mobile.Pages;
-using SteamAuthenticatorCore.Mobile.Services;
-using SteamAuthenticatorCore.Mobile.ViewModels;
-using SteamAuthenticatorCore.Shared;
-using SteamAuthenticatorCore.Shared.Abstractions;
-using SteamAuthenticatorCore.Shared.Extensions;
-using SteamAuthenticatorCore.Shared.Models;
-using SteamAuthenticatorCore.Shared.Services;
-
-namespace SteamAuthenticatorCore.Mobile.Extensions;
+﻿namespace SteamAuthenticatorCore.Mobile.Extensions;
 
 internal static class MauiBuilderExtensions
 {

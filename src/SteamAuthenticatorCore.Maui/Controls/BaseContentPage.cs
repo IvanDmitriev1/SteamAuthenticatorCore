@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using CommunityToolkit.Mvvm.ComponentModel;
-
-namespace SteamAuthenticatorCore.Mobile.Controls;
+﻿namespace SteamAuthenticatorCore.Mobile.Controls;
 
 public abstract class BaseContentPage<TViewModel> : ContentPage where TViewModel : ObservableRecipient
 {

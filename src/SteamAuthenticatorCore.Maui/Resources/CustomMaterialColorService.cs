@@ -1,6 +1,4 @@
-﻿using CommunityToolkit.Maui.Core;
-using CommunityToolkit.Maui.Core.Platform;
-using MaterialColorUtilities.Maui;
+﻿using MaterialColorUtilities.Maui;
 using MaterialColorUtilities.Palettes;
 using MaterialColorUtilities.Schemes;
 using Microsoft.Extensions.Options;

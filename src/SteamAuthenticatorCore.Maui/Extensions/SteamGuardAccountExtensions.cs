@@ -1,7 +1,4 @@
-﻿using SteamAuthCore.Models;
-using SteamAuthenticatorCore.Mobile.Data;
-
-namespace SteamAuthenticatorCore.Mobile.Extensions;
+﻿namespace SteamAuthenticatorCore.Mobile.Extensions;
 
 internal static class SteamGuardAccountExtensions
 {

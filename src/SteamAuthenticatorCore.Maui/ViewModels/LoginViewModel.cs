@@ -1,9 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
-using SteamAuthenticatorCore.Shared.Abstractions;
-using SteamAuthenticatorCore.Shared.ViewModel;
-
-namespace SteamAuthenticatorCore.Mobile.ViewModels;
+﻿namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public partial class LoginViewModel : LoginViewModelBase
 {

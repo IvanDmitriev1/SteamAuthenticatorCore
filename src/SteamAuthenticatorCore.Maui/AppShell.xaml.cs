@@ -1,6 +1,4 @@
-﻿using SteamAuthenticatorCore.Mobile.Pages;
-
-namespace SteamAuthenticatorCore.Mobile;
+﻿namespace SteamAuthenticatorCore.Mobile;
 
 public partial class AppShell : Shell
 {

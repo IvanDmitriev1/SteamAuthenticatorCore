@@ -1,11 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using SteamAuthCore.Abstractions;
-using SteamAuthCore.Models;
-using SteamAuthenticatorCore.Shared.ViewModel;
-using System.Collections.ObjectModel;
-
-namespace SteamAuthenticatorCore.Mobile.ViewModels;
+﻿namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public sealed partial class AccountConfirmationsViewModel : BaseAccountConfirmationsViewModel, IDisposable
 {

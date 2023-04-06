@@ -1,6 +1,5 @@
 ﻿using Android.App;
 using Android.Content;
-using CommunityToolkit.Maui.Alerts;
 using Microsoft.Extensions.Logging;
 
 namespace SteamAuthenticatorCore.Mobile.Platforms.Android.BroadcastReceivers;

@@ -1,7 +1,4 @@
 ﻿using System.ComponentModel;
-using CommunityToolkit.Mvvm.ComponentModel;
-using SteamAuthenticatorCore.Shared;
-using SteamAuthenticatorCore.Shared.Abstractions;
 
 namespace SteamAuthenticatorCore.Mobile;
 

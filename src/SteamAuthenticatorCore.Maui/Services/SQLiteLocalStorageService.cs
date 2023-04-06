@@ -1,8 +1,4 @@
 ﻿using SQLite;
-using SteamAuthCore.Models;
-using SteamAuthenticatorCore.Mobile.Data;
-using SteamAuthenticatorCore.Mobile.Extensions;
-using SteamAuthenticatorCore.Shared.Abstractions;
 using System.Text.Json;
 
 namespace SteamAuthenticatorCore.Mobile.Services;

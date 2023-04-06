@@ -1,7 +1,4 @@
-﻿using SteamAuthenticatorCore.Mobile.Pages;
-using SteamAuthenticatorCore.Shared.Abstractions;
-
-namespace SteamAuthenticatorCore.Mobile;
+﻿namespace SteamAuthenticatorCore.Mobile;
 
 public partial class App : Application
 {

@@ -1,15 +1,4 @@
-﻿using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
-using SteamAuthCore.Abstractions;
-using SteamAuthCore.Models;
-using SteamAuthenticatorCore.Mobile.Pages;
-using SteamAuthenticatorCore.Shared.Abstractions;
-using SteamAuthenticatorCore.Shared.Messages;
-using System.Collections.ObjectModel;
-
-namespace SteamAuthenticatorCore.Mobile.ViewModels;
+﻿namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public sealed partial class TokenViewModel : ObservableRecipient, IAsyncDisposable
 {

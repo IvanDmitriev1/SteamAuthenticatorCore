@@ -1,5 +1,3 @@
-using SteamAuthenticatorCore.Mobile.ViewModels;
-
 namespace SteamAuthenticatorCore.Mobile.Pages;
 
 public partial class AccountConfirmationsPage 

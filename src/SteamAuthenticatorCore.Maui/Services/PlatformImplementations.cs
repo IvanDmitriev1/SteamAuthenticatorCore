@@ -1,6 +1,4 @@
-﻿using SteamAuthenticatorCore.Shared.Abstractions;
-
-namespace SteamAuthenticatorCore.Mobile.Services;
+﻿namespace SteamAuthenticatorCore.Mobile.Services;
 
 internal class PlatformImplementations : IPlatformImplementations
 {

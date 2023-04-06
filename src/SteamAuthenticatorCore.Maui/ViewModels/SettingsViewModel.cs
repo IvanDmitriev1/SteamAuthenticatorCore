@@ -1,8 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using SteamAuthenticatorCore.Shared.Abstractions;
-
-namespace SteamAuthenticatorCore.Mobile.ViewModels;
+﻿namespace SteamAuthenticatorCore.Mobile.ViewModels;
 
 public sealed partial class SettingsViewModel : ObservableRecipient
 {
