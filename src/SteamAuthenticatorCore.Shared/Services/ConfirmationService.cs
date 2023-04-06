@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using SteamAuthCore.Abstractions;
-using SteamAuthCore.Models;
-using SteamAuthenticatorCore.Shared.Abstractions;
-using SteamAuthenticatorCore.Shared.Models;
-
-namespace SteamAuthenticatorCore.Shared.Services;
+﻿namespace SteamAuthenticatorCore.Shared.Services;
 
 internal sealed class ConfirmationService : IConfirmationService, IAsyncDisposable
 {

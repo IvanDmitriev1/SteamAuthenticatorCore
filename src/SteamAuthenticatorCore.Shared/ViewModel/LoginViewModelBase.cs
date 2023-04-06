@@ -1,11 +1,4 @@
-﻿using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Messaging;
-using SteamAuthCore.Models;
-using SteamAuthenticatorCore.Shared.Abstractions;
-using SteamAuthenticatorCore.Shared.Messages;
-
-namespace SteamAuthenticatorCore.Shared.ViewModel;
+﻿namespace SteamAuthenticatorCore.Shared.ViewModel;
 
 public abstract partial class LoginViewModelBase : ObservableRecipient, IRecipient<UpdateAccountInLoginPageMessage>
 {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using SteamAuthenticatorCore.Shared.Abstractions;
-
-namespace SteamAuthenticatorCore.Shared.Services;
+﻿namespace SteamAuthenticatorCore.Shared.Services;
 
 public sealed class BackgroundTimerFactory : IBackgroundTimerFactory
 {

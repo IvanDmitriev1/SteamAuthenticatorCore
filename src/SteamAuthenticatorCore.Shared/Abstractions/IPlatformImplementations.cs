@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using SteamAuthenticatorCore.Shared.Models;
-
-namespace SteamAuthenticatorCore.Shared.Abstractions;
+﻿namespace SteamAuthenticatorCore.Shared.Abstractions;
 
 public interface IPlatformImplementations
 {

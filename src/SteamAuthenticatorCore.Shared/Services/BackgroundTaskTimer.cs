@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace SteamAuthenticatorCore.Shared.Services;
+﻿namespace SteamAuthenticatorCore.Shared.Services;
 
 internal sealed class BackgroundTaskTimer : BaseBackgroundTimer
 {

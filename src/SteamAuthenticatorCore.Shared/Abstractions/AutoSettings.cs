@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using CommunityToolkit.Mvvm.ComponentModel;
-
-namespace SteamAuthenticatorCore.Shared.Abstractions;
+﻿namespace SteamAuthenticatorCore.Shared.Abstractions;
 
 public abstract class AutoSettings : ObservableObject, ISettings
 {

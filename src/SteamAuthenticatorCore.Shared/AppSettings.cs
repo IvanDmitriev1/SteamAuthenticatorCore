@@ -1,9 +1,4 @@
-﻿using System.ComponentModel;
-using CommunityToolkit.Mvvm.ComponentModel;
-using SteamAuthenticatorCore.Shared.Abstractions;
-using SteamAuthenticatorCore.Shared.Models;
-
-namespace SteamAuthenticatorCore.Shared;
+﻿namespace SteamAuthenticatorCore.Shared;
 
 public abstract partial class AppSettings : AutoSettings
 {

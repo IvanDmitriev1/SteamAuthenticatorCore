@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-
-namespace SteamAuthenticatorCore.Shared.Abstractions;
+﻿namespace SteamAuthenticatorCore.Shared.Abstractions;
 
 public interface ISettings : INotifyPropertyChanged
 {

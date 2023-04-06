@@ -1,7 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
-using Microsoft.Extensions.DependencyInjection;
-using SteamAuthenticatorCore.Shared.Abstractions;
-using SteamAuthenticatorCore.Shared.Services;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace SteamAuthenticatorCore.Shared.Extensions;
 

@@ -1,6 +1,4 @@
-﻿using System.IO;
-using Octokit;
-using System.Linq;
+﻿using Octokit;
 
 namespace SteamAuthenticatorCore.Shared.Extensions;
 

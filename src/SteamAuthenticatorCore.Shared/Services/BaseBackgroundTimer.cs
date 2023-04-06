@@ -1,10 +1,4 @@
-﻿using System.Threading.Tasks;
-using System.Threading;
-using System;
-using System.Diagnostics;
-using SteamAuthenticatorCore.Shared.Abstractions;
-
-namespace SteamAuthenticatorCore.Shared.Services;
+﻿namespace SteamAuthenticatorCore.Shared.Services;
 
 internal abstract class BaseBackgroundTimer : IBackgroundTimer
 {

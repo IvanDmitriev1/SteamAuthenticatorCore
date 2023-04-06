@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using SteamAuthenticatorCore.Shared.Abstractions;
-using Octokit;
+﻿using Octokit;
 using ProductHeaderValue = Octokit.ProductHeaderValue;
 
 namespace SteamAuthenticatorCore.Shared.Services;

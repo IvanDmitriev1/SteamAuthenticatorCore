@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using SteamAuthCore.Models;
-using System.Collections.ObjectModel;
-
-namespace SteamAuthenticatorCore.Shared.Models;
+﻿namespace SteamAuthenticatorCore.Shared.Models;
 
 public sealed class SteamGuardAccountConfirmationsModel
 {

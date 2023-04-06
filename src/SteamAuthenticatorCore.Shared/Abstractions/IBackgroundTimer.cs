@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace SteamAuthenticatorCore.Shared.Abstractions;
+﻿namespace SteamAuthenticatorCore.Shared.Abstractions;
 
 public interface IBackgroundTimer : IAsyncDisposable
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using SteamAuthCore.Models;
-using SteamAuthCore.Obsolete;
-using SteamAuthenticatorCore.Shared.Abstractions;
+﻿using SteamAuthCore.Obsolete;
 
 namespace SteamAuthenticatorCore.Shared.Services;
 
