@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace SteamAuthenticatorCore.Mobile;
+namespace SteamAuthenticatorCore.Maui;
 
 public sealed partial class MauiAppSettings : AppSettings
 {
@@ -52,7 +52,7 @@ public sealed partial class MauiAppSettings : AppSettings
     {
         base.OnPropertyChanged(e);
 
-        if (e.PropertyName != nameof(Theme))
+        if (e.PropertyName != nameof(MauiAppSettings.Theme))
             return;
 
         Application.Current!.UserAppTheme = Theme;

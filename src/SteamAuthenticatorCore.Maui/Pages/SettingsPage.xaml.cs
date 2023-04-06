@@ -1,4 +1,4 @@
-namespace SteamAuthenticatorCore.Mobile.Pages;
+namespace SteamAuthenticatorCore.Maui.Pages;
 
 public partial class SettingsPage
 {

@@ -1,4 +1,4 @@
-﻿namespace SteamAuthenticatorCore.Mobile.Controls;
+﻿namespace SteamAuthenticatorCore.Maui.Controls;
 
 public abstract class BaseContentPage<TViewModel> : ContentPage where TViewModel : ObservableRecipient
 {

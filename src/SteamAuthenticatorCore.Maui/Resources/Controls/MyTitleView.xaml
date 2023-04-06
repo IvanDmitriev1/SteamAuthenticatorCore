@@ -2,8 +2,8 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:controls="clr-namespace:SteamAuthenticatorCore.Mobile.Controls"
-    xmlns:resources="using:SteamAuthenticatorCore.Mobile.Resources">
+    xmlns:controls="clr-namespace:SteamAuthenticatorCore.Maui.Controls"
+    xmlns:resources="clr-namespace:SteamAuthenticatorCore.Maui.Resources">
 
     <ControlTemplate x:Key="Template" x:DataType="controls:MyTitleView">
         <Grid>

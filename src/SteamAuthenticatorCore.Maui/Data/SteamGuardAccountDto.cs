@@ -1,6 +1,6 @@
 ﻿using SQLite;
 
-namespace SteamAuthenticatorCore.Mobile.Data;
+namespace SteamAuthenticatorCore.Maui.Data;
 
 [Table("SteamGuardAccountDto")]
 internal sealed class SteamGuardAccountDto

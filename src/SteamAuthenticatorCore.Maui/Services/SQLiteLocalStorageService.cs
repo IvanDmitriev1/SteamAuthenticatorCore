@@ -1,7 +1,7 @@
-﻿using SQLite;
-using System.Text.Json;
+﻿using System.Text.Json;
+using SQLite;
 
-namespace SteamAuthenticatorCore.Mobile.Services;
+namespace SteamAuthenticatorCore.Maui.Services;
 
 internal class SqLiteLocalStorageService : IAccountsService
 {

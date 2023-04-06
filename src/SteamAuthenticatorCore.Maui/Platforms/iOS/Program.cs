@@ -1,6 +1,6 @@
 ﻿using UIKit;
 
-namespace SteamAuthenticatorCore.Mobile;
+namespace SteamAuthenticatorCore.Maui;
 
 public class Program
 {

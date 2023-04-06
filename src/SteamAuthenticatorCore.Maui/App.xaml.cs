@@ -1,4 +1,4 @@
-﻿namespace SteamAuthenticatorCore.Mobile;
+﻿namespace SteamAuthenticatorCore.Maui;
 
 public partial class App : Application
 {

@@ -3,7 +3,7 @@ using MaterialColorUtilities.Palettes;
 using MaterialColorUtilities.Schemes;
 using Microsoft.Extensions.Options;
 
-namespace SteamAuthenticatorCore.Mobile.Resources;
+namespace SteamAuthenticatorCore.Maui.Resources;
 
 public class CustomMaterialColorService : MaterialColorService<CorePalette, Scheme<uint>, Scheme<Color>, LightSchemeMapper, DarkSchemeMapper>
 {

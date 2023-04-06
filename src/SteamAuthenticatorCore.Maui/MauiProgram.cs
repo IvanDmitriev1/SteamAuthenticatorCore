@@ -1,8 +1,9 @@
 ﻿using MaterialColorUtilities.Maui;
 using Microsoft.Extensions.Logging;
+using SteamAuthenticatorCore.Maui.Resources;
 using Syncfusion.Maui.Core.Hosting;
 
-namespace SteamAuthenticatorCore.Mobile;
+namespace SteamAuthenticatorCore.Maui;
 
 public static class MauiProgram
 {

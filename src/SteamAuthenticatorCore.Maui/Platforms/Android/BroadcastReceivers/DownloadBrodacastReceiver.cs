@@ -2,7 +2,7 @@
 using Android.Content;
 using Microsoft.Extensions.Logging;
 
-namespace SteamAuthenticatorCore.Mobile.Platforms.Android.BroadcastReceivers;
+namespace SteamAuthenticatorCore.Maui.Platforms.Android.BroadcastReceivers;
 
 [BroadcastReceiver(Exported = false)]
 [IntentFilter(new string[] { DownloadManager.ActionDownloadComplete })]

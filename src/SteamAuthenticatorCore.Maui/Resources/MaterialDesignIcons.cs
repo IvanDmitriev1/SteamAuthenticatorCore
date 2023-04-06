@@ -1,4 +1,4 @@
-﻿namespace SteamAuthenticatorCore.Mobile.Resources;
+﻿namespace SteamAuthenticatorCore.Maui.Resources;
 
 /// <summary>
 /// The unicode values for all Material Design icons.

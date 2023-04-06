@@ -1,4 +1,4 @@
-﻿namespace SteamAuthenticatorCore.Mobile.Extensions;
+﻿namespace SteamAuthenticatorCore.Maui.Extensions;
 
 internal static class MauiBuilderExtensions
 {

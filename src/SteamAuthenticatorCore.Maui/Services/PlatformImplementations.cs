@@ -1,4 +1,4 @@
-﻿namespace SteamAuthenticatorCore.Mobile.Services;
+﻿namespace SteamAuthenticatorCore.Maui.Services;
 
 internal class PlatformImplementations : IPlatformImplementations
 {

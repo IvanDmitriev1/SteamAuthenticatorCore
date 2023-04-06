@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <controls:BaseContentPage
-    x:Class="SteamAuthenticatorCore.Mobile.Pages.SettingsPage"
+    x:Class="SteamAuthenticatorCore.Maui.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:applicationModel="clr-namespace:Microsoft.Maui.ApplicationModel;assembly=Microsoft.Maui.Essentials"
-    xmlns:controls="clr-namespace:SteamAuthenticatorCore.Mobile.Controls"
+    xmlns:controls="clr-namespace:SteamAuthenticatorCore.Maui.Controls"
     xmlns:effectsView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
-    xmlns:resources="clr-namespace:SteamAuthenticatorCore.Mobile.Resources"
-    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
+    xmlns:resources="clr-namespace:SteamAuthenticatorCore.Maui.Resources"
+    xmlns:viewModels1="clr-namespace:SteamAuthenticatorCore.Maui.ViewModels"
     Title="Settings"
-    x:DataType="viewModels:SettingsViewModel"
-    x:TypeArguments="viewModels:SettingsViewModel">
+    x:DataType="viewModels1:SettingsViewModel"
+    x:TypeArguments="viewModels1:SettingsViewModel">
 
     <ContentPage.Resources>
         <ControlTemplate x:Key="RadioButtonTemplate" x:DataType="RadioButton">

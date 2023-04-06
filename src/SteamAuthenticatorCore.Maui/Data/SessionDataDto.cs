@@ -1,6 +1,6 @@
 ﻿using SQLite;
 
-namespace SteamAuthenticatorCore.Mobile.Data;
+namespace SteamAuthenticatorCore.Maui.Data;
 
 [Table("SessionDataDto")]
 internal class SessionDataDto

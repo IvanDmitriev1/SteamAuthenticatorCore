@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace SteamAuthenticatorCore.Mobile;
+namespace SteamAuthenticatorCore.Maui;
 
 public class Program
 {

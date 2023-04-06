@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Shell
-    x:Class="SteamAuthenticatorCore.Mobile.AppShell"
+    x:Class="SteamAuthenticatorCore.Maui.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:behaviors="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-    xmlns:core="clr-namespace:CommunityToolkit.Maui.Core;assembly=CommunityToolkit.Maui.Core"
-    xmlns:pages="clr-namespace:SteamAuthenticatorCore.Mobile.Pages"
-    xmlns:resources="clr-namespace:SteamAuthenticatorCore.Mobile.Resources"
+    xmlns:pages="clr-namespace:SteamAuthenticatorCore.Maui.Pages"
+    xmlns:resources="clr-namespace:SteamAuthenticatorCore.Maui.Resources"
     FlyoutBehavior="Disabled">
 
     <!--<Shell.Behaviors>

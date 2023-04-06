@@ -1,4 +1,6 @@
-﻿namespace SteamAuthenticatorCore.Mobile;
+﻿using SteamAuthenticatorCore.Maui.Pages;
+
+namespace SteamAuthenticatorCore.Maui;
 
 public partial class AppShell : Shell
 {

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <controls:BaseContentPage
-    x:Class="SteamAuthenticatorCore.Mobile.Pages.LoginPage"
+    x:Class="SteamAuthenticatorCore.Maui.Pages.LoginPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:controls="clr-namespace:SteamAuthenticatorCore.Mobile.Controls"
-    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
+    xmlns:controls="clr-namespace:SteamAuthenticatorCore.Maui.Controls"
+    xmlns:viewModels1="clr-namespace:SteamAuthenticatorCore.Maui.ViewModels"
     Title="Login"
-    x:DataType="viewModels:LoginViewModel"
-    x:TypeArguments="viewModels:LoginViewModel"
+    x:DataType="viewModels1:LoginViewModel"
+    x:TypeArguments="viewModels1:LoginViewModel"
     Shell.TabBarIsVisible="False">
 
     <VerticalStackLayout

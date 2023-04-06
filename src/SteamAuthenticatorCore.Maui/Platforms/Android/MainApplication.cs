@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace SteamAuthenticatorCore.Mobile;
+namespace SteamAuthenticatorCore.Maui;
 
 #if DEBUG
 [Application(Debuggable=true)]

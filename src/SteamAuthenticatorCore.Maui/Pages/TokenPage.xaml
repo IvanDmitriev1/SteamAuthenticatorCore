@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <controls:BaseContentPage
-    x:Class="SteamAuthenticatorCore.Mobile.Pages.TokenPage"
+    x:Class="SteamAuthenticatorCore.Maui.Pages.TokenPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:controls="clr-namespace:SteamAuthenticatorCore.Mobile.Controls"
+    xmlns:controls="clr-namespace:SteamAuthenticatorCore.Maui.Controls"
     xmlns:effectsView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
     xmlns:models="clr-namespace:SteamAuthCore.Models;assembly=SteamAuthCore"
-    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
+    xmlns:viewModels1="clr-namespace:SteamAuthenticatorCore.Maui.ViewModels"
     x:Name="Page"
     Title="Token"
-    x:DataType="viewModels:TokenViewModel"
-    x:TypeArguments="viewModels:TokenViewModel">
+    x:DataType="viewModels1:TokenViewModel"
+    x:TypeArguments="viewModels1:TokenViewModel">
 
     <Shell.TitleView>
         <controls:MyTitleView CloseCommand="{Binding HideLongPressTitleViewCommand}" IsContentVisible="{Binding IsLongPressTitleViewVisible}">

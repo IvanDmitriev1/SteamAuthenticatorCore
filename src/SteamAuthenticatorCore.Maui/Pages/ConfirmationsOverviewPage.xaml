@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <controls:BaseContentPage
-    x:Class="SteamAuthenticatorCore.Mobile.Pages.ConfirmationsOverviewPage"
+    x:Class="SteamAuthenticatorCore.Maui.Pages.ConfirmationsOverviewPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:controls="clr-namespace:SteamAuthenticatorCore.Mobile.Controls"
+    xmlns:controls="clr-namespace:SteamAuthenticatorCore.Maui.Controls"
     xmlns:effectsView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
     xmlns:models="clr-namespace:SteamAuthenticatorCore.Shared.Models;assembly=SteamAuthenticatorCore.Shared"
-    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Mobile.ViewModels"
+    xmlns:viewModels1="clr-namespace:SteamAuthenticatorCore.Maui.ViewModels"
     x:Name="Page"
     Title="Confirmations"
-    x:DataType="viewModels:ConfirmationsOverviewViewModel"
-    x:TypeArguments="viewModels:ConfirmationsOverviewViewModel">
+    x:DataType="viewModels1:ConfirmationsOverviewViewModel"
+    x:TypeArguments="viewModels1:ConfirmationsOverviewViewModel">
 
     <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing}">
         <CollectionView ItemsSource="{Binding Confirmations}">
