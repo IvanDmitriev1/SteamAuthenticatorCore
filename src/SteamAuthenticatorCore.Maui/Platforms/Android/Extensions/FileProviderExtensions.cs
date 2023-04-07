@@ -6,5 +6,5 @@ namespace SteamAuthenticatorCore.Maui.Platforms.Android.Extensions;
 
 internal static class FileProviderExtensions
 {
-    public static Uri? GetUriForFile(string filePath) => FileProvider.GetUriForFile(Platform.AppContext, $"{Platform.AppContext.PackageName}.fileProvider", new File(filePath));
+    public static Uri? GetUriForFile(File file) => FileProvider.GetUriForFile(Platform.AppContext, $"{Platform.AppContext.PackageName}.fileProvider", file);
 }

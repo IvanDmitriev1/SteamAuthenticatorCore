@@ -4,16 +4,14 @@ namespace SteamAuthenticatorCore.Shared.Extensions;
 
 public static class HttpClientExtensions
 {
-    public static async Task DownloadAsync(this HttpClient client, string requestUri, Stream destination, IProgress<double> progress, CancellationToken cancellationToken)
+    public static async Task DownloadAsync(this HttpResponseMessage message, Stream destination, IProgress<double> progress, CancellationToken cancellationToken)
     {
-        using var response = await client.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-
-        if (response.Content.Headers.ContentLength is null)
+        if (message.Content.Headers.ContentLength is null)
             return;
 
-        var totalDownloadSize = response.Content.Headers.ContentLength;
+        var totalDownloadSize = message.Content.Headers.ContentLength;
 
-        await using var download = await response.Content.ReadAsStreamAsync(cancellationToken);
+        await using var download = await message.Content.ReadAsStreamAsync(cancellationToken);
 
         var buffer = new byte[81920];
         long totalBytesRead = 0;

@@ -3,14 +3,12 @@
     x:Class="SteamAuthenticatorCore.Maui.Popups.UpdatePopup"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:octokit="clr-namespace:Octokit;assembly=Octokit"
     xmlns:views="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-    x:DataType="octokit:Release"
     Closed="UpdatePopup_OnClosed"
     Color="Transparent">
 
-    <Border BackgroundColor="{DynamicResource Surface}" WidthRequest="350">
-        <Grid Padding="24" Grid.RowDefinitions="Auto, *, Auto, Auto">
+    <Border x:Name="Border" BackgroundColor="{DynamicResource Surface}">
+        <Grid Padding="12" Grid.RowDefinitions="Auto, *, Auto, Auto">
             <Label
                 Grid.Row="0"
                 FontAttributes="Bold"
@@ -21,7 +19,7 @@
                 VerticalOptions="Center" />
 
             <ScrollView Grid.Row="1" Margin="0,15">
-                <Label LineBreakMode="WordWrap" Text="{Binding Body}" />
+                <Label x:Name="Label" LineBreakMode="WordWrap" />
             </ScrollView>
 
             <ProgressBar

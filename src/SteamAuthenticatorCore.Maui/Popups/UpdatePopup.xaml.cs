@@ -1,9 +1,5 @@
 using Octokit;
-using SteamAuthenticatorCore.Maui.MyPermissions;
 using System.Net.Http.Headers;
-using System.Reflection;
-using Application = Microsoft.Maui.Controls.Application;
-using FileMode = System.IO.FileMode;
 
 namespace SteamAuthenticatorCore.Maui.Popups;
 
@@ -11,7 +7,6 @@ public partial class UpdatePopup
 {
     public UpdatePopup(Release release)
 	{
-        _release = release;
         InitializeComponent();
 
         var releaseAssets = release.FindSuitableAssets(".apk");
@@ -21,10 +16,16 @@ public partial class UpdatePopup
             return;
         }
 
+        _release = release;
         _releaseAsset = releaseAssets[0];
-        BindingContext = release;
+        Label.Text = _release.Body;
 
         _progress = new Progress<double>(ProgressHandler);
+
+        var deviseWidth = DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density;
+        //var deviseHeight = DeviceDisplay.MainDisplayInfo.Height / DeviceDisplay.MainDisplayInfo.Density;
+
+        Border.WidthRequest = deviseWidth / 1.2;
     }
 
     static UpdatePopup()
@@ -37,17 +38,25 @@ public partial class UpdatePopup
     private static readonly HttpClient HttpClient;
 
     private readonly ReleaseAsset _releaseAsset = null!;
-    private readonly Release _release;
+    private readonly Release _release = null!;
     private readonly IProgress<double> _progress = null!;
     private readonly CancellationTokenSource _cancellationTokenSource = new();
 
     private void UpdatePopup_OnClosed(object? sender, PopupClosedEventArgs e)
     {
+        _cancellationTokenSource.Cancel();
         _cancellationTokenSource.Dispose();
     }
 
     private async void OnUpdateClicked(object? sender, EventArgs e)
     {
+        if (!await GrandPermissions())
+        {
+            await Toast.Make("Failed to request permissions").Show();
+            Close();
+            return;
+        }
+
         CanBeDismissedByTappingOutsideOfPopup = false;
         ProgressBar.IsVisible = true;
         UpdateButton.IsVisible = false;
@@ -55,48 +64,51 @@ public partial class UpdatePopup
         var version = _release.TagName.TrimStart('v');
         var newVersion = new Version(version);
 
-        if (!await GrandPermissions())
-        {
-            Close();
-            return;
-        }
-
         await DownloadAndInstall(_releaseAsset, newVersion);
     }
 
     private void OnCancelClicked(object? sender, EventArgs e)
     {
-        _cancellationTokenSource.Cancel();
-
         Close();
     }
 
     private async Task DownloadAndInstall(ReleaseAsset releaseAsset, Version version)
     {
-        var downloadPath = Path.Combine(FileSystem.Current.AppDataDirectory, "Downloads");
-        if (!Directory.Exists(downloadPath))
-            Directory.CreateDirectory(downloadPath);
-
         try
         {
-            var filePath = Path.Combine(downloadPath, $"{AppInfo.PackageName}-{version}.apk");
-            if (File.Exists(filePath))
+            var fileName = $"{AppInfo.PackageName}-{version}.apk";
+            var filePath = Path.Combine(AppInstaller.DownloadedDirectory, fileName);
+
+            using var response = await HttpClient.GetAsync(releaseAsset.BrowserDownloadUrl, HttpCompletionOption.ResponseHeadersRead, _cancellationTokenSource.Token);
+            var totalDownloadSize = response.Content.Headers.ContentLength;
+
+            var fileInfo = new FileInfo(filePath);
+
+            if (fileInfo.Exists && fileInfo.Length == totalDownloadSize)
             {
-                AppInstaller.Install(filePath);
+                ProgressBar.Progress = 1;
+                AppInstaller.Install(fileName);
                 return;
             }
 
-            await using var stream = File.Create(filePath);
+            await using var stream = fileInfo.Create();
 
-            await Toast.Make($"Download started").Show();
-            await HttpClient.DownloadAsync(releaseAsset.BrowserDownloadUrl, stream, _progress, _cancellationTokenSource.Token);
+            await Toast.Make("Started downloading").Show();
+            await response.DownloadAsync(stream, _progress,
+                _cancellationTokenSource.Token);
 
-            AppInstaller.Install(filePath);
+            AppInstaller.Install(fileName);
         }
         catch (TaskCanceledException)
         {
-            
+            return;
         }
+        catch
+        {
+            //
+        }
+
+        Close();
     }
 
     private void ProgressHandler(double obj)
@@ -108,12 +120,15 @@ public partial class UpdatePopup
 
     private static async Task<bool> GrandPermissions()
     {
-        var status = await Permissions.CheckStatusAsync<InstallPackagesPermission>();
-        if (status == PermissionStatus.Granted)
-            return true;
+        if (await Permissions.RequestAsync<Permissions.StorageWrite>() != PermissionStatus.Granted)
+            return false;
 
-        var result = await Permissions.RequestAsync<InstallPackagesPermission>();
+        if (await Permissions.RequestAsync<Permissions.StorageRead>() != PermissionStatus.Granted)
+            return false;
 
-        return result == PermissionStatus.Granted;
+        /*if (await Permissions.RequestAsync<InstallPackagesPermission>() != PermissionStatus.Granted)
+            return false;*/
+
+        return true;
     }
 }
