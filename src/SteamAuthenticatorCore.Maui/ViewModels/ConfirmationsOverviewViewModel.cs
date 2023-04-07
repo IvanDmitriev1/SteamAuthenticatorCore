@@ -1,6 +1,6 @@
 ﻿namespace SteamAuthenticatorCore.Maui.ViewModels;
 
-public sealed partial class ConfirmationsOverviewViewModel : ObservableRecipient
+public sealed partial class ConfirmationsOverviewViewModel : MyObservableRecipient
 {
     public ConfirmationsOverviewViewModel(IConfirmationService confirmationServiceBase)
     {

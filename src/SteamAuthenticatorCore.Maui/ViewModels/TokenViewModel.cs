@@ -2,7 +2,7 @@
 
 namespace SteamAuthenticatorCore.Maui.ViewModels;
 
-public sealed partial class TokenViewModel : ObservableRecipient, IAsyncDisposable
+public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDisposable
 {
     public TokenViewModel(AccountsServiceResolver accountsFileServiceResolver, ISteamGuardAccountService steamGuardAccountService, IBackgroundTimerFactory backgroundTimerFactory)
     {

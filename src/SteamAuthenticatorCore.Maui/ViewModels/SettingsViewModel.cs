@@ -3,7 +3,7 @@ using SteamAuthenticatorCore.Maui.Popups;
 
 namespace SteamAuthenticatorCore.Maui.ViewModels;
 
-public sealed partial class SettingsViewModel : ObservableRecipient
+public sealed partial class SettingsViewModel : MyObservableRecipient
 {
     public SettingsViewModel(IUpdateService updateService)
     {

@@ -2,7 +2,7 @@
 
 public abstract class MyObservableRecipient : ObservableObject
 {
-    protected MyObservableRecipient() :this(WeakReferenceMessenger.Default) { }
+    protected MyObservableRecipient() : this(WeakReferenceMessenger.Default) { }
 
     protected MyObservableRecipient(IMessenger messenger)
     {

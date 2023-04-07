@@ -1,17 +1,47 @@
 ﻿namespace SteamAuthenticatorCore.Maui.ViewModels;
 
-public partial class LoginViewModel : LoginViewModelBase
+public partial class LoginViewModel : MyObservableRecipient, IRecipient<UpdateAccountInLoginPageMessage>
 {
-    public LoginViewModel(ILoginService loginService) : base(loginService)
+    public LoginViewModel(ILoginService loginService)
     {
+        _loginService = loginService;
+    }
+
+    private readonly ILoginService _loginService;
+    private SteamGuardAccount? _steamGuardAccount;
+
+    [ObservableProperty]
+    private string _username = string.Empty;
+
+    [ObservableProperty]
+    private string _password = string.Empty;
+
+    [ObservableProperty]
+    private bool _isPasswordBoxEnabled = true;
+
+    protected override void OnDeactivated()
+    {
+        base.OnDeactivated();
+
+        _steamGuardAccount = null;
+    }
+
+    public void Receive(UpdateAccountInLoginPageMessage message)
+    {
+        _steamGuardAccount = message.Value;
+
+        Username = _steamGuardAccount.AccountName;
     }
 
     [RelayCommand]
-    protected override async Task OnLogin()
+    private async Task OnLogin()
     {
+        if (_steamGuardAccount is null)
+            return;
+
         IsPasswordBoxEnabled = false;
 
-        if (await LoginService.RefreshLogin(Account, Password))
+        if (await _loginService.RefreshLogin(_steamGuardAccount, Password))
             await Shell.Current.GoToAsync("..");
 
         IsPasswordBoxEnabled = true;

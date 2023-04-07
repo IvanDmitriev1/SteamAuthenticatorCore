@@ -22,7 +22,7 @@
                     IsEnabled="False"
                     IsReadOnly="True"
                     Placeholder="Login"
-                    Text="{Binding Path=Account.AccountName}" />
+                    Text="{Binding Path=Username}" />
             </Border>
 
 
