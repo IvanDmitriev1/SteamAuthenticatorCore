@@ -20,18 +20,17 @@ public partial class MainWindow
 
         NavigationFluent.SetServiceProvider(App.ServiceProvider);
         NavigationService.Default.SetNavigationControl(NavigationFluent);
-
-        NavigationFluent.Loaded += NavigationFluentOnLoaded;
-        SizeChanged += OnSizeChanged;
     }
 
     private readonly IUpdateService _updateService;
     private readonly ILogger<MainWindow> _logger;
+    private bool _isLoaded;
 
     private async void NavigationFluentOnLoaded(object sender, RoutedEventArgs e)
     {
         await InitializeDependencies();
 
+        _isLoaded = true;
         RootWelcomeGrid.Visibility = Visibility.Hidden;
         NavigationFluent.Visibility = Visibility.Visible;
         NavigationFluent.Navigate(typeof(TokenPage));
@@ -51,6 +50,12 @@ public partial class MainWindow
 
     private void OnSizeChanged(object sender, SizeChangedEventArgs e)
     {
+        if (!_isLoaded)
+        {
+            NavigationFluent.IsPaneOpen = false;
+            return;
+        }
+
         NavigationFluent.IsPaneOpen = !(e.NewSize.Width <= 1100);
     }
 
