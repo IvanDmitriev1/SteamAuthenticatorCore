@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
-public partial class SettingsViewModel : ObservableRecipient
+public partial class SettingsViewModel : MyObservableRecipient
 {
     public SettingsViewModel(IUpdateService updateService, ILogger<SettingsViewModel> logger, AccountsServiceResolver accountsServiceResolver)
     {

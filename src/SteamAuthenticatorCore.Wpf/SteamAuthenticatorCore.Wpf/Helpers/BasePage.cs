@@ -2,7 +2,7 @@
 
 namespace SteamAuthenticatorCore.Desktop.Helpers;
 
-public abstract class BasePage<T> : Page where T : ObservableRecipient
+public abstract class BasePage<T> : Page where T : MyObservableRecipient
 {
     protected BasePage()
     {

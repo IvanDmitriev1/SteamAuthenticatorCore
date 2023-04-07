@@ -5,7 +5,7 @@ using Wpf.Ui.TaskBar;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
-public sealed partial class TokenViewModel : ObservableRecipient, IAsyncDisposable
+public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDisposable
 {
     public TokenViewModel(ISteamGuardAccountService steamAccountService,
         AccountsServiceResolver accountsServiceResolver, IBackgroundTimerFactory backgroundTimerFactory)

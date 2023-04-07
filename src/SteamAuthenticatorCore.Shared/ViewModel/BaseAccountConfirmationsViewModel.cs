@@ -1,23 +1,16 @@
 ﻿namespace SteamAuthenticatorCore.Shared.ViewModel;
 
-public abstract partial class BaseAccountConfirmationsViewModel : ObservableRecipient, IRecipient<UpdateAccountConfirmationPageMessage>
+public abstract partial class BaseAccountConfirmationsViewModel : MyObservableRecipient, IRecipient<UpdateAccountConfirmationPageMessage>
 {
     protected BaseAccountConfirmationsViewModel(ISteamGuardAccountService accountService)
     {
         _accountService = accountService;
-
-        Messenger.RegisterAll(this);
     }
 
     private readonly ISteamGuardAccountService _accountService;
 
     [ObservableProperty]
     private SteamGuardAccountConfirmationsModel? _model;
-
-    protected override void OnActivated()
-    {
-        
-    }
 
     public void Receive(UpdateAccountConfirmationPageMessage message)
     {
