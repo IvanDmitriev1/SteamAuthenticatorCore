@@ -82,8 +82,10 @@ public partial class DownloadUpdateContentDialog
 
         try
         {
+            using var response = await HttpClient.GetAsync(asset.BrowserDownloadUrl, HttpCompletionOption.ResponseHeadersRead, _cancellationTokenSource.Token);
+
             await using var fileStream = new FileStream(newFilePath, FileMode.OpenOrCreate);
-            await HttpClient.DownloadAsync(asset.BrowserDownloadUrl, fileStream, _progress, _cancellationTokenSource.Token);
+            await response.DownloadAsync(fileStream, _progress, _cancellationTokenSource.Token);
 
             var currentExeName = AppDomain.CurrentDomain.FriendlyName + ".exe";
             var currentExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, currentExeName);

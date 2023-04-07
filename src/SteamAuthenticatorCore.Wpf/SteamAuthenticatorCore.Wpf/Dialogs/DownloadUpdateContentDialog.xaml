@@ -36,9 +36,10 @@
                 LineHeight="20"
                 Text="{Binding Name, StringFormat={}New version: {0}}" />
 
-            <ui:Card Margin="0,5,0,0">
-                <TextBlock FontSize="14" Text="{Binding Body}" />
-            </ui:Card>
+            <TextBlock
+                Margin="0,5,0,0"
+                FontSize="14"
+                Text="{Binding Body}" />
         </StackPanel>
 
         <Grid

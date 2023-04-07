@@ -10,30 +10,33 @@
     x:TypeArguments="viewModels1:LoginViewModel"
     Shell.TabBarIsVisible="False">
 
-    <VerticalStackLayout
-        Margin="10"
-        HorizontalOptions="FillAndExpand"
-        Spacing="10"
-        VerticalOptions="CenterAndExpand">
+    <ScrollView VerticalScrollBarVisibility="Never">
+        <VerticalStackLayout
+            Margin="10"
+            HorizontalOptions="FillAndExpand"
+            Spacing="10"
+            VerticalOptions="CenterAndExpand">
 
-        <Border Padding="5">
-            <Entry
-                IsEnabled="False"
-                IsReadOnly="True"
-                Placeholder="Login"
-                Text="{Binding Path=Account.AccountName}" />
-        </Border>
+            <Border Padding="5">
+                <Entry
+                    IsEnabled="False"
+                    IsReadOnly="True"
+                    Placeholder="Login"
+                    Text="{Binding Path=Account.AccountName}" />
+            </Border>
 
 
-        <Border Padding="5">
-            <Entry
-                IsEnabled="{Binding IsPasswordBoxEnabled}"
-                IsPassword="True"
-                Placeholder="Password"
-                Text="{Binding Path=Password}" />
-        </Border>
+            <Border Padding="5">
+                <Entry
+                    IsEnabled="{Binding IsPasswordBoxEnabled}"
+                    IsPassword="True"
+                    Placeholder="Password"
+                    Text="{Binding Path=Password}" />
+            </Border>
 
-        <Button Command="{Binding LoginCommand}" Text="Login" />
+            <Button Command="{Binding LoginCommand}" Text="Login" />
 
-    </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+
 </controls:BaseContentPage>

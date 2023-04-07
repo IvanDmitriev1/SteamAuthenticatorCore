@@ -150,7 +150,7 @@ public sealed partial class TokenViewModel : ObservableRecipient, IAsyncDisposab
 
         await Clipboard.SetTextAsync(Token);
 
-        var toast = Toast.Make("Copied");
+        var toast = Toast.Make("Copied", ToastDuration.Short, 16);
         await toast.Show();
     }
 

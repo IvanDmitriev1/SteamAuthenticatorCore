@@ -2,8 +2,10 @@
 using Android.Content.PM;
 
 [assembly: UsesPermission(Android.Manifest.Permission.Vibrate)]
-[assembly: UsesPermission(Android.Manifest.Permission.RequestInstallPackages)]
 [assembly: UsesPermission(Android.Manifest.Permission.ReadExternalStorage)]
+[assembly: UsesPermission(Android.Manifest.Permission.WriteExternalStorage)]
+[assembly: UsesPermission(Android.Manifest.Permission.RequestInstallPackages)]
+[assembly: UsesPermission(Android.Manifest.Permission.InstallPackages)]
 
 namespace SteamAuthenticatorCore.Maui;
 

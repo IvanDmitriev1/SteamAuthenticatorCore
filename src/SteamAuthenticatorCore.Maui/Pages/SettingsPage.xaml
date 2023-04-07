@@ -67,133 +67,137 @@
         </ControlTemplate>
     </ContentPage.Resources>
 
-    <VerticalStackLayout Spacing="20">
-        <VerticalStackLayout Spacing="5">
-            <Label FontSize="20" Text="Theme" />
+    <ScrollView VerticalScrollBarVisibility="Never">
+        <VerticalStackLayout Spacing="20">
+            <VerticalStackLayout Spacing="5">
+                <Label FontSize="20" Text="Theme" />
 
-            <Border Padding="15">
-                <Grid
-                    ColumnDefinitions="*,*,*"
-                    RadioButtonGroup.GroupName="Themes"
-                    RadioButtonGroup.SelectedValue="{Binding Path=ThemeSelection}">
-                    <RadioButton
-                        Grid.Column="0"
-                        ControlTemplate="{StaticResource RadioButtonTemplate}"
-                        Value="System">
-                        <RadioButton.Content>
-                            <VerticalStackLayout
-                                HorizontalOptions="Center"
-                                Spacing="5"
-                                VerticalOptions="Center">
-                                <Label
-                                    FontFamily="Material"
-                                    FontSize="35"
+                <Border Padding="15">
+                    <Grid
+                        ColumnDefinitions="*,*,*"
+                        RadioButtonGroup.GroupName="Themes"
+                        RadioButtonGroup.SelectedValue="{Binding Path=ThemeSelection}">
+                        <RadioButton
+                            Grid.Column="0"
+                            ControlTemplate="{StaticResource RadioButtonTemplate}"
+                            Value="System">
+                            <RadioButton.Content>
+                                <VerticalStackLayout
                                     HorizontalOptions="Center"
-                                    HorizontalTextAlignment="Center"
-                                    Text="{x:Static resources:MaterialDesignIcons.Settings}" />
-                                <Label
+                                    Spacing="5"
+                                    VerticalOptions="Center">
+                                    <Label
+                                        FontFamily="Material"
+                                        FontSize="35"
+                                        HorizontalOptions="Center"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{x:Static resources:MaterialDesignIcons.Settings}" />
+                                    <Label
+                                        HorizontalOptions="Center"
+                                        HorizontalTextAlignment="Center"
+                                        Text="System" />
+                                </VerticalStackLayout>
+                            </RadioButton.Content>
+                        </RadioButton>
+
+                        <RadioButton
+                            Grid.Column="1"
+                            ControlTemplate="{StaticResource RadioButtonTemplate}"
+                            Value="Light">
+                            <RadioButton.Content>
+                                <VerticalStackLayout
                                     HorizontalOptions="Center"
-                                    HorizontalTextAlignment="Center"
-                                    Text="System" />
-                            </VerticalStackLayout>
-                        </RadioButton.Content>
-                    </RadioButton>
+                                    Spacing="5"
+                                    VerticalOptions="Center">
+                                    <Label
+                                        FontFamily="Material"
+                                        FontSize="35"
+                                        HorizontalOptions="Center"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{x:Static resources:MaterialDesignIcons.LightMode}" />
+                                    <Label
+                                        HorizontalOptions="Center"
+                                        HorizontalTextAlignment="Center"
+                                        Text="Light" />
+                                </VerticalStackLayout>
+                            </RadioButton.Content>
+                        </RadioButton>
 
-                    <RadioButton
-                        Grid.Column="1"
-                        ControlTemplate="{StaticResource RadioButtonTemplate}"
-                        Value="Light">
-                        <RadioButton.Content>
-                            <VerticalStackLayout
-                                HorizontalOptions="Center"
-                                Spacing="5"
-                                VerticalOptions="Center">
-                                <Label
-                                    FontFamily="Material"
-                                    FontSize="35"
+                        <RadioButton
+                            Grid.Column="2"
+                            ControlTemplate="{StaticResource RadioButtonTemplate}"
+                            Value="Dark">
+                            <RadioButton.Content>
+                                <VerticalStackLayout
                                     HorizontalOptions="Center"
-                                    HorizontalTextAlignment="Center"
-                                    Text="{x:Static resources:MaterialDesignIcons.LightMode}" />
-                                <Label
-                                    HorizontalOptions="Center"
-                                    HorizontalTextAlignment="Center"
-                                    Text="Light" />
-                            </VerticalStackLayout>
-                        </RadioButton.Content>
-                    </RadioButton>
-
-                    <RadioButton
-                        Grid.Column="2"
-                        ControlTemplate="{StaticResource RadioButtonTemplate}"
-                        Value="Dark">
-                        <RadioButton.Content>
-                            <VerticalStackLayout
-                                HorizontalOptions="Center"
-                                Spacing="5"
-                                VerticalOptions="Center">
-                                <Label
-                                    FontFamily="Material"
-                                    FontSize="35"
-                                    HorizontalOptions="Center"
-                                    HorizontalTextAlignment="Center"
-                                    Text="{x:Static resources:MaterialDesignIcons.DarkMode}" />
-                                <Label
-                                    HorizontalOptions="Center"
-                                    HorizontalTextAlignment="Center"
-                                    Text="Dark" />
-                            </VerticalStackLayout>
-                        </RadioButton.Content>
-                    </RadioButton>
-                </Grid>
-            </Border>
-        </VerticalStackLayout>
-
-        <VerticalStackLayout Spacing="5">
-            <Label FontSize="20" Text="Auto-confirmation options" />
-
-            <VerticalStackLayout Spacing="10">
-                <Border>
-                    <effectsView:SfEffectsView TouchUpCommand="{Binding ChangeAutoConfirmationCommand}">
-                        <Grid Margin="15" ColumnDefinitions="*,Auto">
-                            <Label
-                                Grid.Column="0"
-                                LineBreakMode="WordWrap"
-                                MaxLines="2"
-                                Text="Auto-confirm market sell transactions"
-                                VerticalOptions="Center" />
-
-                            <Switch
-                                x:Name="AutoConfirmSwitch"
-                                Grid.Column="1"
-                                IsToggled="{Binding Path=AppSettings.AutoConfirmMarketTransactions}"
-                                VerticalOptions="Center" />
-                        </Grid>
-                    </effectsView:SfEffectsView>
-                </Border>
-
-                <Border>
-                    <effectsView:SfEffectsView TouchUpCommand="{Binding ChangeCheckingIntervalPromptCommand}">
-                        <Grid Margin="15" ColumnDefinitions="*,Auto">
-                            <Label
-                                Grid.Column="0"
-                                LineBreakMode="WordWrap"
-                                MaxLines="2"
-                                Text="Seconds between checking confirmations"
-                                VerticalOptions="Center" />
-
-                            <Label
-                                Grid.Column="1"
-                                Text="{Binding Path=AppSettings.PeriodicCheckingInterval}"
-                                VerticalOptions="Center" />
-                        </Grid>
-                    </effectsView:SfEffectsView>
+                                    Spacing="5"
+                                    VerticalOptions="Center">
+                                    <Label
+                                        FontFamily="Material"
+                                        FontSize="35"
+                                        HorizontalOptions="Center"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{x:Static resources:MaterialDesignIcons.DarkMode}" />
+                                    <Label
+                                        HorizontalOptions="Center"
+                                        HorizontalTextAlignment="Center"
+                                        Text="Dark" />
+                                </VerticalStackLayout>
+                            </RadioButton.Content>
+                        </RadioButton>
+                    </Grid>
                 </Border>
             </VerticalStackLayout>
-        </VerticalStackLayout>
 
-        <VerticalStackLayout Spacing="10">
-            <Label FontSize="20" Text="{Binding Source={x:Static applicationModel:VersionTracking.CurrentVersion}, StringFormat='Current version: {0}'}" />
-            <Button Command="{Binding CheckForUpdatesCommand}" Text="Check for updates" />
+            <VerticalStackLayout Spacing="5">
+                <Label FontSize="20" Text="Auto-confirmation options" />
+
+                <VerticalStackLayout Spacing="10">
+                    <Border>
+                        <effectsView:SfEffectsView TouchUpCommand="{Binding ChangeAutoConfirmationCommand}">
+                            <Grid Margin="15" ColumnDefinitions="*,Auto">
+                                <Label
+                                    Grid.Column="0"
+                                    LineBreakMode="WordWrap"
+                                    MaxLines="2"
+                                    Text="Auto-confirm market sell transactions"
+                                    VerticalOptions="Center" />
+
+                                <Switch
+                                    x:Name="AutoConfirmSwitch"
+                                    Grid.Column="1"
+                                    IsToggled="{Binding Path=AppSettings.AutoConfirmMarketTransactions}"
+                                    VerticalOptions="Center" />
+                            </Grid>
+                        </effectsView:SfEffectsView>
+                    </Border>
+
+                    <Border>
+                        <effectsView:SfEffectsView TouchUpCommand="{Binding ChangeCheckingIntervalPromptCommand}">
+                            <Grid Margin="15" ColumnDefinitions="*,Auto">
+                                <Label
+                                    Grid.Column="0"
+                                    LineBreakMode="WordWrap"
+                                    MaxLines="2"
+                                    Text="Seconds between checking confirmations"
+                                    VerticalOptions="Center" />
+
+                                <Label
+                                    Grid.Column="1"
+                                    Text="{Binding Path=AppSettings.PeriodicCheckingInterval}"
+                                    VerticalOptions="Center" />
+                            </Grid>
+                        </effectsView:SfEffectsView>
+                    </Border>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="10">
+                <Label FontSize="20" Text="{Binding Source={x:Static applicationModel:VersionTracking.CurrentVersion}, StringFormat='Current version: {0}'}" />
+                <Button Command="{Binding CheckForUpdatesCommand}" Text="Check for updates" />
+            </VerticalStackLayout>
         </VerticalStackLayout>
-    </VerticalStackLayout>
+    </ScrollView>
+
+
 </controls:BaseContentPage>
