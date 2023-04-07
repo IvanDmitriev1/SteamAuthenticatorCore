@@ -52,7 +52,7 @@ public partial class UpdatePopup
     {
         if (!await GrandPermissions())
         {
-            await Toast.Make("Failed to request permissions").Show();
+            await Toast.Make("Failed to request permissions", ToastDuration.Long).Show();
             Close();
             return;
         }

@@ -77,7 +77,7 @@ public sealed partial class SettingsViewModel : ObservableRecipient
         {
             if (await _updateService.CheckForUpdate() is not { } release)
             {
-                await Snackbar.Make("You are using the latest version").Show();
+                await Toast.Make("You are using the latest version", ToastDuration.Long, 16).Show();
                 return;
             }
 
