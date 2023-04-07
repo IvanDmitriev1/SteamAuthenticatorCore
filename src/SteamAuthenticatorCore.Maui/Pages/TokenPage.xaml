@@ -37,75 +37,77 @@
         </controls:MyTitleView>
     </Shell.TitleView>
 
-    <Grid RowDefinitions="Auto, Auto, *">
-        <StackLayout Grid.Row="0" Spacing="10">
+    <ScrollView VerticalScrollBarVisibility="Never">
+        <Grid RowDefinitions="Auto, Auto, *">
+            <StackLayout Grid.Row="0" Spacing="10">
 
-            <Button Command="{Binding ImportCommand}" Text="Import" />
+                <Button Command="{Binding ImportCommand}" Text="Import" />
 
-            <effectsView:SfEffectsView
-                TouchDownCommand="{Binding CopyCommand}"
-                TouchDownCommandParameter="{Binding Token}"
-                TouchDownEffects="None"
-                TouchUpEffects="None">
-                <Border Padding="15,5">
-                    <VerticalStackLayout Margin="0,5,0,5" Spacing="4">
-                        <Label HorizontalOptions="Center" Text="{Binding Token}" />
+                <effectsView:SfEffectsView
+                    TouchDownCommand="{Binding CopyCommand}"
+                    TouchDownCommandParameter="{Binding Token}"
+                    TouchDownEffects="None"
+                    TouchUpEffects="None">
+                    <Border Padding="15,5">
+                        <VerticalStackLayout Margin="0,5,0,5" Spacing="4">
+                            <Label HorizontalOptions="Center" Text="{Binding Token}" />
 
-                        <ProgressBar Progress="{Binding TokenProgressBar}" />
-                    </VerticalStackLayout>
-                </Border>
-            </effectsView:SfEffectsView>
-
-            <Grid Margin="0,10,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <Label
-                    Grid.Column="0"
-                    FontSize="20"
-                    Text="Selected Account:" />
-
-                <Label
-                    Grid.Column="1"
-                    FontSize="20"
-                    Text="{Binding SelectedAccount.AccountName}" />
-            </Grid>
-
-        </StackLayout>
-
-        <Entry
-            Grid.Row="1"
-            Margin="0,10,0,0"
-            Placeholder="Search..."
-            Text="{Binding SearchBoxText}" />
-
-        <CollectionView
-            Grid.Row="2"
-            Margin="0,10,0,0"
-            ItemsSource="{Binding FilteredAccounts}">
-            <CollectionView.EmptyView>
-                <Label
-                    HorizontalOptions="Center"
-                    HorizontalTextAlignment="Center"
-                    Text="No items to display"
-                    VerticalOptions="Start" />
-            </CollectionView.EmptyView>
-
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:SteamGuardAccount">
-                    <Border x:Name="Border" Margin="0,0,0,7">
-                        <effectsView:SfEffectsView
-                            LongPressedCommand="{Binding Source={x:Reference Page}, Path=BindingContext.LongPressCommand}"
-                            LongPressedCommandParameter="{x:Reference Border}"
-                            TouchUpCommand="{Binding Source={x:Reference Page}, Path=BindingContext.PressCommand}"
-                            TouchUpCommandParameter="{Binding}">
-                            <Label Margin="18" Text="{Binding AccountName, Mode=OneTime}" />
-                        </effectsView:SfEffectsView>
+                            <ProgressBar Progress="{Binding TokenProgressBar}" />
+                        </VerticalStackLayout>
                     </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </Grid>
+                </effectsView:SfEffectsView>
+
+                <Grid Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Label
+                        Grid.Column="0"
+                        FontSize="20"
+                        Text="Selected Account:" />
+
+                    <Label
+                        Grid.Column="1"
+                        FontSize="20"
+                        Text="{Binding SelectedAccount.AccountName}" />
+                </Grid>
+
+            </StackLayout>
+
+            <Entry
+                Grid.Row="1"
+                Margin="0,10,0,0"
+                Placeholder="Search..."
+                Text="{Binding SearchBoxText}" />
+
+            <CollectionView
+                Grid.Row="2"
+                Margin="0,10,0,0"
+                ItemsSource="{Binding FilteredAccounts}">
+                <CollectionView.EmptyView>
+                    <Label
+                        HorizontalOptions="Center"
+                        HorizontalTextAlignment="Center"
+                        Text="No items to display"
+                        VerticalOptions="Start" />
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:SteamGuardAccount">
+                        <Border x:Name="Border" Margin="0,0,0,7">
+                            <effectsView:SfEffectsView
+                                LongPressedCommand="{Binding Source={x:Reference Page}, Path=BindingContext.LongPressCommand}"
+                                LongPressedCommandParameter="{x:Reference Border}"
+                                TouchUpCommand="{Binding Source={x:Reference Page}, Path=BindingContext.PressCommand}"
+                                TouchUpCommandParameter="{Binding}">
+                                <Label Margin="18" Text="{Binding AccountName, Mode=OneTime}" />
+                            </effectsView:SfEffectsView>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+    </ScrollView>
 </controls:BaseContentPage>
