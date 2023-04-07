@@ -22,10 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <PackageReference Include="DependencyPropertyGenerator" Version="1.2.5" PrivateAssets="all" ExcludeAssets="runtime">
-	    <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
-	<PackageReference Include="Google.Apis.Drive.v3" Version="1.60.0.2986" />
+	  <PackageReference Include="Google.Apis.Drive.v3" Version="1.60.0.2986" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
     <PackageReference Include="Sentry.Extensions.Logging" Version="3.29.1" />
