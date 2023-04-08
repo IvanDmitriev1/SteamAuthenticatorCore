@@ -81,4 +81,14 @@ public sealed class WpfAppSettings : AppSettings, IDisposable
         _registrySoftwareKey.Dispose();
         _appRegistryKey.Dispose();
     }
+
+    protected override void OnLanguageAfterChanged(AvailableLanguages value)
+    {
+        var type = NavigationService.Default.GetNavigationView().SelectedItem?.TargetPageType;
+        if (type is null)
+            return;
+
+        NavigationService.Default.GoBack();
+        NavigationService.Default.Navigate(type);
+    }
 }

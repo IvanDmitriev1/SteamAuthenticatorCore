@@ -17,4 +17,12 @@
     <ProjectReference Include="..\SteamAuthCore\SteamAuthCore.csproj" />
   </ItemGroup>
 
+    <ItemGroup>
+	    <EmbeddedResource Include="Localization\*" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Localization\Russian.xml" />
+    </ItemGroup>
+
 </Project>

@@ -48,13 +48,13 @@ public sealed partial class MauiAppSettings : AppSettings
         Preferences.Set(propertyInfo.Name, propertyInfo.GetValue(this)!.ToString());
     }
 
-    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+    protected override void OnLanguageAfterChanged(AvailableLanguages value)
     {
-        base.OnPropertyChanged(e);
+        
+    }
 
-        if (e.PropertyName != nameof(MauiAppSettings.Theme))
-            return;
-
-        Application.Current!.UserAppTheme = Theme;
+    partial void OnThemeChanged(AppTheme value)
+    {
+        Application.Current!.UserAppTheme = Theme;   
     }
 }

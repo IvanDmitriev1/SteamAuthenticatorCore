@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+
+<strings>
+	<string key="HelloMessage">Hello, world!</string>
+	<string key="GoodbyeMessage">Goodbye!</string>
+	<string key="NewStringKey">New string value</string>
+</strings>
