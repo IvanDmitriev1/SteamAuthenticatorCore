@@ -7,9 +7,12 @@ public sealed class XmlLocalizationProvider : ILocalizationProvider
     public XmlLocalizationProvider(AvailableLanguages language)
     {
         _currentLanguage = language;
-        _currentLanguageDictionary = LoadLanguageFromAssembly(language);
+
+        _englishLanguageDictionary = LoadLanguageFromAssembly(AvailableLanguages.English);
+        _currentLanguageDictionary = new Dictionary<string, string>(0);
     }
 
+    private readonly IReadOnlyDictionary<string, string> _englishLanguageDictionary;
     private IReadOnlyDictionary<string, string> _currentLanguageDictionary;
     private AvailableLanguages _currentLanguage;
 
@@ -31,7 +34,10 @@ public sealed class XmlLocalizationProvider : ILocalizationProvider
 
     public string GetValue(string key)
     {
-        if (!_currentLanguageDictionary.TryGetValue(key, out var result))
+        if (_currentLanguageDictionary.TryGetValue(key, out var result))
+            return result;
+
+        if (!_englishLanguageDictionary.TryGetValue(key, out result))
             return "NOT_FOUND";
 
         return result;

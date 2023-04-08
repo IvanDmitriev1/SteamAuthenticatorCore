@@ -2,12 +2,14 @@
 
 public abstract partial class BaseAccountConfirmationsViewModel : MyObservableRecipient, IRecipient<UpdateAccountConfirmationPageMessage>
 {
-    protected BaseAccountConfirmationsViewModel(ISteamGuardAccountService accountService)
+    protected BaseAccountConfirmationsViewModel(ISteamGuardAccountService accountService, IPlatformImplementations platformImplementations)
     {
         _accountService = accountService;
+        _platformImplementations = platformImplementations;
     }
 
     private readonly ISteamGuardAccountService _accountService;
+    private readonly IPlatformImplementations _platformImplementations;
 
     [ObservableProperty]
     private SteamGuardAccountConfirmationsModel? _model;
@@ -27,7 +29,12 @@ public abstract partial class BaseAccountConfirmationsViewModel : MyObservableRe
         if (confirms.Length == 1)
         {
             if (await _accountService.SendConfirmation(Model!.Account, confirms[0], command, CancellationToken.None))
-                Model.Confirmations.Remove(confirms[0]);
+            {
+                _platformImplementations.InvokeMainThread(() =>
+                {
+                    Model.Confirmations.Remove(confirms[0]);
+                });
+            }
 
             return;
         }
@@ -35,6 +42,9 @@ public abstract partial class BaseAccountConfirmationsViewModel : MyObservableRe
         if (!await _accountService.SendConfirmation(Model!.Account, confirms, command, CancellationToken.None))
             return;
 
-        Model.Confirmations.Clear();
+        _platformImplementations.InvokeMainThread(() =>
+        {
+            Model.Confirmations.Clear();
+        });
     }
 }

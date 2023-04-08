@@ -6,6 +6,7 @@ public enum LocalizationMessages
     HelloMessage,
 
     CopyMessage,
+    UpdateMessage,
 
     //Menu items
     Token,
@@ -28,5 +29,9 @@ public enum LocalizationMessages
     EnableAutoConfirmMarketTransactionsMessage,
     SecondsBetweenCheckingForConfirmationsMessage,
     CurrentVersionMessage,
-    CheckForUpdatesMessage
+    CheckForUpdatesMessage,
+
+    //AccountConfirmations page
+    ConfirmMessage,
+    CancelMessage
 }

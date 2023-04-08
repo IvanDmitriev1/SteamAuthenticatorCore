@@ -4,6 +4,7 @@
 	<string key="HelloMessage">Hello, world!</string>
 
 	<string key="CopyMessage">Copy</string>
+	<string key="UpdateMessage">Update</string>
 
 	<!-- MenuItems -->
 	<string key="Token">Token</string>
@@ -27,5 +28,9 @@
 	<string key="SecondsBetweenCheckingForConfirmationsMessage">Seconds between checking for confirmations</string>
 	<string key="CurrentVersionMessage">Current version:</string>
 	<string key="CheckForUpdatesMessage">Check for updates</string>
-	
+
+	<!-- AccountConfirmations page -->
+	<string key="ConfirmMessage">Confirm</string>
+	<string key="CancelMessage">Cancel</string>
+
 </strings>

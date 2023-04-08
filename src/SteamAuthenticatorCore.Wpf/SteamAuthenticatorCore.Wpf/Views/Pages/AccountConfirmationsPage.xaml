@@ -93,7 +93,7 @@
                     HorizontalAlignment="Stretch"
                     Command="{Binding ConfirmCommand}"
                     CommandParameter="{Binding ElementName=ListBox, Path=SelectedItems}"
-                    Content="Confirm selected" />
+                    Content="{helpers:LocalizationMarkup LocalizationMessages=ConfirmMessage}" />
                 <ui:Button
                     Grid.Column="1"
                     Margin="2.5,0,0,0"
@@ -101,7 +101,7 @@
                     Appearance="Danger"
                     Command="{Binding CancelCommand}"
                     CommandParameter="{Binding ElementName=ListBox, Path=SelectedItems}"
-                    Content="Cancel selected" />
+                    Content="{helpers:LocalizationMarkup LocalizationMessages=CancelMessage}" />
             </Grid>
         </Grid>
     </ScrollViewer>

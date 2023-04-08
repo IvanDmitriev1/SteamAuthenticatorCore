@@ -4,6 +4,7 @@
 	<string key="HelloMessage">Привет, мир!</string>
 
 	<string key="CopyMessage">Копировать</string>
+	<string key="UpdateMessage">Обновить</string>
 
 	<!-- MenuItems -->
 	<string key="Token">Токен</string>
@@ -27,5 +28,9 @@
 	<string key="SecondsBetweenCheckingForConfirmationsMessage">Секунды между проверкой подтверждений</string>
 	<string key="CurrentVersionMessage">Текущая версия:</string>
 	<string key="CheckForUpdatesMessage">Проверьте наличие обновлений</string>
+
+	<!-- AccountConfirmations page -->
+	<string key="ConfirmMessage">Подтвердить</string>
+	<string key="CancelMessage">Отменить</string>
 
 </strings>
