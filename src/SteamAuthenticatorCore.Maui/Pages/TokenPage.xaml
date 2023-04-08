@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:SteamAuthenticatorCore.Maui.Controls"
     xmlns:effectsView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:extensions="clr-namespace:SteamAuthenticatorCore.Maui.Extensions"
     xmlns:models="clr-namespace:SteamAuthCore.Models;assembly=SteamAuthCore"
     xmlns:viewModels1="clr-namespace:SteamAuthenticatorCore.Maui.ViewModels"
     x:Name="Page"
@@ -19,19 +20,19 @@
                     Padding="15,0"
                     BackgroundColor="{DynamicResource SecondaryContainer}"
                     Command="{Binding LoginCommand}"
-                    Text="Login again"
+                    Text="{extensions:LocalizationMarkup LocalizationMessages=LoginMessage}"
                     TextColor="{DynamicResource OnSecondaryContainer}" />
                 <Button
                     Padding="15,0"
                     BackgroundColor="{DynamicResource SecondaryContainer}"
                     Command="{Binding ForceRefreshSessionCommand}"
-                    Text="Refresh session"
+                    Text="{extensions:LocalizationMarkup LocalizationMessages=ForceRefreshSessionMessage}"
                     TextColor="{DynamicResource OnSecondaryContainer}" />
                 <Button
                     Padding="15,0"
                     BackgroundColor="{DynamicResource SecondaryContainer}"
                     Command="{Binding DeleteCommand}"
-                    Text="Delete"
+                    Text="{extensions:LocalizationMarkup LocalizationMessages=DeleteMessage}"
                     TextColor="{DynamicResource OnSecondaryContainer}" />
             </HorizontalStackLayout>
         </controls:MyTitleView>
@@ -41,7 +42,7 @@
         <Grid RowDefinitions="Auto, Auto, *">
             <StackLayout Grid.Row="0" Spacing="10">
 
-                <Button Command="{Binding ImportCommand}" Text="Import" />
+                <Button Command="{Binding ImportCommand}" Text="{extensions:LocalizationMarkup LocalizationMessages=ImportAccountsMessage}" />
 
                 <effectsView:SfEffectsView
                     TouchDownCommand="{Binding CopyCommand}"
@@ -66,7 +67,7 @@
                     <Label
                         Grid.Column="0"
                         FontSize="20"
-                        Text="Selected Account:" />
+                        Text="{extensions:LocalizationMarkup LocalizationMessages=SelectedAccountMessage}" />
 
                     <Label
                         Grid.Column="1"
@@ -79,7 +80,7 @@
             <Entry
                 Grid.Row="1"
                 Margin="0,10,0,0"
-                Placeholder="Search..."
+                Placeholder="{extensions:LocalizationMarkup LocalizationMessages=SearchPlaceholderMessage}"
                 Text="{Binding SearchBoxText}" />
 
             <CollectionView
@@ -90,7 +91,7 @@
                     <Label
                         HorizontalOptions="Center"
                         HorizontalTextAlignment="Center"
-                        Text="No items to display"
+                        Text="{extensions:LocalizationMarkup LocalizationMessages=NoItemsToDisplayMessage}"
                         VerticalOptions="Start" />
                 </CollectionView.EmptyView>
 

@@ -6,6 +6,7 @@
     xmlns:applicationModel="clr-namespace:Microsoft.Maui.ApplicationModel;assembly=Microsoft.Maui.Essentials"
     xmlns:controls="clr-namespace:SteamAuthenticatorCore.Maui.Controls"
     xmlns:effectsView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:extensions="clr-namespace:SteamAuthenticatorCore.Maui.Extensions"
     xmlns:resources="clr-namespace:SteamAuthenticatorCore.Maui.Resources"
     xmlns:viewModels1="clr-namespace:SteamAuthenticatorCore.Maui.ViewModels"
     Title="Settings"
@@ -160,7 +161,7 @@
                                     Grid.Column="0"
                                     LineBreakMode="WordWrap"
                                     MaxLines="2"
-                                    Text="Auto-confirm market sell transactions"
+                                    Text="{extensions:LocalizationMarkup LocalizationMessages=EnableAutoConfirmMarketTransactionsMessage}"
                                     VerticalOptions="Center" />
 
                                 <Switch
@@ -179,7 +180,7 @@
                                     Grid.Column="0"
                                     LineBreakMode="WordWrap"
                                     MaxLines="2"
-                                    Text="Seconds between checking confirmations"
+                                    Text="{extensions:LocalizationMarkup LocalizationMessages=SecondsBetweenCheckingForConfirmationsMessage}"
                                     VerticalOptions="Center" />
 
                                 <Label
@@ -193,8 +194,14 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="10">
-                <Label FontSize="20" Text="{Binding Source={x:Static applicationModel:VersionTracking.CurrentVersion}, StringFormat='Current version: {0}'}" />
-                <Button Command="{Binding CheckForUpdatesCommand}" Text="Check for updates" />
+                <Label FontSize="20">
+                    <Label.Text>
+                        <MultiBinding StringFormat="{}{0} {1}">
+                            <Binding Source="{x:Static applicationModel:VersionTracking.CurrentVersion}" />
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+                <Button Command="{Binding CheckForUpdatesCommand}" Text="{extensions:LocalizationMarkup LocalizationMessages=CheckForUpdatesMessage}" />
             </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>

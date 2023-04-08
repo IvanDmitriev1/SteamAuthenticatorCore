@@ -4,6 +4,7 @@
 	<string key="HelloMessage">Hello, world!</string>
 
 	<string key="CopyMessage">Copy</string>
+	<string key="CopiedMessage">Copied</string>
 	<string key="UpdateMessage">Update</string>
 
 	<!-- MenuItems -->
@@ -20,6 +21,7 @@
 	<string key="ForceRefreshSessionMessage">Force refresh session</string>
 	<string key="DeleteMessage">Delete</string>
 	<string key="SearchPlaceholderMessage">Search...</string>
+	<string key="NoItemsToDisplayMessage">Nothing to display</string>
 
 	<!-- Settings page -->
 	<string key="SelectLanguageMessage">Select your preferred language</string>

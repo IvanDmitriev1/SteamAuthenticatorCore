@@ -6,6 +6,7 @@ public enum LocalizationMessages
     HelloMessage,
 
     CopyMessage,
+    CopiedMessage,
     UpdateMessage,
 
     //Menu items
@@ -22,6 +23,7 @@ public enum LocalizationMessages
     ForceRefreshSessionMessage,
     DeleteMessage,
     SearchPlaceholderMessage,
+    NoItemsToDisplayMessage,
 
     //Settings page
     SelectLanguageMessage,

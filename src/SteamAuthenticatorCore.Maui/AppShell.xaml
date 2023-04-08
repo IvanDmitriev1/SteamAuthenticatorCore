@@ -3,6 +3,7 @@
     x:Class="SteamAuthenticatorCore.Maui.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:extensions="clr-namespace:SteamAuthenticatorCore.Maui.Extensions"
     xmlns:pages="clr-namespace:SteamAuthenticatorCore.Maui.Pages"
     xmlns:resources="clr-namespace:SteamAuthenticatorCore.Maui.Resources"
     FlyoutBehavior="Disabled">
@@ -13,7 +14,7 @@
 
     <TabBar>
         <ShellContent
-            Title="Token"
+            Title="{extensions:LocalizationMarkup LocalizationMessages=Token}"
             ContentTemplate="{DataTemplate pages:TokenPage}"
             Route="TokenPage">
             <ShellContent.Icon>
@@ -22,7 +23,7 @@
         </ShellContent>
 
         <ShellContent
-            Title="Confirmations"
+            Title="{extensions:LocalizationMarkup LocalizationMessages=Confirmations}"
             ContentTemplate="{DataTemplate pages:ConfirmationsOverviewPage}"
             Route="ConfirmationsOverviewPage">
             <ShellContent.Icon>
@@ -31,7 +32,7 @@
         </ShellContent>
 
         <ShellContent
-            Title="Settings"
+            Title="{extensions:LocalizationMarkup LocalizationMessages=Settings}"
             ContentTemplate="{DataTemplate pages:SettingsPage}"
             Route="SettingsPage">
             <ShellContent.Icon>
