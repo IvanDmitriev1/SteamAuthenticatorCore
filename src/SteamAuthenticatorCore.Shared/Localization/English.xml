@@ -3,10 +3,22 @@
 <strings>
 	<string key="HelloMessage">Hello, world!</string>
 
+	<string key="CopyMessage">Copy</string>
+
 	<!-- MenuItems -->
 	<string key="Token">Token</string>
 	<string key="Settings">Settings</string>
 	<string key="Confirmations">Confirmations</string>
+
+	<!-- Token page -->
+	<string key="FileMessage">File</string>
+	<string key="ImportAccountsMessage">Import accounts</string>
+	<string key="ShowAccountsFileFolder">Show accounts file folder</string>
+	<string key="SelectedAccountMessage">Selected account</string>
+	<string key="LoginMessage">Login</string>
+	<string key="ForceRefreshSessionMessage">Force refresh session</string>
+	<string key="DeleteMessage">Delete</string>
+	<string key="SearchPlaceholderMessage">Search...</string>
 
 	<!-- Settings page -->
 	<string key="SelectLanguageMessage">Select your preferred language</string>

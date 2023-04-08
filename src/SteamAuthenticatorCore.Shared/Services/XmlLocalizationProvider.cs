@@ -7,10 +7,10 @@ public sealed class XmlLocalizationProvider : ILocalizationProvider
     public XmlLocalizationProvider(AvailableLanguages language)
     {
         _currentLanguage = language;
-        CurrentLanguageDictionary = LoadLanguageFromAssembly(language);
+        _currentLanguageDictionary = LoadLanguageFromAssembly(language);
     }
 
-    public IReadOnlyDictionary<string, string> CurrentLanguageDictionary { get; private set; }
+    private IReadOnlyDictionary<string, string> _currentLanguageDictionary;
     private AvailableLanguages _currentLanguage;
 
     private static string GetAssemblyName { get; } = Assembly.GetAssembly(typeof(XmlLocalizationProvider))!.GetName().Name!;
@@ -21,7 +21,20 @@ public sealed class XmlLocalizationProvider : ILocalizationProvider
             return;
 
         _currentLanguage = language;
-        CurrentLanguageDictionary = LoadLanguageFromAssembly(language);
+        _currentLanguageDictionary = LoadLanguageFromAssembly(language);
+    }
+
+    public string GetValue(LocalizationMessages messages)
+    {
+        return GetValue(messages.ToString());
+    }
+
+    public string GetValue(string key)
+    {
+        if (!_currentLanguageDictionary.TryGetValue(key, out var result))
+            return "NOT_FOUND";
+
+        return result;
     }
 
     private static IReadOnlyDictionary<string, string> LoadLanguageFromAssembly(AvailableLanguages language)

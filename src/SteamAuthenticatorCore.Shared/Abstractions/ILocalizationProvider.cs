@@ -2,7 +2,8 @@
 
 public interface ILocalizationProvider
 {
-    IReadOnlyDictionary<string, string> CurrentLanguageDictionary { get; }
-
     void ChangeLanguage(AvailableLanguages languages);
+
+    string GetValue(LocalizationMessages  messages);
+    string GetValue(string key);
 }

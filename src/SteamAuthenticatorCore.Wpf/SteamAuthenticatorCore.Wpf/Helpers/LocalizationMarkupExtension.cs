@@ -18,9 +18,6 @@ public sealed class LocalizationMarkupExtension : MarkupExtension
         if (LocalizationMessages != LocalizationMessages.None)
             dictionaryString = LocalizationMessages.ToString();
 
-        if (!AppSettings.Current.LocalizationProvider.CurrentLanguageDictionary.TryGetValue(dictionaryString, out var result))
-            return string.Empty;
-
-        return result;
+        return AppSettings.Current.LocalizationProvider.GetValue(dictionaryString);
     }
 }

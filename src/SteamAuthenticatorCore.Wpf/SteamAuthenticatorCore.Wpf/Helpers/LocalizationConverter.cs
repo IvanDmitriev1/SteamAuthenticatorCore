@@ -10,10 +10,7 @@ public sealed class LocalizationConverter : IValueConverter
         if (value is not LocalizationMessages localizationMessages)
             return null;
 
-        if (!AppSettings.Current.LocalizationProvider.CurrentLanguageDictionary.TryGetValue(localizationMessages.ToString(), out var result))
-            return string.Empty;
-
-        return result;
+        return AppSettings.Current.LocalizationProvider.GetValue(localizationMessages);
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

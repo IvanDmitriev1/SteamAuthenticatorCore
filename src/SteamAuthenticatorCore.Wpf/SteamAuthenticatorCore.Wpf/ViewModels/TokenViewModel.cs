@@ -180,8 +180,11 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
     }
 
     [RelayCommand]
-    private void LoginAgain(SteamGuardAccount account)
+    private void LoginAgain(SteamGuardAccount? account)
     {
+        if (account is null)
+            return;
+
         NavigationService.Default.NavigateWithHierarchy(typeof(LoginPage));
         Messenger.Send(new UpdateAccountInLoginPageMessage(account));
     }

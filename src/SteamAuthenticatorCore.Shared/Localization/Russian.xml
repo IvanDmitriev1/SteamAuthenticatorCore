@@ -3,10 +3,22 @@
 <strings>
 	<string key="HelloMessage">Привет, мир!</string>
 
+	<string key="CopyMessage">Копировать</string>
+
 	<!-- MenuItems -->
 	<string key="Token">Токен</string>
 	<string key="Settings">Настройки</string>
 	<string key="Confirmations">Подтверждения</string>
+
+	<!-- Token page -->
+	<string key="FileMessage">Файл</string>
+	<string key="ImportAccountsMessage">Импортировать аккаунты</string>
+	<string key="ShowAccountsFileFolder">Показать папку с файлами аккаунтов</string>
+	<string key="SelectedAccountMessage">Выбранный аккаунт</string>
+	<string key="LoginMessage">Войти</string>
+	<string key="ForceRefreshSessionMessage">Принудительно обновить сеанс</string>
+	<string key="DeleteMessage">Удалить</string>
+	<string key="SearchPlaceholderMessage">Поиск...</string>
 
 	<!-- Settings page -->
 	<string key="SelectLanguageMessage">Выберите предпочитаемый вами язык</string>
