@@ -1,1 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
+
+<strings>
+	<string key="HelloMessage">Привет, мир!</string>
+
+	<!-- Settings page -->
+	<string key="SelectLanguageMessage">Выберите предпочитаемый вами язык</string>
+	<string key="SelectMaFilesLocationMessage">Выберите расположение .maFile файлов</string>
+	<string key="EnableAutoConfirmMarketTransactionsMessage">Автоматически подтверждать рыночные операции</string>
+	<string key="SecondsBetweenCheckingForConfirmationsMessage">Секунды между проверкой подтверждений</string>
+	<string key="CurrentVersionMessage">Текущая версия:</string>
+	<string key="CheckForUpdatesMessage">Проверьте наличие обновлений</string>
+
+</strings>

@@ -31,25 +31,25 @@
                     </Style>
                 </StackPanel.Resources>
 
-                <ui:CardControl Margin="0,0,0,0" Header="Select your language">
+                <ui:CardControl Margin="0,0,0,0" Header="{helpers:LocalizationMarkup LocalizationMessages=SelectLanguageMessage}">
                     <ComboBox
                         MinWidth="105"
                         ItemsSource="{helpers:EnumBindingSource {x:Type models:AvailableLanguages}}"
                         SelectedValue="{Binding AppSettings.Language}" />
                 </ui:CardControl>
 
-                <ui:CardControl Header=".maFiles location" Visibility="{Binding IsMaFilesLocationСhangeable, Converter={StaticResource BoolToVisibilityConverter}}">
+                <ui:CardControl Header="{helpers:LocalizationMarkup LocalizationMessages=SelectMaFilesLocationMessage}" Visibility="{Binding IsMaFilesLocationСhangeable, Converter={StaticResource BoolToVisibilityConverter}}">
                     <ComboBox
                         MinWidth="105"
                         ItemsSource="{helpers:EnumBindingSource {x:Type models:AccountsLocation}}"
                         SelectedValue="{Binding AppSettings.AccountsLocation}" />
                 </ui:CardControl>
 
-                <ui:CardControl Header="Auto-confirm market transactions">
+                <ui:CardControl Header="{helpers:LocalizationMarkup LocalizationMessages=EnableAutoConfirmMarketTransactionsMessage}">
                     <ui:ToggleSwitch IsChecked="{Binding AppSettings.AutoConfirmMarketTransactions}" />
                 </ui:CardControl>
 
-                <ui:CardControl Header="Seconds between checking for confirmations">
+                <ui:CardControl Header="{helpers:LocalizationMarkup LocalizationMessages=SecondsBetweenCheckingForConfirmationsMessage}">
                     <ui:NumberBox
                         MaxDecimalPlaces="0"
                         Maximum="100"
@@ -65,17 +65,21 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        Text="{Binding Path=CurrentVersion, StringFormat={}Current version: {0}}" />
+                    <TextBlock Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} {1}">
+                                <Binding Source="{helpers:LocalizationMarkup LocalizationMessages=CurrentVersionMessage}" />
+                                <Binding Path="CurrentVersion" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
 
                     <ui:Button
                         Grid.Column="1"
                         HorizontalAlignment="Right"
                         Appearance="Primary"
                         Command="{Binding Path=CheckForUpdatesCommand}"
-                        Content="Check for updates" />
+                        Content="{helpers:LocalizationMarkup LocalizationMessages=CheckForUpdatesMessage}" />
                 </Grid>
             </ui:Card>
         </Grid>

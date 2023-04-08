@@ -35,6 +35,9 @@ public sealed class XmlLocalizationProvider : ILocalizationProvider
 
         foreach (XmlNode node in document.DocumentElement!.ChildNodes)
         {
+            if (node.NodeType != XmlNodeType.Element)
+                continue;
+
             var attribute = node.Attributes!["key"]!;
             dictionary.Add(attribute.Value, node.InnerText);
         }
