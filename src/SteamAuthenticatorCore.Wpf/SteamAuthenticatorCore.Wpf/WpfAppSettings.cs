@@ -84,11 +84,26 @@ public sealed class WpfAppSettings : AppSettings, IDisposable
 
     protected override void OnLanguageAfterChanged(AvailableLanguages value)
     {
+        if (Application.Current.MainWindow is null)
+            return;
+
         var type = NavigationService.Default.GetNavigationView().SelectedItem?.TargetPageType;
         if (type is null)
             return;
 
+        UpdateContentPropertyOfANavigationViewItems(NavigationService.Default.GetNavigationView().MenuItems);
+        UpdateContentPropertyOfANavigationViewItems(NavigationService.Default.GetNavigationView().FooterMenuItems);
+
         NavigationService.Default.GoBack();
         NavigationService.Default.Navigate(type);
+    }
+
+    private static void UpdateContentPropertyOfANavigationViewItems(IEnumerable items)
+    {
+        foreach (NavigationViewItem frameworkElement in items)
+        {
+            var bindingExpression = frameworkElement.GetBindingExpression(ContentControl.ContentProperty);
+            bindingExpression?.UpdateTarget();
+        }
     }
 }

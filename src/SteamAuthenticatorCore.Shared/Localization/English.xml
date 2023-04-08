@@ -3,6 +3,11 @@
 <strings>
 	<string key="HelloMessage">Hello, world!</string>
 
+	<!-- MenuItems -->
+	<string key="Token">Token</string>
+	<string key="Settings">Settings</string>
+	<string key="Confirmations">Confirmations</string>
+
 	<!-- Settings page -->
 	<string key="SelectLanguageMessage">Select your preferred language</string>
 	<string key="SelectMaFilesLocationMessage">Select .maFile's location</string>

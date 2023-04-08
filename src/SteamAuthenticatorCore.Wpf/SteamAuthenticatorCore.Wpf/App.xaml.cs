@@ -104,6 +104,8 @@ public sealed partial class App : Application
 
     private async void OnStartup(object sender, StartupEventArgs e)
     { 
+        WpfAppSettings.Current.Load();
+
         await _host.StartAsync();
         ServiceProvider = _host.Services;
 

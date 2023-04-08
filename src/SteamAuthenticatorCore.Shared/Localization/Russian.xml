@@ -3,6 +3,11 @@
 <strings>
 	<string key="HelloMessage">Привет, мир!</string>
 
+	<!-- MenuItems -->
+	<string key="Token">Токен</string>
+	<string key="Settings">Настройки</string>
+	<string key="Confirmations">Подтверждения</string>
+
 	<!-- Settings page -->
 	<string key="SelectLanguageMessage">Выберите предпочитаемый вами язык</string>
 	<string key="SelectMaFilesLocationMessage">Выберите расположение .maFile файлов</string>
