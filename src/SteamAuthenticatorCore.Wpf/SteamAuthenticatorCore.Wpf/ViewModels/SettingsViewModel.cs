@@ -12,6 +12,7 @@ public partial class SettingsViewModel : MyObservableRecipient
         _accountsServiceResolver = accountsServiceResolver;
         AppSettings = AppSettings.Current;
         CurrentVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
+        IsMaFilesLocationСhangeable = GoogleDriveAccountsService.IsClientSecretAttachedToAssembly();
     }
 
     private readonly IUpdateService _updateService;
@@ -20,6 +21,9 @@ public partial class SettingsViewModel : MyObservableRecipient
 
     public AppSettings AppSettings { get; }
     public string CurrentVersion { get; }
+
+    [ObservableProperty]
+    private bool _isMaFilesLocationСhangeable;
 
     protected override void OnActivated()
     {

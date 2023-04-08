@@ -20,6 +20,22 @@ internal class GoogleDriveAccountsService : IAccountsService
         _api = new GoogleDriveApi(userCredentialPath, new[] { Google.Apis.Drive.v3.DriveService.Scope.DriveFile }, App.Name);
     }
 
+    private const string ClientSecretFile = "client_secret.json";
+
+    public static bool IsClientSecretAttachedToAssembly()
+    {
+        var appName = Assembly.GetEntryAssembly()!.GetName().Name;
+
+        return Assembly.GetExecutingAssembly().GetManifestResourceInfo($"{appName}.{ClientSecretFile}") is not null;
+    }
+
+    private static Stream? GetClientSecretStream()
+    {
+        var appName = Assembly.GetEntryAssembly()!.GetName().Name;
+        var steam = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{appName}.{ClientSecretFile}");
+        return steam;
+    }
+
     private readonly List<SteamGuardAccount> _accounts;
     private readonly GoogleDriveApi _api;
     private bool _isInitialized;
@@ -29,12 +45,15 @@ internal class GoogleDriveAccountsService : IAccountsService
         if (_isInitialized)
             return;
 
-        _isInitialized = true;
-            
-        var appName = Assembly.GetEntryAssembly()!.GetName().Name;
+        if (!IsClientSecretAttachedToAssembly())
+            throw new ArgumentException("ClientSecretFile is not as embedded resource");
 
-        if (!await _api.Init(Assembly.GetExecutingAssembly().GetManifestResourceStream($"{appName}.client_secret.json")!).ConfigureAwait(false))
-            await _api.ConnectGoogleDrive(Assembly.GetExecutingAssembly().GetManifestResourceStream($"{appName}.client_secret.json")!).ConfigureAwait(false);
+        _isInitialized = true;
+        
+        if (!await _api.Init(GetClientSecretStream()!).ConfigureAwait(false))
+        {
+            await _api.ConnectGoogleDrive(GetClientSecretStream()!).ConfigureAwait(false);
+        }
 
         if (await _api.GetFiles().ConfigureAwait(false) is not { } files)
             files = Array.Empty<GoogleFile>();

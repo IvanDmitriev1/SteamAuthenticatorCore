@@ -73,6 +73,9 @@ public sealed partial class App : Application
                 {
                     var appSettings = AppSettings.Current;
 
+                    if (!GoogleDriveAccountsService.IsClientSecretAttachedToAssembly())
+                        return provider.GetRequiredService<LocalDriveAccountsService>();
+
                     return appSettings.AccountsLocation switch
                     {
                         AccountsLocation.LocalDrive =>

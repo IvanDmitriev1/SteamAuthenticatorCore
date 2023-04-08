@@ -24,22 +24,22 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" DataContext="{Binding Path=AppSettings, Mode=OneTime}">
+            <StackPanel Grid.Row="0">
                 <StackPanel.Resources>
                     <Style BasedOn="{StaticResource {x:Type ui:CardControl}}" TargetType="{x:Type ui:CardControl}">
                         <Setter Property="Margin" Value="0,5,0,0" />
                     </Style>
                 </StackPanel.Resources>
 
-                <ui:CardControl Header=".maFiles location">
+                <ui:CardControl Header=".maFiles location" Visibility="{Binding IsMaFilesLocationСhangeable, Converter={StaticResource BoolToVisibilityConverter}}">
                     <ComboBox
                         MinWidth="105"
                         ItemsSource="{helpers:EnumBindingSource {x:Type models:AccountsLocation}}"
-                        SelectedValue="{Binding Path=AccountsLocation}" />
+                        SelectedValue="{Binding AppSettings.AccountsLocation}" />
                 </ui:CardControl>
 
                 <ui:CardControl Header="Auto-confirm market transactions">
-                    <ui:ToggleSwitch IsChecked="{Binding Path=AutoConfirmMarketTransactions}" />
+                    <ui:ToggleSwitch IsChecked="{Binding AppSettings.AutoConfirmMarketTransactions}" />
                 </ui:CardControl>
 
                 <ui:CardControl Header="Seconds between checking for confirmations">
@@ -47,7 +47,7 @@
                         MaxDecimalPlaces="0"
                         Maximum="100"
                         Minimum="15"
-                        Value="{Binding Path=PeriodicCheckingInterval, Mode=TwoWay, Converter={StaticResource DoubleToIntConverter}}" />
+                        Value="{Binding AppSettings.PeriodicCheckingInterval, Mode=TwoWay, Converter={StaticResource DoubleToIntConverter}}" />
                 </ui:CardControl>
             </StackPanel>
 
