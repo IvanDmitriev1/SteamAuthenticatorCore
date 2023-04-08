@@ -10,11 +10,12 @@
     <Version>0.9.8.0</Version>
     <LangVersion>latest</LangVersion>
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+	<PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
 
 	<ItemGroup>
     <EmbeddedResource Include="appsettings.json" />
-    <EmbeddedResource Include="client_secret.json" />
+    <!--<EmbeddedResource Include="client_secret.json" />-->
   </ItemGroup>
 	
 	<ItemGroup>

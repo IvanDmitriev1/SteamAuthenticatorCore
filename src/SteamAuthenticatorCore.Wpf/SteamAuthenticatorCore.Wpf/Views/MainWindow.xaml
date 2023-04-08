@@ -83,6 +83,8 @@
             IsBackButtonVisible="Visible"
             IsPaneToggleVisible="True"
             IsPaneVisible="True"
+            PaneOpened="NavigationFluent_OnPaneOpened"
+            PaneClosed="NavigationFluent_OnPaneClosed"
             Loaded="NavigationFluentOnLoaded"
             PaneDisplayMode="Left"
             TitleBar="{Binding ElementName=TitleBar, Mode=OneTime}"

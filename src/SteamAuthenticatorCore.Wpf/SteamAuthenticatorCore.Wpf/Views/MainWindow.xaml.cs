@@ -26,6 +26,9 @@ public partial class MainWindow
     private readonly ILogger<MainWindow> _logger;
     private bool _isLoaded;
 
+    private bool _isUserClosedPane;
+    private bool _isPaneOpenedOrClosedFromCode;
+
     private async void NavigationFluentOnLoaded(object sender, RoutedEventArgs e)
     {
         await InitializeDependencies();
@@ -56,7 +59,28 @@ public partial class MainWindow
             return;
         }
 
-        NavigationFluent.IsPaneOpen = !(e.NewSize.Width <= 1100);
+        if (_isUserClosedPane)
+            return;
+
+        _isPaneOpenedOrClosedFromCode = true;
+        NavigationFluent.IsPaneOpen = !(e.NewSize.Width <= 1200);
+        _isPaneOpenedOrClosedFromCode = false;
+    }
+
+    private void NavigationFluent_OnPaneOpened(NavigationView sender, RoutedEventArgs args)
+    {
+        if (_isPaneOpenedOrClosedFromCode)
+            return;
+
+        _isUserClosedPane = false;
+    }
+
+    private void NavigationFluent_OnPaneClosed(NavigationView sender, RoutedEventArgs args)
+    {
+        if (_isPaneOpenedOrClosedFromCode || !_isLoaded)
+            return;
+
+        _isUserClosedPane = true;
     }
 
     private void MenuItem_OnClick(object sender, RoutedEventArgs e)
