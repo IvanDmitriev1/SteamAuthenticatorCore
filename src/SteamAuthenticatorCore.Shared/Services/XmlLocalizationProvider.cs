@@ -12,6 +12,8 @@ public sealed class XmlLocalizationProvider : ILocalizationProvider
         _currentLanguageDictionary = new Dictionary<string, string>(0);
     }
 
+    public event PropertyChangedEventHandler? PropertyChanged;
+
     private readonly IReadOnlyDictionary<string, string> _englishLanguageDictionary;
     private IReadOnlyDictionary<string, string> _currentLanguageDictionary;
     private AvailableLanguages _currentLanguage;
@@ -23,16 +25,18 @@ public sealed class XmlLocalizationProvider : ILocalizationProvider
         if (_currentLanguage == language)
             return;
 
+        if (language == AvailableLanguages.English)
+            _currentLanguageDictionary = _englishLanguageDictionary;
+        else
+            _currentLanguageDictionary = LoadLanguageFromAssembly(language);
+
         _currentLanguage = language;
-        _currentLanguageDictionary = LoadLanguageFromAssembly(language);
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
     }
 
-    public string GetValue(LocalizationMessages messages)
-    {
-        return GetValue(messages.ToString());
-    }
+    public string this[string key] => GetValue(key);
 
-    public string GetValue(string key)
+    private string GetValue(string key)
     {
         if (_currentLanguageDictionary.TryGetValue(key, out var result))
             return result;

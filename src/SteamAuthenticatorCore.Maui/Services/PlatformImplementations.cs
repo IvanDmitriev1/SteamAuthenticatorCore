@@ -14,7 +14,7 @@ internal class PlatformImplementations : IPlatformImplementations
         return image;
     }
 
-    public async ValueTask InvokeMainThread(Action method)
+    public void InvokeMainThread(Action method)
     {
         if (MainThread.IsMainThread)
         {
@@ -22,7 +22,7 @@ internal class PlatformImplementations : IPlatformImplementations
             return;
         }
 
-        await MainThread.InvokeOnMainThreadAsync(method);
+        MainThread.BeginInvokeOnMainThread(method);
     }
 
     public Task DisplayAlert(string title, string message)

@@ -1,9 +1,8 @@
 ﻿namespace SteamAuthenticatorCore.Shared.Abstractions;
 
-public interface ILocalizationProvider
+public interface ILocalizationProvider : INotifyPropertyChanged
 {
     void ChangeLanguage(AvailableLanguages languages);
 
-    string GetValue(LocalizationMessages  messages);
-    string GetValue(string key);
+    string this[string key] { get; }
 }

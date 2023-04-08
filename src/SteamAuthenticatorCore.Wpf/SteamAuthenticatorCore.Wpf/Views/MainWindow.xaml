@@ -97,18 +97,18 @@
 
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem
-                    Content="{Binding Source={x:Static models:LocalizationMessages.Token}, Converter={StaticResource LocalizationConverter}, Mode=OneWay}"
+                    Content="{helpers:LocalizationMarkup LocalizationMessages=Token}"
                     Icon="{ui:SymbolIcon Timer24}"
                     TargetPageType="{x:Type pages:TokenPage}" />
                 <ui:NavigationViewItem
-                    Content="{Binding Source={x:Static models:LocalizationMessages.Confirmations}, Converter={StaticResource LocalizationConverter}, Mode=OneWay}"
+                    Content="{helpers:LocalizationMarkup LocalizationMessages=Confirmations}"
                     Icon="{ui:SymbolIcon TaskListLtr24}"
                     TargetPageType="{x:Type pages:ConfirmationsOverviewPage}" />
             </ui:NavigationView.MenuItems>
 
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem
-                    Content="{Binding Source={x:Static models:LocalizationMessages.Settings}, Converter={StaticResource LocalizationConverter}, Mode=OneWay}"
+                    Content="{helpers:LocalizationMarkup LocalizationMessages=Settings}"
                     Icon="{ui:SymbolIcon Settings24}"
                     TargetPageType="{x:Type pages:SettingsPage}" />
             </ui:NavigationView.FooterMenuItems>

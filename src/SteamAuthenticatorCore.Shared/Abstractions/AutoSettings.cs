@@ -4,8 +4,7 @@ public abstract class AutoSettings : ObservableObject, ISettings
 {
     protected AutoSettings()
     {
-        var properties = GetType().GetProperties()
-            .SkipWhile(info => info.GetCustomAttribute<IgnoreSetting>() is not null).ToArray();
+        var properties = GetType().GetProperties().Where(info => info.GetCustomAttribute<IgnoreSetting>() is null).ToArray();
 
         PropertyInfos = properties;
         PropertiesDictionary = properties.ToDictionary(static info => info.Name);
