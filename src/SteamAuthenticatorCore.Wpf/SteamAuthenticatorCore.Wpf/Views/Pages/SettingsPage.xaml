@@ -31,25 +31,25 @@
                     </Style>
                 </StackPanel.Resources>
 
-                <ui:CardControl Margin="0,0,0,0" Header="{helpers:LocalizationMarkup LocalizationMessages=SelectLanguageMessage}">
+                <ui:CardControl Margin="0,0,0,0" Header="{helpers:LocalizationMarkup SelectLanguageMessage, BindingMode=OneWay}">
                     <ComboBox
                         MinWidth="105"
                         ItemsSource="{helpers:EnumBindingSource {x:Type models:AvailableLanguages}}"
                         SelectedValue="{Binding AppSettings.Language}" />
                 </ui:CardControl>
 
-                <ui:CardControl Header="{helpers:LocalizationMarkup LocalizationMessages=SelectMaFilesLocationMessage}" Visibility="{Binding IsMaFilesLocationСhangeable, Converter={StaticResource BoolToVisibilityConverter}}">
+                <ui:CardControl Header="{helpers:LocalizationMarkup SelectMaFilesLocationMessage, BindingMode=OneWay}" Visibility="{Binding IsMaFilesLocationСhangeable, Converter={StaticResource BoolToVisibilityConverter}}">
                     <ComboBox
                         MinWidth="105"
                         ItemsSource="{helpers:EnumBindingSource {x:Type models:AccountsLocation}}"
                         SelectedValue="{Binding AppSettings.AccountsLocation}" />
                 </ui:CardControl>
 
-                <ui:CardControl Header="{helpers:LocalizationMarkup LocalizationMessages=EnableAutoConfirmMarketTransactionsMessage}">
+                <ui:CardControl Header="{helpers:LocalizationMarkup EnableAutoConfirmMarketTransactionsMessage, BindingMode=OneWay}">
                     <ui:ToggleSwitch IsChecked="{Binding AppSettings.AutoConfirmMarketTransactions}" />
                 </ui:CardControl>
 
-                <ui:CardControl Header="{helpers:LocalizationMarkup LocalizationMessages=SecondsBetweenCheckingForConfirmationsMessage}">
+                <ui:CardControl Header="{helpers:LocalizationMarkup SecondsBetweenCheckingForConfirmationsMessage, BindingMode=OneWay}">
                     <ui:NumberBox
                         MaxDecimalPlaces="0"
                         Maximum="100"
@@ -79,7 +79,8 @@
                         HorizontalAlignment="Right"
                         Appearance="Primary"
                         Command="{Binding Path=CheckForUpdatesCommand}"
-                        Content="{helpers:LocalizationMarkup LocalizationMessages=CheckForUpdatesMessage}" />
+                        Content="{helpers:LocalizationMarkup CheckForUpdatesMessage,
+                                                             BindingMode=OneWay}" />
                 </Grid>
             </ui:Card>
         </Grid>

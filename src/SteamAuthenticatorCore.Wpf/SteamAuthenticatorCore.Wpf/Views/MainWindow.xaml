@@ -97,18 +97,21 @@
 
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem
-                    Content="{helpers:LocalizationMarkup LocalizationMessages=Token}"
+                    Content="{helpers:LocalizationMarkup Token,
+                                                         BindingMode=OneWay}"
                     Icon="{ui:SymbolIcon Timer24}"
                     TargetPageType="{x:Type pages:TokenPage}" />
                 <ui:NavigationViewItem
-                    Content="{helpers:LocalizationMarkup LocalizationMessages=Confirmations}"
+                    Content="{helpers:LocalizationMarkup Confirmations,
+                                                         BindingMode=OneWay}"
                     Icon="{ui:SymbolIcon TaskListLtr24}"
                     TargetPageType="{x:Type pages:ConfirmationsOverviewPage}" />
             </ui:NavigationView.MenuItems>
 
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem
-                    Content="{helpers:LocalizationMarkup LocalizationMessages=Settings}"
+                    Content="{helpers:LocalizationMarkup Settings,
+                                                         BindingMode=OneWay}"
                     Icon="{ui:SymbolIcon Settings24}"
                     TargetPageType="{x:Type pages:SettingsPage}" />
             </ui:NavigationView.FooterMenuItems>

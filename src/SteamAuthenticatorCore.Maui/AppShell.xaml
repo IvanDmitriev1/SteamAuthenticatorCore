@@ -14,7 +14,7 @@
 
     <TabBar>
         <ShellContent
-            Title="{extensions:LocalizationMarkup LocalizationMessages=Token}"
+            Title="{extensions:LocalizationMarkup Token}"
             ContentTemplate="{DataTemplate pages:TokenPage}"
             Route="TokenPage">
             <ShellContent.Icon>
@@ -23,7 +23,7 @@
         </ShellContent>
 
         <ShellContent
-            Title="{extensions:LocalizationMarkup LocalizationMessages=Confirmations}"
+            Title="{extensions:LocalizationMarkup Confirmations}"
             ContentTemplate="{DataTemplate pages:ConfirmationsOverviewPage}"
             Route="ConfirmationsOverviewPage">
             <ShellContent.Icon>
@@ -32,7 +32,7 @@
         </ShellContent>
 
         <ShellContent
-            Title="{extensions:LocalizationMarkup LocalizationMessages=Settings}"
+            Title="{extensions:LocalizationMarkup Settings}"
             ContentTemplate="{DataTemplate pages:SettingsPage}"
             Route="SettingsPage">
             <ShellContent.Icon>

@@ -158,7 +158,7 @@
                                 Grid.Column="0"
                                 LineBreakMode="WordWrap"
                                 MaxLines="2"
-                                Text="{extensions:LocalizationMarkup LocalizationMessages=Language}"
+                                Text="{extensions:LocalizationMarkup Language}"
                                 VerticalOptions="Center" />
 
                             <Label Grid.Column="1" Text="{Binding AppSettings.Language}" />
@@ -173,7 +173,7 @@
                                 Grid.Column="0"
                                 LineBreakMode="WordWrap"
                                 MaxLines="2"
-                                Text="{extensions:LocalizationMarkup LocalizationMessages=EnableAutoConfirmMarketTransactionsMessage}"
+                                Text="{extensions:LocalizationMarkup EnableAutoConfirmMarketTransactionsMessage}"
                                 VerticalOptions="Center" />
 
                             <Switch
@@ -192,7 +192,7 @@
                                 Grid.Column="0"
                                 LineBreakMode="WordWrap"
                                 MaxLines="2"
-                                Text="{extensions:LocalizationMarkup LocalizationMessages=SecondsBetweenCheckingForConfirmationsMessage}"
+                                Text="{extensions:LocalizationMarkup SecondsBetweenCheckingForConfirmationsMessage}"
                                 VerticalOptions="Center" />
 
                             <Label
@@ -213,7 +213,7 @@
                         </MultiBinding>
                     </Label.Text>
                 </Label>
-                <Button Command="{Binding CheckForUpdatesCommand}" Text="{extensions:LocalizationMarkup LocalizationMessages=CheckForUpdatesMessage}" />
+                <Button Command="{Binding CheckForUpdatesCommand}" Text="{extensions:LocalizationMarkup CheckForUpdatesMessage}" />
             </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
