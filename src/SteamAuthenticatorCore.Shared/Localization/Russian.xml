@@ -36,4 +36,7 @@
 	<string key="ConfirmMessage">Подтвердить</string>
 	<string key="CancelMessage">Отменить</string>
 
+	<!-- Login page -->
+	<string key="AccountNameMessage">Имя аккаунта:</string>
+	<string key="PasswordMessage">Пароль:</string>
 </strings>

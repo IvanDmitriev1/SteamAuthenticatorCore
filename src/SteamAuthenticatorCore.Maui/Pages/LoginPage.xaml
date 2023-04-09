@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:SteamAuthenticatorCore.Maui.Controls"
+    xmlns:extensions="clr-namespace:SteamAuthenticatorCore.Maui.Extensions"
     xmlns:viewModels1="clr-namespace:SteamAuthenticatorCore.Maui.ViewModels"
     Title="Login"
     x:DataType="viewModels1:LoginViewModel"
@@ -21,7 +22,7 @@
                 <Entry
                     IsEnabled="False"
                     IsReadOnly="True"
-                    Placeholder="Login"
+                    Placeholder="{extensions:LocalizationMarkup LocalizationMessages=AccountNameMessage}"
                     Text="{Binding Path=Username}" />
             </Border>
 
@@ -30,11 +31,11 @@
                 <Entry
                     IsEnabled="{Binding IsPasswordBoxEnabled}"
                     IsPassword="True"
-                    Placeholder="Password"
+                    Placeholder="{extensions:LocalizationMarkup LocalizationMessages=PasswordMessage}"
                     Text="{Binding Path=Password}" />
             </Border>
 
-            <Button Command="{Binding LoginCommand}" Text="Login" />
+            <Button Command="{Binding LoginCommand}" Text="{extensions:LocalizationMarkup LocalizationMessages=LoginMessage}" />
 
         </VerticalStackLayout>
     </ScrollView>

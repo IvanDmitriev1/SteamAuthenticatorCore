@@ -36,5 +36,9 @@ public enum LocalizationMessages
 
     //AccountConfirmations page
     ConfirmMessage,
-    CancelMessage
+    CancelMessage,
+
+    //Login page
+    AccountNameMessage,
+    PasswordMessage
 }

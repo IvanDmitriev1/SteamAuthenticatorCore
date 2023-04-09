@@ -36,4 +36,8 @@
 	<string key="ConfirmMessage">Confirm</string>
 	<string key="CancelMessage">Cancel</string>
 
+	<!-- Login page -->
+	<string key="AccountNameMessage">Account name:</string>
+	<string key="PasswordMessage">Password:</string>
+
 </strings>

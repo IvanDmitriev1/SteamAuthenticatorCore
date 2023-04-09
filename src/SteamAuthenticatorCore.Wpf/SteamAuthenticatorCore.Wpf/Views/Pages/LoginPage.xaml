@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="clr-namespace:SteamAuthenticatorCore.Desktop.Helpers"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Desktop.ViewModels"
@@ -19,12 +20,12 @@
         <ui:Card VerticalAlignment="Top">
             <StackPanel>
                 <StackPanel>
-                    <Label Content="Account name:" />
+                    <Label Content="{helpers:LocalizationMarkup LocalizationMessages=AccountNameMessage}" />
                     <TextBox IsEnabled="False" Text="{Binding Username}" />
                 </StackPanel>
 
                 <StackPanel Margin="0,10,0,0">
-                    <Label Content="Password:" />
+                    <Label Content="{helpers:LocalizationMarkup LocalizationMessages=PasswordMessage}" />
                     <TextBox IsEnabled="{Binding Path=IsPasswordBoxEnabled}" Text="{Binding Password}" />
                 </StackPanel>
             </StackPanel>
@@ -35,6 +36,6 @@
             HorizontalAlignment="Stretch"
             Appearance="Primary"
             Command="{Binding Path=LoginCommand}"
-            Content="Login" />
+            Content="{helpers:LocalizationMarkup LocalizationMessages=LoginMessage}" />
     </StackPanel>
 </Page>
