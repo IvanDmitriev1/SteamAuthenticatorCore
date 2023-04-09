@@ -148,7 +148,8 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
 
         await Clipboard.SetTextAsync(Token);
 
-        var toast = Toast.Make("Copied", ToastDuration.Short, 16);
+
+        var toast = Toast.Make(AppSettings.Current.LocalizationProvider[LocalizationMessage.CopiedMessage], ToastDuration.Short, 16);
         await toast.Show();
     }
 

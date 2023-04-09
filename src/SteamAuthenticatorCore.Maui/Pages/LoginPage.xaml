@@ -22,7 +22,7 @@
                 <Entry
                     IsEnabled="False"
                     IsReadOnly="True"
-                    Placeholder="{extensions:LocalizationMarkup LocalizationMessages=AccountNameMessage}"
+                    Placeholder="{extensions:LocalizationMarkup LocalizationMessage=AccountNameMessage}"
                     Text="{Binding Path=Username}" />
             </Border>
 
@@ -31,11 +31,11 @@
                 <Entry
                     IsEnabled="{Binding IsPasswordBoxEnabled}"
                     IsPassword="True"
-                    Placeholder="{extensions:LocalizationMarkup LocalizationMessages=PasswordMessage}"
+                    Placeholder="{extensions:LocalizationMarkup LocalizationMessage=PasswordMessage}"
                     Text="{Binding Path=Password}" />
             </Border>
 
-            <Button Command="{Binding LoginCommand}" Text="{extensions:LocalizationMarkup LocalizationMessages=LoginMessage}" />
+            <Button Command="{Binding LoginCommand}" Text="{extensions:LocalizationMarkup LocalizationMessage=LoginMessage}" />
 
         </VerticalStackLayout>
     </ScrollView>

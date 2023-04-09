@@ -208,7 +208,7 @@
                 <Label FontSize="20">
                     <Label.Text>
                         <MultiBinding StringFormat="{}{0} {1}">
-                            <extensions:LocalizationMarkup LocalizationMessages="CurrentVersionMessage" />
+                            <extensions:LocalizationMarkup LocalizationMessage="CurrentVersionMessage" />
                             <Binding Source="{x:Static applicationModel:VersionTracking.CurrentVersion}" />
                         </MultiBinding>
                     </Label.Text>

@@ -1,6 +1,6 @@
 ﻿namespace SteamAuthenticatorCore.Shared.Models;
 
-public enum AvailableLanguages
+public enum AvailableLanguage
 {
     English,
     Russian,

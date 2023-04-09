@@ -1,6 +1,6 @@
 ﻿namespace SteamAuthenticatorCore.Shared.Models;
 
-public enum LocalizationMessages
+public enum LocalizationMessage
 {
     None,
     HelloMessage,

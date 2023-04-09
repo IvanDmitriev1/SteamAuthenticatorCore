@@ -7,7 +7,7 @@
     xmlns:extensions="clr-namespace:SteamAuthenticatorCore.Maui.Extensions"
     xmlns:models="clr-namespace:SteamAuthenticatorCore.Shared.Models;assembly=SteamAuthenticatorCore.Shared"
     xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Maui.ViewModels"
-    Title="{extensions:LocalizationMarkup LocalizationMessages=Language}"
+    Title="{extensions:LocalizationMarkup LocalizationMessage=Language}"
     x:DataType="viewModels:AvailableLanguagesPageViewModel"
     x:TypeArguments="viewModels:AvailableLanguagesPageViewModel">
 
@@ -17,7 +17,7 @@
             FontSize="20"
             HorizontalOptions="Center"
             HorizontalTextAlignment="Center"
-            Text="{extensions:LocalizationMarkup LocalizationMessages=SelectLanguageMessage}" />
+            Text="{extensions:LocalizationMarkup LocalizationMessage=SelectLanguageMessage}" />
 
         <VerticalStackLayout
             Grid.Row="1"
@@ -31,8 +31,8 @@
                 </Style>
             </VerticalStackLayout.Resources>
 
-            <RadioButton Content="{x:Static models:AvailableLanguages.English}" Value="{x:Static models:AvailableLanguages.English}" />
-            <RadioButton Content="{x:Static models:AvailableLanguages.Russian}" Value="{x:Static models:AvailableLanguages.Russian}" />
+            <RadioButton Content="{x:Static models:AvailableLanguage.English}" Value="{x:Static models:AvailableLanguage.English}" />
+            <RadioButton Content="{x:Static models:AvailableLanguage.Russian}" Value="{x:Static models:AvailableLanguage.Russian}" />
         </VerticalStackLayout>
     </Grid>
 </controls:BaseContentPage>

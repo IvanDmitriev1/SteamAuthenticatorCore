@@ -20,12 +20,12 @@
         <ui:Card VerticalAlignment="Top">
             <StackPanel>
                 <StackPanel>
-                    <Label Content="{helpers:LocalizationMarkup LocalizationMessages=AccountNameMessage}" />
+                    <Label Content="{helpers:LocalizationMarkup LocalizationMessage=AccountNameMessage}" />
                     <TextBox IsEnabled="False" Text="{Binding Username}" />
                 </StackPanel>
 
                 <StackPanel Margin="0,10,0,0">
-                    <Label Content="{helpers:LocalizationMarkup LocalizationMessages=PasswordMessage}" />
+                    <Label Content="{helpers:LocalizationMarkup LocalizationMessage=PasswordMessage}" />
                     <TextBox IsEnabled="{Binding Path=IsPasswordBoxEnabled}" Text="{Binding Password}" />
                 </StackPanel>
             </StackPanel>
@@ -36,6 +36,6 @@
             HorizontalAlignment="Stretch"
             Appearance="Primary"
             Command="{Binding Path=LoginCommand}"
-            Content="{helpers:LocalizationMarkup LocalizationMessages=LoginMessage}" />
+            Content="{helpers:LocalizationMarkup LocalizationMessage=LoginMessage}" />
     </StackPanel>
 </Page>

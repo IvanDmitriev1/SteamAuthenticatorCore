@@ -27,7 +27,7 @@
             HorizontalAlignment="Stretch"
             Appearance="Primary"
             Command="{Binding Path=CheckConfirmationsCommand}"
-            Content="{helpers:LocalizationMarkup LocalizationMessages=UpdateMessage}" />
+            Content="{helpers:LocalizationMarkup LocalizationMessage=UpdateMessage}" />
 
         <ScrollViewer
             Grid.Row="1"

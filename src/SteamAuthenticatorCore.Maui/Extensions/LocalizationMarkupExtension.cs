@@ -1,6 +1,6 @@
 ﻿namespace SteamAuthenticatorCore.Maui.Extensions;
 
-[ContentProperty(nameof(LocalizationMessages))]
+[ContentProperty(nameof(LocalizationMessage))]
 public sealed class LocalizationMarkupExtension : IMarkupExtension<BindingBase>
 {
     public LocalizationMarkupExtension()
@@ -8,19 +8,19 @@ public sealed class LocalizationMarkupExtension : IMarkupExtension<BindingBase>
 
     }
 
-    public LocalizationMarkupExtension(LocalizationMessages localizationMessages)
+    public LocalizationMarkupExtension(LocalizationMessage localizationMessage)
     {
-        LocalizationMessages = localizationMessages;
+        LocalizationMessage = localizationMessage;
     }
 
-    public LocalizationMessages LocalizationMessages { get; set; }
+    public LocalizationMessage LocalizationMessage { get; set; }
 
     public BindingBase ProvideValue(IServiceProvider serviceProvider)
     {
         string dictionaryKey = string.Empty;
 
-        if (LocalizationMessages != LocalizationMessages.None)
-            dictionaryKey = LocalizationMessages.ToString();
+        if (LocalizationMessage != LocalizationMessage.None)
+            dictionaryKey = LocalizationMessage.ToString();
 
         return new Binding()
         {

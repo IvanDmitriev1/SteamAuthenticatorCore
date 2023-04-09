@@ -11,8 +11,8 @@ public abstract partial class AppSettings : AutoSettings
 
         Language = Thread.CurrentThread.CurrentUICulture.Name switch
         {
-            "ru-RU" => AvailableLanguages.Russian,
-            _ => AvailableLanguages.English
+            "ru-RU" => AvailableLanguage.Russian,
+            _ => AvailableLanguage.English
         };
 
         LocalizationProvider = new XmlLocalizationProvider(Language);
@@ -34,7 +34,7 @@ public abstract partial class AppSettings : AutoSettings
     private bool _autoConfirmMarketTransactions;
 
     [ObservableProperty]
-    private AvailableLanguages _language;
+    private AvailableLanguage _language;
 
     [IgnoreSetting]
     public bool IsLoaded { get; protected set; }
@@ -54,7 +54,7 @@ public abstract partial class AppSettings : AutoSettings
         Save(e.PropertyName!);
     }
 
-    partial void OnLanguageChanged(AvailableLanguages value)
+    partial void OnLanguageChanged(AvailableLanguage value)
     {
         LocalizationProvider.ChangeLanguage(value);
     }

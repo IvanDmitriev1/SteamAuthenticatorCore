@@ -3,7 +3,7 @@ using System.Windows.Markup;
 
 namespace SteamAuthenticatorCore.Desktop.Helpers;
 
-[ContentProperty(nameof(LocalizationMessages))]
+[ContentProperty(nameof(LocalizationMessage))]
 [MarkupExtensionReturnType(typeof(object))]
 public sealed class LocalizationMarkupExtension : MarkupExtension
 {
@@ -11,13 +11,13 @@ public sealed class LocalizationMarkupExtension : MarkupExtension
     {
     }
 
-    public LocalizationMarkupExtension(LocalizationMessages localizationMessages)
+    public LocalizationMarkupExtension(LocalizationMessage localizationMessage)
     {
-        LocalizationMessages = localizationMessages;
+        LocalizationMessage = localizationMessage;
     }
 
-    [ConstructorArgument("localizationMessages")]
-    public LocalizationMessages LocalizationMessages { get; set; }
+    [ConstructorArgument("localizationMessage")]
+    public LocalizationMessage LocalizationMessage { get; set; }
 
     public BindingMode BindingMode { get; set; } = BindingMode.OneTime;
 
@@ -25,8 +25,8 @@ public sealed class LocalizationMarkupExtension : MarkupExtension
     {
         string dictionaryKey = string.Empty;
 
-        if (LocalizationMessages != LocalizationMessages.None)
-            dictionaryKey = LocalizationMessages.ToString();
+        if (LocalizationMessage != LocalizationMessage.None)
+            dictionaryKey = LocalizationMessage.ToString();
 
         var binding = new Binding()
         {

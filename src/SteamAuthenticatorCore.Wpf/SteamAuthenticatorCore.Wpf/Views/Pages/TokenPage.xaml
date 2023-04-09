@@ -39,29 +39,29 @@
                 </Style>
             </Menu.Resources>
 
-            <MenuItem Header="{helpers:LocalizationMarkup LocalizationMessages=FileMessage}">
-                <MenuItem Command="{Binding Path=ImportAccountsCommand}" Header="{helpers:LocalizationMarkup LocalizationMessages=ImportAccountsMessage}" />
+            <MenuItem Header="{helpers:LocalizationMarkup LocalizationMessage=FileMessage}">
+                <MenuItem Command="{Binding Path=ImportAccountsCommand}" Header="{helpers:LocalizationMarkup LocalizationMessage=ImportAccountsMessage}" />
                 <!--<MenuItem
                     Command="{Binding Path=RefreshAccountsCommand}"
                     CommandParameter="{Binding ElementName=LoadingStackPanel}"
                     Header="Refresh account list" />-->
-                <MenuItem Command="{Binding Path=ShowAccountFilesFolderCommand}" Header="{helpers:LocalizationMarkup LocalizationMessages=ShowAccountsFileFolder}" />
+                <MenuItem Command="{Binding Path=ShowAccountFilesFolderCommand}" Header="{helpers:LocalizationMarkup LocalizationMessage=ShowAccountsFileFolder}" />
             </MenuItem>
 
-            <MenuItem Header="{helpers:LocalizationMarkup LocalizationMessages=SelectedAccountMessage}">
+            <MenuItem Header="{helpers:LocalizationMarkup LocalizationMessage=SelectedAccountMessage}">
                 <MenuItem
                     Command="{Binding LoginAgainCommand}"
                     CommandParameter="{Binding SelectedAccount}"
-                    Header="{helpers:LocalizationMarkup LocalizationMessages=LoginMessage}" />
+                    Header="{helpers:LocalizationMarkup LocalizationMessage=LoginMessage}" />
                 <MenuItem
                     Command="{Binding Path=ForceRefreshSessionCommand}"
                     CommandParameter="{Binding SelectedAccount}"
-                    Header="{helpers:LocalizationMarkup LocalizationMessages=ForceRefreshSessionMessage}" />
+                    Header="{helpers:LocalizationMarkup LocalizationMessage=ForceRefreshSessionMessage}" />
                 <Separator />
                 <MenuItem
                     Command="{Binding Path=DeleteAccountCommand}"
                     CommandParameter="{Binding SelectedAccount}"
-                    Header="{helpers:LocalizationMarkup LocalizationMessages=DeleteMessage}" />
+                    Header="{helpers:LocalizationMarkup LocalizationMessage=DeleteMessage}" />
             </MenuItem>
 
             <!--<MenuItem Command="{Binding Path=OnSetUpNewAccountCommand}" Header="Set up new account" />-->
@@ -96,7 +96,7 @@
                         Appearance="Primary"
                         Command="{StaticResource CopyCommand}"
                         CommandParameter="{Binding Token}"
-                        Content="{helpers:LocalizationMarkup LocalizationMessages=CopyMessage}" />
+                        Content="{helpers:LocalizationMarkup LocalizationMessage=CopyMessage}" />
                 </Grid>
 
                 <ProgressBar
@@ -134,7 +134,7 @@
 
                 <ui:TextBox
                     Grid.Row="0"
-                    PlaceholderText="{helpers:LocalizationMarkup LocalizationMessages=SearchPlaceholderMessage}"
+                    PlaceholderText="{helpers:LocalizationMarkup LocalizationMessage=SearchPlaceholderMessage}"
                     Text="{Binding SearchBoxText, UpdateSourceTrigger=PropertyChanged}" />
 
                 <ListView
@@ -172,16 +172,16 @@
                                         <MenuItem
                                             Command="{Binding Source={x:Reference Grid}, Path=DataContext.LoginAgainCommand}"
                                             CommandParameter="{Binding}"
-                                            Header="{helpers:LocalizationMarkup LocalizationMessages=LoginMessage}" />
+                                            Header="{helpers:LocalizationMarkup LocalizationMessage=LoginMessage}" />
                                         <MenuItem
                                             Command="{Binding Source={x:Reference Grid}, Path=DataContext.ForceRefreshSessionCommand}"
                                             CommandParameter="{Binding}"
-                                            Header="{helpers:LocalizationMarkup LocalizationMessages=ForceRefreshSessionMessage}" />
+                                            Header="{helpers:LocalizationMarkup LocalizationMessage=ForceRefreshSessionMessage}" />
                                         <Separator />
                                         <MenuItem
                                             Command="{Binding Source={x:Reference Grid}, Path=DataContext.DeleteAccountCommand}"
                                             CommandParameter="{Binding}"
-                                            Header="{helpers:LocalizationMarkup LocalizationMessages=DeleteMessage}" />
+                                            Header="{helpers:LocalizationMarkup LocalizationMessage=DeleteMessage}" />
                                     </ContextMenu>
                                 </Border.ContextMenu>
                             </Border>

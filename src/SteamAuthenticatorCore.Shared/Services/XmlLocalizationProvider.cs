@@ -4,11 +4,11 @@ namespace SteamAuthenticatorCore.Shared.Services;
 
 public sealed class XmlLocalizationProvider : ILocalizationProvider
 {
-    public XmlLocalizationProvider(AvailableLanguages language)
+    public XmlLocalizationProvider(AvailableLanguage language)
     {
         _currentLanguage = language;
 
-        _englishLanguageDictionary = LoadLanguageFromAssembly(AvailableLanguages.English);
+        _englishLanguageDictionary = LoadLanguageFromAssembly(AvailableLanguage.English);
         _currentLanguageDictionary = new Dictionary<string, string>(0);
     }
 
@@ -16,16 +16,16 @@ public sealed class XmlLocalizationProvider : ILocalizationProvider
 
     private readonly IReadOnlyDictionary<string, string> _englishLanguageDictionary;
     private IReadOnlyDictionary<string, string> _currentLanguageDictionary;
-    private AvailableLanguages _currentLanguage;
+    private AvailableLanguage _currentLanguage;
 
     private static string GetAssemblyName { get; } = Assembly.GetAssembly(typeof(XmlLocalizationProvider))!.GetName().Name!;
 
-    public void ChangeLanguage(AvailableLanguages language)
+    public void ChangeLanguage(AvailableLanguage language)
     {
         if (_currentLanguage == language)
             return;
 
-        if (language == AvailableLanguages.English)
+        if (language == AvailableLanguage.English)
             _currentLanguageDictionary = _englishLanguageDictionary;
         else
             _currentLanguageDictionary = LoadLanguageFromAssembly(language);
@@ -35,6 +35,8 @@ public sealed class XmlLocalizationProvider : ILocalizationProvider
     }
 
     public string this[string key] => GetValue(key);
+
+    public string this[LocalizationMessage message] => this[message.ToString()];
 
     private string GetValue(string key)
     {
@@ -47,7 +49,7 @@ public sealed class XmlLocalizationProvider : ILocalizationProvider
         return "NOT_FOUND";
     }
 
-    private static IReadOnlyDictionary<string, string> LoadLanguageFromAssembly(AvailableLanguages language)
+    private static IReadOnlyDictionary<string, string> LoadLanguageFromAssembly(AvailableLanguage language)
     {
         using var stream =
             Assembly.GetAssembly(typeof(XmlLocalizationProvider))!.GetManifestResourceStream(

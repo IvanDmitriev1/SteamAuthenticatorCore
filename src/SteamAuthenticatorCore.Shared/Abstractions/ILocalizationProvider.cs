@@ -2,7 +2,8 @@
 
 public interface ILocalizationProvider : INotifyPropertyChanged
 {
-    void ChangeLanguage(AvailableLanguages languages);
+    void ChangeLanguage(AvailableLanguage language);
 
     string this[string key] { get; }
+    string this[LocalizationMessage message] { get; }
 }

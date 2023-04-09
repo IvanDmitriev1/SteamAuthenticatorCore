@@ -34,7 +34,7 @@
                 <ui:CardControl Margin="0,0,0,0" Header="{helpers:LocalizationMarkup SelectLanguageMessage, BindingMode=OneWay}">
                     <ComboBox
                         MinWidth="105"
-                        ItemsSource="{helpers:EnumBindingSource {x:Type models:AvailableLanguages}}"
+                        ItemsSource="{helpers:EnumBindingSource {x:Type models:AvailableLanguage}}"
                         SelectedValue="{Binding AppSettings.Language}" />
                 </ui:CardControl>
 
@@ -68,7 +68,7 @@
                     <TextBlock Grid.Column="0" VerticalAlignment="Center">
                         <TextBlock.Text>
                             <MultiBinding StringFormat="{}{0} {1}">
-                                <helpers:LocalizationMarkup LocalizationMessages="CurrentVersionMessage" />
+                                <helpers:LocalizationMarkup LocalizationMessage="CurrentVersionMessage" />
                                 <Binding Path="CurrentVersion" />
                             </MultiBinding>
                         </TextBlock.Text>
