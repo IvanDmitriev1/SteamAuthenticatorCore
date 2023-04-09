@@ -8,8 +8,9 @@ public sealed class LocalizationMarkupExtension : MarkupExtension
 {
     public string LocalizationString { get; set; } = string.Empty;
     public LocalizationMessages LocalizationMessages { get; set; }
+    public BindingMode BindingMode { get; set; } = BindingMode.OneWay;
 
-    public override object? ProvideValue(IServiceProvider serviceProvider)
+    public override object ProvideValue(IServiceProvider serviceProvider)
     {
         string dictionaryKey = string.Empty;
 
@@ -19,21 +20,12 @@ public sealed class LocalizationMarkupExtension : MarkupExtension
         if (LocalizationMessages != LocalizationMessages.None)
             dictionaryKey = LocalizationMessages.ToString();
 
-        var target = (IProvideValueTarget)serviceProvider.GetService(typeof(IProvideValueTarget))!;
-
-        if (target.TargetObject is not DependencyObject obj || target.TargetProperty is not DependencyProperty prop)
-        {
-            return null;
-        }
-
         var binding = new Binding()
         {
             Source = AppSettings.Current.LocalizationProvider,
             Path = new PropertyPath($"[{dictionaryKey}]"),
-            Mode = BindingMode.OneWay,
+            Mode = BindingMode,
         };
-
-         BindingOperations.SetBinding(obj, prop, binding);
 
         return binding.ProvideValue(serviceProvider);
     }

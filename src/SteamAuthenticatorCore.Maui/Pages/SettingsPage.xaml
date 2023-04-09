@@ -150,53 +150,50 @@
                 </Border>
             </VerticalStackLayout>
 
-            <VerticalStackLayout Spacing="5">
-                <Label FontSize="20" Text="Auto-confirmation options" />
+            <VerticalStackLayout Spacing="10">
+                <Border>
+                    <effectsView:SfEffectsView TouchUpCommand="{Binding ChangeAutoConfirmationCommand}">
+                        <Grid Margin="15" ColumnDefinitions="*,Auto">
+                            <Label
+                                Grid.Column="0"
+                                LineBreakMode="WordWrap"
+                                MaxLines="2"
+                                Text="{extensions:LocalizationMarkup LocalizationMessages=EnableAutoConfirmMarketTransactionsMessage}"
+                                VerticalOptions="Center" />
 
-                <VerticalStackLayout Spacing="10">
-                    <Border>
-                        <effectsView:SfEffectsView TouchUpCommand="{Binding ChangeAutoConfirmationCommand}">
-                            <Grid Margin="15" ColumnDefinitions="*,Auto">
-                                <Label
-                                    Grid.Column="0"
-                                    LineBreakMode="WordWrap"
-                                    MaxLines="2"
-                                    Text="{extensions:LocalizationMarkup LocalizationMessages=EnableAutoConfirmMarketTransactionsMessage}"
-                                    VerticalOptions="Center" />
+                            <Switch
+                                x:Name="AutoConfirmSwitch"
+                                Grid.Column="1"
+                                IsToggled="{Binding Path=AppSettings.AutoConfirmMarketTransactions}"
+                                VerticalOptions="Center" />
+                        </Grid>
+                    </effectsView:SfEffectsView>
+                </Border>
 
-                                <Switch
-                                    x:Name="AutoConfirmSwitch"
-                                    Grid.Column="1"
-                                    IsToggled="{Binding Path=AppSettings.AutoConfirmMarketTransactions}"
-                                    VerticalOptions="Center" />
-                            </Grid>
-                        </effectsView:SfEffectsView>
-                    </Border>
+                <Border>
+                    <effectsView:SfEffectsView TouchUpCommand="{Binding ChangeCheckingIntervalPromptCommand}">
+                        <Grid Margin="15" ColumnDefinitions="*,Auto">
+                            <Label
+                                Grid.Column="0"
+                                LineBreakMode="WordWrap"
+                                MaxLines="2"
+                                Text="{extensions:LocalizationMarkup LocalizationMessages=SecondsBetweenCheckingForConfirmationsMessage}"
+                                VerticalOptions="Center" />
 
-                    <Border>
-                        <effectsView:SfEffectsView TouchUpCommand="{Binding ChangeCheckingIntervalPromptCommand}">
-                            <Grid Margin="15" ColumnDefinitions="*,Auto">
-                                <Label
-                                    Grid.Column="0"
-                                    LineBreakMode="WordWrap"
-                                    MaxLines="2"
-                                    Text="{extensions:LocalizationMarkup LocalizationMessages=SecondsBetweenCheckingForConfirmationsMessage}"
-                                    VerticalOptions="Center" />
-
-                                <Label
-                                    Grid.Column="1"
-                                    Text="{Binding Path=AppSettings.PeriodicCheckingInterval}"
-                                    VerticalOptions="Center" />
-                            </Grid>
-                        </effectsView:SfEffectsView>
-                    </Border>
-                </VerticalStackLayout>
+                            <Label
+                                Grid.Column="1"
+                                Text="{Binding Path=AppSettings.PeriodicCheckingInterval}"
+                                VerticalOptions="Center" />
+                        </Grid>
+                    </effectsView:SfEffectsView>
+                </Border>
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="10">
                 <Label FontSize="20">
                     <Label.Text>
                         <MultiBinding StringFormat="{}{0} {1}">
+                            <extensions:LocalizationMarkup LocalizationMessages="CurrentVersionMessage" />
                             <Binding Source="{x:Static applicationModel:VersionTracking.CurrentVersion}" />
                         </MultiBinding>
                     </Label.Text>

@@ -68,7 +68,7 @@
                     <TextBlock Grid.Column="0" VerticalAlignment="Center">
                         <TextBlock.Text>
                             <MultiBinding StringFormat="{}{0} {1}">
-                                <Binding Source="{helpers:LocalizationMarkup LocalizationMessages=CurrentVersionMessage}" />
+                                <helpers:LocalizationMarkup LocalizationMessages="CurrentVersionMessage" />
                                 <Binding Path="CurrentVersion" />
                             </MultiBinding>
                         </TextBlock.Text>
