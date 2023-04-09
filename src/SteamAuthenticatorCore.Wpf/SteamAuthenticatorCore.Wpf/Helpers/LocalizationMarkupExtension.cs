@@ -3,7 +3,7 @@ using System.Windows.Markup;
 
 namespace SteamAuthenticatorCore.Desktop.Helpers;
 
-[MarkupExtensionReturnType(typeof(BindingBase))]
+[MarkupExtensionReturnType(typeof(object))]
 public sealed class LocalizationMarkupExtension : MarkupExtension
 {
     public string LocalizationString { get; set; } = string.Empty;

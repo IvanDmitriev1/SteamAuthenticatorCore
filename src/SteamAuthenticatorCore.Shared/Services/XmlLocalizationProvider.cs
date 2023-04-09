@@ -41,15 +41,17 @@ public sealed class XmlLocalizationProvider : ILocalizationProvider
         if (_currentLanguageDictionary.TryGetValue(key, out var result))
             return result;
 
-        if (!_englishLanguageDictionary.TryGetValue(key, out result))
-            return "NOT_FOUND";
+        if (_englishLanguageDictionary.TryGetValue(key, out result))
+            return result;
 
-        return result;
+        return "NOT_FOUND";
     }
 
     private static IReadOnlyDictionary<string, string> LoadLanguageFromAssembly(AvailableLanguages language)
     {
-        var stream = Assembly.GetAssembly(typeof(XmlLocalizationProvider))!.GetManifestResourceStream($"{GetAssemblyName}.Localization.{language}.xml")!;
+        using var stream =
+            Assembly.GetAssembly(typeof(XmlLocalizationProvider))!.GetManifestResourceStream(
+                $"{GetAssemblyName}.Localization.{language}.xml")!;
 
         var dictionary = new Dictionary<string, string>();
 
