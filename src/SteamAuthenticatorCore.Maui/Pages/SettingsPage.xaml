@@ -152,6 +152,21 @@
 
             <VerticalStackLayout Spacing="10">
                 <Border>
+                    <effectsView:SfEffectsView TouchUpCommand="{Binding NavigateToAvailableLanguagesPageCommand}">
+                        <Grid Margin="15" ColumnDefinitions="*,Auto">
+                            <Label
+                                Grid.Column="0"
+                                LineBreakMode="WordWrap"
+                                MaxLines="2"
+                                Text="{extensions:LocalizationMarkup LocalizationMessages=Language}"
+                                VerticalOptions="Center" />
+
+                            <Label Grid.Column="1" Text="{Binding AppSettings.Language}" />
+                        </Grid>
+                    </effectsView:SfEffectsView>
+                </Border>
+
+                <Border>
                     <effectsView:SfEffectsView TouchUpCommand="{Binding ChangeAutoConfirmationCommand}">
                         <Grid Margin="15" ColumnDefinitions="*,Auto">
                             <Label

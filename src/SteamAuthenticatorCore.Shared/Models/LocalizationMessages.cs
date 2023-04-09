@@ -13,6 +13,7 @@ public enum LocalizationMessages
     Token,
     Settings,
     Confirmations,
+    Language,
 
     //Token page
     FileMessage,

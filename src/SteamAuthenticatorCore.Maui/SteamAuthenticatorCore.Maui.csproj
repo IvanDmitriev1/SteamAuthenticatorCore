@@ -100,5 +100,10 @@
 		<Compile Remove="**\*.Windows.cs" />
 		<None Include="**\*.Windows.cs" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
 	</ItemGroup>
+	<ItemGroup>
+	  <MauiXaml Update="Pages\AvailableLanguagesPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
 
 </Project>

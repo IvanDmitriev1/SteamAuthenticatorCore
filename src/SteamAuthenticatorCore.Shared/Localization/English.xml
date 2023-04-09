@@ -11,6 +11,7 @@
 	<string key="Token">Token</string>
 	<string key="Settings">Settings</string>
 	<string key="Confirmations">Confirmations</string>
+	<string key="Language">Language</string>
 
 	<!-- Token page -->
 	<string key="FileMessage">File</string>

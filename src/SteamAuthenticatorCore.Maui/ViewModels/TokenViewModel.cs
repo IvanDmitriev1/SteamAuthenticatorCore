@@ -1,6 +1,4 @@
-﻿using SteamAuthenticatorCore.Maui.Pages;
-
-namespace SteamAuthenticatorCore.Maui.ViewModels;
+﻿namespace SteamAuthenticatorCore.Maui.ViewModels;
 
 public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDisposable
 {

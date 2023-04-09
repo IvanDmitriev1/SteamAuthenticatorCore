@@ -26,15 +26,10 @@ public sealed partial class SettingsViewModel : MyObservableRecipient
     [ObservableProperty]
     private string _themeSelection;
 
-    partial void OnThemeSelectionChanged(string value)
+    [RelayCommand]
+    private Task NavigateToAvailableLanguagesPage()
     {
-        AppSettings.Theme = value switch
-        {
-            "System" => AppTheme.Unspecified,
-            "Light" => AppTheme.Light,
-            "Dark" => AppTheme.Dark,
-            _ => throw new ArgumentOutOfRangeException()
-        };
+        return Shell.Current.GoToAsync(nameof(AvailableLanguagesPage));
     }
 
     [RelayCommand]
@@ -88,5 +83,16 @@ public sealed partial class SettingsViewModel : MyObservableRecipient
         {
             //
         }
+    }
+
+    partial void OnThemeSelectionChanged(string value)
+    {
+        AppSettings.Theme = value switch
+        {
+            "System" => AppTheme.Unspecified,
+            "Light" => AppTheme.Light,
+            "Dark" => AppTheme.Dark,
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 }

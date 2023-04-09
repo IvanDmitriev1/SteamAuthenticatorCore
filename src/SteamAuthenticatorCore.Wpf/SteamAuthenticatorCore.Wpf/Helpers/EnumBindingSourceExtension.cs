@@ -1,10 +1,12 @@
-﻿namespace SteamAuthenticatorCore.Desktop.Helpers;
+﻿using System.Windows.Markup;
 
+namespace SteamAuthenticatorCore.Desktop.Helpers;
+
+[MarkupExtensionReturnType(typeof(Array))]
 internal class EnumBindingSourceExtension : System.Windows.Markup.MarkupExtension
 {
-    public Type EnumType { get; }
-
     public int Offset { get; set; }
+    public Type EnumType { get; }
 
     public EnumBindingSourceExtension(Type enumType)
     {
@@ -17,7 +19,8 @@ internal class EnumBindingSourceExtension : System.Windows.Markup.MarkupExtensio
     public override object ProvideValue(IServiceProvider serviceProvider)
     {
         var arr = Enum.GetValues(EnumType);
-        if (Offset <= 0) return arr;
+        if (Offset <= 0)
+            return arr;
 
         Array.Reverse(arr);
         var newArr = new object[arr.Length - Offset];

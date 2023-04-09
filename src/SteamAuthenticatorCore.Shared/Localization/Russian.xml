@@ -11,6 +11,7 @@
 	<string key="Token">Токен</string>
 	<string key="Settings">Настройки</string>
 	<string key="Confirmations">Подтверждения</string>
+	<string key="Language">Язык</string>
 
 	<!-- Token page -->
 	<string key="FileMessage">Файл</string>
