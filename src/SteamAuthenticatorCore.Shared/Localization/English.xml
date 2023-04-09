@@ -6,6 +6,9 @@
 	<string key="CopyMessage">Copy</string>
 	<string key="CopiedMessage">Copied</string>
 	<string key="UpdateMessage">Update</string>
+	<string key="ErrorMessage">Error</string>
+	<string key="YesMessage">Yes</string>
+	<string key="NoMessage">No</string>
 
 	<!-- MenuItems -->
 	<string key="Token">Token</string>
@@ -23,6 +26,9 @@
 	<string key="DeleteMessage">Delete</string>
 	<string key="SearchPlaceholderMessage">Search...</string>
 	<string key="NoItemsToDisplayMessage">Nothing to display</string>
+	<string key="ShowGoogleAccountFilesFolderContentMessage">Your accounts are stored in the google drive {0} folder</string>
+	<string key="DeletingAccountMessage">Deleting an account</string>
+	<string key="DeletingAccountContentMessage">Are you sure you want to delete {0} ?</string>
 
 	<!-- Settings page -->
 	<string key="SelectLanguageMessage">Select your preferred language</string>
@@ -39,5 +45,8 @@
 	<!-- Login page -->
 	<string key="AccountNameMessage">Account name:</string>
 	<string key="PasswordMessage">Password:</string>
+	<string key="RefreshSessionMessage">Refresh session</string>
+	<string key="FailedToRefreshSessionMessage">Failed to refresh session</string>
+	<string key="SessionHasBeenRefreshedMessage">Session has been refreshed</string>
 
 </strings>

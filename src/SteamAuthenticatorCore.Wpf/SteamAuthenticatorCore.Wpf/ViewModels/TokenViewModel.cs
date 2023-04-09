@@ -114,16 +114,16 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
             return;
 
         var dialog = ContentDialogService.Default.CreateDialog();
-        dialog.Title = "Refresh session";
+        dialog.Title = _appSettings.LocalizationProvider[LocalizationMessage.RefreshSessionMessage];
 
         if (!await _steamAccountService.RefreshSession(SelectedAccount, CancellationToken.None))
         {
-            dialog.Content = "Failed to refresh session";
+            dialog.Content = _appSettings.LocalizationProvider[LocalizationMessage.FailedToRefreshSessionMessage];
         }
         else
         {
             await _accountsService.Update(SelectedAccount);
-            dialog.Content = "Session has been refreshed";   
+            dialog.Content = _appSettings.LocalizationProvider[LocalizationMessage.SessionHasBeenRefreshedMessage];   
         }
 
         await dialog.ShowAsync();
@@ -135,8 +135,11 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
         if (_appSettings.AccountsLocation == AccountsLocation.GoogleDrive)
         {
             var dialog = ContentDialogService.Default.CreateDialog();
-            dialog.Title = "Error";
-            dialog.Content = $"Your accounts are stored in the google drive {App.InternalName} folder";
+            dialog.Title = _appSettings.LocalizationProvider[LocalizationMessage.ErrorMessage];
+            dialog.Content =
+                string.Format(
+                    _appSettings.LocalizationProvider[LocalizationMessage.ShowGoogleAccountFilesFolderContentMessage],
+                    App.InternalName);
 
             await dialog.ShowAsync();
             return;
@@ -165,10 +168,12 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
             return;
 
         var dialog = ContentDialogService.Default.CreateDialog();
-        dialog.Title = "Delete account";
-        dialog.Content = $"Are you sure what you want to delete {SelectedAccount.AccountName}?";
-        dialog.PrimaryButtonText = "Yes";
-        dialog.CloseButtonText = "No";
+        dialog.Title = _appSettings.LocalizationProvider[LocalizationMessage.DeletingAccountMessage];
+        dialog.Content = string.Format(
+            _appSettings.LocalizationProvider[LocalizationMessage.DeletingAccountContentMessage],
+            SelectedAccount.AccountName);
+        dialog.PrimaryButtonText = _appSettings.LocalizationProvider[LocalizationMessage.YesMessage];
+        dialog.CloseButtonText = _appSettings.LocalizationProvider[LocalizationMessage.NoMessage];
 
         if (await dialog.ShowAsync() != ContentDialogResult.Primary)
             return;

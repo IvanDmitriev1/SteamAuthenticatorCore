@@ -6,6 +6,9 @@
 	<string key="CopyMessage">Копировать</string>
 	<string key="CopiedMessage">Скопировано</string>
 	<string key="UpdateMessage">Обновить</string>
+	<string key="ErrorMessage">Ошибка</string>
+	<string key="YesMessage">Да</string>
+	<string key="NoMessage">Нет</string>
 
 	<!-- MenuItems -->
 	<string key="Token">Токен</string>
@@ -23,6 +26,9 @@
 	<string key="DeleteMessage">Удалить</string>
 	<string key="SearchPlaceholderMessage">Поиск...</string>
 	<string key="NoItemsToDisplayMessage">Нечего показывать</string>
+	<string key="ShowGoogleAccountFilesFolderContentMessage">Ваши учетные записи хранятся в папке {0} на Google диске</string>
+	<string key="DeletingAccountMessage">Удаление аккаунта</string>
+	<string key="DeletingAccountContentMessage">Вы уверены, что хотите удалить {0}?</string>
 
 	<!-- Settings page -->
 	<string key="SelectLanguageMessage">Выберите предпочитаемый вами язык</string>
@@ -39,4 +45,8 @@
 	<!-- Login page -->
 	<string key="AccountNameMessage">Имя аккаунта:</string>
 	<string key="PasswordMessage">Пароль:</string>
+	<string key="RefreshSessionMessage">Обновление сеанса</string>
+	<string key="FailedToRefreshSessionMessage">Не удалось обновить сеанс</string>
+	<string key="SessionHasBeenRefreshedMessage">Сессия была обновлена</string>
+
 </strings>

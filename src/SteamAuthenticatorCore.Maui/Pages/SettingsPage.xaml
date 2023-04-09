@@ -197,6 +197,7 @@
 
                             <Label
                                 Grid.Column="1"
+                                Margin="10,0,0,0"
                                 Text="{Binding Path=AppSettings.PeriodicCheckingInterval}"
                                 VerticalOptions="Center" />
                         </Grid>
@@ -213,7 +214,10 @@
                         </MultiBinding>
                     </Label.Text>
                 </Label>
-                <Button Command="{Binding CheckForUpdatesCommand}" Text="{extensions:LocalizationMarkup CheckForUpdatesMessage}" />
+                <Button
+                    Command="{Binding CheckForUpdatesCommand}"
+                    LineBreakMode="WordWrap"
+                    Text="{extensions:LocalizationMarkup CheckForUpdatesMessage}" />
             </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>

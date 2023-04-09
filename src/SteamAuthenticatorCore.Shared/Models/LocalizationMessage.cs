@@ -8,6 +8,9 @@ public enum LocalizationMessage
     CopyMessage,
     CopiedMessage,
     UpdateMessage,
+    ErrorMessage,
+    YesMessage,
+    NoMessage,
 
     //Menu items
     Token,
@@ -25,6 +28,9 @@ public enum LocalizationMessage
     DeleteMessage,
     SearchPlaceholderMessage,
     NoItemsToDisplayMessage,
+    ShowGoogleAccountFilesFolderContentMessage,
+    DeletingAccountMessage,
+    DeletingAccountContentMessage,
 
     //Settings page
     SelectLanguageMessage,
@@ -40,5 +46,8 @@ public enum LocalizationMessage
 
     //Login page
     AccountNameMessage,
-    PasswordMessage
+    PasswordMessage,
+    RefreshSessionMessage,
+    FailedToRefreshSessionMessage,
+    SessionHasBeenRefreshedMessage,
 }
