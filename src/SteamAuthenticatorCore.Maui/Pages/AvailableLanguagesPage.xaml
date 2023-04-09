@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:BaseContentPage
+    x:Class="SteamAuthenticatorCore.Maui.Pages.AvailableLanguagesPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:SteamAuthenticatorCore.Maui.Controls"
+    xmlns:extensions="clr-namespace:SteamAuthenticatorCore.Maui.Extensions"
+    xmlns:models="clr-namespace:SteamAuthenticatorCore.Shared.Models;assembly=SteamAuthenticatorCore.Shared"
+    xmlns:viewModels="clr-namespace:SteamAuthenticatorCore.Maui.ViewModels"
+    Title="{extensions:LocalizationMarkup LocalizationMessage=Language}"
+    x:DataType="viewModels:AvailableLanguagesPageViewModel"
+    x:TypeArguments="viewModels:AvailableLanguagesPageViewModel">
+
+    <Grid RowDefinitions="Auto, *">
+        <Label
+            Grid.Row="0"
+            FontSize="20"
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"
+            Text="{extensions:LocalizationMarkup LocalizationMessage=SelectLanguageMessage}" />
+
+        <VerticalStackLayout
+            Grid.Row="1"
+            Margin="0,10,0,0"
+            RadioButtonGroup.GroupName="Language"
+            RadioButtonGroup.SelectedValue="{Binding Path=Settings.Language}"
+            Spacing="5">
+            <VerticalStackLayout.Resources>
+                <Style TargetType="RadioButton">
+                    <Setter Property="FontSize" Value="18" />
+                </Style>
+            </VerticalStackLayout.Resources>
+
+            <RadioButton Content="{x:Static models:AvailableLanguage.English}" Value="{x:Static models:AvailableLanguage.English}" />
+            <RadioButton Content="{x:Static models:AvailableLanguage.Russian}" Value="{x:Static models:AvailableLanguage.Russian}" />
+        </VerticalStackLayout>
+    </Grid>
+</controls:BaseContentPage>

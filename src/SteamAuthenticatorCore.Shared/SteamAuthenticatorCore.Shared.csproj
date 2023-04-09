@@ -9,12 +9,20 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0-preview1" />
     <PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="All" />
-    <PackageReference Include="Octokit" Version="5.0.2" />
+    <PackageReference Include="Octokit" Version="5.0.3" />
     <PackageReference Include="System.Net.Http.Json" Version="7.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SteamAuthCore\SteamAuthCore.csproj" />
   </ItemGroup>
+
+    <ItemGroup>
+	    <EmbeddedResource Include="Localization\*" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Localization\Russian.xml" />
+    </ItemGroup>
 
 </Project>

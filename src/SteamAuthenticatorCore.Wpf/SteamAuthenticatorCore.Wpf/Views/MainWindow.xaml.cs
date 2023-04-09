@@ -106,8 +106,6 @@ public partial class MainWindow
 
     private static async Task InitializeDependencies()
     {
-        WpfAppSettings.Current.Load();
-
         await App.ServiceProvider.GetRequiredService<ITimeAligner>().AlignTimeAsync();
         await App.ServiceProvider.GetRequiredService<AccountsServiceResolver>().Invoke().Initialize();
         await App.ServiceProvider.GetRequiredService<IConfirmationService>().Initialize();

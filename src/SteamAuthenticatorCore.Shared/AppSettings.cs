@@ -8,6 +8,14 @@ public abstract partial class AppSettings : AutoSettings
         FirstRun = true;
         PeriodicCheckingInterval = 15;
         AutoConfirmMarketTransactions = false;
+
+        Language = Thread.CurrentThread.CurrentUICulture.Name switch
+        {
+            "ru-RU" => AvailableLanguage.Russian,
+            _ => AvailableLanguage.English
+        };
+
+        LocalizationProvider = new XmlLocalizationProvider(Language);
     }
 
     [IgnoreSetting]
@@ -25,8 +33,14 @@ public abstract partial class AppSettings : AutoSettings
     [ObservableProperty]
     private bool _autoConfirmMarketTransactions;
 
+    [ObservableProperty]
+    private AvailableLanguage _language;
+
     [IgnoreSetting]
     public bool IsLoaded { get; protected set; }
+
+    [IgnoreSetting]
+    public ILocalizationProvider LocalizationProvider { get; }
 
     protected abstract void Save(string propertyName);
 
@@ -38,5 +52,10 @@ public abstract partial class AppSettings : AutoSettings
         base.OnPropertyChanged(e);
 
         Save(e.PropertyName!);
+    }
+
+    partial void OnLanguageChanged(AvailableLanguage value)
+    {
+        LocalizationProvider.ChangeLanguage(value);
     }
 }

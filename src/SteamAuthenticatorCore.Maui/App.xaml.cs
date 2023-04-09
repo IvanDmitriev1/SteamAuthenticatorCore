@@ -9,6 +9,8 @@ public partial class App : Application
         _accountsFileServiceResolver = accountsFileServiceResolver;
         _confirmationService = confirmationService;
 
+        MauiAppSettings.Current.Load();
+
         MainPage = new AppShell();
         Shell.Current.Navigating += CurrentOnNavigating;
     }
@@ -18,8 +20,6 @@ public partial class App : Application
 
     protected override async void OnStart()
     {
-        MauiAppSettings.Current.Load();
-
         await _accountsFileServiceResolver.Invoke().Initialize().ConfigureAwait(false);
         await _confirmationService.Initialize().ConfigureAwait(false);
 

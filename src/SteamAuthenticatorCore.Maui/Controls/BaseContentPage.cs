@@ -11,11 +11,6 @@ public abstract class BaseContentPage<TViewModel> : ContentPage where TViewModel
             var self = (BaseContentPage<TViewModel>)sender!;
             self.OnLoaded();
         };
-
-#if DEBUG
-        if (string.IsNullOrWhiteSpace(Title))
-            Title = GetType().Name;
-#endif
     }
 
     public new TViewModel BindingContext => (TViewModel)base.BindingContext;

@@ -42,7 +42,10 @@ public partial class LoginViewModel : MyObservableRecipient, IRecipient<UpdateAc
         IsPasswordBoxEnabled = false;
 
         if (await _loginService.RefreshLogin(_steamGuardAccount, Password))
+        {
             NavigationService.Default.GoBack();
+            return;
+        }
 
         IsPasswordBoxEnabled = true;
     }

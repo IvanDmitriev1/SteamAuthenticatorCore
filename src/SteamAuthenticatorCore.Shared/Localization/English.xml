@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+
+<strings>
+	<string key="HelloMessage">Hello, world!</string>
+
+	<string key="CopyMessage">Copy</string>
+	<string key="CopiedMessage">Copied</string>
+	<string key="UpdateMessage">Update</string>
+	<string key="ErrorMessage">Error</string>
+	<string key="YesMessage">Yes</string>
+	<string key="NoMessage">No</string>
+
+	<!-- MenuItems -->
+	<string key="Token">Token</string>
+	<string key="Settings">Settings</string>
+	<string key="Confirmations">Confirmations</string>
+	<string key="Language">Language</string>
+
+	<!-- Token page -->
+	<string key="FileMessage">File</string>
+	<string key="ImportAccountsMessage">Import accounts</string>
+	<string key="ShowAccountsFileFolder">Show accounts file folder</string>
+	<string key="SelectedAccountMessage">Selected account</string>
+	<string key="LoginMessage">Login</string>
+	<string key="ForceRefreshSessionMessage">Force refresh session</string>
+	<string key="DeleteMessage">Delete</string>
+	<string key="SearchPlaceholderMessage">Search...</string>
+	<string key="NoItemsToDisplayMessage">Nothing to display</string>
+	<string key="ShowGoogleAccountFilesFolderContentMessage">Your accounts are stored in the google drive {0} folder</string>
+	<string key="DeletingAccountMessage">Deleting an account</string>
+	<string key="DeletingAccountContentMessage">Are you sure you want to delete {0} ?</string>
+
+	<!-- Settings page -->
+	<string key="SelectLanguageMessage">Select your preferred language</string>
+	<string key="SelectMaFilesLocationMessage">Select .maFile's location</string>
+	<string key="EnableAutoConfirmMarketTransactionsMessage">Automatically confirm market transactions</string>
+	<string key="SecondsBetweenCheckingForConfirmationsMessage">Seconds between checking for confirmations</string>
+	<string key="CurrentVersionMessage">Current version:</string>
+	<string key="CheckForUpdatesMessage">Check for updates</string>
+
+	<!-- AccountConfirmations page -->
+	<string key="ConfirmMessage">Confirm</string>
+	<string key="CancelMessage">Cancel</string>
+
+	<!-- Login page -->
+	<string key="AccountNameMessage">Account name:</string>
+	<string key="PasswordMessage">Password:</string>
+	<string key="RefreshSessionMessage">Refresh session</string>
+	<string key="FailedToRefreshSessionMessage">Failed to refresh session</string>
+	<string key="SessionHasBeenRefreshedMessage">Session has been refreshed</string>
+
+</strings>

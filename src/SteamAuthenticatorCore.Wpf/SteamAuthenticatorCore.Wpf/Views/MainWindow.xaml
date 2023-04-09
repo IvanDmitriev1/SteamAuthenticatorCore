@@ -4,7 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:desktop="clr-namespace:SteamAuthenticatorCore.Desktop"
+    xmlns:helpers="clr-namespace:SteamAuthenticatorCore.Desktop.Helpers"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:SteamAuthenticatorCore.Shared.Models;assembly=SteamAuthenticatorCore.Shared"
     xmlns:pages="clr-namespace:SteamAuthenticatorCore.Desktop.Views.Pages"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     x:Name="Window"
@@ -83,10 +85,10 @@
             IsBackButtonVisible="Visible"
             IsPaneToggleVisible="True"
             IsPaneVisible="True"
-            PaneOpened="NavigationFluent_OnPaneOpened"
-            PaneClosed="NavigationFluent_OnPaneClosed"
             Loaded="NavigationFluentOnLoaded"
+            PaneClosed="NavigationFluent_OnPaneClosed"
             PaneDisplayMode="Left"
+            PaneOpened="NavigationFluent_OnPaneOpened"
             TitleBar="{Binding ElementName=TitleBar, Mode=OneTime}"
             Visibility="Hidden">
             <ui:NavigationView.Header>
@@ -95,18 +97,21 @@
 
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem
-                    Content="Token"
+                    Content="{helpers:LocalizationMarkup Token,
+                                                         BindingMode=OneWay}"
                     Icon="{ui:SymbolIcon Timer24}"
                     TargetPageType="{x:Type pages:TokenPage}" />
                 <ui:NavigationViewItem
-                    Content="Confirmations"
+                    Content="{helpers:LocalizationMarkup Confirmations,
+                                                         BindingMode=OneWay}"
                     Icon="{ui:SymbolIcon TaskListLtr24}"
                     TargetPageType="{x:Type pages:ConfirmationsOverviewPage}" />
             </ui:NavigationView.MenuItems>
 
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem
-                    Content="Settings"
+                    Content="{helpers:LocalizationMarkup Settings,
+                                                         BindingMode=OneWay}"
                     Icon="{ui:SymbolIcon Settings24}"
                     TargetPageType="{x:Type pages:SettingsPage}" />
             </ui:NavigationView.FooterMenuItems>

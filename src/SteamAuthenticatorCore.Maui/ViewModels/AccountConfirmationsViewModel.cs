@@ -2,7 +2,7 @@
 
 public sealed partial class AccountConfirmationsViewModel : BaseAccountConfirmationsViewModel, IDisposable
 {
-    public AccountConfirmationsViewModel(ISteamGuardAccountService accountService) : base(accountService)
+    public AccountConfirmationsViewModel(ISteamGuardAccountService accountService, IPlatformImplementations platformImplementations) : base(accountService, platformImplementations)
     {
         SelectedItems = new ObservableCollection<(VisualElement, ConfirmationModel)>();
     }

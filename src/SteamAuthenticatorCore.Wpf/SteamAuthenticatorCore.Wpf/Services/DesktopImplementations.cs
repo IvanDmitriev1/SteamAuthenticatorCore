@@ -15,12 +15,12 @@ internal class DesktopImplementations : IPlatformImplementations
         return image;
     }
 
-    public async ValueTask InvokeMainThread(Action method)
+    public void InvokeMainThread(Action method)
     {
         if (Application.Current.Dispatcher.CheckAccess())
             method.Invoke();
         else
-            await Application.Current.Dispatcher.InvokeAsync(method);
+            Application.Current.Dispatcher.Invoke(method);
     }
 
     public async Task DisplayAlert(string title, string message)

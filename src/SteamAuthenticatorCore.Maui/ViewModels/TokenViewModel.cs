@@ -1,6 +1,4 @@
-﻿using SteamAuthenticatorCore.Maui.Pages;
-
-namespace SteamAuthenticatorCore.Maui.ViewModels;
+﻿namespace SteamAuthenticatorCore.Maui.ViewModels;
 
 public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDisposable
 {
@@ -9,6 +7,7 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
         _steamGuardAccountService = steamGuardAccountService;
         _accountsService = accountsFileServiceResolver.Invoke();
         _token = TokenPlaceHolder;
+        _appSettings = AppSettings.Current;
 
         _backgroundTimer = backgroundTimerFactory.StartNewTimer(TimeSpan.FromSeconds(1), OnTimer);
     }
@@ -18,6 +17,7 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
     private readonly ISteamGuardAccountService _steamGuardAccountService;
     private readonly IBackgroundTimer _backgroundTimer;
     private readonly IAccountsService _accountsService;
+    private readonly AppSettings _appSettings;
     private IReadOnlyList<SteamGuardAccount> _accounts = Array.Empty<SteamGuardAccount>();
 
     private Int64 _currentSteamChunk;
@@ -112,11 +112,11 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
 
         if (!await _steamGuardAccountService.RefreshSession(account, CancellationToken.None))
         {
-            await Application.Current!.MainPage!.DisplayAlert("Session refresh", "Failed to refresh session", "Ok");
+            await Application.Current!.MainPage!.DisplayAlert(_appSettings.LocalizationProvider[LocalizationMessage.RefreshSessionMessage], _appSettings.LocalizationProvider[LocalizationMessage.FailedToRefreshSessionMessage], "Ok");
             return;
         }
 
-        await Application.Current!.MainPage!.DisplayAlert("Session refresh", "Session has been refreshed", "Ok");
+        await Application.Current!.MainPage!.DisplayAlert(_appSettings.LocalizationProvider[LocalizationMessage.RefreshSessionMessage], _appSettings.LocalizationProvider[LocalizationMessage.SessionHasBeenRefreshedMessage], "Ok");
     }
 
     [RelayCommand]
@@ -124,7 +124,10 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
     {
         var account = (SteamGuardAccount) _longPressView!.BindingContext;
 
-        if (!await Application.Current!.MainPage!.DisplayAlert("Delete account", $"Are you sure what you want to delete {account.AccountName}?", "Yes", "No"))
+        var message = string.Format(_appSettings.LocalizationProvider[LocalizationMessage.DeletingAccountContentMessage],
+            account.AccountName);
+
+        if (!await Application.Current!.MainPage!.DisplayAlert(_appSettings.LocalizationProvider[LocalizationMessage.DeletingAccountMessage], message, _appSettings.LocalizationProvider[LocalizationMessage.YesMessage], _appSettings.LocalizationProvider[LocalizationMessage.NoMessage]))
             return;
 
         await _accountsService.Delete(account);
@@ -150,7 +153,8 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
 
         await Clipboard.SetTextAsync(Token);
 
-        var toast = Toast.Make("Copied", ToastDuration.Short, 16);
+
+        var toast = Toast.Make(AppSettings.Current.LocalizationProvider[LocalizationMessage.CopiedMessage], ToastDuration.Short, 16);
         await toast.Show();
     }
 

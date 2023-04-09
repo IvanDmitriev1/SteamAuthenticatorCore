@@ -39,6 +39,7 @@ internal static class MauiBuilderExtensions
 
         services.AddTransient<LoginViewModel>();
         services.AddTransient<AccountConfirmationsViewModel>();
+        services.AddTransient<AvailableLanguagesPageViewModel>();
     }
 
     private static void AddPages(this IServiceCollection services)
@@ -48,6 +49,7 @@ internal static class MauiBuilderExtensions
         services.AddTransient<LoginPage>();
         services.AddTransient<ConfirmationsOverviewPage>();
         services.AddTransient<AccountConfirmationsPage>();
+        services.AddTransient<AvailableLanguagesPage>();
     }
 
     private static void AddServices(this IServiceCollection services)

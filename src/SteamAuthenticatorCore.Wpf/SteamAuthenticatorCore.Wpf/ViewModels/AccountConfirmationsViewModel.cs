@@ -2,7 +2,7 @@
 
 public sealed partial class AccountConfirmationsViewModel : BaseAccountConfirmationsViewModel
 {
-    public AccountConfirmationsViewModel(ISteamGuardAccountService accountService) : base(accountService)
+    public AccountConfirmationsViewModel(ISteamGuardAccountService accountService, IPlatformImplementations platformImplementations) : base(accountService, platformImplementations)
     {
         
     }

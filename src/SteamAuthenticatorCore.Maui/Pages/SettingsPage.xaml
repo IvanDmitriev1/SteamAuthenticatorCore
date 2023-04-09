@@ -6,6 +6,7 @@
     xmlns:applicationModel="clr-namespace:Microsoft.Maui.ApplicationModel;assembly=Microsoft.Maui.Essentials"
     xmlns:controls="clr-namespace:SteamAuthenticatorCore.Maui.Controls"
     xmlns:effectsView="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+    xmlns:extensions="clr-namespace:SteamAuthenticatorCore.Maui.Extensions"
     xmlns:resources="clr-namespace:SteamAuthenticatorCore.Maui.Resources"
     xmlns:viewModels1="clr-namespace:SteamAuthenticatorCore.Maui.ViewModels"
     Title="Settings"
@@ -149,52 +150,74 @@
                 </Border>
             </VerticalStackLayout>
 
-            <VerticalStackLayout Spacing="5">
-                <Label FontSize="20" Text="Auto-confirmation options" />
+            <VerticalStackLayout Spacing="10">
+                <Border>
+                    <effectsView:SfEffectsView TouchUpCommand="{Binding NavigateToAvailableLanguagesPageCommand}">
+                        <Grid Margin="15" ColumnDefinitions="*,Auto">
+                            <Label
+                                Grid.Column="0"
+                                LineBreakMode="WordWrap"
+                                MaxLines="2"
+                                Text="{extensions:LocalizationMarkup Language}"
+                                VerticalOptions="Center" />
 
-                <VerticalStackLayout Spacing="10">
-                    <Border>
-                        <effectsView:SfEffectsView TouchUpCommand="{Binding ChangeAutoConfirmationCommand}">
-                            <Grid Margin="15" ColumnDefinitions="*,Auto">
-                                <Label
-                                    Grid.Column="0"
-                                    LineBreakMode="WordWrap"
-                                    MaxLines="2"
-                                    Text="Auto-confirm market sell transactions"
-                                    VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{Binding AppSettings.Language}" />
+                        </Grid>
+                    </effectsView:SfEffectsView>
+                </Border>
 
-                                <Switch
-                                    x:Name="AutoConfirmSwitch"
-                                    Grid.Column="1"
-                                    IsToggled="{Binding Path=AppSettings.AutoConfirmMarketTransactions}"
-                                    VerticalOptions="Center" />
-                            </Grid>
-                        </effectsView:SfEffectsView>
-                    </Border>
+                <Border>
+                    <effectsView:SfEffectsView TouchUpCommand="{Binding ChangeAutoConfirmationCommand}">
+                        <Grid Margin="15" ColumnDefinitions="*,Auto">
+                            <Label
+                                Grid.Column="0"
+                                LineBreakMode="WordWrap"
+                                MaxLines="2"
+                                Text="{extensions:LocalizationMarkup EnableAutoConfirmMarketTransactionsMessage}"
+                                VerticalOptions="Center" />
 
-                    <Border>
-                        <effectsView:SfEffectsView TouchUpCommand="{Binding ChangeCheckingIntervalPromptCommand}">
-                            <Grid Margin="15" ColumnDefinitions="*,Auto">
-                                <Label
-                                    Grid.Column="0"
-                                    LineBreakMode="WordWrap"
-                                    MaxLines="2"
-                                    Text="Seconds between checking confirmations"
-                                    VerticalOptions="Center" />
+                            <Switch
+                                x:Name="AutoConfirmSwitch"
+                                Grid.Column="1"
+                                IsToggled="{Binding Path=AppSettings.AutoConfirmMarketTransactions}"
+                                VerticalOptions="Center" />
+                        </Grid>
+                    </effectsView:SfEffectsView>
+                </Border>
 
-                                <Label
-                                    Grid.Column="1"
-                                    Text="{Binding Path=AppSettings.PeriodicCheckingInterval}"
-                                    VerticalOptions="Center" />
-                            </Grid>
-                        </effectsView:SfEffectsView>
-                    </Border>
-                </VerticalStackLayout>
+                <Border>
+                    <effectsView:SfEffectsView TouchUpCommand="{Binding ChangeCheckingIntervalPromptCommand}">
+                        <Grid Margin="15" ColumnDefinitions="*,Auto">
+                            <Label
+                                Grid.Column="0"
+                                LineBreakMode="WordWrap"
+                                MaxLines="2"
+                                Text="{extensions:LocalizationMarkup SecondsBetweenCheckingForConfirmationsMessage}"
+                                VerticalOptions="Center" />
+
+                            <Label
+                                Grid.Column="1"
+                                Margin="10,0,0,0"
+                                Text="{Binding Path=AppSettings.PeriodicCheckingInterval}"
+                                VerticalOptions="Center" />
+                        </Grid>
+                    </effectsView:SfEffectsView>
+                </Border>
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="10">
-                <Label FontSize="20" Text="{Binding Source={x:Static applicationModel:VersionTracking.CurrentVersion}, StringFormat='Current version: {0}'}" />
-                <Button Command="{Binding CheckForUpdatesCommand}" Text="Check for updates" />
+                <Label FontSize="20">
+                    <Label.Text>
+                        <MultiBinding StringFormat="{}{0} {1}">
+                            <extensions:LocalizationMarkup LocalizationMessage="CurrentVersionMessage" />
+                            <Binding Source="{x:Static applicationModel:VersionTracking.CurrentVersion}" />
+                        </MultiBinding>
+                    </Label.Text>
+                </Label>
+                <Button
+                    Command="{Binding CheckForUpdatesCommand}"
+                    LineBreakMode="WordWrap"
+                    Text="{extensions:LocalizationMarkup CheckForUpdatesMessage}" />
             </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
