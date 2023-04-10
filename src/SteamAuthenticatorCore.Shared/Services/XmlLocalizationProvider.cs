@@ -4,12 +4,12 @@ namespace SteamAuthenticatorCore.Shared.Services;
 
 public sealed class XmlLocalizationProvider : ILocalizationProvider
 {
-    public XmlLocalizationProvider(AvailableLanguage language)
+    public XmlLocalizationProvider(AvailableLanguage defaultLanguage)
     {
-        _currentLanguage = language;
+        _currentLanguage = defaultLanguage;
 
-        _englishLanguageDictionary = LoadLanguageFromAssembly(AvailableLanguage.English);
-        _currentLanguageDictionary = new Dictionary<string, string>(0);
+        _englishLanguageDictionary = LoadLanguageFromAssembly(defaultLanguage);
+        _currentLanguageDictionary = _englishLanguageDictionary;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -25,10 +25,7 @@ public sealed class XmlLocalizationProvider : ILocalizationProvider
         if (_currentLanguage == language)
             return;
 
-        if (language == AvailableLanguage.English)
-            _currentLanguageDictionary = _englishLanguageDictionary;
-        else
-            _currentLanguageDictionary = LoadLanguageFromAssembly(language);
+        _currentLanguageDictionary = LoadLanguageFromAssembly(language);
 
         _currentLanguage = language;
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));

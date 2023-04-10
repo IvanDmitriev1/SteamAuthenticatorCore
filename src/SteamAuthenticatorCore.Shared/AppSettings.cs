@@ -9,7 +9,7 @@ public abstract partial class AppSettings : AutoSettings
         PeriodicCheckingInterval = 15;
         AutoConfirmMarketTransactions = false;
 
-        LocalizationProvider = new XmlLocalizationProvider(Language);
+        LocalizationProvider = new XmlLocalizationProvider(AvailableLanguage.English);
 
         Language = Thread.CurrentThread.CurrentUICulture.Name switch
         {
