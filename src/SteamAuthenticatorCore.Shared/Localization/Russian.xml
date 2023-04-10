@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+
+<strings>
+	<string key="HelloMessage">Привет, мир!</string>
+
+	<string key="CopyMessage">Копировать</string>
+	<string key="CopiedMessage">Скопировано</string>
+	<string key="UpdateMessage">Обновить</string>
+	<string key="ErrorMessage">Ошибка</string>
+	<string key="YesMessage">Да</string>
+	<string key="NoMessage">Нет</string>
+	<string key="ChangeMessage">Изминить</string>
+	<string key="CancelMessage">Отменить</string>
+	<string key="ConfirmMessage">Подтвердить</string>
+
+	<!-- MenuItems -->
+	<string key="Token">Токен</string>
+	<string key="Settings">Настройки</string>
+	<string key="Confirmations">Подтверждения</string>
+	<string key="Language">Язык</string>
+
+	<!-- Token page -->
+	<string key="FileMessage">Файл</string>
+	<string key="ImportAccountsMessage">Импортировать аккаунты</string>
+	<string key="ShowAccountsFileFolder">Показать папку с файлами аккаунтов</string>
+	<string key="SelectedAccountMessage">Выбранный аккаунт</string>
+	<string key="LoginMessage">Войти</string>
+	<string key="ForceRefreshSessionMessage">Принудительно обновить сеанс</string>
+	<string key="DeleteMessage">Удалить</string>
+	<string key="SearchPlaceholderMessage">Поиск...</string>
+	<string key="NoItemsToDisplayMessage">Нечего показывать</string>
+	<string key="ShowGoogleAccountFilesFolderContentMessage">Ваши учетные записи хранятся в папке {0} на Google диске</string>
+	<string key="DeletingAccountMessage">Удаление аккаунта</string>
+	<string key="DeletingAccountContentMessage">Вы уверены, что хотите удалить {0}?</string>
+
+	<!-- Settings page -->
+	<string key="SelectLanguageMessage">Выберите предпочитаемый вами язык</string>
+	<string key="SelectMaFilesLocationMessage">Выберите расположение .maFile файлов</string>
+	<string key="EnableAutoConfirmMarketTransactionsMessage">Автоматически подтверждать рыночные операции</string>
+	<string key="SecondsBetweenCheckingForConfirmationsMessage">Секунды между проверкой подтверждений</string>
+	<string key="CurrentVersionMessage">Текущая версия:</string>
+	<string key="CheckForUpdatesMessage">Проверьте наличие обновлений</string>
+	<string key="YouAreUsingTheLatestVersionMessage">Вы используете самую последнюю версию</string>
+	<string key="UpdaterMessage">Средство обновления</string>
+
+	<!-- Login page -->
+	<string key="AccountNameMessage">Имя аккаунта:</string>
+	<string key="PasswordMessage">Пароль:</string>
+	<string key="RefreshSessionMessage">Обновление сеанса</string>
+	<string key="FailedToRefreshSessionMessage">Не удалось обновить сеанс</string>
+	<string key="SessionHasBeenRefreshedMessage">Сессия была обновлена</string>
+
+</strings>

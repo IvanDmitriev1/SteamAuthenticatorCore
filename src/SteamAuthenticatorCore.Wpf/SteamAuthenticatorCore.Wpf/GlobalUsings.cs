@@ -1,0 +1,34 @@
+// Global using directives
+
+global using System;
+global using System.Collections;
+global using System.Collections.Generic;
+global using System.Collections.ObjectModel;
+global using System.ComponentModel;
+global using System.Diagnostics;
+global using System.Linq;
+global using System.Threading.Tasks;
+global using System.Windows;
+global using System.Windows.Controls;
+global using CommunityToolkit.Mvvm.ComponentModel;
+global using CommunityToolkit.Mvvm.Input;
+global using CommunityToolkit.Mvvm.Messaging;
+global using Microsoft.Extensions.Logging;
+global using SteamAuthCore.Abstractions;
+global using SteamAuthCore.Models;
+global using SteamAuthenticatorCore.Desktop.Dialogs;
+global using SteamAuthenticatorCore.Desktop.Helpers;
+global using SteamAuthenticatorCore.Desktop.Services;
+global using SteamAuthenticatorCore.Desktop.Views.Pages;
+global using SteamAuthenticatorCore.Shared;
+global using SteamAuthenticatorCore.Shared.Abstractions;
+global using SteamAuthenticatorCore.Shared.Extensions;
+global using SteamAuthenticatorCore.Shared.Messages;
+global using SteamAuthenticatorCore.Shared.Models;
+global using SteamAuthenticatorCore.Shared.Services;
+global using SteamAuthenticatorCore.Shared.ViewModel;
+global using Wpf.Ui.Common;
+global using Wpf.Ui.Contracts;
+global using Wpf.Ui.Controls.ContentDialogControl;
+global using Wpf.Ui.Controls.IconElements;
+global using Wpf.Ui.Controls.Navigation;

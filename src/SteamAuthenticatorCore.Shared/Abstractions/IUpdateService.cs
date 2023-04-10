@@ -1,12 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using SteamAuthenticatorCore.Shared.Models;
+﻿using Octokit;
 
 namespace SteamAuthenticatorCore.Shared.Abstractions;
 
 public interface IUpdateService
 {
-    ValueTask CheckForUpdateAndDownloadInstall(bool isInBackground);
-    ValueTask<CheckForUpdateModel?> CheckForUpdate(string fileContains, Version currentVersion);
-    Task DownloadAndInstall(CheckForUpdateModel updateModel);
+    Task<Release?> CheckForUpdate();
 }

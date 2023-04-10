@@ -1,22 +1,28 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using SteamAuthenticatorCore.Shared.Abstractions;
-using SteamAuthenticatorCore.Shared.Models;
+﻿namespace SteamAuthenticatorCore.Shared;
 
-namespace SteamAuthenticatorCore.Shared;
-
-public partial class AppSettings : ObservableObject, ISettings
+public abstract partial class AppSettings : AutoSettings
 {
-    public AppSettings(ISettingsService settingsService, IPlatformImplementations platformImplementations)
+    protected AppSettings()
     {
-        _platformImplementations = platformImplementations;
-        SettingsService = settingsService;
-        IsInitialized = false;
+        AccountsLocation = AccountsLocation.LocalDrive;
+        FirstRun = true;
+        PeriodicCheckingInterval = 15;
+        AutoConfirmMarketTransactions = false;
+
+        LocalizationProvider = new XmlLocalizationProvider(AvailableLanguage.English);
+
+        Language = Thread.CurrentThread.CurrentUICulture.Name switch
+        {
+            "ru-RU" => AvailableLanguage.Russian,
+            _ => AvailableLanguage.English
+        };
     }
 
-    private readonly IPlatformImplementations _platformImplementations;
+    [IgnoreSetting]
+    public static AppSettings Current { get; protected set; } = null!;
 
     [ObservableProperty]
-    private AccountsLocationModel _accountsLocation;
+    private AccountsLocation _accountsLocation;
     
     [ObservableProperty]
     private bool _firstRun;
@@ -28,48 +34,28 @@ public partial class AppSettings : ObservableObject, ISettings
     private bool _autoConfirmMarketTransactions;
 
     [ObservableProperty]
-    private Theme _theme;
+    private AvailableLanguage _language;
 
     [IgnoreSetting]
-    public bool IsInitialized { get; private set; }
-    
+    public bool IsLoaded { get; protected set; }
+
     [IgnoreSetting]
-    public ISettingsService SettingsService { get; }
+    public ILocalizationProvider LocalizationProvider { get; }
 
-    public void DefaultSettings()
+    protected abstract void Save(string propertyName);
+
+    protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
-        AccountsLocation = AccountsLocationModel.LocalDrive;
-        FirstRun = true;
-        PeriodicCheckingInterval = 15;
-        AutoConfirmMarketTransactions = false;
-        Theme = Theme.System;
+        if (!IsLoaded)
+            return;
 
-        IsInitialized = true;
-    }
-    
-    public void LoadSettings()
-    {
-        DefaultSettings();
-        SettingsService.LoadSettings(this);
+        base.OnPropertyChanged(e);
 
-        PropertyChanged += async (sender, args) =>
-        {
-            var settings = (sender as AppSettings)!;
-
-            settings.SettingsService.SaveSetting(args.PropertyName!, settings);
-
-            if (args.PropertyName != nameof(settings.Theme))
-                return;
-
-            await _platformImplementations.InvokeMainThread(() =>
-            {
-                _platformImplementations.SetTheme(settings.Theme);
-            });
-        };
+        Save(e.PropertyName!);
     }
 
-    public void SaveSettings()
+    partial void OnLanguageChanged(AvailableLanguage value)
     {
-        SettingsService.SaveSettings(this);
+        LocalizationProvider.ChangeLanguage(value);
     }
 }

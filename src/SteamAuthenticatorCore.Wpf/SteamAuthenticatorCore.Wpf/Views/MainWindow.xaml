@@ -1,0 +1,130 @@
+﻿<ui:FluentWindow
+    x:Class="SteamAuthenticatorCore.Desktop.Views.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:desktop="clr-namespace:SteamAuthenticatorCore.Desktop"
+    xmlns:helpers="clr-namespace:SteamAuthenticatorCore.Desktop.Helpers"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:SteamAuthenticatorCore.Shared.Models;assembly=SteamAuthenticatorCore.Shared"
+    xmlns:pages="clr-namespace:SteamAuthenticatorCore.Desktop.Views.Pages"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    x:Name="Window"
+    Title="{x:Static desktop:App.Name}"
+    Width="1000"
+    Height="700"
+    MinWidth="850"
+    MinHeight="650"
+    Background="{ui:ThemeResource ApplicationBackgroundBrush}"
+    ExtendsContentIntoTitleBar="True"
+    SizeChanged="OnSizeChanged"
+    WindowBackdropType="Mica"
+    WindowCornerPreference="Round"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+
+    <Grid>
+        <ui:TitleBar
+            x:Name="TitleBar"
+            Title="{x:Static desktop:App.Name}"
+            Grid.Row="0"
+            MinimizeToTray="True">
+            <ui:TitleBar.Icon>
+                <ui:ImageIcon Source="pack://application:,,,/icon.ico" />
+            </ui:TitleBar.Icon>
+
+            <ui:TitleBar.Tray>
+                <ui:NotifyIcon
+                    FocusOnLeftClick="True"
+                    Icon="pack://application:,,,/icon.ico"
+                    MenuOnRightClick="True">
+                    <ui:NotifyIcon.Menu>
+                        <ContextMenu>
+                            <ui:MenuItem
+                                Click="MenuItem_OnClick"
+                                Header="Token"
+                                Icon="{ui:SymbolIcon Timer24}"
+                                Tag="token" />
+                            <ui:MenuItem
+                                Click="MenuItem_OnClick"
+                                Header="Confirmations"
+                                Icon="{ui:SymbolIcon TaskListLtr24}"
+                                Tag="confirms" />
+                            <Separator />
+                            <ui:MenuItem
+                                Click="MenuItem_OnClick"
+                                Header="Settings"
+                                Icon="{ui:SymbolIcon Settings24}"
+                                Tag="settings" />
+                            <MenuItem
+                                Click="MenuItem_OnClick"
+                                Header="Close"
+                                Tag="close" />
+                        </ContextMenu>
+                    </ui:NotifyIcon.Menu>
+                </ui:NotifyIcon>
+            </ui:TitleBar.Tray>
+        </ui:TitleBar>
+
+        <Grid x:Name="RootWelcomeGrid">
+            <StackPanel VerticalAlignment="Center">
+                <ui:ProgressRing IsIndeterminate="True" />
+                <TextBlock
+                    Margin="0,12,0,0"
+                    FontSize="16"
+                    FontWeight="Medium"
+                    Text="Preparing app for you."
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
+            </StackPanel>
+        </Grid>
+
+        <ui:NavigationView
+            x:Name="NavigationFluent"
+            Padding="15,15,15,10"
+            IsBackButtonVisible="Visible"
+            IsPaneToggleVisible="True"
+            IsPaneVisible="True"
+            Loaded="NavigationFluentOnLoaded"
+            PaneClosed="NavigationFluent_OnPaneClosed"
+            PaneDisplayMode="Left"
+            PaneOpened="NavigationFluent_OnPaneOpened"
+            TitleBar="{Binding ElementName=TitleBar, Mode=OneTime}"
+            Visibility="Hidden">
+            <ui:NavigationView.Header>
+                <ui:BreadcrumbBar Margin="15,32,15,0" />
+            </ui:NavigationView.Header>
+
+            <ui:NavigationView.MenuItems>
+                <ui:NavigationViewItem
+                    Content="{helpers:LocalizationMarkup Token,
+                                                         BindingMode=OneWay}"
+                    Icon="{ui:SymbolIcon Timer24}"
+                    TargetPageType="{x:Type pages:TokenPage}" />
+                <ui:NavigationViewItem
+                    Content="{helpers:LocalizationMarkup Confirmations,
+                                                         BindingMode=OneWay}"
+                    Icon="{ui:SymbolIcon TaskListLtr24}"
+                    TargetPageType="{x:Type pages:ConfirmationsOverviewPage}" />
+            </ui:NavigationView.MenuItems>
+
+            <ui:NavigationView.FooterMenuItems>
+                <ui:NavigationViewItem
+                    Content="{helpers:LocalizationMarkup Settings,
+                                                         BindingMode=OneWay}"
+                    Icon="{ui:SymbolIcon Settings24}"
+                    TargetPageType="{x:Type pages:SettingsPage}" />
+            </ui:NavigationView.FooterMenuItems>
+
+            <ui:NavigationView.ContentOverlay>
+                <ui:Snackbar
+                    x:Name="RootSnackbar"
+                    Appearance="Secondary"
+                    CloseButtonEnabled="True"
+                    Timeout="5000" />
+            </ui:NavigationView.ContentOverlay>
+        </ui:NavigationView>
+
+        <ContentPresenter x:Name="RootContentDialogPresenter" />
+    </Grid>
+</ui:FluentWindow>

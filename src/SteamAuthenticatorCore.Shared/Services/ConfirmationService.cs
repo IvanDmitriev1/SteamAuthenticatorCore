@@ -1,119 +1,114 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using SteamAuthCore.Abstractions;
-using SteamAuthCore.Models;
-using SteamAuthenticatorCore.Shared.Abstractions;
+﻿namespace SteamAuthenticatorCore.Shared.Services;
 
-namespace SteamAuthenticatorCore.Shared.Services;
-
-internal class ConfirmationService : IConfirmationService, IDisposable
+internal sealed class ConfirmationService : IConfirmationService, IAsyncDisposable
 {
-    public ConfirmationService(ObservableCollection<SteamGuardAccount> steamGuardAccounts, AppSettings settings, ITaskTimer taskTimer, ISteamGuardAccountService accountService, IPlatformImplementations platformImplementations)
+    public ConfirmationService(IBackgroundTimerFactory backgroundTimerFactory, ISteamGuardAccountService steamAccountService, IPlatformImplementations platformImplementations, AccountsServiceResolver accountsServiceResolver)
     {
-        ConfirmationViewModels = new ObservableCollection<Models.ConfirmationModel>();
-
-        _steamGuardAccounts = steamGuardAccounts;
-        _taskTimer = taskTimer;
-        _accountService = accountService;
+        _steamAccountService = steamAccountService;
         _platformImplementations = platformImplementations;
-        _settings = settings;
+        _accountsServiceResolver = accountsServiceResolver;
+
+        AppSettings.Current.PropertyChanged += SettingsOnPropertyChanged;
+
+        _backgroundTimer = backgroundTimerFactory.InitializeTimer(TradeAutoConfirmationTimerOnTick);
     }
 
-    private readonly ObservableCollection<SteamGuardAccount> _steamGuardAccounts;
-    private readonly AppSettings _settings;
-    private readonly ITaskTimer _taskTimer;
-    private readonly ISteamGuardAccountService _accountService;
+    private readonly ISteamGuardAccountService _steamAccountService;
     private readonly IPlatformImplementations _platformImplementations;
+    private readonly AccountsServiceResolver _accountsServiceResolver;
+    private readonly IBackgroundTimer _backgroundTimer;
 
-    public ObservableCollection<Models.ConfirmationModel> ConfirmationViewModels { get; }
+    private IAccountsService _accountsService = null!;
 
-    public void Dispose()
+    public async Task Initialize()
     {
-        _settings.PropertyChanged -= SettingsOnPropertyChanged;
-    }
+        _accountsService = _accountsServiceResolver.Invoke();
 
-    public async void Initialize()
-    {
-        _settings.PropertyChanged += SettingsOnPropertyChanged;
-
-        if (!_settings.AutoConfirmMarketTransactions)
+        if (!AppSettings.Current.AutoConfirmMarketTransactions)
             return;
 
-        await _taskTimer.StartOrRestart(TimeSpan.FromSeconds(_settings.PeriodicCheckingInterval), TradeAutoConfirmationTimerOnTick).ConfigureAwait(false);
+        await _backgroundTimer.StartOrRestart(TimeSpan.FromSeconds(AppSettings.Current.PeriodicCheckingInterval));
     }
-    
-    public async Task CheckConfirmations()
+
+    public async ValueTask DisposeAsync()
     {
-        ConfirmationViewModels.Clear();
+        await _backgroundTimer.DisposeAsync();
 
-        await Parallel.ForEachAsync(_steamGuardAccounts, async (account, token) =>
+        AppSettings.Current.PropertyChanged -= SettingsOnPropertyChanged;
+    }
+
+    public async Task<IReadOnlyList<SteamGuardAccountConfirmationsModel>> CheckConfirmationFromAllAccounts()
+    {
+        var accountConfirmations = new List<SteamGuardAccountConfirmationsModel>();
+
+        foreach (var account in await _accountsService.GetAll())
         {
-            var confirmations = (await _accountService.FetchConfirmations(account, token).ConfigureAwait(false)).ToArray();
-
+            var confirmations = (await _steamAccountService.FetchConfirmations(account, CancellationToken.None)).ToArray();
             if (!confirmations.Any())
-                return;
+                continue;
 
-            var list = new List<ConfirmationModel>(confirmations.Length);
             foreach (var confirmation in confirmations)
             {
                 confirmation.BitMapImage = _platformImplementations.CreateImage(confirmation.ImageSource);
-                list.Add(confirmation);
             }
 
-            await _platformImplementations.InvokeMainThread(() =>
+            accountConfirmations.Add(new SteamGuardAccountConfirmationsModel(account, confirmations));
+        }
+
+        return accountConfirmations;
+    }
+
+    private async Task TradeAutoConfirmationTimerOnTick(CancellationToken cancellationToken)
+    {
+        foreach (var account in await _accountsService.GetAll())
+        {
+            var confirmations = await _steamAccountService.FetchConfirmations(account, cancellationToken);
+            var sortedConfirmations = confirmations.Where(model => model.ConfType == ConfirmationType.MarketSellTransaction).ToArray();
+
+            if (sortedConfirmations.Length == 0)
+                continue;
+
+            if (sortedConfirmations.Length == 1)
             {
-                ConfirmationViewModels.Add(new Models.ConfirmationModel(account, list));
-            });
-        });
+                await _steamAccountService.SendConfirmation(account, sortedConfirmations[0], ConfirmationOptions.Allow, cancellationToken);
+                continue;
+            }
+
+            await _steamAccountService.SendConfirmation(account, sortedConfirmations, ConfirmationOptions.Allow, cancellationToken);
+        }
     }
 
     private async void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         var settings = (AppSettings) sender!;
-        if (!settings.IsInitialized)
+        if (!settings.IsLoaded)
             return;
 
-        switch (e.PropertyName)
+        if (e.PropertyName == nameof(settings.AccountsLocation))
         {
-            case nameof(settings.PeriodicCheckingInterval):
-                if (!settings.AutoConfirmMarketTransactions)
-                    break;
+            _accountsService = _accountsServiceResolver.Invoke();
+            return;
+        }
 
-                await _taskTimer.StartOrRestart(TimeSpan.FromSeconds(settings.PeriodicCheckingInterval), TradeAutoConfirmationTimerOnTick).ConfigureAwait(false);
-                break;
-            case nameof(settings.AutoConfirmMarketTransactions):
-                switch (settings.AutoConfirmMarketTransactions)
-                {
-                    case true:
-                        await _taskTimer.StartOrRestart(TimeSpan.FromSeconds(settings.PeriodicCheckingInterval), TradeAutoConfirmationTimerOnTick).ConfigureAwait(false);
-                        break;
-                    case false:
-                        await _taskTimer.DisposeAsync().ConfigureAwait(false);
-                        break;
-                }
-                break;
+        if (e.PropertyName == nameof(settings.PeriodicCheckingInterval))
+        {
+            if (!settings.AutoConfirmMarketTransactions)
+                return;
+
+            await _backgroundTimer.StartOrRestart(TimeSpan.FromSeconds(settings.PeriodicCheckingInterval));
+            return;
+        }
+
+        if (e.PropertyName != nameof(settings.AutoConfirmMarketTransactions))
+            return;
+
+        if (settings.AutoConfirmMarketTransactions)
+        {
+            await _backgroundTimer.StartOrRestart(TimeSpan.FromSeconds(settings.PeriodicCheckingInterval));
+        }
+        else
+        {
+            await _backgroundTimer.Stop();
         }
     }
-
-    private Task TradeAutoConfirmationTimerOnTick(CancellationToken cancellationToken) =>
-        Parallel.ForEachAsync(_steamGuardAccounts, cancellationToken, async (account, token) =>
-        {
-            var confirmations = (await _accountService.FetchConfirmations(account, token).ConfigureAwait(false)).Where(model => model.ConfType == ConfirmationType.MarketSellTransaction).ToArray();
-
-            if (confirmations.Length == 0)
-                return;
-
-            if (confirmations.Length == 1)
-            {
-                await _accountService.SendConfirmation(account, confirmations[0], ConfirmationOptions.Allow, token).ConfigureAwait(false);
-                return;
-            }
-
-            await _accountService.SendConfirmation(account, confirmations, ConfirmationOptions.Allow, token).ConfigureAwait(false);
-        });
 }

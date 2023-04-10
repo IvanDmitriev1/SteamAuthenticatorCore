@@ -5,17 +5,15 @@ VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.Shared", "src\SteamAuthenticatorCore.Shared\SteamAuthenticatorCore.Shared.csproj", "{671232B5-A884-4367-A69D-58AEF3EB01F7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.Desktop", "src\SteamAuthenticatorCore.Desktop\SteamAuthenticatorCore.Desktop.csproj", "{7E183D01-3B09-4A61-8B64-DCF1CBC7154D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.Desktop", "src\SteamAuthenticatorCore.Wpf\SteamAuthenticatorCore.Wpf\SteamAuthenticatorCore.Desktop.csproj", "{7E183D01-3B09-4A61-8B64-DCF1CBC7154D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{A33AC445-C43F-49D7-8CA1-059DCFBF038F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthCore", "src\SteamAuthCore\SteamAuthCore.csproj", "{34466B4D-C15C-421A-B0BD-7FAA3B1FF89C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthCore", "src\Dependencies\SteamAuthCore\SteamAuthCore.csproj", "{34466B4D-C15C-421A-B0BD-7FAA3B1FF89C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.Maui", "src\SteamAuthenticatorCore.Maui\SteamAuthenticatorCore.Maui.csproj", "{219B7917-15E8-4A12-8144-59E9548407C5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleDrive", "src\Dependencies\GoogleDrive\GoogleDrive.csproj", "{8B64CD43-3419-4A7D-B2C7-450123CE0D3B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Wpf", "Wpf", "{B4C6FCDB-2F3B-48FC-ABA1-730A49CBD58A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wpf.Ui", "src\Dependencies\wpfui\src\Wpf.Ui\Wpf.Ui.csproj", "{1ADC87D1-8963-4100-845A-18477824718E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.Mobile", "src\SteamAuthenticatorCore.Mobile\SteamAuthenticatorCore.Mobile.csproj", "{219B7917-15E8-4A12-8144-59E9548407C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wpf.Ui", "src\SteamAuthenticatorCore.Wpf\WpfUI\src\Wpf.Ui\Wpf.Ui.csproj", "{1ADC87D1-8963-4100-845A-18477824718E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,28 +33,23 @@ Global
 		{34466B4D-C15C-421A-B0BD-7FAA3B1FF89C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34466B4D-C15C-421A-B0BD-7FAA3B1FF89C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34466B4D-C15C-421A-B0BD-7FAA3B1FF89C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8B64CD43-3419-4A7D-B2C7-450123CE0D3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8B64CD43-3419-4A7D-B2C7-450123CE0D3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8B64CD43-3419-4A7D-B2C7-450123CE0D3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8B64CD43-3419-4A7D-B2C7-450123CE0D3B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1ADC87D1-8963-4100-845A-18477824718E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1ADC87D1-8963-4100-845A-18477824718E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{219B7917-15E8-4A12-8144-59E9548407C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{219B7917-15E8-4A12-8144-59E9548407C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{219B7917-15E8-4A12-8144-59E9548407C5}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{219B7917-15E8-4A12-8144-59E9548407C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{219B7917-15E8-4A12-8144-59E9548407C5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{219B7917-15E8-4A12-8144-59E9548407C5}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ADC87D1-8963-4100-845A-18477824718E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{34466B4D-C15C-421A-B0BD-7FAA3B1FF89C} = {A33AC445-C43F-49D7-8CA1-059DCFBF038F}
-		{8B64CD43-3419-4A7D-B2C7-450123CE0D3B} = {A33AC445-C43F-49D7-8CA1-059DCFBF038F}
-		{1ADC87D1-8963-4100-845A-18477824718E} = {A33AC445-C43F-49D7-8CA1-059DCFBF038F}
+		{7E183D01-3B09-4A61-8B64-DCF1CBC7154D} = {B4C6FCDB-2F3B-48FC-ABA1-730A49CBD58A}
+		{1ADC87D1-8963-4100-845A-18477824718E} = {B4C6FCDB-2F3B-48FC-ABA1-730A49CBD58A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {03A98404-F097-4449-B4E2-D2A82D25EFFF}

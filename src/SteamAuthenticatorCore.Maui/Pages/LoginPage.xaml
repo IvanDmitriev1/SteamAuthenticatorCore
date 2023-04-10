@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<controls:BaseContentPage
+    x:Class="SteamAuthenticatorCore.Maui.Pages.LoginPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:SteamAuthenticatorCore.Maui.Controls"
+    xmlns:extensions="clr-namespace:SteamAuthenticatorCore.Maui.Extensions"
+    xmlns:viewModels1="clr-namespace:SteamAuthenticatorCore.Maui.ViewModels"
+    Title="Login"
+    x:DataType="viewModels1:LoginViewModel"
+    x:TypeArguments="viewModels1:LoginViewModel"
+    Shell.TabBarIsVisible="False">
+
+    <ScrollView VerticalScrollBarVisibility="Never">
+        <VerticalStackLayout
+            Margin="10"
+            HorizontalOptions="FillAndExpand"
+            Spacing="10"
+            VerticalOptions="CenterAndExpand">
+
+            <Border Padding="5">
+                <Entry
+                    IsEnabled="False"
+                    IsReadOnly="True"
+                    Placeholder="{extensions:LocalizationMarkup LocalizationMessage=AccountNameMessage}"
+                    Text="{Binding Path=Username}" />
+            </Border>
+
+
+            <Border Padding="5">
+                <Entry
+                    IsEnabled="{Binding IsPasswordBoxEnabled}"
+                    IsPassword="True"
+                    Placeholder="{extensions:LocalizationMarkup LocalizationMessage=PasswordMessage}"
+                    Text="{Binding Path=Password}" />
+            </Border>
+
+            <Button Command="{Binding LoginCommand}" Text="{extensions:LocalizationMarkup LocalizationMessage=LoginMessage}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</controls:BaseContentPage>

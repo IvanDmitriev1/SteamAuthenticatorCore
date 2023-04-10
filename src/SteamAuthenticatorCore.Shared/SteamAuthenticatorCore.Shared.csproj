@@ -1,18 +1,28 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
-    <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0-preview1" />
+    <PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="All" />
+    <PackageReference Include="Octokit" Version="5.0.3" />
+    <PackageReference Include="System.Net.Http.Json" Version="7.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Dependencies\SteamAuthCore\SteamAuthCore.csproj" />
+    <ProjectReference Include="..\SteamAuthCore\SteamAuthCore.csproj" />
   </ItemGroup>
+
+    <ItemGroup>
+	    <EmbeddedResource Include="Localization\*" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Localization\Russian.xml" />
+    </ItemGroup>
 
 </Project>
