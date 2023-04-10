@@ -21,6 +21,6 @@ public sealed class UpdateService : IUpdateService
         var version = release.TagName.TrimStart('v');
         var newVersion = new Version(version);
 
-        return newVersion.CompareTo(_currentVersion) == 0 ? release : null;
+        return newVersion.CompareTo(_currentVersion) > 0 ? release : null;
     }
 }
