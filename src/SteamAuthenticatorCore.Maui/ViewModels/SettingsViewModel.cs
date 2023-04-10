@@ -43,7 +43,13 @@ public sealed partial class SettingsViewModel : MyObservableRecipient
     {
         try
         {
-            var value = await Application.Current!.MainPage!.DisplayPromptAsync("Settings", "Seconds between checking confirmations", "Change", "Cancel", string.Empty, 2, Keyboard.Numeric, AppSettings.PeriodicCheckingInterval.ToString());
+            var value = await Application.Current!.MainPage!.DisplayPromptAsync(
+                AppSettings.LocalizationProvider[LocalizationMessage.Settings],
+                AppSettings.LocalizationProvider[LocalizationMessage.SecondsBetweenCheckingForConfirmationsMessage],
+                AppSettings.LocalizationProvider[LocalizationMessage.ChangeMessage],
+                AppSettings.LocalizationProvider[LocalizationMessage.CancelMessage], string.Empty, 2, Keyboard.Numeric,
+                AppSettings.PeriodicCheckingInterval.ToString());
+
             if (!int.TryParse(value, out var result))
                 return;
 
@@ -72,7 +78,7 @@ public sealed partial class SettingsViewModel : MyObservableRecipient
         {
             if (await _updateService.CheckForUpdate() is not { } release)
             {
-                await Toast.Make("You are using the latest version", ToastDuration.Long, 16).Show();
+                await Toast.Make(AppSettings.LocalizationProvider[LocalizationMessage.YouAreUsingTheLatestVersionMessage], ToastDuration.Long, 16).Show();
                 return;
             }
 

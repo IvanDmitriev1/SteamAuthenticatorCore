@@ -46,7 +46,7 @@ public partial class SettingsViewModel : MyObservableRecipient
         {
             if (await _updateService.CheckForUpdate() is not { } release)
             {
-                await SnackbarService.Default.ShowAsync("Updater", "You are using the latest version", new SymbolIcon(SymbolRegular.Info24));
+                await SnackbarService.Default.ShowAsync(AppSettings.LocalizationProvider[LocalizationMessage.UpdaterMessage], AppSettings.LocalizationProvider[LocalizationMessage.YouAreUsingTheLatestVersionMessage], new SymbolIcon(SymbolRegular.Info24));
                 return;
             }
 

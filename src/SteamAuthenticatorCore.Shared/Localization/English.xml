@@ -9,6 +9,10 @@
 	<string key="ErrorMessage">Error</string>
 	<string key="YesMessage">Yes</string>
 	<string key="NoMessage">No</string>
+	<string key="ChangeMessage">Change</string>
+	<string key="CancelMessage">Cancel</string>
+	<string key="ConfirmMessage">Confirm</string>
+
 
 	<!-- MenuItems -->
 	<string key="Token">Token</string>
@@ -37,10 +41,8 @@
 	<string key="SecondsBetweenCheckingForConfirmationsMessage">Seconds between checking for confirmations</string>
 	<string key="CurrentVersionMessage">Current version:</string>
 	<string key="CheckForUpdatesMessage">Check for updates</string>
-
-	<!-- AccountConfirmations page -->
-	<string key="ConfirmMessage">Confirm</string>
-	<string key="CancelMessage">Cancel</string>
+	<string key="YouAreUsingTheLatestVersionMessage">You are using the latest version</string>
+	<string key="UpdaterMessage">Updater</string>
 
 	<!-- Login page -->
 	<string key="AccountNameMessage">Account name:</string>

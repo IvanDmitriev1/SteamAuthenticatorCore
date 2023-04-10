@@ -11,6 +11,9 @@ public enum LocalizationMessage
     ErrorMessage,
     YesMessage,
     NoMessage,
+    ChangeMessage,
+    CancelMessage,
+    ConfirmMessage,
 
     //Menu items
     Token,
@@ -39,10 +42,8 @@ public enum LocalizationMessage
     SecondsBetweenCheckingForConfirmationsMessage,
     CurrentVersionMessage,
     CheckForUpdatesMessage,
-
-    //AccountConfirmations page
-    ConfirmMessage,
-    CancelMessage,
+    YouAreUsingTheLatestVersionMessage,
+    UpdaterMessage,
 
     //Login page
     AccountNameMessage,

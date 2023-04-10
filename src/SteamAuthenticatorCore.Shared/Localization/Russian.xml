@@ -9,6 +9,9 @@
 	<string key="ErrorMessage">Ошибка</string>
 	<string key="YesMessage">Да</string>
 	<string key="NoMessage">Нет</string>
+	<string key="ChangeMessage">Изминить</string>
+	<string key="CancelMessage">Отменить</string>
+	<string key="ConfirmMessage">Подтвердить</string>
 
 	<!-- MenuItems -->
 	<string key="Token">Токен</string>
@@ -37,10 +40,8 @@
 	<string key="SecondsBetweenCheckingForConfirmationsMessage">Секунды между проверкой подтверждений</string>
 	<string key="CurrentVersionMessage">Текущая версия:</string>
 	<string key="CheckForUpdatesMessage">Проверьте наличие обновлений</string>
-
-	<!-- AccountConfirmations page -->
-	<string key="ConfirmMessage">Подтвердить</string>
-	<string key="CancelMessage">Отменить</string>
+	<string key="YouAreUsingTheLatestVersionMessage">Вы используете самую последнюю версию</string>
+	<string key="UpdaterMessage">Средство обновления</string>
 
 	<!-- Login page -->
 	<string key="AccountNameMessage">Имя аккаунта:</string>
