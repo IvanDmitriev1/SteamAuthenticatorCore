@@ -5,15 +5,11 @@ VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.Shared", "src\SteamAuthenticatorCore.Shared\SteamAuthenticatorCore.Shared.csproj", "{671232B5-A884-4367-A69D-58AEF3EB01F7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.Desktop", "src\SteamAuthenticatorCore.Wpf\SteamAuthenticatorCore.Wpf\SteamAuthenticatorCore.Desktop.csproj", "{7E183D01-3B09-4A61-8B64-DCF1CBC7154D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthCore", "src\SteamAuthCore\SteamAuthCore.csproj", "{34466B4D-C15C-421A-B0BD-7FAA3B1FF89C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.Maui", "src\SteamAuthenticatorCore.Maui\SteamAuthenticatorCore.Maui.csproj", "{219B7917-15E8-4A12-8144-59E9548407C5}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Wpf", "Wpf", "{B4C6FCDB-2F3B-48FC-ABA1-730A49CBD58A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wpf.Ui", "src\SteamAuthenticatorCore.Wpf\WpfUI\src\Wpf.Ui\Wpf.Ui.csproj", "{1ADC87D1-8963-4100-845A-18477824718E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SteamAuthenticatorCore.Desktop", "src\SteamAuthenticatorCore.Wpf\SteamAuthenticatorCore.Desktop.csproj", "{847243EA-941B-4093-A4B9-0F9E0759FE82}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +21,6 @@ Global
 		{671232B5-A884-4367-A69D-58AEF3EB01F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{671232B5-A884-4367-A69D-58AEF3EB01F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{671232B5-A884-4367-A69D-58AEF3EB01F7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7E183D01-3B09-4A61-8B64-DCF1CBC7154D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7E183D01-3B09-4A61-8B64-DCF1CBC7154D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7E183D01-3B09-4A61-8B64-DCF1CBC7154D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7E183D01-3B09-4A61-8B64-DCF1CBC7154D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{34466B4D-C15C-421A-B0BD-7FAA3B1FF89C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{34466B4D-C15C-421A-B0BD-7FAA3B1FF89C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34466B4D-C15C-421A-B0BD-7FAA3B1FF89C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,17 +31,13 @@ Global
 		{219B7917-15E8-4A12-8144-59E9548407C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{219B7917-15E8-4A12-8144-59E9548407C5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{219B7917-15E8-4A12-8144-59E9548407C5}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1ADC87D1-8963-4100-845A-18477824718E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1ADC87D1-8963-4100-845A-18477824718E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1ADC87D1-8963-4100-845A-18477824718E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{847243EA-941B-4093-A4B9-0F9E0759FE82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{847243EA-941B-4093-A4B9-0F9E0759FE82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{847243EA-941B-4093-A4B9-0F9E0759FE82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{847243EA-941B-4093-A4B9-0F9E0759FE82}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{7E183D01-3B09-4A61-8B64-DCF1CBC7154D} = {B4C6FCDB-2F3B-48FC-ABA1-730A49CBD58A}
-		{1ADC87D1-8963-4100-845A-18477824718E} = {B4C6FCDB-2F3B-48FC-ABA1-730A49CBD58A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {03A98404-F097-4449-B4E2-D2A82D25EFFF}

@@ -108,40 +108,20 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
     }
 
     [RelayCommand]
-    private async Task ForceRefreshSession()
-    {
-        if (SelectedAccount is null)
-            return;
-
-        var dialog = ContentDialogService.Default.CreateDialog();
-        dialog.Title = _appSettings.LocalizationProvider[LocalizationMessage.RefreshSessionMessage];
-
-        if (!await _steamAccountService.RefreshSession(SelectedAccount, CancellationToken.None))
-        {
-            dialog.Content = _appSettings.LocalizationProvider[LocalizationMessage.FailedToRefreshSessionMessage];
-        }
-        else
-        {
-            await _accountsService.Update(SelectedAccount);
-            dialog.Content = _appSettings.LocalizationProvider[LocalizationMessage.SessionHasBeenRefreshedMessage];   
-        }
-
-        await dialog.ShowAsync();
-    }
-
-    [RelayCommand]
     private async void ShowAccountFilesFolder()
     {
         if (_appSettings.AccountsLocation == AccountsLocation.GoogleDrive)
         {
-            var dialog = ContentDialogService.Default.CreateDialog();
-            dialog.Title = _appSettings.LocalizationProvider[LocalizationMessage.ErrorMessage];
-            dialog.Content =
-                string.Format(
+            var dialogResult = ContentDialogService.Default.ShowSimpleDialogAsync(new SimpleContentDialogCreateOptions
+            {
+                Title = _appSettings.LocalizationProvider[LocalizationMessage.ErrorMessage],
+                Content = string.Format(
                     _appSettings.LocalizationProvider[LocalizationMessage.ShowGoogleAccountFilesFolderContentMessage],
-                    App.InternalName);
+                    App.InternalName),
+                CloseButtonText = "Ok"
+            });
 
-            await dialog.ShowAsync();
+            await dialogResult;
             return;
         }
 
@@ -167,15 +147,18 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
         if (SelectedAccount is null)
             return;
 
-        var dialog = ContentDialogService.Default.CreateDialog();
-        dialog.Title = _appSettings.LocalizationProvider[LocalizationMessage.DeletingAccountMessage];
-        dialog.Content = string.Format(
-            _appSettings.LocalizationProvider[LocalizationMessage.DeletingAccountContentMessage],
-            SelectedAccount.AccountName);
-        dialog.PrimaryButtonText = _appSettings.LocalizationProvider[LocalizationMessage.YesMessage];
-        dialog.CloseButtonText = _appSettings.LocalizationProvider[LocalizationMessage.NoMessage];
+        var dialogResult = ContentDialogService.Default.ShowSimpleDialogAsync(new SimpleContentDialogCreateOptions()
+        {
+            Title = _appSettings.LocalizationProvider[LocalizationMessage.DeletingAccountMessage],
+            Content = string.Format(
+                _appSettings.LocalizationProvider[LocalizationMessage.DeletingAccountContentMessage],
+                SelectedAccount.AccountName),
 
-        if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+            PrimaryButtonText = _appSettings.LocalizationProvider[LocalizationMessage.YesMessage],
+            CloseButtonText = _appSettings.LocalizationProvider[LocalizationMessage.NoMessage]
+        });
+
+        if (await dialogResult != ContentDialogResult.Primary)
             return;
 
         await _accountsService.Delete(SelectedAccount);

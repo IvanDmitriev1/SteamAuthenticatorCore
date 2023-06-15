@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Platform>AnyCPU</Platform>
-    <Version>0.9.8.0</Version>
+    <Version>0.9.8.1</Version>
     <LangVersion>latest</LangVersion>
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
 	<PublishSingleFile>true</PublishSingleFile>
@@ -23,14 +23,14 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <PackageReference Include="Google.Apis.Drive.v3" Version="1.60.0.2986" />
+	  <PackageReference Include="Google.Apis.Drive.v3" Version="1.60.0.3075" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
-    <PackageReference Include="Sentry.Extensions.Logging" Version="3.29.1" />
+    <PackageReference Include="Sentry.Extensions.Logging" Version="3.33.1" />
+    <PackageReference Include="WPF-UI" Version="3.0.0-preview.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WpfUI\src\Wpf.Ui\Wpf.Ui.csproj" />
-    <ProjectReference Include="..\..\SteamAuthenticatorCore.Shared\SteamAuthenticatorCore.Shared.csproj" />
+    <ProjectReference Include="..\SteamAuthenticatorCore.Shared\SteamAuthenticatorCore.Shared.csproj" />
   </ItemGroup>
 </Project>

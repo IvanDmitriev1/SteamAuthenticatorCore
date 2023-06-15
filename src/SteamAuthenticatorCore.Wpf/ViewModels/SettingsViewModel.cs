@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Threading;
+using Wpf.Ui.Controls;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
@@ -46,7 +47,12 @@ public partial class SettingsViewModel : MyObservableRecipient
         {
             if (await _updateService.CheckForUpdate() is not { } release)
             {
-                await SnackbarService.Default.ShowAsync(AppSettings.LocalizationProvider[LocalizationMessage.UpdaterMessage], AppSettings.LocalizationProvider[LocalizationMessage.YouAreUsingTheLatestVersionMessage], new SymbolIcon(SymbolRegular.Info24));
+                SnackbarService.Default.Show(AppSettings.LocalizationProvider[LocalizationMessage.UpdaterMessage],
+                    AppSettings.LocalizationProvider[LocalizationMessage.YouAreUsingTheLatestVersionMessage],
+                    ControlAppearance.Secondary, new SymbolIcon(SymbolRegular.Info24)
+                    {
+                        FontSize = 32
+                    });
                 return;
             }
 
@@ -65,10 +71,12 @@ public partial class SettingsViewModel : MyObservableRecipient
             return;
 
         var cts = new CancellationTokenSource();
-        var dialog = ContentDialogService.Default.CreateDialog();
-        dialog.Title = "Settings";
-        dialog.Content = "Please wait";
-        dialog.IsFooterVisible = false;
+        ContentDialog dialog = new ContentDialog(ContentDialogService.Default.GetContentPresenter())
+        {
+            Title = "Settings",
+            Content = "Please wait",
+            IsFooterVisible = false
+        };
 
         try
         {

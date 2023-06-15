@@ -43,27 +43,26 @@ public partial class DownloadUpdateContentDialog
     private readonly ReleaseAsset? _asset;
     private readonly IProgress<double> _progress;
 
-    protected override bool OnButtonClick(ContentDialogButton button)
+    protected override void OnButtonClick(ContentDialogButton button)
     {
         if (button == ContentDialogButton.Close)
         {
             _cancellationTokenSource.Cancel();
-            return true;
+            base.OnButtonClick(button);
+            return;
         }
 
         if (ListViewGrid.Visibility == Visibility.Collapsed && _asset is not null)
         {
             DownloadAndInstall(_asset);
-            return false;
+            return;
         }
 
         if (ListViewGrid.Visibility == Visibility.Visible && ListView.SelectedItem is ReleaseAsset selectedRelease)
         {
             DownloadAndInstall(selectedRelease);
-            return false;
+            return;
         }
-
-        return false;
     }
 
     private void ProgressHandler(double obj)

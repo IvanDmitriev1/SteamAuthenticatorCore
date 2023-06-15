@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
 using MenuItem = Wpf.Ui.Controls.MenuItem;
 
 namespace SteamAuthenticatorCore.Desktop.Views;
@@ -15,7 +16,7 @@ public partial class MainWindow
         _updateService = updateService;
         _logger = logger;
 
-        SnackbarService.Default.SetSnackbarControl(RootSnackbar);
+        SnackbarService.Default.SetSnackbarPresenter(SnackbarPresenter);
         ContentDialogService.Default.SetContentPresenter(RootContentDialogPresenter);
 
         NavigationFluent.SetServiceProvider(App.ServiceProvider);
@@ -43,7 +44,7 @@ public partial class MainWindow
             if (await _updateService.CheckForUpdate() is not { } release)
                 return;
 
-            await RootSnackbar.ShowAsync("Updater", $"A new version available: {release.Name}", new SymbolIcon(SymbolRegular.PhoneUpdate20));
+            SnackbarService.Default.Show("Updater", $"A new version available: {release.Name}", ControlAppearance.Secondary, new SymbolIcon(SymbolRegular.PhoneUpdate20) { FontSize = 22});
         }
         catch (Exception exception)
         {

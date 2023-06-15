@@ -82,6 +82,7 @@
         <ui:NavigationView
             x:Name="NavigationFluent"
             Padding="15,15,15,10"
+            BreadcrumbBar="{Binding ElementName=BreadcrumbBar, Mode=OneTime}"
             IsBackButtonVisible="Visible"
             IsPaneToggleVisible="True"
             IsPaneVisible="True"
@@ -92,7 +93,7 @@
             TitleBar="{Binding ElementName=TitleBar, Mode=OneTime}"
             Visibility="Hidden">
             <ui:NavigationView.Header>
-                <ui:BreadcrumbBar Margin="15,32,15,0" />
+                <ui:BreadcrumbBar x:Name="BreadcrumbBar" Margin="15,32,15,0" />
             </ui:NavigationView.Header>
 
             <ui:NavigationView.MenuItems>
@@ -117,11 +118,7 @@
             </ui:NavigationView.FooterMenuItems>
 
             <ui:NavigationView.ContentOverlay>
-                <ui:Snackbar
-                    x:Name="RootSnackbar"
-                    Appearance="Secondary"
-                    CloseButtonEnabled="True"
-                    Timeout="5000" />
+                <ui:SnackbarPresenter x:Name="SnackbarPresenter" />
             </ui:NavigationView.ContentOverlay>
         </ui:NavigationView>
 

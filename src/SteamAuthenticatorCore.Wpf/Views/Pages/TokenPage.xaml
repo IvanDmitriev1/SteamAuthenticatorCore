@@ -53,10 +53,6 @@
                     Command="{Binding LoginAgainCommand}"
                     CommandParameter="{Binding SelectedAccount}"
                     Header="{helpers:LocalizationMarkup LocalizationMessage=LoginMessage}" />
-                <MenuItem
-                    Command="{Binding Path=ForceRefreshSessionCommand}"
-                    CommandParameter="{Binding SelectedAccount}"
-                    Header="{helpers:LocalizationMarkup LocalizationMessage=ForceRefreshSessionMessage}" />
                 <Separator />
                 <MenuItem
                     Command="{Binding Path=DeleteAccountCommand}"
@@ -173,10 +169,6 @@
                                             Command="{Binding Source={x:Reference Grid}, Path=DataContext.LoginAgainCommand}"
                                             CommandParameter="{Binding}"
                                             Header="{helpers:LocalizationMarkup LocalizationMessage=LoginMessage}" />
-                                        <MenuItem
-                                            Command="{Binding Source={x:Reference Grid}, Path=DataContext.ForceRefreshSessionCommand}"
-                                            CommandParameter="{Binding}"
-                                            Header="{helpers:LocalizationMarkup LocalizationMessage=ForceRefreshSessionMessage}" />
                                         <Separator />
                                         <MenuItem
                                             Command="{Binding Source={x:Reference Grid}, Path=DataContext.DeleteAccountCommand}"
