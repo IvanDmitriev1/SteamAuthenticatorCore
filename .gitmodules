@@ -1,4 +1,0 @@
-[submodule "src/SteamAuthenticatorCore.Wpf/WpfUI"]
-	path = src/SteamAuthenticatorCore.Wpf/WpfUI
-	url = https://github.com/lepoco/wpfui.git
-	branch = development
