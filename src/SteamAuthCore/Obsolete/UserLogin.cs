@@ -1,4 +1,6 @@
-﻿namespace SteamAuthCore.Obsolete;
+﻿using SteamAuthCore.Models.Internal;
+
+namespace SteamAuthCore.Obsolete;
 
 public class UserLogin
 {
@@ -34,7 +36,7 @@ public class UserLogin
 
     #endregion
 
-    public async Task<LoginResult> DoLogin()
+    public async Task<LoginResult> DoLoginV2()
     {
         NameValueCollection postData = new();
         CookieContainer cookies = _cookies;
@@ -160,5 +162,117 @@ public class UserLogin
         };
         LoggedIn = true;
         return LoginResult.LoginOkay;
+    }
+
+    public async Task<LoginResult> DoLogin()
+    {
+        var cookies = _cookies;
+        
+        if (cookies.Count == 0)
+        {
+            //Generate a SessionID
+            cookies.Add(new Cookie("mobileClientVersion", "0 (2.1.3)", "/", ".steamcommunity.com"));
+            cookies.Add(new Cookie("mobileClient", "android", "/", ".steamcommunity.com"));
+            cookies.Add(new Cookie("Steam_Language", "english", "/", ".steamcommunity.com"));
+
+            NameValueCollection headers = new NameValueCollection
+            {
+                {
+                    "X-Requested-With", "com.valvesoftware.android.steam.community"
+                }
+            };
+
+            await SteamApi.MobileLoginRequest(
+                "https://steamcommunity.com/login?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client",
+                SteamApi.RequestMethod.Get, null, cookies, headers);
+        }
+
+
+        NameValueCollection postData = new();
+        postData.Add("donotcache", (ITimeAligner.SteamTime * 1000).ToString());
+        postData.Add("username", this.Username);
+
+        if (await SteamApi.MobileLoginRequest<RsaResponse>(ApiEndpoints.CommunityBase + "/login/getrsakey",
+                SteamApi.RequestMethod.Post, postData, cookies) is not { Success: true } rsaResponse)
+            return LoginResult.GeneralFailure;
+
+        await Task.Delay(350); //Sleep for a bit to give Steam a chance to catch up??
+
+        byte[] encryptedPasswordBytes;
+        using (var rsaEncryptor = new RSACryptoServiceProvider())
+        {
+            var passwordBytes = Encoding.ASCII.GetBytes(this.Password);
+            var rsaParameters = rsaEncryptor.ExportParameters(false);
+            rsaParameters.Exponent = Util.HexStringToByteArray(rsaResponse.Exponent);
+            rsaParameters.Modulus = Util.HexStringToByteArray(rsaResponse.Modulus);
+            rsaEncryptor.ImportParameters(rsaParameters);
+            encryptedPasswordBytes = rsaEncryptor.Encrypt(passwordBytes, false);
+        }
+
+        string encryptedPassword = Convert.ToBase64String(encryptedPasswordBytes);
+
+        postData.Clear();
+
+        postData.Add("donotcache", (ITimeAligner.SteamTime * 1000).ToString());
+
+        postData.Add("password", encryptedPassword);
+        postData.Add("username", Username);
+        postData.Add("twofactorcode", TwoFactorCode ?? string.Empty);
+
+        postData.Add("emailauth", RequiresEmail ? EmailCode : string.Empty);
+        postData.Add("captchagid", RequiresCaptcha ? CaptchaGid : "-1");
+        postData.Add("captcha_text", RequiresCaptcha ? CaptchaText : string.Empty);
+        postData.Add("emailsteamid", (Requires2Fa || RequiresEmail) ? SteamId.ToString() : string.Empty);
+
+        postData.Add("rsatimestamp", rsaResponse.Timestamp);
+        postData.Add("remember_login", "true");
+
+        if (await SteamApi.MobileLoginRequest<DoLoginResult>(ApiEndpoints.CommunityBase + "/login/dologin",
+                SteamApi.RequestMethod.Post, postData, cookies) is not {  } loginResponse)
+            return LoginResult.GeneralFailure;
+
+        if (loginResponse.Message is not null && loginResponse.Message.Contains("There have been too many login failures"))
+            return LoginResult.TooManyFailedLogins;
+
+        if (loginResponse.Message is not null && loginResponse.Message.Contains("Incorrect login"))
+            return LoginResult.BadCredentials;
+
+        if (loginResponse.CaptchaNeeded)
+        {
+            RequiresCaptcha = true;
+            CaptchaGid = loginResponse.CaptchaGid;
+            return LoginResult.NeedCaptcha;
+        }
+
+        if (loginResponse.EmailAuthNeeded)
+        {
+            RequiresEmail = true;
+            SteamId = loginResponse.EmailSteamId;
+            return LoginResult.NeedEmail;
+        }
+
+        if (loginResponse is { TwoFactorNeeded: true, Success: false })
+        {
+            Requires2Fa = true;
+            return LoginResult.Need2Fa;
+        }
+
+        if (loginResponse is { Success: true, TransferParameters: not null })
+        {
+            var readableCookies = cookies.GetCookies(new Uri("https://steamcommunity.com"));
+            var transferParameters = loginResponse.TransferParameters;
+            
+            Session = new SessionData()
+            {
+                WebCookie = transferParameters.Webcookie,
+                SteamId = UInt64.Parse(transferParameters.Steamid),
+                SteamLoginSecure = SteamId + "%7C%7C" + transferParameters.TokenSecure,
+                SessionId = readableCookies["sessionid"]!.Value,
+            };
+            LoggedIn = true;
+            return LoginResult.LoginOkay;
+        }
+
+        return LoginResult.GeneralFailure;
     }
 }

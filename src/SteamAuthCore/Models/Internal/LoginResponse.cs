@@ -1,6 +1,6 @@
 ﻿namespace SteamAuthCore.Models.Internal;
 
-internal class LoginResponse
+internal class DoLoginResult
 {
     [JsonPropertyName("success")]
     public bool Success { get; set; }

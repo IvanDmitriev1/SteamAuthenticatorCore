@@ -5,6 +5,7 @@ public class SessionData
     public string? SessionId { get; init; }
     public string? SteamLoginSecure { get; set; }
     public string? AccessToken { get; init; }
+    public string? WebCookie { get; init; }
     public ulong SteamId { get; init; }
 
     public string GetCookieString()
