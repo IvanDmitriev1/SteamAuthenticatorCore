@@ -71,19 +71,18 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBox
+                    <ui:TextBox
                         Grid.Column="0"
                         Margin="0,0,5,0"
                         HorizontalContentAlignment="Center"
                         VerticalContentAlignment="Center"
                         ContextMenu="{x:Null}"
-                        FontSize="14"
                         IsEnabled="False"
                         Text="{Binding Token}">
                         <TextBox.Foreground>
                             <SolidColorBrush Color="{DynamicResource TextFillColorPrimary}" />
                         </TextBox.Foreground>
-                    </TextBox>
+                    </ui:TextBox>
 
                     <ui:Button
                         Grid.Column="1"
@@ -119,10 +118,9 @@
                     Grid.RowSpan="2"
                     VerticalAlignment="Center">
                     <ui:ProgressRing IsIndeterminate="True" />
-                    <TextBlock
+                    <ui:TextBlock
                         Margin="0,12,0,0"
-                        FontSize="16"
-                        FontWeight="Medium"
+                        FontTypography="Subtitle"
                         Text="Loading..."
                         TextAlignment="Center"
                         TextWrapping="Wrap" />
