@@ -35,10 +35,10 @@ public class SteamGuardAccount
     private static readonly byte[] SteamGuardCodeTranslations = { 50, 51, 52, 53, 54, 55, 56, 57, 66, 67, 68, 70, 71, 72, 74, 75, 77, 78, 80, 81, 82, 84, 86, 87, 88, 89 };
     private byte[]? _key;
 
-    public string? GenerateSteamGuardCode()
+    public string GenerateSteamGuardCode()
     {
         if (string.IsNullOrEmpty(SharedSecret))
-            return null;
+            return string.Empty;
 
         _key ??= Convert.FromBase64String(Regex.Unescape(SharedSecret!));
         Span<byte> timeArray = stackalloc byte[8];
@@ -71,7 +71,7 @@ public class SteamGuardAccount
         }
         catch (Exception)
         {
-            return null; //Change later, catch-alls are bad!
+            return string.Empty; //Change later, catch-alls are bad!
         }
 
         return Encoding.UTF8.GetString(codeArray);

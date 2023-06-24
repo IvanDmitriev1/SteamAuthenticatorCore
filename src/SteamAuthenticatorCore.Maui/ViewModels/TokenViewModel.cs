@@ -106,20 +106,6 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
     }
 
     [RelayCommand]
-    private async Task ForceRefreshSession()
-    {
-        var account = (SteamGuardAccount) _longPressView!.BindingContext;
-
-        if (!await _steamGuardAccountService.RefreshSession(account, CancellationToken.None))
-        {
-            await Application.Current!.MainPage!.DisplayAlert(_appSettings.LocalizationProvider[LocalizationMessage.RefreshSessionMessage], _appSettings.LocalizationProvider[LocalizationMessage.FailedToRefreshSessionMessage], "Ok");
-            return;
-        }
-
-        await Application.Current!.MainPage!.DisplayAlert(_appSettings.LocalizationProvider[LocalizationMessage.RefreshSessionMessage], _appSettings.LocalizationProvider[LocalizationMessage.SessionHasBeenRefreshedMessage], "Ok");
-    }
-
-    [RelayCommand]
     private async Task Delete()
     {
         var account = (SteamGuardAccount) _longPressView!.BindingContext;

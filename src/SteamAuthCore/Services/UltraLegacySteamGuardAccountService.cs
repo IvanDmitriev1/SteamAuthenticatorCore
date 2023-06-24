@@ -11,6 +11,22 @@ internal class UltraLegacySteamGuardAccountService : ISteamGuardAccountService
 
     private readonly LegacySteamGuardAccountService _steamGuardAccountService;
 
+    public Task<bool> LoginAgain(SteamGuardAccount account, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> LoginAgain(SteamGuardAccount account, string password, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<LoginAgainData> LoginAgain
+        (SteamGuardAccount account, string password, LoginAgainData loginAgainData, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<IReadOnlyList<Confirmation>> FetchConfirmations(SteamGuardAccount account, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(account.DeviceId))

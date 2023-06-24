@@ -4,25 +4,38 @@ namespace SteamAuthenticatorCore.Shared.Services;
 
 internal sealed class LoginService : ILoginService
 {
-    public LoginService(AccountsServiceResolver accountsServiceResolver, IPlatformImplementations platformImplementations)
+    public LoginService(AccountsServiceResolver accountsServiceResolver, IPlatformImplementations platformImplementations, ISteamGuardAccountService steamGuardAccountService)
     {
         _accountsServiceResolver = accountsServiceResolver;
         _platformImplementations = platformImplementations;
+        _steamGuardAccountService = steamGuardAccountService;
     }
 
     private readonly AccountsServiceResolver _accountsServiceResolver;
     private readonly IPlatformImplementations _platformImplementations;
+    private readonly ISteamGuardAccountService _steamGuardAccountService;
 
     public async Task<bool> RefreshLogin(SteamGuardAccount account, string password)
     {
-        if (await RefreshSession(new UserLogin(account.AccountName, password), account) is not { } session)
+        try
+        {
+            var result = await _steamGuardAccountService.LoginAgain(account, password, new LoginAgainData(), CancellationToken.None);
             return false;
+            /*if (await RefreshSession(new UserLogin(account.AccountName, password), account) is not { } session)
+                return false;
 
-        account.Session = session;
-        await _accountsServiceResolver.Invoke().Update(account);
+            account.Session = session;
+            await _accountsServiceResolver.Invoke().Update(account);
 
-        await _platformImplementations.DisplayAlert("Login",  "Session successfully refreshed");
-        return true;
+            await _platformImplementations.DisplayAlert("Login",  "Session successfully refreshed");
+            return true;*/
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine(e);
+
+            return false;
+        }
     }
 
     private async Task<SessionData?> RefreshSession(UserLogin userLogin, SteamGuardAccount account)

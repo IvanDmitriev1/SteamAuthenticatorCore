@@ -240,7 +240,7 @@ public class UserLogin
         if (loginResponse.CaptchaNeeded)
         {
             RequiresCaptcha = true;
-            CaptchaGid = loginResponse.CaptchaGid;
+            CaptchaGid = loginResponse.CaptchaGid?.Deserialize<string>();
             return LoginResult.NeedCaptcha;
         }
 

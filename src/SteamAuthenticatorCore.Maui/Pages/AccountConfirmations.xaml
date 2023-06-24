@@ -32,20 +32,20 @@
         <CollectionView ItemsSource="{Binding Model.Confirmations}">
 
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:ConfirmationModel">
+                <DataTemplate x:DataType="models:Confirmation">
                     <Border Margin="0,0,0,5">
                         <effectsView:SfEffectsView TouchUpCommand="{Binding Source={x:Reference Page}, Path=BindingContext.ElementTouchCommand}" TouchUpCommandParameter="{Binding Source={RelativeSource Mode=Self}}">
                             <StackLayout Margin="20,15" Orientation="Horizontal">
                                 <VerticalStackLayout HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand">
-                                    <Label Text="{Binding Path=ItemName, Mode=OneTime}" />
-                                    <Label Text="{Binding Path=Description, Mode=OneTime}" />
-                                    <Label Text="{Binding Path=Time, Mode=OneTime}" />
+                                    <Label Text="{Binding Path=Summary[0], Mode=OneTime}" />
+                                    <Label Text="{Binding Path=Headline, Mode=OneTime}" />
+                                    <Label Text="{Binding Path=CreationTime, Mode=OneTime}" />
                                 </VerticalStackLayout>
 
                                 <Image
                                     HeightRequest="50"
                                     HorizontalOptions="End"
-                                    Source="{Binding Path=BitMapImage, Mode=OneTime}"
+                                    Source="{Binding Path=BitMapIcon, Mode=OneTime}"
                                     VerticalOptions="CenterAndExpand" />
                             </StackLayout>
                         </effectsView:SfEffectsView>

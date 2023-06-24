@@ -1,4 +1,6 @@
 ﻿
+using System.Net;
+
 namespace SteamAuthCore.Services;
 
 internal class LegacySteamGuardAccountService : ISteamGuardAccountService
@@ -11,6 +13,75 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
 
     private readonly ILegacySteamApi _legacySteamApi;
     private readonly ILegacySteamCommunityApi _legacySteamCommunityApi;
+
+    public async Task<LoginAgainData> LoginAgain(SteamGuardAccount account, string password, LoginAgainData data, CancellationToken cancellationToken)
+    {
+        data.SessionCookie ??= await _legacySteamCommunityApi.GenerateSessionIdCookieForLogin(cancellationToken);
+
+        if (await _legacySteamCommunityApi.LoginGetRsaKey(account.AccountName, cancellationToken) is not { Success: true } rsaResponse)
+            return new LoginAgainData(LoginResult.BadRsa);
+
+        string encryptedPassword = EncryptPassword(password, rsaResponse);
+        KeyValuePair<string, string>[] postData =
+        {
+            new("donotcache", $"{ITimeAligner.SteamTime * 1000}"),
+
+            new("password", encryptedPassword),
+            new("username", account.AccountName),
+
+            new("twofactorcode", data.LoginResult == LoginResult.Need2Fa ? account.GenerateSteamGuardCode() : string.Empty),
+            new("emailsteamid", data.LoginResult is LoginResult.Need2Fa or LoginResult.NeedEmail ? data.SteamId.ToString() : string.Empty),
+
+            new("emailauth", data.EmailCode ?? string.Empty),
+            new("captchagid", data.CaptchaGid ?? "-1"),
+            new("captcha_text", data.CaptchaText ?? "-1"),
+
+            new("rsatimestamp", rsaResponse.Timestamp),
+            new("remember_login", "true"),
+        };
+
+        if (await _legacySteamCommunityApi.DoLogin(postData, cancellationToken) is not { } loginResponse)
+            return new LoginAgainData(LoginResult.BadCredentials);
+
+        data.SteamId = loginResponse.EmailSteamId;
+
+        if (loginResponse.CaptchaNeeded)
+        {
+            data.LoginResult = LoginResult.NeedCaptcha;
+            data.CaptchaGid = loginResponse.CaptchaGid?.Deserialize<string>();
+
+            return data;
+        }
+
+        if (loginResponse.EmailAuthNeeded)
+        {
+            data.LoginResult = LoginResult.NeedEmail;
+            return data;
+        }
+
+        if (loginResponse.TwoFactorNeeded)
+        {
+            data.LoginResult = LoginResult.Need2Fa;
+            return await LoginAgain(account, password, data, cancellationToken);
+        }
+
+        if (loginResponse is { Success: true, TransferParameters: not null })
+        {
+            var transferParameters = loginResponse.TransferParameters;
+            
+            account.Session = new SessionData()
+            {
+                WebCookie = transferParameters.Webcookie,
+                SteamId = UInt64.Parse(transferParameters.Steamid),
+                SteamLoginSecure = loginResponse.LoginSecure,
+                SessionId = data.SessionCookie,
+            };
+
+            return new LoginAgainData(LoginResult.LoginOkay);
+        }
+
+        return new LoginAgainData(LoginResult.GeneralFailure);
+    }
 
     public async Task<IReadOnlyList<Confirmation>> FetchConfirmations(SteamGuardAccount account, CancellationToken cancellationToken)
     {
@@ -121,5 +192,21 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
         {
             return null;
         }
+    }
+
+    private string EncryptPassword(string password, RsaResponse rsaResponse)
+    {
+        byte[] encryptedPasswordBytes;
+        using (var rsaEncryptor = new RSACryptoServiceProvider())
+        {
+            var passwordBytes = Encoding.ASCII.GetBytes(password);
+            var rsaParameters = rsaEncryptor.ExportParameters(false);
+            rsaParameters.Exponent = Util.HexStringToByteArray(rsaResponse.Exponent);
+            rsaParameters.Modulus = Util.HexStringToByteArray(rsaResponse.Modulus);
+            rsaEncryptor.ImportParameters(rsaParameters);
+            encryptedPasswordBytes = rsaEncryptor.Encrypt(passwordBytes, false);
+        }
+
+        return Convert.ToBase64String(encryptedPasswordBytes);
     }
 }

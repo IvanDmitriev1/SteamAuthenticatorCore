@@ -4,13 +4,13 @@ public sealed partial class AccountConfirmationsViewModel : BaseAccountConfirmat
 {
     public AccountConfirmationsViewModel(ISteamGuardAccountService accountService, IPlatformImplementations platformImplementations) : base(accountService, platformImplementations)
     {
-        SelectedItems = new ObservableCollection<(VisualElement, ConfirmationModel)>();
+        SelectedItems = new ObservableCollection<(VisualElement, Confirmation)>();
     }
 
     [ObservableProperty]
     private bool _isCountTitleViewVisible;
 
-    public ObservableCollection<(VisualElement, ConfirmationModel)> SelectedItems { get; }
+    public ObservableCollection<(VisualElement, Confirmation)> SelectedItems { get; }
 
     public void Dispose()
     {
@@ -30,7 +30,7 @@ public sealed partial class AccountConfirmationsViewModel : BaseAccountConfirmat
     [RelayCommand]
     private Task OnElementTouch(VisualElement view)
     {
-        var item = (view, (ConfirmationModel) view.BindingContext);
+        var item = (view, (Confirmation) view.BindingContext);
 
         if (SelectedItems.Contains(item))
         {
@@ -70,18 +70,11 @@ public sealed partial class AccountConfirmationsViewModel : BaseAccountConfirmat
             //
         }
 
-        if (SelectedItems.Count == 1)
-        {
-            await SendConfirmations(new[] { SelectedItems[0].Item2 }, confirmationOptions);
-        }
-        else
-        {
-            var items = new ConfirmationModel[SelectedItems.Count];
-            for (var i = 0; i < SelectedItems.Count; i++)
-                items[i] = SelectedItems[i].Item2;
+        var items = new Confirmation[SelectedItems.Count];
+        for (var i = 0; i < SelectedItems.Count; i++)
+            items[i] = SelectedItems[i].Item2;
 
-            await SendConfirmations(items, confirmationOptions);
-        }
+        await SendConfirmations(items, confirmationOptions);
 
         await HideCountTitleView();
     }

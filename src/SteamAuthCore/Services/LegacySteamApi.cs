@@ -36,16 +36,8 @@ internal sealed class LegacySteamApi : ILegacySteamApi
         return response!.Response;
     }
 
-    public async Task<bool> RemoveAuthenticator(KeyValuePair<string, string>[] postData)
+    public Task<bool> RemoveAuthenticator(KeyValuePair<string, string>[] postData)
     {
-        using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.MobileauthGetwgtoken);
-        message.Headers.Referrer = new Uri(ApiEndpoints.MobileLoginRequestRefer);
-        message.Content = new FormUrlEncodedContent(postData);
-
-        using var responseMessage = await _client.SendAsync(message);
-        if (!responseMessage.IsSuccessStatusCode)
-            return false;
-
-        return await responseMessage.Content.ReadFromJsonAsync<RemoveAuthenticatorResponse>() is not {Response.Success: true};
+        return Task.FromResult(false);
     }
 }

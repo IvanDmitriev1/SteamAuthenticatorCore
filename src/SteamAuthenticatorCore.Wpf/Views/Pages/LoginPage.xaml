@@ -28,6 +28,12 @@
                     <Label Content="{helpers:LocalizationMarkup LocalizationMessage=PasswordMessage}" />
                     <ui:TextBox IsEnabled="{Binding Path=IsPasswordBoxEnabled}" Text="{Binding Password}" />
                 </StackPanel>
+
+                <StackPanel Margin="0,10,0,0" Visibility="{Binding Path=IsCaptchaBoxVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Label Content="Enter captcha" />
+                    <ui:Image Source="{Binding Path=CaptchaImageSource}" />
+                    <ui:TextBox IsEnabled="{Binding Path=IsCaptchaBoxVisible}" Text="{Binding CaptchaText}" />
+                </StackPanel>
             </StackPanel>
         </ui:Card>
 

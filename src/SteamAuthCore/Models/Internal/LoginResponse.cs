@@ -28,8 +28,11 @@ internal class DoLoginResult
     public bool CaptchaNeeded { get; set; }
 
     [JsonPropertyName("captcha_gid")]
-    public string? CaptchaGid { get; set; }
+    public JsonDocument? CaptchaGid { get; set; }
 
     [JsonPropertyName("transfer_parameters")]
     public TransferParameters? TransferParameters { get; set; }
+
+    [JsonIgnore]
+    public string LoginSecure { get; set; } = null!;
 }

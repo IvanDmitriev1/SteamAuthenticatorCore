@@ -14,7 +14,14 @@ internal static class SteamGuardAccountExtensions
             IdentitySecret = dto.IdentitySecret,
             Secret1 = dto.Secret1,
             DeviceId = dto.DeviceId,
-            Session = new SessionData(sessionDataDto.SessionId, sessionDataDto.SteamLogin, sessionDataDto.SteamLoginSecure, sessionDataDto.WebCookie, sessionDataDto.OAuthToken, (ulong)sessionDataDto.SteamId)
+            Session = new SessionData()
+            {
+                AccessToken = sessionDataDto.AccessToken,
+                SteamId = (ulong) sessionDataDto.SteamId,
+                SessionId = sessionDataDto.SessionId,
+                WebCookie = sessionDataDto.WebCookie,
+                SteamLoginSecure = sessionDataDto.SteamLoginSecure
+            }
         };
     }
 
@@ -41,10 +48,9 @@ internal static class SteamGuardAccountExtensions
         return new SessionDataDto()
         {
             SessionId = sessionData.SessionId,
-            SteamLogin = sessionData.SteamLogin,
             SteamLoginSecure = sessionData.SteamLoginSecure,
             WebCookie = sessionData.WebCookie,
-            OAuthToken = sessionData.OAuthToken,
+            AccessToken = sessionData.AccessToken,
             SteamId = (long)sessionData.SteamId
         };
     }
