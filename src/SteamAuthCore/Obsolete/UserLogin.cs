@@ -266,7 +266,7 @@ public class UserLogin
             {
                 WebCookie = transferParameters.Webcookie,
                 SteamId = UInt64.Parse(transferParameters.Steamid),
-                SteamLoginSecure = SteamId + "%7C%7C" + transferParameters.TokenSecure,
+                SteamLoginSecure = readableCookies["steamLoginSecure"]!.Value,
                 SessionId = readableCookies["sessionid"]!.Value,
             };
             LoggedIn = true;

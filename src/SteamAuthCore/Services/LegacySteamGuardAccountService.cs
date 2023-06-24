@@ -40,10 +40,12 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
         builder.Append($"&cid={confirmation.Id}");
         builder.Append($"&ck={confirmation.Key}");
 
-        var response = await _legacySteamCommunityApi.MobileConf(builder.ToString(), account.Session.GetCookieString(), cancellationToken);
-        var confirmationDetailsResponse = JsonSerializer.Deserialize<ConfirmationDetailsResponse>(response);
+        return false;
 
-        return confirmationDetailsResponse?.Success == true;
+        //var response = await _legacySteamCommunityApi.MobileConf(builder.ToString(), account.Session.GetCookieString(), cancellationToken);
+        //var confirmationDetailsResponse = JsonSerializer.Deserialize<ConfirmationDetailsResponse>(response);
+
+        //return confirmationDetailsResponse?.Success == true;
     }
 
     public async Task<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel[] confirmations, ConfirmationOptions options, CancellationToken cancellationToken)
@@ -68,36 +70,22 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
 
     private async ValueTask<string?> SendFetchConfirmationsRequest(SteamGuardAccount account, CancellationToken cancellationToken, UInt16 times = 0)
     {
-        try
+        var builder = new StringBuilder(140 + 5);
+        builder.Append(GenerateConfirmationQueryParams(account, "conf"));
+
+        var confirmationsListJson = await _legacySteamCommunityApi
+                                          .MobileConf(builder.ToString(), account.Session.GetCookieString(), cancellationToken)
+                                          .ConfigureAwait(false);
+
+        if (!confirmationsListJson.Success)
+            throw new WgTokenInvalidException();
+
+        foreach (var confData in confirmationsListJson.Conf)
         {
-            var builder = new StringBuilder(140 + 5);
-            builder.Append("conf?");
-            builder.Append(GenerateConfirmationQueryParams(account, "conf"));
-
-            var html = await _legacySteamCommunityApi
-                .MobileConf(builder.ToString(), account.Session.GetCookieString(), cancellationToken)
-                .ConfigureAwait(false);
-
-            if (html.Contains("Nothing to confirm"))
-                return null;
-
-            if (!html.Contains("Invalid authenticator"))
-                return html;
-
-            return await SendFetchConfirmationsRequest(account, cancellationToken);
+            
         }
-        catch (WgTokenInvalidException)
-        {
-            if (times >= 1)
-                return null;
 
-            await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
-            return await SendFetchConfirmationsRequest(account, cancellationToken, ++times);
-        }
-        catch (WgTokenExpiredException)
-        {
-            return null;
-        }
+        return string.Empty;
     }
 
     internal static ConfirmationModel GetConfirmationModelFromHtml(IElement confirmationElement)

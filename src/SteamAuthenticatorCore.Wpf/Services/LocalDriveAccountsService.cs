@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using System.Text.Json;
 
 namespace SteamAuthenticatorCore.Desktop.Services;
@@ -89,8 +90,12 @@ internal class LocalDriveAccountsService : IAccountsService
             return;
 
         var json = JsonSerializer.Serialize(account);
-        await using var fileStream = File.OpenWrite(filePath);
-        await using var streamWriter = new StreamWriter(fileStream);
+        await using var streamWriter = new StreamWriter(filePath, Encoding.UTF8, new FileStreamOptions()
+        {
+            Access = FileAccess.Write,
+            Mode = FileMode.Create,
+            Share = FileShare.None,
+        });
         await streamWriter.WriteAsync(json);
     }
 

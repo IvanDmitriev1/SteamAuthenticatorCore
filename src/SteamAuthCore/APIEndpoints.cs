@@ -12,7 +12,7 @@ public static class ApiEndpoints
 
     public const string MobileLoginRequestRefer = CommunityBase + "/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client";
 
-    public const string Mobileconf = "/mobileconf/";
+    public const string Mobileconf = "/mobileconf/getlist?";
     public const string MultipleConfirmations = Mobileconf + "multiajaxop";
     public const string Login = "/login?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client";
     public const string GetRsaKey = "/login/getrsakey";

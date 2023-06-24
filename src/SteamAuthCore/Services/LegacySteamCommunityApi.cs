@@ -13,7 +13,7 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
 
     private readonly HttpClient _client;
 
-    public async ValueTask<string> MobileConf(string query, string cookieString, CancellationToken cancellationToken)
+    public async ValueTask<GetListJson> MobileConf(string query, string cookieString, CancellationToken cancellationToken)
     {
         var url = ApiEndpoints.Mobileconf + query;
 
@@ -21,10 +21,9 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
         message.Headers.Add("Cookie", cookieString);
 
         using var responseMessage = await _client.SendAsync(message, cancellationToken);
-        if (!responseMessage.IsSuccessStatusCode)
+        if (await responseMessage.Content.ReadFromJsonAsync<GetListJson>(cancellationToken:  cancellationToken) is not { } response)
             throw new WgTokenInvalidException();
 
-        var response = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
         return response;
     }
 
