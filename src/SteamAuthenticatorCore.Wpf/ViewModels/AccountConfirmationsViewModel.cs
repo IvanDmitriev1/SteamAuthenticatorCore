@@ -13,7 +13,7 @@ public sealed partial class AccountConfirmationsViewModel : BaseAccountConfirmat
         if (Model is null)
             return;
 
-        var confirmations = list.OfType<ConfirmationModel>();
+        var confirmations = list.OfType<Confirmation>();
         await SendConfirmations(confirmations, ConfirmationOptions.Allow);
 
         if (Model.Confirmations.Count == 0)
@@ -26,7 +26,7 @@ public sealed partial class AccountConfirmationsViewModel : BaseAccountConfirmat
         if (Model is null)
             return;
 
-        var confirmations = list.OfType<ConfirmationModel>();
+        var confirmations = list.OfType<Confirmation>();
         await SendConfirmations(confirmations, ConfirmationOptions.Deny);
 
         if (Model.Confirmations.Count == 0)

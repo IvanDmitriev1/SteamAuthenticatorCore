@@ -49,7 +49,7 @@
                     </ListBox.ItemsPanel>
 
                     <ListBox.ItemTemplate>
-                        <DataTemplate DataType="{x:Type steamAuthCore:ConfirmationModel}">
+                        <DataTemplate DataType="{x:Type steamAuthCore:Confirmation}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -60,9 +60,9 @@
                                     Grid.Column="0"
                                     Margin="10,0,0,0"
                                     VerticalAlignment="Center">
-                                    <TextBlock FontSize="14" Text="{Binding Path=ItemName, Mode=OneTime}" />
-                                    <TextBlock FontSize="14" Text="{Binding Path=Description, Mode=OneTime}" />
-                                    <TextBlock FontSize="14" Text="{Binding Path=Time, Mode=OneTime}" />
+                                    <TextBlock FontSize="14" Text="{Binding Path=Summary[0], Mode=OneTime}" />
+                                    <TextBlock FontSize="14" Text="{Binding Path=Headline, Mode=OneTime}" />
+                                    <TextBlock FontSize="14" Text="{Binding Path=CreationTime, Mode=OneTime}" />
                                 </StackPanel>
 
                                 <Image
@@ -73,7 +73,7 @@
                                     VerticalAlignment="Center"
                                     RenderOptions.BitmapScalingMode="Fant"
                                     RenderOptions.EdgeMode="Aliased"
-                                    Source="{Binding Path=ImageSource, Mode=OneTime}" />
+                                    Source="{Binding Path=Icon, Mode=OneTime}" />
 
                             </Grid>
                         </DataTemplate>

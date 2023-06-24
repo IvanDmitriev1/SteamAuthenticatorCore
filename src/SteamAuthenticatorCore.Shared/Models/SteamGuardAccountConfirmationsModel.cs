@@ -2,12 +2,12 @@
 
 public sealed class SteamGuardAccountConfirmationsModel
 {
-    public SteamGuardAccountConfirmationsModel(SteamGuardAccount account, IEnumerable<ConfirmationModel> confirmations)
+    public SteamGuardAccountConfirmationsModel(SteamGuardAccount account, IEnumerable<Confirmation> confirmations)
     {
         Account = account;
-        Confirmations = new ObservableCollection<ConfirmationModel>(confirmations);
+        Confirmations = new ObservableCollection<Confirmation>(confirmations);
     }
 
     public SteamGuardAccount Account { get; }
-    public ObservableCollection<ConfirmationModel> Confirmations { get; }
+    public ObservableCollection<Confirmation> Confirmations { get; }
 }

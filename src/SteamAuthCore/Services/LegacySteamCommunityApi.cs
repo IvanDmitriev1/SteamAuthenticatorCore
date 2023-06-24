@@ -13,7 +13,7 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
 
     private readonly HttpClient _client;
 
-    public async ValueTask<string> MobileConf(string query, string cookieString, CancellationToken cancellationToken)
+    public async Task<GetListJson> MobileConf(string query, string cookieString, CancellationToken cancellationToken)
     {
         var url = ApiEndpoints.Mobileconf + query;
 
@@ -21,71 +21,40 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
         message.Headers.Add("Cookie", cookieString);
 
         using var responseMessage = await _client.SendAsync(message, cancellationToken);
-        if (!responseMessage.IsSuccessStatusCode)
-            throw new WgTokenInvalidException();
 
-        var response = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
+        if (await responseMessage.Content.ReadFromJsonAsync<GetListJson>(cancellationToken: cancellationToken) is not
+            { Success: true } response)
+            throw new WgTokenExpiredException();
+
         return response;
     }
 
-    public async ValueTask<SendConfirmationResponse> SendMultipleConfirmations(string query, string cookieString, CancellationToken cancellationToken)
+    public async Task<bool> SendMultipleConfirmations(string query, string cookieString, CancellationToken cancellationToken)
     {
         using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.MultipleConfirmations);
         message.Content = new StringContent(query, Encoding.UTF8, "application/x-www-form-urlencoded");
         message.Headers.Add("Cookie", cookieString);
 
         using var responseMessage = await _client.SendAsync(message, cancellationToken);
-        return (await responseMessage.Content.ReadFromJsonAsync<SendConfirmationResponse>(cancellationToken: cancellationToken))!;
-    }
-
-    public async ValueTask<string> Login(string cookieString)
-    {
-        using var message = new HttpRequestMessage(HttpMethod.Get, ApiEndpoints.Login);
-        message.Headers.Referrer = new Uri(ApiEndpoints.MobileLoginRequestRefer);
-        message.Headers.Add("Cookie", cookieString);
-        message.Headers.Add("X-Requested-With", "com.valvesoftware.android.steam.community");
-
-        using var responseMessage = await _client.SendAsync(message);
-        responseMessage.EnsureSuccessStatusCode();
-
-        try
-        {
-            var sessionCookie = responseMessage.Headers.GetValues("Set-Cookie").ElementAt(0);
-            var arr = sessionCookie.Split(new[] {'=', ';'}, StringSplitOptions.RemoveEmptyEntries);
-
-            return arr[1];
-        }
-        catch (Exception)
-        {
-            return string.Empty;
-        }
-    }
-
-    public async ValueTask<RsaResponse?> GetRsaKey(KeyValuePair<string, string>[] content, string cookieString)
-    {
-        using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.GetRsaKey);
-        message.Headers.Referrer = new Uri(ApiEndpoints.MobileLoginRequestRefer);
-        message.Headers.Add("Cookie", cookieString);
-        message.Content = new FormUrlEncodedContent(content);
-
-        using var responseMessage = await _client.SendAsync(message);
         if (!responseMessage.IsSuccessStatusCode)
-            return null;
+            return false;
 
-        return await responseMessage.Content.ReadFromJsonAsync<RsaResponse>();
+        var response = await responseMessage.Content.ReadFromJsonAsync<SendConfirmationResponse>(cancellationToken: cancellationToken);
+        return response?.Success ?? false;
     }
 
-    public async ValueTask<LoginResponse?> DoLogin(KeyValuePair<string, string>[] content, string cookieString)
+    public async Task<bool> SendSingleConfirmations(string query, string cookieString, CancellationToken cancellationToken)
     {
-        using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.GetRsaKey);
-        message.Headers.Referrer = new Uri(ApiEndpoints.MobileLoginRequestRefer);
+        var url = ApiEndpoints.SingleConfirmations + query;
+
+        using var message = new HttpRequestMessage(HttpMethod.Get, url);
         message.Headers.Add("Cookie", cookieString);
-        message.Content = new FormUrlEncodedContent(content);
 
-        using var responseMessage = await _client.SendAsync(message);
+        using var responseMessage = await _client.SendAsync(message, cancellationToken);
         if (!responseMessage.IsSuccessStatusCode)
-            return null;
+            return false;
 
-        return await responseMessage.Content.ReadFromJsonAsync<LoginResponse>();
+        var response = await responseMessage.Content.ReadFromJsonAsync<SendConfirmationResponse>(cancellationToken: cancellationToken);
+        return response?.Success ?? false;
     }
 }

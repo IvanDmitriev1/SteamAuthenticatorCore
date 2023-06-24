@@ -43,13 +43,24 @@ internal sealed class ConfirmationService : IConfirmationService, IAsyncDisposab
 
         foreach (var account in await _accountsService.GetAll())
         {
-            var confirmations = (await _steamAccountService.FetchConfirmations(account, CancellationToken.None)).ToArray();
+            IReadOnlyList<Confirmation> confirmations;
+
+            try
+            {
+                confirmations = await _steamAccountService.FetchConfirmations(account, CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                continue;
+                //TODO
+            }
+
             if (!confirmations.Any())
                 continue;
 
             foreach (var confirmation in confirmations)
             {
-                confirmation.BitMapImage = _platformImplementations.CreateImage(confirmation.ImageSource);
+                confirmation.BitMapIcon = _platformImplementations.CreateImage(confirmation.Icon);
             }
 
             accountConfirmations.Add(new SteamGuardAccountConfirmationsModel(account, confirmations));
@@ -63,16 +74,10 @@ internal sealed class ConfirmationService : IConfirmationService, IAsyncDisposab
         foreach (var account in await _accountsService.GetAll())
         {
             var confirmations = await _steamAccountService.FetchConfirmations(account, cancellationToken);
-            var sortedConfirmations = confirmations.Where(model => model.ConfType == ConfirmationType.MarketSellTransaction).ToArray();
+            var sortedConfirmations = confirmations.Where(model => model.Type == ConfirmationType.MarketSellTransaction).ToArray();
 
             if (sortedConfirmations.Length == 0)
                 continue;
-
-            if (sortedConfirmations.Length == 1)
-            {
-                await _steamAccountService.SendConfirmation(account, sortedConfirmations[0], ConfirmationOptions.Allow, cancellationToken);
-                continue;
-            }
 
             await _steamAccountService.SendConfirmation(account, sortedConfirmations, ConfirmationOptions.Allow, cancellationToken);
         }
