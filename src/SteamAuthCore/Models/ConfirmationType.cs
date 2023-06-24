@@ -2,8 +2,8 @@
 
 public enum ConfirmationType
 {
-    GenericConfirmation,
-    Trade,
-    MarketSellTransaction,
-    Unknown
+    Unknown,
+    GenericConfirmation = 1,
+    Trade = 2,
+    MarketSellTransaction = 3,
 }

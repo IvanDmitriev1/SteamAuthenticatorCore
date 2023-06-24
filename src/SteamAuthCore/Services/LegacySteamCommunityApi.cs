@@ -13,7 +13,7 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
 
     private readonly HttpClient _client;
 
-    public async ValueTask<GetListJson> MobileConf(string query, string cookieString, CancellationToken cancellationToken)
+    public async Task<GetListJson> MobileConf(string query, string cookieString, CancellationToken cancellationToken)
     {
         var url = ApiEndpoints.Mobileconf + query;
 
@@ -21,19 +21,40 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
         message.Headers.Add("Cookie", cookieString);
 
         using var responseMessage = await _client.SendAsync(message, cancellationToken);
-        if (await responseMessage.Content.ReadFromJsonAsync<GetListJson>(cancellationToken:  cancellationToken) is not { } response)
-            throw new WgTokenInvalidException();
+
+        if (await responseMessage.Content.ReadFromJsonAsync<GetListJson>(cancellationToken: cancellationToken) is not
+            { Success: true } response)
+            throw new WgTokenExpiredException();
 
         return response;
     }
 
-    public async ValueTask<SendConfirmationResponse> SendMultipleConfirmations(string query, string cookieString, CancellationToken cancellationToken)
+    public async Task<bool> SendMultipleConfirmations(string query, string cookieString, CancellationToken cancellationToken)
     {
         using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.MultipleConfirmations);
         message.Content = new StringContent(query, Encoding.UTF8, "application/x-www-form-urlencoded");
         message.Headers.Add("Cookie", cookieString);
 
         using var responseMessage = await _client.SendAsync(message, cancellationToken);
-        return (await responseMessage.Content.ReadFromJsonAsync<SendConfirmationResponse>(cancellationToken: cancellationToken))!;
+        if (!responseMessage.IsSuccessStatusCode)
+            return false;
+
+        var response = await responseMessage.Content.ReadFromJsonAsync<SendConfirmationResponse>(cancellationToken: cancellationToken);
+        return response?.Success ?? false;
+    }
+
+    public async Task<bool> SendSingleConfirmations(string query, string cookieString, CancellationToken cancellationToken)
+    {
+        var url = ApiEndpoints.SingleConfirmations + query;
+
+        using var message = new HttpRequestMessage(HttpMethod.Get, url);
+        message.Headers.Add("Cookie", cookieString);
+
+        using var responseMessage = await _client.SendAsync(message, cancellationToken);
+        if (!responseMessage.IsSuccessStatusCode)
+            return false;
+
+        var response = await responseMessage.Content.ReadFromJsonAsync<SendConfirmationResponse>(cancellationToken: cancellationToken);
+        return response?.Success ?? false;
     }
 }

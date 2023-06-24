@@ -2,6 +2,7 @@
 
 internal interface ILegacySteamCommunityApi
 {
-    ValueTask<GetListJson> MobileConf(string query, string cookieString, CancellationToken cancellationToken);
-    ValueTask<SendConfirmationResponse> SendMultipleConfirmations(string query, string cookieString, CancellationToken cancellationToken);
+    Task<GetListJson> MobileConf(string query, string cookieString, CancellationToken cancellationToken);
+    Task<bool> SendMultipleConfirmations(string query, string cookieString, CancellationToken cancellationToken);
+    Task<bool> SendSingleConfirmations(string query, string cookieString, CancellationToken cancellationToken);
 }

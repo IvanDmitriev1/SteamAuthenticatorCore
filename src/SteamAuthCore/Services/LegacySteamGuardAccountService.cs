@@ -1,7 +1,4 @@
-﻿using AngleSharp.Dom;
-using AngleSharp.Html.Dom;
-using AngleSharp.Html.Parser;
-
+﻿
 namespace SteamAuthCore.Services;
 
 internal class LegacySteamGuardAccountService : ISteamGuardAccountService
@@ -14,44 +11,40 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
 
     private readonly ILegacySteamApi _legacySteamApi;
     private readonly ILegacySteamCommunityApi _legacySteamCommunityApi;
-    internal static readonly HtmlParser Parser = new();
 
-    public async Task<IEnumerable<ConfirmationModel>> FetchConfirmations(SteamGuardAccount account, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<Confirmation>> FetchConfirmations(SteamGuardAccount account, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(account.DeviceId))
             throw new ArgumentException("Device ID is not present");
 
-        if (await SendFetchConfirmationsRequest(account, cancellationToken) is not { } html)
-            return Enumerable.Empty<ConfirmationModel>();
+        var builder = new StringBuilder(140 + 5);
+        builder.Append(GenerateConfirmationQueryParams(account, "conf"));
 
-        using var document = await Parser.ParseDocumentAsync(html, cancellationToken);
-        return document.GetElementsByClassName("mobileconf_list_entry").Select(GetConfirmationModelFromHtml);
+        var confirmationsListJson = await _legacySteamCommunityApi
+                                          .MobileConf(builder.ToString(), account.Session.GetCookieString(), cancellationToken)
+                                          .ConfigureAwait(false);
+
+        return confirmationsListJson.Conf ?? new List<Confirmation>();
     }
 
-    public async Task<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel confirmation, ConfirmationOptions options, CancellationToken cancellationToken)
+    public Task<bool> SendConfirmation(SteamGuardAccount account, Confirmation confirmation, ConfirmationOptions options, CancellationToken cancellationToken)
     {
         var strOption = options.ToString().ToLower();
 
         var builder = new StringBuilder(140 + 50);
-        builder.Append("ajaxop");
         builder.Append($"?op={strOption}");
         builder.Append('&');
         builder.Append(GenerateConfirmationQueryParams(account, strOption));
         builder.Append($"&cid={confirmation.Id}");
-        builder.Append($"&ck={confirmation.Key}");
+        builder.Append($"&ck={confirmation.Nonce}");
 
-        return false;
-
-        //var response = await _legacySteamCommunityApi.MobileConf(builder.ToString(), account.Session.GetCookieString(), cancellationToken);
-        //var confirmationDetailsResponse = JsonSerializer.Deserialize<ConfirmationDetailsResponse>(response);
-
-        //return confirmationDetailsResponse?.Success == true;
+        return _legacySteamCommunityApi.SendSingleConfirmations(builder.ToString(), account.Session.GetCookieString(), cancellationToken);
     }
 
-    public async Task<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel[] confirmations, ConfirmationOptions options, CancellationToken cancellationToken)
+    public Task<bool> SendConfirmation(SteamGuardAccount account, IReadOnlyList<Confirmation> confirmations, ConfirmationOptions options, CancellationToken cancellationToken)
     {
         var strOption = options.ToString().ToLower();
-        var capacity = 140 + confirmations.Length * (20 + 11 + 7 + 6 + 3);
+        var capacity = 140 + confirmations.Count * (20 + 11 + 7 + 6 + 3);
 
         var builder = new StringBuilder(capacity);
         builder.Append($"op={strOption}");
@@ -61,47 +54,10 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
         foreach (var confirmation in confirmations)
         {
             builder.Append($"&cid[]={confirmation.Id}");
-            builder.Append($"&ck[]={confirmation.Key}");
+            builder.Append($"&ck[]={confirmation.Nonce}");
         }
 
-        var response = await _legacySteamCommunityApi.SendMultipleConfirmations(builder.ToString(), account.Session.GetCookieString(), cancellationToken);
-        return response.Success;
-    }
-
-    private async ValueTask<string?> SendFetchConfirmationsRequest(SteamGuardAccount account, CancellationToken cancellationToken, UInt16 times = 0)
-    {
-        var builder = new StringBuilder(140 + 5);
-        builder.Append(GenerateConfirmationQueryParams(account, "conf"));
-
-        var confirmationsListJson = await _legacySteamCommunityApi
-                                          .MobileConf(builder.ToString(), account.Session.GetCookieString(), cancellationToken)
-                                          .ConfigureAwait(false);
-
-        if (!confirmationsListJson.Success)
-            throw new WgTokenInvalidException();
-
-        foreach (var confData in confirmationsListJson.Conf)
-        {
-            
-        }
-
-        return string.Empty;
-    }
-
-    internal static ConfirmationModel GetConfirmationModelFromHtml(IElement confirmationElement)
-    {
-        Span<UInt64> attributesValue = stackalloc UInt64[5];
-
-        for (var i = 2; i <= 5; i++)
-        {
-            attributesValue[i - 2] = UInt64.Parse(confirmationElement.Attributes[i]!.Value);
-        }
-
-        var confirmationElementContent = confirmationElement.FirstElementChild!;
-        var imageSource = ((IHtmlImageElement)confirmationElementContent.QuerySelector("img")!).Source!;
-        var children = confirmationElementContent.Children[^1].Children;
-
-        return new ConfirmationModel(attributesValue, imageSource, children);
+        return _legacySteamCommunityApi.SendMultipleConfirmations(builder.ToString(), account.Session.GetCookieString(), cancellationToken);
     }
 
     internal static string GenerateConfirmationQueryParams(SteamGuardAccount account, string tag)
