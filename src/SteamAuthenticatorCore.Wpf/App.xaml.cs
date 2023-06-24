@@ -55,10 +55,10 @@ public sealed partial class App : Application
                 services.AddTransient<TokenViewModel>();
                 services.AddTransient<SettingsViewModel>();
                 services.AddTransient<ConfirmationsOverviewViewModel>();
+                services.AddTransient<LoginViewModel>();
 
                 services.AddSingleton<AccountConfirmationsViewModel>();
-                services.AddSingleton<LoginViewModel>();
-
+                
                 services.AddSingleton<IPlatformImplementations, DesktopImplementations>();
                 services.AddSingleton<LocalDriveAccountsService>();
                 services.AddSingleton<GoogleDriveAccountsService>();

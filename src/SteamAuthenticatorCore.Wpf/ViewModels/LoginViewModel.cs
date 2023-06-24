@@ -1,23 +1,18 @@
-﻿using Octokit;
-using SteamAuthenticatorCore.Shared.Abstractions;
-using System.Threading;
+﻿using System.Threading;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Image = Wpf.Ui.Controls.Image;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public partial class LoginViewModel : MyObservableRecipient, IRecipient<UpdateAccountInLoginPageMessage>
 {
-    public LoginViewModel(ILoginService loginService, ISteamGuardAccountService steamGuardAccountService, AccountsServiceResolver accountsServiceResolver)
+    public LoginViewModel(ISteamGuardAccountService steamGuardAccountService, AccountsServiceResolver accountsServiceResolver)
     {
-        _loginService = loginService;
         _steamGuardAccountService = steamGuardAccountService;
         _accountsServiceResolver = accountsServiceResolver;
     }
 
     private readonly AccountsServiceResolver _accountsServiceResolver;
-    private readonly ILoginService _loginService;
     private readonly ISteamGuardAccountService _steamGuardAccountService;
     private SteamGuardAccount? _steamGuardAccount;
     private LoginAgainData _loginAgainData = new();
@@ -62,23 +57,25 @@ public partial class LoginViewModel : MyObservableRecipient, IRecipient<UpdateAc
             return;
 
         IsPasswordBoxEnabled = false;
-        _loginAgainData.CaptchaText = _captchaText;
+        _loginAgainData.CaptchaText = CaptchaText;
         _loginAgainData = await _steamGuardAccountService.LoginAgain(_steamGuardAccount, Password, _loginAgainData, CancellationToken.None);
 
-        if (_loginAgainData.LoginResult == LoginResult.LoginOkay)
+        switch (_loginAgainData.LoginResult)
         {
+        case LoginResult.TooManyFailedLogins:
+            await ContentDialogService.Default.ShowAlertAsync("Login", "To many requests try again later", "Ok");
+            NavigationService.Default.GoBack();
+            return;
+        case LoginResult.LoginOkay:
             await _accountsServiceResolver.Invoke().Update(_steamGuardAccount);
             NavigationService.Default.GoBack();
-        }
-
-        if (_loginAgainData.LoginResult == LoginResult.NeedCaptcha)
-        {
+            return;
+        case LoginResult.NeedCaptcha:
             CaptchaImageSource = new BitmapImage(new Uri($"https://steamcommunity.com/public/captcha.php?gid={_loginAgainData.CaptchaGid}"));
             IsCaptchaBoxVisible = true;
-        }
-        else
-        {
-            IsPasswordBoxEnabled = true;   
+            break;
+        default: IsPasswordBoxEnabled = true;
+            break;
         }
     }
 }

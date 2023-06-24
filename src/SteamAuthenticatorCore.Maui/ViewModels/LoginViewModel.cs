@@ -2,13 +2,17 @@
 
 public partial class LoginViewModel : MyObservableRecipient, IRecipient<UpdateAccountInLoginPageMessage>
 {
-    public LoginViewModel(ILoginService loginService)
+    public LoginViewModel(ISteamGuardAccountService steamGuardAccountService, AccountsServiceResolver accountsServiceResolver)
     {
-        _loginService = loginService;
+        _steamGuardAccountService = steamGuardAccountService;
+        _accountsServiceResolver = accountsServiceResolver;
     }
 
-    private readonly ILoginService _loginService;
+    private readonly ISteamGuardAccountService _steamGuardAccountService;
+    private readonly AccountsServiceResolver _accountsServiceResolver;
+
     private SteamGuardAccount? _steamGuardAccount;
+    private LoginAgainData _loginAgainData = new();
 
     [ObservableProperty]
     private string _username = string.Empty;
@@ -18,6 +22,15 @@ public partial class LoginViewModel : MyObservableRecipient, IRecipient<UpdateAc
 
     [ObservableProperty]
     private bool _isPasswordBoxEnabled = true;
+
+    [ObservableProperty]
+    private bool _isCaptchaBoxVisible;
+
+    [ObservableProperty]
+    private string? _captchaText;
+
+    [ObservableProperty]
+    private ImageSource? _captchaImageSource;
 
     protected override void OnDeactivated()
     {
@@ -40,10 +53,31 @@ public partial class LoginViewModel : MyObservableRecipient, IRecipient<UpdateAc
             return;
 
         IsPasswordBoxEnabled = false;
+        _loginAgainData.CaptchaText = CaptchaText;
+        _loginAgainData = await _steamGuardAccountService.LoginAgain(_steamGuardAccount, Password, _loginAgainData, CancellationToken.None);
 
-        if (await _loginService.RefreshLogin(_steamGuardAccount, Password))
+        if (_loginAgainData.LoginResult == LoginResult.LoginOkay)
+        {
+            await _accountsServiceResolver.Invoke().Update(_steamGuardAccount);
             await Shell.Current.GoToAsync("..");
+        }
 
-        IsPasswordBoxEnabled = true;
+        if (_loginAgainData.LoginResult == LoginResult.TooManyFailedLogins)
+        {
+            await App.Current!.MainPage!.DisplayAlert("Login", "To many requests try again later", "ok");
+            await Shell.Current.GoToAsync("..");
+        }
+
+        if (_loginAgainData.LoginResult == LoginResult.NeedCaptcha)
+        {
+            CaptchaImageSource = ImageSource.FromUri(new Uri($"https://steamcommunity.com/public/captcha.php?gid={_loginAgainData.CaptchaGid}"));
+            IsCaptchaBoxVisible = true;
+        }
+        else
+        {
+            IsPasswordBoxEnabled = true;   
+        }
+
+        IsPasswordBoxEnabled = false;
     }
 }

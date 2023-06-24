@@ -14,6 +14,7 @@ public class LoginAgainData
 
 	public LoginResult LoginResult { get; set; }
 	public string? SessionCookie { get; set; }
+	public string? LoginSecure { get; set; }
 
 	public UInt64 SteamId { get; set; }
 

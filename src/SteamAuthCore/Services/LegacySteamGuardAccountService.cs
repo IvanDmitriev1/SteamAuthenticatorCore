@@ -1,6 +1,4 @@
 ﻿
-using System.Net;
-
 namespace SteamAuthCore.Services;
 
 internal class LegacySteamGuardAccountService : ISteamGuardAccountService
@@ -40,14 +38,24 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
             new("remember_login", "true"),
         };
 
-        if (await _legacySteamCommunityApi.DoLogin(postData, cancellationToken) is not { } loginResponse)
-            return new LoginAgainData(LoginResult.BadCredentials);
+        StringBuilder stringBuilder = new StringBuilder(50);
+        stringBuilder.Append($"sessionid={data.SessionCookie};");
+        if (data.LoginSecure is not null)
+            stringBuilder.Append($"steamLoginSecure={data.LoginSecure};");
 
+        if (await _legacySteamCommunityApi.DoLogin(postData, stringBuilder.ToString(), cancellationToken) is not { } loginResponse)
+        {
+            return new LoginAgainData(data.CaptchaGid is not null
+                ? LoginResult.TooManyFailedLogins
+                : LoginResult.BadCredentials);
+        }
+
+        data.LoginSecure = loginResponse.LoginSecure;
         data.SteamId = loginResponse.EmailSteamId;
 
         if (loginResponse.CaptchaNeeded)
         {
-            data.LoginResult = LoginResult.NeedCaptcha;
+            data.LoginResult =  LoginResult.NeedCaptcha;
             data.CaptchaGid = loginResponse.CaptchaGid?.Deserialize<string>();
 
             return data;
@@ -194,7 +202,7 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
         }
     }
 
-    private string EncryptPassword(string password, RsaResponse rsaResponse)
+    private static string EncryptPassword(string password, RsaResponse rsaResponse)
     {
         byte[] encryptedPasswordBytes;
         using (var rsaEncryptor = new RSACryptoServiceProvider())

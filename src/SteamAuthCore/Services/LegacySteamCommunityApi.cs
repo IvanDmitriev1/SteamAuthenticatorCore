@@ -57,6 +57,7 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
         using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.LoginGetRSAKey);
         message.Headers.Referrer = new Uri($"{ApiEndpoints.CommunityBase}/mobilelogin?{ApiEndpoints.LoginOauth}");
         message.Content = new FormUrlEncodedContent(postData);
+        message.Headers.Add("Cookie", _cookieStringForSessionId);
 
         using var responseMessage = await _client.SendAsync(message, cancellationToken: cancellationToken);
         if (!responseMessage.IsSuccessStatusCode)
@@ -65,13 +66,16 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
         return await responseMessage.Content.ReadFromJsonAsync<RsaResponse>(cancellationToken: cancellationToken);
     }
 
-    public async Task<DoLoginResult?> DoLogin(KeyValuePair<string, string>[] postData, CancellationToken cancellationToken)
+    public async Task<DoLoginResult?> DoLogin(KeyValuePair<string, string>[] postData, string cookieString, CancellationToken cancellationToken)
     {
+        string fullCookieString = _cookieStringForSessionId + cookieString;
+
         using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.DoLogin);
         message.Headers.Referrer = new Uri($"{ApiEndpoints.CommunityBase}/mobilelogin?{ApiEndpoints.LoginOauth}");
         message.Content = new FormUrlEncodedContent(postData);
+        message.Headers.Add("Cookie", fullCookieString);
 
-        using var responseMessage = await _client.SendAsync(message, cancellationToken);
+        using var responseMessage = await _client.SendAsync(message, HttpCompletionOption.ResponseContentRead, cancellationToken);
         if (!responseMessage.IsSuccessStatusCode)
             return null;
 

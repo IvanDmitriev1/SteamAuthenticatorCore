@@ -9,7 +9,6 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
 
         services.AddSingleton<IConfirmationService, ConfirmationService>();
-        services.AddSingleton<ILoginService, LoginService>();
 
         services.AddSingleton(BackgroundTimerFactory.Default);
     }
