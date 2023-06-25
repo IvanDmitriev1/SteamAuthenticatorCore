@@ -55,6 +55,7 @@
                             Margin="0,0,0,5"
                             Command="{Binding Source={x:Reference Page}, Path=DataContext.ClickCommand}"
                             CommandParameter="{Binding}"
+                            FontSize="18"
                             Header="{Binding Account.AccountName, Mode=OneTime}">
                             <TextBlock Text="{Binding Confirmations.Count, Mode=OneTime}" />
                         </ui:CardControl>

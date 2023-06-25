@@ -26,11 +26,11 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <ui:TextBox
+            <ui:TextBlock
                 Grid.Row="0"
                 Margin="1,0,0,15"
                 HorizontalAlignment="Center"
-                FontSize="18"
+                FontTypography="Subtitle"
                 Text="{Binding Path=Model.Account.AccountName}" />
 
             <ui:Card Grid.Row="1" VerticalAlignment="Top">
@@ -60,9 +60,15 @@
                                     Grid.Column="0"
                                     Margin="10,0,0,0"
                                     VerticalAlignment="Center">
-                                    <TextBlock FontSize="14" Text="{Binding Path=Summary[0], Mode=OneTime}" />
-                                    <TextBlock FontSize="14" Text="{Binding Path=Headline, Mode=OneTime}" />
-                                    <TextBlock FontSize="14" Text="{Binding Path=CreationTime, Mode=OneTime}" />
+                                    <ui:TextBlock
+                                        Margin="0,0,0,2"
+                                        FontTypography="BodyStrong"
+                                        Text="{Binding Path=Summary[0], Mode=OneTime}" />
+                                    <ui:TextBlock Text="{Binding Path=Headline, Mode=OneTime}" />
+                                    <ui:TextBlock
+                                        Margin="0,1,0,0"
+                                        FontTypography="Caption"
+                                        Text="{Binding Path=CreateDateTime, StringFormat='yyyy-MM-dd HH:mm:ss', Mode=OneTime}" />
                                 </StackPanel>
 
                                 <Image

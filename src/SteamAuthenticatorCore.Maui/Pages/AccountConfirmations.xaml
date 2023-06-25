@@ -37,9 +37,15 @@
                         <effectsView:SfEffectsView TouchUpCommand="{Binding Source={x:Reference Page}, Path=BindingContext.ElementTouchCommand}" TouchUpCommandParameter="{Binding Source={RelativeSource Mode=Self}}">
                             <StackLayout Margin="20,15" Orientation="Horizontal">
                                 <VerticalStackLayout HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand">
-                                    <Label Text="{Binding Path=Summary[0], Mode=OneTime}" />
-                                    <Label Text="{Binding Path=Headline, Mode=OneTime}" />
-                                    <Label Text="{Binding Path=CreationTime, Mode=OneTime}" />
+                                    <Label
+                                        Margin="0,0,0,2"
+                                        FontSize="18"
+                                        Text="{Binding Path=Summary[0], Mode=OneTime}" />
+                                    <Label
+                                        Margin="0,0,0,2"
+                                        FontSize="16"
+                                        Text="{Binding Path=Headline, Mode=OneTime}" />
+                                    <Label FontSize="14" Text="{Binding Path=CreateDateTime, Mode=OneTime}" />
                                 </VerticalStackLayout>
 
                                 <Image

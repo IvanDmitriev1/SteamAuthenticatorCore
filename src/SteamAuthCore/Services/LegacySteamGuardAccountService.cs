@@ -206,16 +206,14 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
 
     private static string EncryptPassword(string password, RsaResponse rsaResponse)
     {
-        byte[] encryptedPasswordBytes;
-        using (var rsaEncryptor = new RSACryptoServiceProvider())
-        {
-            var passwordBytes = Encoding.ASCII.GetBytes(password);
-            var rsaParameters = rsaEncryptor.ExportParameters(false);
-            rsaParameters.Exponent = Util.HexStringToByteArray(rsaResponse.Exponent);
-            rsaParameters.Modulus = Util.HexStringToByteArray(rsaResponse.Modulus);
-            rsaEncryptor.ImportParameters(rsaParameters);
-            encryptedPasswordBytes = rsaEncryptor.Encrypt(passwordBytes, false);
-        }
+        using var rsaEncryptor = new RSACryptoServiceProvider();
+
+        var passwordBytes = Encoding.ASCII.GetBytes(password);
+        var rsaParameters = rsaEncryptor.ExportParameters(false);
+        rsaParameters.Exponent = Util.HexStringToByteArray(rsaResponse.Exponent);
+        rsaParameters.Modulus = Util.HexStringToByteArray(rsaResponse.Modulus);
+        rsaEncryptor.ImportParameters(rsaParameters);
+        var encryptedPasswordBytes = rsaEncryptor.Encrypt(passwordBytes, false);
 
         return Convert.ToBase64String(encryptedPasswordBytes);
     }

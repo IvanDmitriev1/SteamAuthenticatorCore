@@ -38,5 +38,9 @@ public class Confirmation
 	[JsonPropertyName("warn")]
 	public required object Warn { get; set; }
 
+	[JsonIgnore]
 	public object? BitMapIcon { get; set; }
+
+	[JsonIgnore]
+	public DateTime CreateDateTime => DateTimeOffset.FromUnixTimeSeconds(CreationTime).LocalDateTime;
 }
