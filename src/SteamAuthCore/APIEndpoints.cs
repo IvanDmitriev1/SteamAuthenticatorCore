@@ -7,6 +7,8 @@ public static class ApiEndpoints
     public const string LoginSteampoweredBase = "https://login.steampowered.com";
     public const string LoginOauth = "oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client";
 
+    public const string MobileLoginRefer = $"{CommunityBase}/mobilelogin?{LoginOauth}";
+
     public const string MobileauthGetwgtoken = "/IMobileAuthService/GetWGToken/v0001";
     public const string TwoFactorTimeQuery = "/ITwoFactorService/QueryTime/v0001";
     public const string RemoveAuthenticator = "/ITwoFactorService/RemoveAuthenticator/v0001";

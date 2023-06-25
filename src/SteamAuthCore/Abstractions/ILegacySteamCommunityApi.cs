@@ -2,7 +2,7 @@
 
 internal interface ILegacySteamCommunityApi
 {
-    Task<string> GenerateSessionIdCookieForLogin(CancellationToken cancellationToken);
+    Task<string?> GenerateSessionIdCookieForLogin(CancellationToken cancellationToken);
     Task<RsaResponse?> LoginGetRsaKey(string userName, CancellationToken cancellationToken);
     Task<DoLoginResult?> DoLogin(KeyValuePair<string, string>[] postData, string cookieString, CancellationToken cancellationToken);
 

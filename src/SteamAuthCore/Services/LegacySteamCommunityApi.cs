@@ -26,21 +26,21 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
         return builder.ToString();
     }
 
-    public async Task<string> GenerateSessionIdCookieForLogin(CancellationToken cancellationToken)
+    public async Task<string?> GenerateSessionIdCookieForLogin(CancellationToken cancellationToken)
     {
-        string url = "login?" + ApiEndpoints.LoginOauth;
+        string url = "mobilelogin?" + ApiEndpoints.LoginOauth;
 
         using var message = new HttpRequestMessage(HttpMethod.Get, url);
-        message.Headers.Referrer = new Uri($"{ApiEndpoints.CommunityBase}/mobilelogin?{ApiEndpoints.LoginOauth}");
+        message.Headers.Referrer = new Uri(ApiEndpoints.MobileLoginRefer);
         message.Headers.Add("Cookie", _cookieStringForSessionId);
         message.Headers.Add("X-Requested-With", "com.valvesoftware.android.steam.community");
 
         using var responseMessage = await _client.SendAsync(message, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         if (!responseMessage.IsSuccessStatusCode)
-            return string.Empty;
+            return null;
 
         if (!responseMessage.Headers.TryGetValues("Set-Cookie", out var cookies)) 
-            return string.Empty;
+            return null;
 
         var sessionIdString = cookies.FirstOrDefault(s => s.Contains("sessionid"))!;
         return GetCookieValue(sessionIdString);
@@ -55,7 +55,7 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
         };
 
         using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.LoginGetRSAKey);
-        message.Headers.Referrer = new Uri($"{ApiEndpoints.CommunityBase}/mobilelogin?{ApiEndpoints.LoginOauth}");
+        message.Headers.Referrer = new Uri(ApiEndpoints.MobileLoginRefer);
         message.Content = new FormUrlEncodedContent(postData);
         message.Headers.Add("Cookie", _cookieStringForSessionId);
 
@@ -71,7 +71,7 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
         string fullCookieString = _cookieStringForSessionId + cookieString;
 
         using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.DoLogin);
-        message.Headers.Referrer = new Uri($"{ApiEndpoints.CommunityBase}/mobilelogin?{ApiEndpoints.LoginOauth}");
+        message.Headers.Referrer = new Uri(ApiEndpoints.MobileLoginRefer);
         message.Content = new FormUrlEncodedContent(postData);
         message.Headers.Add("Cookie", fullCookieString);
 

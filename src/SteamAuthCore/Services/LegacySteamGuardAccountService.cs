@@ -28,14 +28,16 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
             new("username", account.AccountName),
 
             new("twofactorcode", data.LoginResult == LoginResult.Need2Fa ? account.GenerateSteamGuardCode() : string.Empty),
-            new("emailsteamid", data.LoginResult is LoginResult.Need2Fa or LoginResult.NeedEmail ? data.SteamId.ToString() : string.Empty),
+            new("emailsteamid", string.Empty),
 
             new("emailauth", data.EmailCode ?? string.Empty),
             new("captchagid", data.CaptchaGid ?? "-1"),
-            new("captcha_text", data.CaptchaText ?? "-1"),
+            new("captcha_text", data.CaptchaText ?? string.Empty),
 
             new("rsatimestamp", rsaResponse.Timestamp),
             new("remember_login", "true"),
+            new("oauth_client_id", "DE45CD61"),
+            new("oauth_scope", "read_profile write_profile read_client write_client"),
         };
 
         StringBuilder stringBuilder = new StringBuilder(50);
