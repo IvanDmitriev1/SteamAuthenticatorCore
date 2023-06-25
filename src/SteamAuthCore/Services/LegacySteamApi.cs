@@ -5,9 +5,6 @@ internal sealed class LegacySteamApi : ILegacySteamApi
     public LegacySteamApi(HttpClient client)
     {
         _client = client;
-
-        _client.BaseAddress = new Uri(ApiEndpoints.SteamApiBase);
-        _client.AddDefaultHeaders();
     }
 
     private readonly HttpClient _client;

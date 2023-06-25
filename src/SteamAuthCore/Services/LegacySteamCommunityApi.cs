@@ -5,11 +5,6 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
     public LegacySteamCommunityApi(HttpClient client)
     {
         _client = client;
-
-        _client.BaseAddress = new Uri(ApiEndpoints.CommunityBase);
-        _client.AddDefaultHeaders();
-        _client.DefaultRequestHeaders.Referrer = new Uri(ApiEndpoints.CommunityBase);
-
         _cookieStringForSessionId = CreateCookieForSessionId();
     }
 
