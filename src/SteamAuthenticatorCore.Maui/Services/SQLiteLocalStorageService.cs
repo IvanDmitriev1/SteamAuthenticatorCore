@@ -77,10 +77,14 @@ internal class SqLiteLocalStorageService : IAccountsService
         if (dto is null)
             return;
 
+        var sessionNewDto = account.Session.MapToDto();
+        sessionNewDto.Id = dto.SessionId;
+
         var newDto = account.MapToDto(dto.SessionId);
         newDto.Id = dto.Id;
 
-        var result = await _connection.UpdateAsync(newDto);
+        var sessionResult = await _connection.UpdateAsync(sessionNewDto);
+        var accountResult = await _connection.UpdateAsync(newDto);
     }
 
     public async ValueTask Delete(SteamGuardAccount account)
