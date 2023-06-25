@@ -40,12 +40,12 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
             new("oauth_scope", "read_profile write_profile read_client write_client"),
         };
 
-        StringBuilder stringBuilder = new StringBuilder(50);
-        stringBuilder.Append($"sessionid={data.SessionCookie};");
-        if (data.LoginSecure is not null)
-            stringBuilder.Append($"steamLoginSecure={data.LoginSecure};");
+        string cookieString = new CookieStringBuilder(35)
+                              .AddCookie("sessionid", data.SessionCookie)
+                              .AddCookie("steamLoginSecure", data.LoginSecure)
+                              .ToString();
 
-        if (await _legacySteamCommunityApi.DoLogin(postData, stringBuilder.ToString(), cancellationToken) is not { } loginResponse)
+        if (await _legacySteamCommunityApi.DoLogin(postData, cookieString, cancellationToken) is not { } loginResponse)
         {
             return new LoginAgainData(data.CaptchaGid is not null
                 ? LoginResult.TooManyFailedLogins
@@ -84,7 +84,7 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
                 WebCookie = transferParameters.Webcookie,
                 SteamId = UInt64.Parse(transferParameters.Steamid),
                 SteamLoginSecure = loginResponse.LoginSecure,
-                SessionId = data.SessionCookie,
+                SessionId = data.SessionCookie ?? throw new ArgumentNullException(nameof(data.SessionCookie)),
             };
 
             return new LoginAgainData(LoginResult.LoginOkay);
@@ -95,11 +95,11 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
 
     public async Task<IReadOnlyList<Confirmation>> FetchConfirmations(SteamGuardAccount account, CancellationToken cancellationToken)
     {
-        var builder = new StringBuilder(140 + 5);
-        builder.Append(GenerateConfirmationQueryParams(account, "conf"));
+        var queryStringBuilder = new QueryBuilder();
+        GenerateConfirmationQueryParams(queryStringBuilder, account, "conf");
 
         var confirmationsListJson = await _legacySteamCommunityApi
-                                          .MobileConf(builder.ToString(), account.Session.CookieString, cancellationToken)
+                                          .MobileConf(queryStringBuilder.ToString(), account.Session.CookieString, cancellationToken)
                                           .ConfigureAwait(false);
 
         return confirmationsListJson.Conf ?? new List<Confirmation>();
@@ -109,48 +109,44 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
     {
         var strOption = options.ToString().ToLower();
 
-        var builder = new StringBuilder(210);
-        builder.Append($"?op={strOption}");
-        builder.Append('&');
-        builder.Append(GenerateConfirmationQueryParams(account, strOption));
-        builder.Append($"&cid={confirmation.Id}");
-        builder.Append($"&ck={confirmation.Nonce}");
+        var queryStringBuilder = new QueryBuilder()
+            .AddParameter("op", strOption);
 
-        return _legacySteamCommunityApi.SendSingleConfirmations(builder.ToString(), account.Session.CookieString, cancellationToken);
+        GenerateConfirmationQueryParams(queryStringBuilder, account, strOption);
+        queryStringBuilder.AddParameter("cid", confirmation.Id)
+                          .AddParameter("ck", confirmation.Nonce);
+
+        return _legacySteamCommunityApi.SendSingleConfirmations(queryStringBuilder.ToString(), account.Session.CookieString, cancellationToken);
     }
 
     public Task<bool> SendConfirmation(SteamGuardAccount account, IReadOnlyList<Confirmation> confirmations, ConfirmationOptions options, CancellationToken cancellationToken)
     {
         var strOption = options.ToString().ToLower();
-        var capacity = 140 + confirmations.Count * (20 + 11 + 7 + 6 + 3);
 
-        var builder = new StringBuilder(capacity);
-        builder.Append($"op={strOption}");
-        builder.Append('&');
-        builder.Append(GenerateConfirmationQueryParams(account, strOption));
+        var queryStringBuilder = new QueryBuilder()
+            .AddParameter("op", strOption);
+
+        GenerateConfirmationQueryParams(queryStringBuilder, account, strOption);
 
         foreach (var confirmation in confirmations)
         {
-            builder.Append($"&cid[]={confirmation.Id}");
-            builder.Append($"&ck[]={confirmation.Nonce}");
+            queryStringBuilder.AddParameter("cid[]", confirmation.Id);
+            queryStringBuilder.AddParameter("ck[]", confirmation.Nonce);
         }
 
-        return _legacySteamCommunityApi.SendMultipleConfirmations(builder.ToString(), account.Session.CookieString, cancellationToken);
+        return _legacySteamCommunityApi.SendMultipleConfirmations(queryStringBuilder.ToKeyValuePairs(), account.Session.CookieString, cancellationToken);
     }
 
-    private static string GenerateConfirmationQueryParams(SteamGuardAccount account, string tag)
+    private static void GenerateConfirmationQueryParams(QueryBuilder queryBuilder, SteamGuardAccount account, string tag)
     {
         var time = ITimeAligner.SteamTime;
 
-        var builder = new StringBuilder(140);
-        builder.Append($"p={account.DeviceId}");
-        builder.Append($"&a={account.Session.SteamId}");
-        builder.Append($"&k={GenerateConfirmationHashForTime(time, tag, account.IdentitySecret)}");
-        builder.Append($"&t={time}");
-        builder.Append("&m=android");
-        builder.Append($"&tag={tag}");
-
-        return builder.ToString();
+        queryBuilder.AddParameter("p", account.DeviceId)
+                          .AddParameter("a", account.Session.SteamId.ToString())
+                          .AddParameter("k", GenerateConfirmationHashForTime(time, tag, account.IdentitySecret))
+                          .AddParameter("t", time.ToString())
+                          .AddParameter("m", "android")
+                          .AddParameter("tag", tag);
     }
 
     private static string? GenerateConfirmationHashForTime(Int64 time, string tag, string identitySecret)

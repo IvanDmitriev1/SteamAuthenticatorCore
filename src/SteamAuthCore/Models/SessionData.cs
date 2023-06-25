@@ -2,8 +2,8 @@
 
 public class SessionData
 {
-    public required string? SessionId { get; init; }
-    public required string? SteamLoginSecure { get; init; }
+    public required string SessionId { get; init; }
+    public required string SteamLoginSecure { get; init; }
     public required UInt64 SteamId { get; init; }
 
     public string? AccessToken { get; init; }
@@ -14,17 +14,13 @@ public class SessionData
 
     private string? _cookieString;
 
-    private string GenerateCookie()
-    {
-        var builder = new StringBuilder(200);
-        builder.Append($"steamid={SteamId};");
-        builder.Append($"steamLoginSecure={SteamLoginSecure};");
-        builder.Append("Steam_Language=english;");
-        builder.Append("dob= ;");
-        builder.Append($"sessionid={SessionId};");
-
-        return builder.ToString();
-    }
+    private string GenerateCookie() => new CookieStringBuilder(200)
+                                       .AddCookie("steamid", SteamId.ToString())
+                                       .AddCookie("steamLoginSecure", SteamLoginSecure)
+                                       .AddCookie("Steam_Language", "english")
+                                       .AddCookie("dob", string.Empty)
+                                       .AddCookie("sessionid", SessionId)
+                                       .ToString();
 
     public CookieContainer GetCookieContainer()
     {

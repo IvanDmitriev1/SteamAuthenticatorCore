@@ -91,20 +91,23 @@ internal sealed class LegacySteamCommunityApi : ILegacySteamCommunityApi
         message.Headers.Add("Cookie", cookieString);
 
         using var responseMessage = await _client.SendAsync(message, cancellationToken);
+        if (responseMessage.StatusCode == HttpStatusCode.TooManyRequests)
+            throw new TooManyRequestsException();
+
         if (!responseMessage.IsSuccessStatusCode)
             throw new WgTokenExpiredException();
 
         if (await responseMessage.Content.ReadFromJsonAsync<GetListJson>(cancellationToken: cancellationToken) is not
-            { Success: true } response)
+                { } response || response is { Needauth: true, Success: false })
             throw new WgTokenExpiredException();
 
         return response;
     }
 
-    public async Task<bool> SendMultipleConfirmations(string query, string cookieString, CancellationToken cancellationToken)
+    public async Task<bool> SendMultipleConfirmations(IReadOnlyList<KeyValuePair<string, string>> postData, string cookieString, CancellationToken cancellationToken)
     {
         using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.MultipleConfirmations);
-        message.Content = new StringContent(query, Encoding.UTF8, "application/x-www-form-urlencoded");
+        message.Content = new FormUrlEncodedContent(postData);
         message.Headers.Add("Cookie", cookieString);
 
         using var responseMessage = await _client.SendAsync(message, cancellationToken);
