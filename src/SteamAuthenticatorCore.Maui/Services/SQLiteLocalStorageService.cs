@@ -71,8 +71,7 @@ internal class SqLiteLocalStorageService : IAccountsService
         if (!_isInitialized)
             await Initialize();
 
-        var dto = await _connection.Table<SteamGuardAccountDto>().FirstOrDefaultAsync(dto =>
-            dto.SharedSecret == account.SharedSecret && dto.IdentitySecret == account.IdentitySecret);
+        var dto = await _connection.Table<SteamGuardAccountDto>().FirstOrDefaultAsync(dto => dto == account);
 
         if (dto is null)
             return;
@@ -92,8 +91,7 @@ internal class SqLiteLocalStorageService : IAccountsService
         if (!_isInitialized)
             await Initialize();
 
-        var dto = await _connection.Table<SteamGuardAccountDto>().FirstOrDefaultAsync(dto =>
-            dto.SharedSecret == account.SharedSecret && dto.IdentitySecret == account.IdentitySecret);
+        var dto = await _connection.Table<SteamGuardAccountDto>().FirstOrDefaultAsync(dto => dto == account);
 
         if (dto is null)
             return;

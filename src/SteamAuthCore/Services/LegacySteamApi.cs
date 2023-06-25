@@ -21,21 +21,6 @@ internal sealed class LegacySteamApi : ILegacySteamApi
         return timeQuery.Response.ServerTime;
     }
 
-    public async ValueTask<RefreshSessionDataInternalResponse?> MobileAuthGetWgToken(string token, CancellationToken cancellationToken)
-    {
-        var pair = new KeyValuePair<string, string>("access_token", token);
-
-        using var message = new HttpRequestMessage(HttpMethod.Post, ApiEndpoints.MobileauthGetwgtoken);
-        message.Content = new FormUrlEncodedContent(new[] {pair});
-
-        using var responseMessage = await _client.SendAsync(message, cancellationToken);
-        if (!responseMessage.IsSuccessStatusCode)
-            return null;
-
-        var response = await responseMessage.Content.ReadFromJsonAsync<RefreshSessionDataResponse>(cancellationToken: cancellationToken);
-        return response!.Response;
-    }
-
     public Task<bool> RemoveAuthenticator(KeyValuePair<string, string>[] postData)
     {
         return Task.FromResult(false);

@@ -78,8 +78,9 @@ internal class LocalDriveAccountsService : IAccountsService
             _accounts.Add(account);
             return true;
         }
-        catch
+        catch (Exception e)
         {
+            Debug.WriteLine(e);
             return false;
         }
     }
@@ -128,7 +129,7 @@ internal class LocalDriveAccountsService : IAccountsService
             if (JsonSerializer.Deserialize<SteamGuardAccount>(fileStream) is not { } account)
                 continue;
 
-            if (account.Secret1 != accountToFind.Secret1 || account.AccountName != accountToFind.AccountName)
+            if (account != accountToFind)
                 continue;
 
             return filePath;
@@ -136,35 +137,4 @@ internal class LocalDriveAccountsService : IAccountsService
 
         return null;
     }
-
-    /*private async ValueTask<string?> FindAccountInDirectoryAsync(SteamGuardAccount accountToFind)
-    {
-        var cts = new CancellationTokenSource();
-        string? foundedFilePath = null;
-
-        try
-        {
-            await Parallel.ForEachAsync(Directory.GetFiles(_maFilesDirectory), cts.Token, async (filePath, token) =>
-            {
-                if (!filePath.Contains(IAccountsService.AccountFileExtension))
-                    return;
-
-                await using var fileStream = File.OpenRead(filePath);
-                if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(fileStream, cancellationToken: token) is not { } account)
-                    return;
-
-                if (account.Secret1 != accountToFind.Secret1 || account.AccountName != accountToFind.AccountName)
-                    return;
-
-                foundedFilePath = filePath;
-                cts.Cancel();
-            });
-        }
-        catch (OperationCanceledException)
-        {
-            
-        }
-
-        return foundedFilePath;
-    }*/
 }

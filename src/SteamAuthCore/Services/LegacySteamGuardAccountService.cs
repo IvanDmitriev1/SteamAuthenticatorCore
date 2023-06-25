@@ -95,14 +95,11 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
 
     public async Task<IReadOnlyList<Confirmation>> FetchConfirmations(SteamGuardAccount account, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(account.DeviceId))
-            throw new ArgumentException("Device ID is not present");
-
         var builder = new StringBuilder(140 + 5);
         builder.Append(GenerateConfirmationQueryParams(account, "conf"));
 
         var confirmationsListJson = await _legacySteamCommunityApi
-                                          .MobileConf(builder.ToString(), account.Session.GetCookieString(), cancellationToken)
+                                          .MobileConf(builder.ToString(), account.Session.CookieString, cancellationToken)
                                           .ConfigureAwait(false);
 
         return confirmationsListJson.Conf ?? new List<Confirmation>();
@@ -112,14 +109,14 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
     {
         var strOption = options.ToString().ToLower();
 
-        var builder = new StringBuilder(140 + 50);
+        var builder = new StringBuilder(210);
         builder.Append($"?op={strOption}");
         builder.Append('&');
         builder.Append(GenerateConfirmationQueryParams(account, strOption));
         builder.Append($"&cid={confirmation.Id}");
         builder.Append($"&ck={confirmation.Nonce}");
 
-        return _legacySteamCommunityApi.SendSingleConfirmations(builder.ToString(), account.Session.GetCookieString(), cancellationToken);
+        return _legacySteamCommunityApi.SendSingleConfirmations(builder.ToString(), account.Session.CookieString, cancellationToken);
     }
 
     public Task<bool> SendConfirmation(SteamGuardAccount account, IReadOnlyList<Confirmation> confirmations, ConfirmationOptions options, CancellationToken cancellationToken)
@@ -138,10 +135,10 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
             builder.Append($"&ck[]={confirmation.Nonce}");
         }
 
-        return _legacySteamCommunityApi.SendMultipleConfirmations(builder.ToString(), account.Session.GetCookieString(), cancellationToken);
+        return _legacySteamCommunityApi.SendMultipleConfirmations(builder.ToString(), account.Session.CookieString, cancellationToken);
     }
 
-    internal static string GenerateConfirmationQueryParams(SteamGuardAccount account, string tag)
+    private static string GenerateConfirmationQueryParams(SteamGuardAccount account, string tag)
     {
         var time = ITimeAligner.SteamTime;
 

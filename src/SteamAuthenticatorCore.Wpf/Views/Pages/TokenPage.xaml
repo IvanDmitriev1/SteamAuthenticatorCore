@@ -137,6 +137,7 @@
                     AllowDrop="True"
                     ItemsSource="{Binding FilteredAccounts}"
                     SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
+                    SelectionMode="Single"
                     VirtualizingPanel.IsContainerVirtualizable="True"
                     VirtualizingPanel.IsVirtualizing="True"
                     VirtualizingPanel.VirtualizationMode="Recycling">
