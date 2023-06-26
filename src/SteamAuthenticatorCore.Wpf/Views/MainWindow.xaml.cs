@@ -44,7 +44,11 @@ public partial class MainWindow
             if (await _updateService.CheckForUpdate() is not { } release)
                 return;
 
-            SnackbarService.Default.Show("Updater", $"A new version available: {release.Name}", ControlAppearance.Secondary, new SymbolIcon(SymbolRegular.PhoneUpdate20) { FontSize = 22});
+            SnackbarService.Default.Show("Updater", $"A new version available: {release.Name}",
+                ControlAppearance.Secondary, new SymbolIcon(SymbolRegular.PhoneUpdate20)
+                {
+                    FontSize = 22
+                }, TimeSpan.FromSeconds(10));
         }
         catch (Exception exception)
         {
