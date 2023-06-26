@@ -66,6 +66,9 @@ internal class LocalDriveAccountsService : IAccountsService
         if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(stream) is not { } account)
             return false;
 
+        if (FindAccountInDirectory(account) is not null)
+            return false;
+
         var newFileName = Path.ChangeExtension(Path.GetFileNameWithoutExtension(fileName), IAccountsService.AccountFileExtension);
         var newFilePath = Path.Combine(_maFilesDirectory, newFileName);
 

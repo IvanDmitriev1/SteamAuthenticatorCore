@@ -57,7 +57,7 @@ public sealed partial class App : Application
                 services.AddTransient<ConfirmationsOverviewViewModel>();
                 services.AddTransient<LoginViewModel>();
 
-                services.AddSingleton<AccountConfirmationsViewModel>();
+                services.AddTransient<AccountConfirmationsViewModel>();
                 
                 services.AddSingleton<IPlatformImplementations, DesktopImplementations>();
                 services.AddSingleton<LocalDriveAccountsService>();

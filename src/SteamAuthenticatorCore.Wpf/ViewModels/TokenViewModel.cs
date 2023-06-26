@@ -254,19 +254,21 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
             FilteredAccounts.Add(account);
     }
 
-    private async Task SaveAccountsFromFilesNames(string[] files)
+    private async Task SaveAccountsFromFilesNames(IEnumerable<string> files)
     {
-        foreach (var fileName in files)
+        foreach (var filePath in files)
         {
+            var fileName = Path.GetFileName(filePath);
+
             try
             {
-                await using var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                await using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
                 if (!await _accountsService.Save(stream, Path.GetFileName(fileName)))
-                    await ContentDialogService.Default.ShowAlertAsync("Error", $"Failed to deserialize - {fileName}", "Ok");
+                    await ContentDialogService.Default.ShowAlertAsync("Error", $"Failed to deserialize file or it was already added - {fileName}", "Ok");
             }
             catch (Exception e)
             {
-                await ContentDialogService.Default.ShowAlertAsync($"Exception while adding - {fileName} file", e.ToString(), "Ok");
+                await ContentDialogService.Default.ShowAlertAsync($"Exception while adding - {Path.GetFileName(fileName)} file", e.ToString(), "Ok");
             }
         }
 
