@@ -10,7 +10,7 @@
     <Version>0.9.8.1</Version>
     <LangVersion>latest</LangVersion>
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
-	<PublishSingleFile>true</PublishSingleFile>
+	  <PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
 
 	<ItemGroup>

@@ -87,21 +87,14 @@ internal class GoogleDriveAccountsService : IAccountsService
 
     public async ValueTask<bool> Save(Stream stream, string fileName)
     {
-        try
-        {
-            if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(stream) is not { } account)
-                return false;
-
-            stream.Seek(0, SeekOrigin.Begin);
-            await _api.UploadFile(fileName, stream).ConfigureAwait(false);
-
-            _accounts.Add(account);
-            return true;
-        }
-        catch
-        {
+        if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(stream) is not { } account)
             return false;
-        }
+
+        stream.Seek(0, SeekOrigin.Begin);
+        await _api.UploadFile(fileName, stream).ConfigureAwait(false);
+
+        _accounts.Add(account);
+        return true;
     }
 
     public async ValueTask Update(SteamGuardAccount account)

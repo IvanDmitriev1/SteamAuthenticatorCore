@@ -52,8 +52,8 @@
                 <ui:CardControl Header="{helpers:LocalizationMarkup SecondsBetweenCheckingForConfirmationsMessage, BindingMode=OneWay}">
                     <ui:NumberBox
                         MaxDecimalPlaces="0"
-                        Maximum="100"
-                        Minimum="15"
+                        Maximum="1000"
+                        Minimum="20"
                         Value="{Binding AppSettings.PeriodicCheckingInterval, Mode=TwoWay, Converter={StaticResource DoubleToIntConverter}}" />
                 </ui:CardControl>
             </StackPanel>

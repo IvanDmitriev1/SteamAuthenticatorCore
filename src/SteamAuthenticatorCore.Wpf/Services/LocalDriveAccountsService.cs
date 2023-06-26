@@ -63,26 +63,18 @@ internal class LocalDriveAccountsService : IAccountsService
 
     public async ValueTask<bool> Save(Stream stream, string fileName)
     {
-        try
-        {
-            if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(stream) is not { } account)
-                return false;
-
-            var newFileName = Path.ChangeExtension(Path.GetFileNameWithoutExtension(fileName), IAccountsService.AccountFileExtension);
-            var newFilePath = Path.Combine(_maFilesDirectory, newFileName);
-
-            stream.Seek(0, SeekOrigin.Begin);
-            await using var newFileStream = File.OpenWrite(newFilePath);
-            await stream.CopyToAsync(newFileStream);
-
-            _accounts.Add(account);
-            return true;
-        }
-        catch (Exception e)
-        {
-            Debug.WriteLine(e);
+        if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(stream) is not { } account)
             return false;
-        }
+
+        var newFileName = Path.ChangeExtension(Path.GetFileNameWithoutExtension(fileName), IAccountsService.AccountFileExtension);
+        var newFilePath = Path.Combine(_maFilesDirectory, newFileName);
+
+        stream.Seek(0, SeekOrigin.Begin);
+        await using var newFileStream = File.OpenWrite(newFilePath);
+        await stream.CopyToAsync(newFileStream);
+
+        _accounts.Add(account);
+        return true;
     }
 
     public async ValueTask Update(SteamGuardAccount account)

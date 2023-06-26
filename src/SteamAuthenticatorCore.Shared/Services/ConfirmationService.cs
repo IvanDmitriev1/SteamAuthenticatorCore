@@ -43,8 +43,9 @@ internal sealed class ConfirmationService : IConfirmationService, IAsyncDisposab
 
         foreach (var account in await _accountsService.GetAll())
         {
-            IReadOnlyList<Confirmation> confirmations;
+            await Task.Delay(TimeSpan.FromSeconds(1.5));
 
+            IReadOnlyList<Confirmation> confirmations;
             try
             {
                 confirmations = await _steamAccountService.FetchConfirmations(account, CancellationToken.None);
@@ -73,10 +74,12 @@ internal sealed class ConfirmationService : IConfirmationService, IAsyncDisposab
     {
         foreach (var account in await _accountsService.GetAll())
         {
-            var confirmations = await _steamAccountService.FetchConfirmations(account, cancellationToken);
-            var sortedConfirmations = confirmations.Where(model => model.Type == ConfirmationType.MarketSellTransaction).ToArray();
+            await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
 
-            if (sortedConfirmations.Length == 0)
+            var confirmations = await _steamAccountService.FetchConfirmations(account, cancellationToken);
+            var sortedConfirmations = confirmations.Where(model => model.Type == ConfirmationType.MarketSellTransaction).ToList();
+
+            if (sortedConfirmations.Count == 0)
                 continue;
 
             await _steamAccountService.SendConfirmation(account, sortedConfirmations, ConfirmationOptions.Allow, cancellationToken);

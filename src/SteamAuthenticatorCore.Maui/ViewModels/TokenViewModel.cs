@@ -88,8 +88,15 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
 
         foreach (var fileResult in files)
         {
-            await using var stream = await fileResult.OpenReadAsync().ConfigureAwait(false);
-            await _accountsService.Save(stream, fileResult.FileName).ConfigureAwait(false);
+            try
+            {
+                await using var stream = await fileResult.OpenReadAsync().ConfigureAwait(false);
+                await _accountsService.Save(stream, fileResult.FileName).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                //TODO
+            }
         }
 
         await RefreshAccounts().ConfigureAwait(false);

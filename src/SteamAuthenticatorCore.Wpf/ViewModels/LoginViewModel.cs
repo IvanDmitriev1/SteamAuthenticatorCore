@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Wpf.Ui.Controls;
 
 namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
@@ -68,6 +69,11 @@ public partial class LoginViewModel : MyObservableRecipient, IRecipient<UpdateAc
             return;
         case LoginResult.LoginOkay:
             await _accountsServiceResolver.Invoke().Update(_steamGuardAccount);
+            SnackbarService.Default.Show("Login", $"Login to {_steamGuardAccount.AccountName} successfully completed",
+                ControlAppearance.Primary, new SymbolIcon(SymbolRegular.Checkmark24)
+                {
+                    FontSize = 18
+                }, TimeSpan.FromSeconds(5));
             NavigationService.Default.GoBack();
             return;
         case LoginResult.NeedCaptcha:

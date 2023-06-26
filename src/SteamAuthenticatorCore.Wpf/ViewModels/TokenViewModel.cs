@@ -92,7 +92,7 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
     }
 
     [RelayCommand]
-    private async Task ImportAccounts()
+    private Task ImportAccounts()
     {
         OpenFileDialog fileDialog = new()
         {
@@ -102,9 +102,9 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
         };
 
         if (fileDialog.ShowDialog() == false)
-            return;
+            return Task.CompletedTask;
 
-        await SaveAccountsFromFilesNames(fileDialog.FileNames);
+        return SaveAccountsFromFilesNames(fileDialog.FileNames);
     }
 
     [RelayCommand]
@@ -210,15 +210,15 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
     }
 
     [RelayCommand]
-    private async Task ListBoxDragAndDrop(DragEventArgs eventArgs)
+    private Task ListBoxDragAndDrop(DragEventArgs eventArgs)
     {
         if (!eventArgs.Data.GetDataPresent(DataFormats.FileDrop))
-            return;
+            return Task.CompletedTask;
 
         if (eventArgs.Data.GetData(DataFormats.FileDrop) is not string[] files)
-            return;
+            return Task.CompletedTask;
 
-        await SaveAccountsFromFilesNames(files);
+        return SaveAccountsFromFilesNames(files);
     }
 
     #endregion
@@ -254,12 +254,20 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
             FilteredAccounts.Add(account);
     }
 
-    private async ValueTask SaveAccountsFromFilesNames(string[] files)
+    private async Task SaveAccountsFromFilesNames(string[] files)
     {
         foreach (var fileName in files)
         {
-            using var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            await _accountsService.Save(stream, Path.GetFileName(fileName));
+            try
+            {
+                await using var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                if (!await _accountsService.Save(stream, Path.GetFileName(fileName)))
+                    await ContentDialogService.Default.ShowAlertAsync("Error", $"Failed to deserialize - {fileName}", "Ok");
+            }
+            catch (Exception e)
+            {
+                await ContentDialogService.Default.ShowAlertAsync($"Exception while adding - {fileName} file", e.ToString(), "Ok");
+            }
         }
 
         await RefreshAccounts();
