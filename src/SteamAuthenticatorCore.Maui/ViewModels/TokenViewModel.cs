@@ -69,6 +69,7 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
     private async Task Import()
     {
         IEnumerable<FileResult> files;
+        if (Application.Current!.MainPage is null) return;
 
         try
         {
@@ -90,12 +91,19 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
         {
             try
             {
-                await using var stream = await fileResult.OpenReadAsync().ConfigureAwait(false);
-                await _accountsService.Save(stream, fileResult.FileName).ConfigureAwait(false);
+                await using var stream = await fileResult.OpenReadAsync();
+                await _accountsService.Save(stream, fileResult.FileName);
+
+                /*if (!await _accountsService.Save(stream, fileResult.FileName))
+                {
+                    await Application.Current?.MainPage?.DisplayAlert("Error",
+                        $"Failed to deserialize - {fileResult.FileName}", "Ok")!;
+                }*/
             }
             catch (Exception e)
             {
-                //TODO
+                /*await Application.Current.MainPage.DisplayAlert(
+                    $"Exception while adding - {fileResult.FileName} file", e.ToString(), "Ok");*/
             }
         }
 

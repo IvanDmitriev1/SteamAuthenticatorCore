@@ -64,7 +64,7 @@ public partial class LoginViewModel : MyObservableRecipient, IRecipient<UpdateAc
         switch (_loginAgainData.LoginResult)
         {
         case LoginResult.TooManyFailedLogins:
-            await ContentDialogService.Default.ShowAlertAsync("Login", "To many requests try again later", "Ok");
+            await ContentDialogService.Default.ShowAlertAsync("Login", "To many failed requests try again later", "Ok");
             NavigationService.Default.GoBack();
             return;
         case LoginResult.LoginOkay:
@@ -73,14 +73,15 @@ public partial class LoginViewModel : MyObservableRecipient, IRecipient<UpdateAc
                 ControlAppearance.Primary, new SymbolIcon(SymbolRegular.Checkmark24)
                 {
                     FontSize = 18
-                }, TimeSpan.FromSeconds(5));
+                }, TimeSpan.FromSeconds(4));
             NavigationService.Default.GoBack();
             return;
         case LoginResult.NeedCaptcha:
             CaptchaImageSource = new BitmapImage(new Uri($"https://steamcommunity.com/public/captcha.php?gid={_loginAgainData.CaptchaGid}"));
             IsCaptchaBoxVisible = true;
             break;
-        default: IsPasswordBoxEnabled = true;
+        default:
+            IsPasswordBoxEnabled = true;
             break;
         }
     }
