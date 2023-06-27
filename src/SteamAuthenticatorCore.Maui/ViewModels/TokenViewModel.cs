@@ -1,4 +1,6 @@
-﻿namespace SteamAuthenticatorCore.Maui.ViewModels;
+﻿using SteamAuthCore.Models;
+
+namespace SteamAuthenticatorCore.Maui.ViewModels;
 
 public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDisposable
 {
@@ -80,7 +82,7 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
                 {
                     { DevicePlatform.Android, new[] { "application/octet-stream", } },
                 })*/
-            }).ConfigureAwait(false) ?? Array.Empty<FileResult>();
+            }) ?? Array.Empty<FileResult>();
         }
         catch
         {
@@ -92,22 +94,21 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
             try
             {
                 await using var stream = await fileResult.OpenReadAsync();
-                await _accountsService.Save(stream, fileResult.FileName);
 
-                /*if (!await _accountsService.Save(stream, fileResult.FileName))
+                if (!await _accountsService.Save(stream, fileResult.FileName))
                 {
-                    await Application.Current?.MainPage?.DisplayAlert("Error",
-                        $"Failed to deserialize - {fileResult.FileName}", "Ok")!;
-                }*/
+                    await Application.Current.MainPage!.DisplayAlert("Error",
+                        $"Failed to deserialize file or it was already added - {fileResult.FileName}", "Ok");
+                }
             }
             catch (Exception e)
             {
-                /*await Application.Current.MainPage.DisplayAlert(
-                    $"Exception while adding - {fileResult.FileName} file", e.ToString(), "Ok");*/
+                await Application.Current.MainPage!.DisplayAlert(
+                    $"Exception while adding - {fileResult.FileName} file", e.ToString(), "Ok");
             }
         }
 
-        await RefreshAccounts().ConfigureAwait(false);
+        await RefreshAccounts();
     }
 
     [RelayCommand]

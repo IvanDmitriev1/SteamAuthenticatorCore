@@ -7,13 +7,15 @@ namespace SteamAuthenticatorCore.Desktop.ViewModels;
 
 public partial class LoginViewModel : MyObservableRecipient, IRecipient<UpdateAccountInLoginPageMessage>
 {
-    public LoginViewModel(ISteamGuardAccountService steamGuardAccountService, AccountsServiceResolver accountsServiceResolver)
+    public LoginViewModel(ISteamGuardAccountService steamGuardAccountService, AccountsServiceResolver accountsServiceResolver, ILogger<LoginViewModel> logger)
     {
         _steamGuardAccountService = steamGuardAccountService;
         _accountsServiceResolver = accountsServiceResolver;
+        _logger = logger;
     }
 
     private readonly AccountsServiceResolver _accountsServiceResolver;
+    private readonly ILogger<LoginViewModel> _logger;
     private readonly ISteamGuardAccountService _steamGuardAccountService;
     private SteamGuardAccount? _steamGuardAccount;
     private LoginAgainData _loginAgainData = new();
@@ -59,7 +61,16 @@ public partial class LoginViewModel : MyObservableRecipient, IRecipient<UpdateAc
 
         IsPasswordBoxEnabled = false;
         _loginAgainData.CaptchaText = CaptchaText;
-        _loginAgainData = await _steamGuardAccountService.LoginAgain(_steamGuardAccount, Password, _loginAgainData, CancellationToken.None);
+
+        try
+        {
+            _loginAgainData = await _steamGuardAccountService.LoginAgain(_steamGuardAccount, Password, _loginAgainData, CancellationToken.None);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error in OnLogin method");
+            _loginAgainData = new LoginAgainData();
+        }
 
         switch (_loginAgainData.LoginResult)
         {
