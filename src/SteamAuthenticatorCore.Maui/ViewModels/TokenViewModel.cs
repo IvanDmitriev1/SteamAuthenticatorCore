@@ -1,4 +1,6 @@
-﻿namespace SteamAuthenticatorCore.Maui.ViewModels;
+﻿using SteamAuthCore.Models;
+
+namespace SteamAuthenticatorCore.Maui.ViewModels;
 
 public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDisposable
 {
@@ -69,6 +71,7 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
     private async Task Import()
     {
         IEnumerable<FileResult> files;
+        if (Application.Current!.MainPage is null) return;
 
         try
         {
@@ -79,7 +82,7 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
                 {
                     { DevicePlatform.Android, new[] { "application/octet-stream", } },
                 })*/
-            }).ConfigureAwait(false) ?? Array.Empty<FileResult>();
+            }) ?? Array.Empty<FileResult>();
         }
         catch
         {
@@ -88,11 +91,24 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
 
         foreach (var fileResult in files)
         {
-            await using var stream = await fileResult.OpenReadAsync().ConfigureAwait(false);
-            await _accountsService.Save(stream, fileResult.FileName).ConfigureAwait(false);
+            try
+            {
+                await using var stream = await fileResult.OpenReadAsync();
+
+                if (!await _accountsService.Save(stream, fileResult.FileName))
+                {
+                    await Application.Current.MainPage!.DisplayAlert("Error",
+                        $"Failed to deserialize file or it was already added - {fileResult.FileName}", "Ok");
+                }
+            }
+            catch (Exception e)
+            {
+                await Application.Current.MainPage!.DisplayAlert(
+                    $"Exception while adding - {fileResult.FileName} file", e.ToString(), "Ok");
+            }
         }
 
-        await RefreshAccounts().ConfigureAwait(false);
+        await RefreshAccounts();
     }
 
     [RelayCommand]
@@ -103,20 +119,6 @@ public sealed partial class TokenViewModel : MyObservableRecipient, IAsyncDispos
         await Shell.Current.GoToAsync($"{nameof(LoginPage)}");
 
         Messenger.Send(new UpdateAccountInLoginPageMessage(account));
-    }
-
-    [RelayCommand]
-    private async Task ForceRefreshSession()
-    {
-        var account = (SteamGuardAccount) _longPressView!.BindingContext;
-
-        if (!await _steamGuardAccountService.RefreshSession(account, CancellationToken.None))
-        {
-            await Application.Current!.MainPage!.DisplayAlert(_appSettings.LocalizationProvider[LocalizationMessage.RefreshSessionMessage], _appSettings.LocalizationProvider[LocalizationMessage.FailedToRefreshSessionMessage], "Ok");
-            return;
-        }
-
-        await Application.Current!.MainPage!.DisplayAlert(_appSettings.LocalizationProvider[LocalizationMessage.RefreshSessionMessage], _appSettings.LocalizationProvider[LocalizationMessage.SessionHasBeenRefreshedMessage], "Ok");
     }
 
     [RelayCommand]

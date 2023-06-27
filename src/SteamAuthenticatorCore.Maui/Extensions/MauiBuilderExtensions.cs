@@ -6,7 +6,7 @@ internal static class MauiBuilderExtensions
     {
         var services = builder.Services;
 
-        services.AddSteamAuthCoreServices(true);
+        services.AddSteamAuthCoreServices();
         services.AddSharedServices();
 
         services.AddViewModels();

@@ -16,11 +16,18 @@ public sealed class UpdateService : IUpdateService
 
     public async Task<Release?> CheckForUpdate()
     {
-        var release = await _githubClient.Repository.Release.GetLatest("IvanDmitriev1", "SteamAuthenticatorCore");
+        try
+        {
+            var release = await _githubClient.Repository.Release.GetLatest("IvanDmitriev1", "SteamAuthenticatorCore");
 
-        var version = release.TagName.TrimStart('v');
-        var newVersion = new Version(version);
+            var version = release.TagName.TrimStart('v');
+            var newVersion = new Version(version);
 
-        return newVersion.CompareTo(_currentVersion) > 0 ? release : null;
+            return newVersion.CompareTo(_currentVersion) > 0 ? release : null;
+        }
+        catch (NotFoundException)
+        {
+            return null;
+        }
     }
 }

@@ -18,7 +18,7 @@
                 VerticalTextAlignment="Center" />
 
             <Grid
-                Padding="0,10,10,10"
+                Padding="0,0,10,0"
                 ColumnDefinitions="Auto, *"
                 IsVisible="{TemplateBinding Path=IsContentVisible}">
                 <Button

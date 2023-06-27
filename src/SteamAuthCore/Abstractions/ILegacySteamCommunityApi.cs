@@ -2,9 +2,11 @@
 
 internal interface ILegacySteamCommunityApi
 {
-    ValueTask<string> MobileConf(string query, string cookieString, CancellationToken cancellationToken);
-    ValueTask<SendConfirmationResponse> SendMultipleConfirmations(string query, string cookieString, CancellationToken cancellationToken);
-    ValueTask<string> Login(string cookieString);
-    ValueTask<RsaResponse?> GetRsaKey(KeyValuePair<string, string>[] content, string cookieString);
-    ValueTask<LoginResponse?> DoLogin(KeyValuePair<string, string>[] content, string cookieString);
+    Task<string?> GenerateSessionIdCookieForLogin(CancellationToken cancellationToken);
+    Task<RsaResponse?> LoginGetRsaKey(string userName, CancellationToken cancellationToken);
+    Task<DoLoginResult?> DoLogin(KeyValuePair<string, string>[] postData, string cookieString, CancellationToken cancellationToken);
+
+    Task<GetListJson> MobileConf(string query, string cookieString, CancellationToken cancellationToken);
+    Task<bool> SendMultipleConfirmations(IReadOnlyList<KeyValuePair<string, string>> postData, string cookieString, CancellationToken cancellationToken);
+    Task<bool> SendSingleConfirmations(string query, string cookieString, CancellationToken cancellationToken);
 }

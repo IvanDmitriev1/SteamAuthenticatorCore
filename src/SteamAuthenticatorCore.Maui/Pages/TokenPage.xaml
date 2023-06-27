@@ -25,12 +25,6 @@
                 <Button
                     Padding="15,0"
                     BackgroundColor="{DynamicResource SecondaryContainer}"
-                    Command="{Binding ForceRefreshSessionCommand}"
-                    Text="{extensions:LocalizationMarkup LocalizationMessage=ForceRefreshSessionMessage}"
-                    TextColor="{DynamicResource OnSecondaryContainer}" />
-                <Button
-                    Padding="15,0"
-                    BackgroundColor="{DynamicResource SecondaryContainer}"
                     Command="{Binding DeleteCommand}"
                     Text="{extensions:LocalizationMarkup LocalizationMessage=DeleteMessage}"
                     TextColor="{DynamicResource OnSecondaryContainer}" />

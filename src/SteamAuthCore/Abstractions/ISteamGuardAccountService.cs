@@ -2,10 +2,8 @@
 
 public interface ISteamGuardAccountService
 {
-    ValueTask<bool> RefreshSession(SteamGuardAccount account, CancellationToken cancellationToken);
-    ValueTask<IEnumerable<ConfirmationModel>> FetchConfirmations(SteamGuardAccount account, CancellationToken cancellationToken);
-    ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel confirmation, ConfirmationOptions options, CancellationToken cancellationToken);
-    ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel[] confirmations, ConfirmationOptions options, CancellationToken cancellationToken);
-    Task<LoginResult> Login(LoginData loginData);
-    Task<bool> RemoveAuthenticator(SteamGuardAccount account);
+    Task<LoginAgainData> LoginAgain(SteamGuardAccount account, string password, LoginAgainData loginAgainData, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Confirmation>> FetchConfirmations(SteamGuardAccount account, CancellationToken cancellationToken);
+    Task<bool> SendConfirmation(SteamGuardAccount account, Confirmation confirmation, ConfirmationOptions options, CancellationToken cancellationToken);
+    Task<bool> SendConfirmation(SteamGuardAccount account, IReadOnlyList<Confirmation> confirmations, ConfirmationOptions options, CancellationToken cancellationToken);
 }

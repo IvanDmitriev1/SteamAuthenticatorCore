@@ -19,14 +19,14 @@ public abstract partial class BaseAccountConfirmationsViewModel : MyObservableRe
         Model = message.Value;
     }
 
-    protected async ValueTask SendConfirmations(IEnumerable<ConfirmationModel> confirmations, ConfirmationOptions command)
+    protected async ValueTask SendConfirmations(IEnumerable<Confirmation> confirmations, ConfirmationOptions command)
     {
-        var confirms = confirmations as ConfirmationModel[] ?? confirmations.ToArray();
+        IReadOnlyList<Confirmation> confirms = confirmations as List<Confirmation> ?? confirmations.ToList();
 
-        if (confirms.Length == 0)
+        if (confirms.Count == 0)
             return;
-
-        if (confirms.Length == 1)
+        /*
+         if (confirms.Length == 1)
         {
             if (await _accountService.SendConfirmation(Model!.Account, confirms[0], command, CancellationToken.None))
             {
@@ -38,6 +38,7 @@ public abstract partial class BaseAccountConfirmationsViewModel : MyObservableRe
 
             return;
         }
+         */
 
         if (!await _accountService.SendConfirmation(Model!.Account, confirms, command, CancellationToken.None))
             return;

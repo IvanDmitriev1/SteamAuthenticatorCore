@@ -6,7 +6,7 @@ public abstract partial class AppSettings : AutoSettings
     {
         AccountsLocation = AccountsLocation.LocalDrive;
         FirstRun = true;
-        PeriodicCheckingInterval = 15;
+        PeriodicCheckingInterval = 20;
         AutoConfirmMarketTransactions = false;
 
         LocalizationProvider = new XmlLocalizationProvider(AvailableLanguage.English);

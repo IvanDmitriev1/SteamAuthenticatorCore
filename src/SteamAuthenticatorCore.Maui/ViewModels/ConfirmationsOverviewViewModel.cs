@@ -22,6 +22,13 @@ public sealed partial class ConfirmationsOverviewViewModel : MyObservableRecipie
         Confirmations = Array.Empty<SteamGuardAccountConfirmationsModel>();
     }
 
+    protected override void OnActivated()
+    {
+        base.OnActivated();
+
+        Confirmations = Array.Empty<SteamGuardAccountConfirmationsModel>();
+    }
+
     [RelayCommand]
     private async Task Refresh()
     {

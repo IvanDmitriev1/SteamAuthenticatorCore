@@ -47,23 +47,22 @@ internal class SqLiteLocalStorageService : IAccountsService
         if (!_isInitialized)
             await Initialize();
 
-        try
-        {
-            if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(stream).ConfigureAwait(false) is not { } account)
-                return false;
-
-            var sessionId = await _connection.InsertAsync(account.Session.MapToDto()).ConfigureAwait(false);
-            var accountDto = account.MapToDto(sessionId);
-
-            await _connection.InsertAsync(accountDto).ConfigureAwait(false);
-            _accounts.Add(account);
-
-            return true;
-        }
-        catch
-        {
+        if (await JsonSerializer.DeserializeAsync<SteamGuardAccount>(stream).ConfigureAwait(false) is not { } account)
             return false;
-        }
+
+        if (await _connection.Table<SteamGuardAccountDto>().FirstOrDefaultAsync(dto =>
+                dto.SerialNumber == account.SerialNumber && dto.RevocationCode == account.RevocationCode &&
+                dto.AccountName == account.AccountName && dto.IdentitySecret == account.IdentitySecret &&
+                dto.Secret1 == account.Secret1) is not null)
+            return false;
+
+        var sessionId = await _connection.InsertAsync(account.Session.MapToDto()).ConfigureAwait(false);
+        var accountDto = account.MapToDto(sessionId);
+
+        await _connection.InsertAsync(accountDto).ConfigureAwait(false);
+        _accounts.Add(account);
+
+        return true;
     }
 
     public async ValueTask Update(SteamGuardAccount account)
@@ -71,16 +70,20 @@ internal class SqLiteLocalStorageService : IAccountsService
         if (!_isInitialized)
             await Initialize();
 
-        var dto = await _connection.Table<SteamGuardAccountDto>().FirstOrDefaultAsync(dto =>
-            dto.SharedSecret == account.SharedSecret && dto.IdentitySecret == account.IdentitySecret);
-
-        if (dto is null)
+        if (await _connection.Table<SteamGuardAccountDto>().FirstOrDefaultAsync(dto =>
+                dto.SerialNumber == account.SerialNumber && dto.RevocationCode == account.RevocationCode &&
+                dto.AccountName == account.AccountName && dto.IdentitySecret == account.IdentitySecret &&
+                dto.Secret1 == account.Secret1) is not { } dtoObj)
             return;
 
-        var newDto = account.MapToDto(dto.SessionId);
-        newDto.Id = dto.Id;
+        var sessionNewDto = account.Session.MapToDto();
+        sessionNewDto.Id = dtoObj.SessionId;
 
-        var result = await _connection.UpdateAsync(newDto);
+        var newDto = account.MapToDto(dtoObj.SessionId);
+        newDto.Id = dtoObj.Id;
+
+        var sessionResult = await _connection.UpdateAsync(sessionNewDto);
+        var accountResult = await _connection.UpdateAsync(newDto);
     }
 
     public async ValueTask Delete(SteamGuardAccount account)
@@ -88,13 +91,13 @@ internal class SqLiteLocalStorageService : IAccountsService
         if (!_isInitialized)
             await Initialize();
 
-        var dto = await _connection.Table<SteamGuardAccountDto>().FirstOrDefaultAsync(dto =>
-            dto.SharedSecret == account.SharedSecret && dto.IdentitySecret == account.IdentitySecret);
-
-        if (dto is null)
+        if (await _connection.Table<SteamGuardAccountDto>().FirstOrDefaultAsync(dto =>
+                dto.SerialNumber == account.SerialNumber && dto.RevocationCode == account.RevocationCode &&
+                dto.AccountName == account.AccountName && dto.IdentitySecret == account.IdentitySecret &&
+                dto.Secret1 == account.Secret1) is not { } dtoObj)
             return;
 
-        var result = await _connection.DeleteAsync<SteamGuardAccountDto>(dto.Id);
+        var result = await _connection.DeleteAsync<SteamGuardAccountDto>(dtoObj.Id);
         _accounts.Remove(account);
     }
 }

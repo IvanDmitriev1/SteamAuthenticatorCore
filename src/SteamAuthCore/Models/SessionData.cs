@@ -2,35 +2,25 @@
 
 public class SessionData
 {
-    public SessionData(string sessionId, string steamLogin, string steamLoginSecure, string webCookie, string oAuthToken, ulong steamId)
-    {
-        SessionId = sessionId;
-        SteamLogin = steamLogin;
-        SteamLoginSecure = steamLoginSecure;
-        WebCookie = webCookie;
-        OAuthToken = oAuthToken;
-        SteamId = steamId;
-    }
+    public required string SessionId { get; init; }
+    public required string SteamLoginSecure { get; init; }
+    public required UInt64 SteamId { get; init; }
 
-    public string SessionId { get; }
-    public string SteamLogin { get; set; }
-    public string SteamLoginSecure { get; set; }
-    public string WebCookie { get; }
-    public string OAuthToken { get; }
-    public ulong SteamId { get; }
+    public string? AccessToken { get; init; }
+    public string? WebCookie { get; init; }
 
-    public string GetCookieString()
-    {
-        var builder = new StringBuilder(6);
-        builder.Append($"steamid={SteamId};");
-        builder.Append($"steamLogin={SteamLogin};");
-        builder.Append($"steamLoginSecure={SteamLoginSecure};");
-        builder.Append("Steam_Language=english;");
-        builder.Append("dob= ;");
-        builder.Append($"sessionid={SessionId};");
+    [JsonIgnore]
+    public string CookieString => _cookieString ??= GenerateCookie();
 
-        return builder.ToString();
-    }
+    private string? _cookieString;
+
+    private string GenerateCookie() => new CookieStringBuilder(200)
+                                       .AddCookie("steamid", SteamId.ToString())
+                                       .AddCookie("steamLoginSecure", SteamLoginSecure)
+                                       .AddCookie("Steam_Language", "english")
+                                       .AddCookie("dob", string.Empty)
+                                       .AddCookie("sessionid", SessionId)
+                                       .ToString();
 
     public CookieContainer GetCookieContainer()
     {
@@ -40,10 +30,6 @@ public class SessionData
         cookies.Add(new Cookie("mobileClient", "android", "/", ".steamcommunity.com"));
 
         cookies.Add(new Cookie("steamid", SteamId.ToString(), "/", ".steamcommunity.com"));
-        cookies.Add(new Cookie("steamLogin", SteamLogin, "/", ".steamcommunity.com")
-        {
-            HttpOnly = true
-        });
 
         cookies.Add(new Cookie("steamLoginSecure", SteamLoginSecure, "/", ".steamcommunity.com")
         {

@@ -2,18 +2,19 @@
 
 internal class RsaResponse
 {
-    [JsonPropertyName("success")]
-    public bool Success { get; set; }
+	[JsonPropertyName("success")]
+	public bool Success { get; set; }
 
-    [JsonPropertyName("publickey_exp")]
-    public string Exponent { get; set; } = null!;
+	[JsonPropertyName("publickey_exp")]
+	public required string Exponent { get; set; }
 
-    [JsonPropertyName("publickey_mod")]
-    public string Modulus { get; set; } = null!;
+	[JsonPropertyName("publickey_mod")]
+	public required string Modulus { get; set; }
 
-    [JsonPropertyName("timestamp")]
-    public string Timestamp { get; set; } = null!;
+	[JsonPropertyName("timestamp")]
+	public required string Timestamp { get; set; }
 
-    [JsonPropertyName("steamid")]
-    public ulong SteamId { get; set; }
+	[JsonPropertyName("steamid")]
+	public ulong SteamId { get; set; }
+
 }

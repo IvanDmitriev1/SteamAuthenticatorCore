@@ -1,7 +1,4 @@
-﻿using AngleSharp.Dom;
-using AngleSharp.Html.Dom;
-using AngleSharp.Html.Parser;
-
+﻿
 namespace SteamAuthCore.Services;
 
 internal class LegacySteamGuardAccountService : ISteamGuardAccountService
@@ -14,274 +11,142 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
 
     private readonly ILegacySteamApi _legacySteamApi;
     private readonly ILegacySteamCommunityApi _legacySteamCommunityApi;
-    internal static readonly HtmlParser Parser = new();
 
-    public async ValueTask<bool> RefreshSession(SteamGuardAccount account, CancellationToken cancellationToken)
+    public async Task<LoginAgainData> LoginAgain(SteamGuardAccount account, string password, LoginAgainData data, CancellationToken cancellationToken)
     {
-        if (await _legacySteamApi.MobileAuthGetWgToken(account.Session.OAuthToken, cancellationToken) is not { } refreshResponse)
-            return false;
+        data.SessionCookie ??= await _legacySteamCommunityApi.GenerateSessionIdCookieForLogin(cancellationToken);
 
-        var token = account.Session.SteamId + "%7C%7C" + refreshResponse.Token;
-        var tokenSecure = account.Session.SteamId + "%7C%7C" + refreshResponse.TokenSecure;
+        if (await _legacySteamCommunityApi.LoginGetRsaKey(account.AccountName, cancellationToken) is not { Success: true } rsaResponse)
+            return new LoginAgainData(LoginResult.BadRsa);
 
-        account.Session.SteamLogin = token;
-        account.Session.SteamLoginSecure = tokenSecure;
-        return true;
-    }
-
-    public async ValueTask<IEnumerable<ConfirmationModel>> FetchConfirmations(SteamGuardAccount account, CancellationToken cancellationToken)
-    {
-        if (string.IsNullOrEmpty(account.DeviceId))
-            throw new ArgumentException("Device ID is not present");
-
-        if (await SendFetchConfirmationsRequest(account, cancellationToken) is not { } html)
-            return Enumerable.Empty<ConfirmationModel>();
-
-        using var document = await Parser.ParseDocumentAsync(html, cancellationToken);
-        return document.GetElementsByClassName("mobileconf_list_entry").Select(GetConfirmationModelFromHtml);
-    }
-
-    public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel confirmation, ConfirmationOptions options, CancellationToken cancellationToken)
-    {
-        var strOption = options.ToString().ToLower();
-
-        var builder = new StringBuilder(140 + 50);
-        builder.Append("ajaxop");
-        builder.Append($"?op={strOption}");
-        builder.Append('&');
-        builder.Append(GenerateConfirmationQueryParams(account, strOption));
-        builder.Append($"&cid={confirmation.Id}");
-        builder.Append($"&ck={confirmation.Key}");
-
-        var response = await _legacySteamCommunityApi.MobileConf(builder.ToString(), account.Session.GetCookieString(), cancellationToken);
-        var confirmationDetailsResponse = JsonSerializer.Deserialize<ConfirmationDetailsResponse>(response);
-
-        return confirmationDetailsResponse?.Success == true;
-    }
-
-    public async ValueTask<bool> SendConfirmation(SteamGuardAccount account, ConfirmationModel[] confirmations, ConfirmationOptions options, CancellationToken cancellationToken)
-    {
-        var strOption = options.ToString().ToLower();
-        var capacity = 140 + confirmations.Length * (20 + 11 + 7 + 6 + 3);
-
-        var builder = new StringBuilder(capacity);
-        builder.Append($"op={strOption}");
-        builder.Append('&');
-        builder.Append(GenerateConfirmationQueryParams(account, strOption));
-
-        foreach (var confirmation in confirmations)
+        string encryptedPassword = EncryptPassword(password, rsaResponse);
+        KeyValuePair<string, string>[] postData =
         {
-            builder.Append($"&cid[]={confirmation.Id}");
-            builder.Append($"&ck[]={confirmation.Key}");
+            new("donotcache", $"{ITimeAligner.SteamTime * 1000}"),
+
+            new("password", encryptedPassword),
+            new("username", account.AccountName),
+
+            new("twofactorcode", data.LoginResult == LoginResult.Need2Fa ? account.GenerateSteamGuardCode() : string.Empty),
+            new("emailsteamid", string.Empty),
+
+            new("emailauth", data.EmailCode ?? string.Empty),
+            new("captchagid", data.CaptchaGid ?? "-1"),
+            new("captcha_text", data.CaptchaText ?? string.Empty),
+
+            new("rsatimestamp", rsaResponse.Timestamp),
+            new("remember_login", "true"),
+            new("oauth_client_id", "DE45CD61"),
+            new("oauth_scope", "read_profile write_profile read_client write_client"),
+        };
+
+        string cookieString = new CookieStringBuilder(35)
+                              .AddCookie("sessionid", data.SessionCookie)
+                              .AddCookie("steamLoginSecure", data.LoginSecure)
+                              .ToString();
+
+        if (await _legacySteamCommunityApi.DoLogin(postData, cookieString, cancellationToken) is not { } loginResponse)
+        {
+            return new LoginAgainData(data.CaptchaGid is not null
+                ? LoginResult.TooManyFailedLogins
+                : LoginResult.BadCredentials);
         }
 
-        var response = await _legacySteamCommunityApi.SendMultipleConfirmations(builder.ToString(), account.Session.GetCookieString(), cancellationToken);
-        return response.Success;
-    }
-
-    public async Task<LoginResult> Login(LoginData loginData)
-    {
-        if (string.IsNullOrEmpty(loginData.SessionId))
-        {
-            loginData.SessionId = await _legacySteamCommunityApi.Login(LoginData.DefaultCookies);
-
-            var cookieBuilder = new StringBuilder();
-            cookieBuilder.Append($"sessionid={loginData.SessionId};");
-            cookieBuilder.Append(LoginData.DefaultCookies);
-
-            loginData.CookieString = cookieBuilder.ToString();
-        }
-
-        var getRsaKeyContent = new KeyValuePair<string, string>[2];
-        getRsaKeyContent[0] = new KeyValuePair<string, string>("donotcache", $"{ITimeAligner.SteamTime * 1000}");
-        getRsaKeyContent[1] = new KeyValuePair<string, string>("username", loginData.Username);
-
-        
-        if (await _legacySteamCommunityApi.GetRsaKey(getRsaKeyContent, loginData.CookieString) is not { } rsaResponse)
-        {
-            loginData.Result = LoginResult.GeneralFailure;
-            return loginData.Result;
-        }
-
-        if (!rsaResponse.Success)
-        {
-            loginData.Result = LoginResult.BadRsa;
-            return loginData.Result;
-        }
-
-        string encryptedPassword;
-        using (var rsaEncryptor = new RSACryptoServiceProvider())
-        {
-            var passwordBytes = Encoding.ASCII.GetBytes(loginData.Password);
-            var rsaParameters = rsaEncryptor.ExportParameters(false);
-            rsaParameters.Exponent = Util.HexStringToByteArray(rsaResponse.Exponent);
-            rsaParameters.Modulus = Util.HexStringToByteArray(rsaResponse.Modulus);
-            rsaEncryptor.ImportParameters(rsaParameters);
-
-            encryptedPassword = Convert.ToBase64String(rsaEncryptor.Encrypt(passwordBytes, false));
-        }
-
-        var doLoginPostData = new KeyValuePair<string, string>[13];
-        doLoginPostData[0] = new KeyValuePair<string, string>("donotcache", $"{ITimeAligner.SteamTime * 1000}");
-
-        doLoginPostData[1] = new KeyValuePair<string, string>("password", encryptedPassword);
-        doLoginPostData[2] = new KeyValuePair<string, string>("username", loginData.Username);
-        doLoginPostData[3] = new KeyValuePair<string, string>("twofactorcode", loginData.TwoFactorCode);
-
-        doLoginPostData[4] = new KeyValuePair<string, string>("emailauth", string.Empty);
-        doLoginPostData[5] = new KeyValuePair<string, string>("loginfriendlyname", string.Empty);
-        doLoginPostData[6] = new KeyValuePair<string, string>("captchagid", loginData.CaptchaGid ?? "-1");
-        doLoginPostData[7] = new KeyValuePair<string, string>("captcha_text", loginData.CaptchaGid is null ? string.Empty : loginData.CaptchaText);
-        doLoginPostData[8] = new KeyValuePair<string, string>("emailsteamid", loginData.Result == LoginResult.Need2Fa ? loginData.SteamId.ToString() : string.Empty);
-
-        doLoginPostData[9] = new KeyValuePair<string, string>("rsatimestamp", rsaResponse.Timestamp);
-        doLoginPostData[10] = new KeyValuePair<string, string>("remember_login", "true");
-        doLoginPostData[11] = new KeyValuePair<string, string>("oauth_client_id", "DE45CD61");
-        doLoginPostData[12] = new KeyValuePair<string, string>("oauth_scope", "read_profile write_profile read_client write_client");
-
-        if (await _legacySteamCommunityApi.DoLogin(doLoginPostData, loginData.CookieString) is not { } loginResponse)
-        {
-            loginData.Result = LoginResult.GeneralFailure;
-            return loginData.Result;   
-        }
-
-        if (loginResponse.LoginComplete)
-        {
-            var oAuthData = loginResponse.OAuthData!;
-
-            loginData.SessionData = new SessionData(loginData.SessionId,
-                oAuthData.SteamId + "%7C%7C" + oAuthData.SteamLogin,
-                oAuthData.SteamId + "%7C%7C" + oAuthData.SteamLogin,
-                oAuthData.Webcookie,
-                oAuthData.OAuthToken!, loginData.SteamId);
-
-            loginData.Result = LoginResult.LoginOkay;
-            return loginData.Result;
-        }
-
-        if (loginResponse.Message is null)
-        {
-            loginData.Result = LoginResult.GeneralFailure;
-            return loginData.Result;
-        }
-
-        if (loginResponse.Message.Contains("There have been too many login failures"))
-        {
-            loginData.Result = LoginResult.TooManyFailedLogins;
-            return loginData.Result;
-        }
-
-        if (loginResponse.Message.Contains("Incorrect login"))
-        {
-            loginData.Result = LoginResult.BadCredentials;
-            return loginData.Result;
-        }
+        data.LoginSecure = loginResponse.LoginSecure;
+        data.SteamId = loginResponse.EmailSteamId;
 
         if (loginResponse.CaptchaNeeded)
         {
-            loginData.CaptchaGid = loginResponse.CaptchaGid;
-            loginData.Result = LoginResult.NeedCaptcha;
-            return loginData.Result;
+            data.LoginResult =  LoginResult.NeedCaptcha;
+            data.CaptchaGid = loginResponse.CaptchaGid?.Deserialize<string>();
+
+            return data;
         }
 
         if (loginResponse.EmailAuthNeeded)
         {
-            throw new NotImplementedException();
+            data.LoginResult = LoginResult.NeedEmail;
+            return data;
         }
 
-        if (loginResponse.TwoFactorNeeded && !loginResponse.Success)
+        if (loginResponse.TwoFactorNeeded)
         {
-            loginData.Result = LoginResult.Need2Fa;
-            return loginData.Result;
+            data.LoginResult = LoginResult.Need2Fa;
+            return await LoginAgain(account, password, data, cancellationToken);
         }
 
-        if (loginResponse.OAuthData?.OAuthToken is null || loginResponse.OAuthData.OAuthToken.Length == 0)
+        if (loginResponse is { Success: true, TransferParameters: not null })
         {
-            loginData.Result = LoginResult.GeneralFailure;
-            return loginData.Result;
+            var transferParameters = loginResponse.TransferParameters;
+            
+            account.Session = new SessionData()
+            {
+                WebCookie = transferParameters.Webcookie,
+                SteamId = UInt64.Parse(transferParameters.Steamid),
+                SteamLoginSecure = loginResponse.LoginSecure,
+                SessionId = data.SessionCookie ?? throw new ArgumentNullException(nameof(data.SessionCookie)),
+            };
+
+            return new LoginAgainData(LoginResult.LoginOkay);
         }
 
-        return loginData.Result;
+        return new LoginAgainData(LoginResult.GeneralFailure);
     }
 
-    public Task<bool> RemoveAuthenticator(SteamGuardAccount account)
+    public async Task<IReadOnlyList<Confirmation>> FetchConfirmations(SteamGuardAccount account, CancellationToken cancellationToken)
     {
-        var posData = new KeyValuePair<string, string>[4];
-        posData[0] = new KeyValuePair<string, string>("steamid", account.Session.SessionId);
-        posData[1] = new KeyValuePair<string, string>("steamguard_scheme", "2");
-        posData[2] = new KeyValuePair<string, string>("revocation_code", account.RevocationCode);
-        posData[3] = new KeyValuePair<string, string>("access_token", account.Session.OAuthToken);
+        var queryStringBuilder = new QueryBuilder();
+        GenerateConfirmationQueryParams(queryStringBuilder, account, "conf");
 
-        return _legacySteamApi.RemoveAuthenticator(posData);
+        var confirmationsListJson = await _legacySteamCommunityApi
+                                          .MobileConf(queryStringBuilder.ToString(), account.Session.CookieString, cancellationToken)
+                                          .ConfigureAwait(false);
+
+        return confirmationsListJson.Conf ?? new List<Confirmation>();
     }
 
-    private async ValueTask<string?> SendFetchConfirmationsRequest(SteamGuardAccount account, CancellationToken cancellationToken, UInt16 times = 0)
+    public Task<bool> SendConfirmation(SteamGuardAccount account, Confirmation confirmation, ConfirmationOptions options, CancellationToken cancellationToken)
     {
-        try
-        {
-            var builder = new StringBuilder(140 + 5);
-            builder.Append("conf?");
-            builder.Append(GenerateConfirmationQueryParams(account, "conf"));
+        var strOption = options.ToString().ToLower();
 
-            var html = await _legacySteamCommunityApi
-                .MobileConf(builder.ToString(), account.Session.GetCookieString(), cancellationToken)
-                .ConfigureAwait(false);
+        var queryStringBuilder = new QueryBuilder()
+            .AddParameter("op", strOption);
 
-            if (html.Contains("Nothing to confirm"))
-                return null;
+        GenerateConfirmationQueryParams(queryStringBuilder, account, strOption);
+        queryStringBuilder.AddParameter("cid", confirmation.Id)
+                          .AddParameter("ck", confirmation.Nonce);
 
-            if (!html.Contains("Invalid authenticator"))
-                return html;
-
-            return await SendFetchConfirmationsRequest(account, cancellationToken);
-        }
-        catch (WgTokenInvalidException)
-        {
-            if (times >= 1)
-                return null;
-
-            await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
-
-            if (!await RefreshSession(account, cancellationToken))
-                return null;
-
-            return await SendFetchConfirmationsRequest(account, cancellationToken, ++times);
-        }
-        catch (WgTokenExpiredException)
-        {
-            return null;
-        }
+        return _legacySteamCommunityApi.SendSingleConfirmations(queryStringBuilder.ToString(), account.Session.CookieString, cancellationToken);
     }
 
-    internal static ConfirmationModel GetConfirmationModelFromHtml(IElement confirmationElement)
+    public Task<bool> SendConfirmation(SteamGuardAccount account, IReadOnlyList<Confirmation> confirmations, ConfirmationOptions options, CancellationToken cancellationToken)
     {
-        Span<UInt64> attributesValue = stackalloc UInt64[5];
+        var strOption = options.ToString().ToLower();
 
-        for (var i = 2; i <= 5; i++)
+        var queryStringBuilder = new QueryBuilder()
+            .AddParameter("op", strOption);
+
+        GenerateConfirmationQueryParams(queryStringBuilder, account, strOption);
+
+        foreach (var confirmation in confirmations)
         {
-            attributesValue[i - 2] = UInt64.Parse(confirmationElement.Attributes[i]!.Value);
+            queryStringBuilder.AddParameter("cid[]", confirmation.Id);
+            queryStringBuilder.AddParameter("ck[]", confirmation.Nonce);
         }
 
-        var confirmationElementContent = confirmationElement.FirstElementChild!;
-        var imageSource = ((IHtmlImageElement)confirmationElementContent.QuerySelector("img")!).Source!;
-        var children = confirmationElementContent.Children[^1].Children;
-
-        return new ConfirmationModel(attributesValue, imageSource, children);
+        return _legacySteamCommunityApi.SendMultipleConfirmations(queryStringBuilder.ToKeyValuePairs(), account.Session.CookieString, cancellationToken);
     }
 
-    internal static string GenerateConfirmationQueryParams(SteamGuardAccount account, string tag)
+    private static void GenerateConfirmationQueryParams(QueryBuilder queryBuilder, SteamGuardAccount account, string tag)
     {
         var time = ITimeAligner.SteamTime;
 
-        var builder = new StringBuilder(140);
-        builder.Append($"p={account.DeviceId}");
-        builder.Append($"&a={account.Session.SteamId}");
-        builder.Append($"&k={GenerateConfirmationHashForTime(time, tag, account.IdentitySecret)}");
-        builder.Append($"&t={time}");
-        builder.Append("&m=android");
-        builder.Append($"&tag={tag}");
-
-        return builder.ToString();
+        queryBuilder.AddParameter("p", account.DeviceId)
+                          .AddParameter("a", account.Session.SteamId.ToString())
+                          .AddParameter("k", GenerateConfirmationHashForTime(time, tag, account.IdentitySecret))
+                          .AddParameter("t", time.ToString())
+                          .AddParameter("m", "android")
+                          .AddParameter("tag", tag);
     }
 
     private static string? GenerateConfirmationHashForTime(Int64 time, string tag, string identitySecret)
@@ -330,5 +195,19 @@ internal class LegacySteamGuardAccountService : ISteamGuardAccountService
         {
             return null;
         }
+    }
+
+    private static string EncryptPassword(string password, RsaResponse rsaResponse)
+    {
+        using var rsaEncryptor = new RSACryptoServiceProvider();
+
+        var passwordBytes = Encoding.ASCII.GetBytes(password);
+        var rsaParameters = rsaEncryptor.ExportParameters(false);
+        rsaParameters.Exponent = Util.HexStringToByteArray(rsaResponse.Exponent);
+        rsaParameters.Modulus = Util.HexStringToByteArray(rsaResponse.Modulus);
+        rsaEncryptor.ImportParameters(rsaParameters);
+        var encryptedPasswordBytes = rsaEncryptor.Encrypt(passwordBytes, false);
+
+        return Convert.ToBase64String(encryptedPasswordBytes);
     }
 }
